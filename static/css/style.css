@@ -1,118 +1,267 @@
-/* Fondo General */
+/* ============================================
+<<<<<<< Updated upstream
+   PALETA DEPORTIVA — #1A237E · #0277BD · #546E7A · #0D0D0D
+   ============================================ */
 
+/* Reset general */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0D0D0D;
+}
+
+/* Fondo General */
 .main-container {
-    background-color: #797fe1;
-    /* El color lila/azul de tu imagen */
+    background-color: #0D0D0D;
+=======
+   PALETA DEPORTIVA — Negro + Azul Eléctrico
+   ============================================ */
+
+/* Fondo General */
+.main-container {
+    background-color: #0a0e1a;
+>>>>>>> Stashed changes
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
 /* Logo Principal */
-
 .main-logo {
     width: 80px;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.2));
+<<<<<<< Updated upstream
+    filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(2, 119, 189, 0.9));
+=======
+    filter: drop-shadow(0px 4px 8px rgba(0, 120, 255, 0.4));
+>>>>>>> Stashed changes
 }
 
-
-/* Barra de Navegación Estilo Imagen */
-
+/* Barra de Navegación */
 .custom-nav {
-    background-color: #9ba2f0;
-    border: 2px solid #333;
+<<<<<<< Updated upstream
+    background-color: #1A237E;
+    border: 2px solid #0277BD;
+=======
+    background-color: #111827;
+    border: 2px solid #1e40af;
+>>>>>>> Stashed changes
     margin: 0 10%;
+    padding: 8px 16px;
+    border-radius: 8px;
 }
 
+.custom-nav .navbar-nav {
+    gap: 4px;
+    align-items: center;
+}
+
+.custom-nav .nav-link,
 .custom-nav a {
-    color: #000;
+<<<<<<< Updated upstream
+    color: #ECEFF1 !important;
+=======
+    color: #cbd5e1 !important;
+>>>>>>> Stashed changes
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
+    padding: 8px 16px !important;
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
 }
 
+.custom-nav .nav-link:hover,
 .custom-nav a:hover {
-    color: #fff;
+    color: #fff !important;
+<<<<<<< Updated upstream
+    background-color: #0277BD;
+=======
+    background-color: #1e40af;
+>>>>>>> Stashed changes
 }
 
+.custom-nav .nav-link.active,
+.custom-nav a.active {
+    color: #fff !important;
+<<<<<<< Updated upstream
+    background-color: #0277BD;
+}
+
+/* Iconos nav */
+.custom-nav i,
+.custom-nav .fa {
+    color: #ECEFF1;
+=======
+    background-color: #2563eb;
+>>>>>>> Stashed changes
+}
+
+/* Navbar toggler (móvil) */
+.custom-nav .navbar-toggler {
+<<<<<<< Updated upstream
+    border-color: #0277BD;
+=======
+    border-color: #1e40af;
+>>>>>>> Stashed changes
+}
+
+.custom-nav .navbar-toggler-icon {
+    filter: invert(1);
+}
 
 /* Títulos de Sección */
-
 .section-title {
-    border-bottom: 2px solid #ff8c42;
+<<<<<<< Updated upstream
+    border-bottom: 2px solid #0277BD;
     display: inline-block;
     padding-bottom: 5px;
     margin-bottom: 10px;
+    color: #ECEFF1;
+=======
+    border-bottom: 2px solid #3b82f6;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    color: #f1f5f9;
+>>>>>>> Stashed changes
 }
 
-
-/* Tarjetas de Disciplinas y Servicios (Amarillas) */
-
+/* Tarjetas de Disciplinas y Servicios */
 .sport-card,
 .service-card {
-    background-color: #e9c46a;
-    /* Color mostaza/amarillo de la imagen */
-    border: 2px solid #000;
+<<<<<<< Updated upstream
+    background-color: #1A237E;
+    border: 2px solid #0277BD;
+=======
+    background-color: #111827;
+    border: 2px solid #1e40af;
+>>>>>>> Stashed changes
     border-radius: 15px;
     padding: 25px;
     text-align: center;
     height: 100%;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .sport-card:hover,
 .service-card:hover {
     transform: scale(1.03);
+<<<<<<< Updated upstream
+    box-shadow: 0 0 20px rgba(2, 119, 189, 0.4);
+=======
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.35);
+>>>>>>> Stashed changes
 }
 
+/* Iconos tarjetas — gris claro ECEFF1 */
 .card-icon {
-    width: 60px;
+    width: 80px;
     margin-bottom: 15px;
+    filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(2, 119, 189, 0.8));
 }
 
 .sport-card h5,
 .service-card h5 {
     font-size: 1rem;
     font-weight: bold;
-    color: #444;
+<<<<<<< Updated upstream
+    color: #ECEFF1;
+=======
+    color: #e2e8f0;
+>>>>>>> Stashed changes
     margin-bottom: 10px;
 }
 
 .sport-card p,
 .service-card p {
     font-size: 0.85rem;
-    color: #333;
+<<<<<<< Updated upstream
+    color: #ECEff1cc;
+=======
+    color: #94a3b8;
+>>>>>>> Stashed changes
     line-height: 1.3;
 }
 
-
-/* Estilo del Modal (Pantalla Flotante) */
-
+/* Modal */
 .custom-modal {
-    background-color: #e9c46a;
-    border: 3px solid #000;
+<<<<<<< Updated upstream
+    background-color: #1A237E;
+    border: 3px solid #0277BD;
     border-radius: 20px;
+    color: #ECEFF1;
 }
 
 .custom-input {
-    border: 2px solid #000;
+    border: 2px solid #0277BD;
     border-radius: 8px;
+    background-color: #546E7A;
+    color: #ECEFF1;
 }
 
+.custom-input:focus {
+    border-color: #0277BD;
+    box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.3);
+    background-color: #546E7A;
+    color: #ECEFF1;
+=======
+    background-color: #111827;
+    border: 3px solid #1e40af;
+    border-radius: 20px;
+    color: #f1f5f9;
+}
+
+.custom-input {
+    border: 2px solid #1e40af;
+    border-radius: 8px;
+    background-color: #1e293b;
+    color: #f1f5f9;
+}
+
+.custom-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    background-color: #1e293b;
+    color: #f1f5f9;
+>>>>>>> Stashed changes
+    outline: none;
+}
 
 /* ===== INTER-FICHAS ===== */
-
 .modulo-header i {
-    color: #ffc107;
-    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.4));
+<<<<<<< Updated upstream
+    color: #ECEFF1;
+    filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
 }
 
 .panel-interfichas {
-    background-color: #e9c46a;
-    border: 2px solid #000;
+    background-color: #1A237E;
+    border: 2px solid #0277BD;
     border-radius: 15px;
     padding: 25px;
     animation: fadeIn 0.4s ease;
+    color: #ECEFF1;
+=======
+    color: #3b82f6;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+}
+
+.panel-interfichas {
+    background-color: #111827;
+    border: 2px solid #1e40af;
+    border-radius: 15px;
+    padding: 25px;
+    animation: fadeIn 0.4s ease;
+    color: #f1f5f9;
+>>>>>>> Stashed changes
 }
 
 @keyframes fadeIn {
@@ -127,23 +276,234 @@
 }
 
 #tabla-torneos thead {
-    background-color: #1a1a2e;
+<<<<<<< Updated upstream
+    background-color: #0277BD;
+=======
+    background-color: #1e40af;
+>>>>>>> Stashed changes
+    color: #fff;
+}
+
+#tabla-torneos tbody tr:hover {
+<<<<<<< Updated upstream
+    background-color: #546E7A;
+}
+
+#tabla-torneos {
+    color: #ECEFF1;
 }
 
 .modulo-header .fa-building {
-    color: #4361ee;
-    filter: drop-shadow(0 0 10px rgba(67, 97, 238, 0.4));
+    color: #ECEFF1;
+    filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
 }
 
 .modulo-header .fa-dumbbell {
-    color: #2dc653;
-    filter: drop-shadow(0 0 10px rgba(45, 198, 83, 0.4));
+    color: #ECEFF1;
+    filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
+=======
+    background-color: #1e293b;
 }
 
+#tabla-torneos {
+    color: #e2e8f0;
+}
+
+.modulo-header .fa-building {
+    color: #60a5fa;
+    filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.4));
+}
+
+.modulo-header .fa-dumbbell {
+    color: #34d399;
+    filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.4));
+>>>>>>> Stashed changes
+}
 
 /* ===== INVENTARIO ===== */
-
 .modulo-header .fa-box {
-    color: #e63946;
-    filter: drop-shadow(0 0 10px rgba(230, 57, 70, 0.4));
+<<<<<<< Updated upstream
+    color: #546E7A;
+    filter: drop-shadow(0 0 10px rgba(84, 110, 122, 0.6));
+=======
+    color: #f87171;
+    filter: drop-shadow(0 0 10px rgba(248, 113, 113, 0.4));
+>>>>>>> Stashed changes
+}
+
+/* ===== BOTONES GENERALES ===== */
+.btn-primary {
+<<<<<<< Updated upstream
+    background-color: #0277BD;
+    border-color: #1A237E;
+}
+
+.btn-primary:hover {
+    background-color: #1A237E;
+    border-color: #0277BD;
+}
+
+.btn-outline-primary {
+    color: #0277BD;
+    border-color: #0277BD;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0277BD;
+    border-color: #0277BD;
+=======
+    background-color: #2563eb;
+    border-color: #1e40af;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    border-color: #1e3a8a;
+}
+
+.btn-outline-primary {
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.btn-outline-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+>>>>>>> Stashed changes
+    color: #fff;
+}
+
+/* ===== TABLAS GENERALES ===== */
+.table {
+<<<<<<< Updated upstream
+    color: #ECEFF1;
+}
+
+.table thead {
+    background-color: #0277BD;
+=======
+    color: #e2e8f0;
+}
+
+.table thead {
+    background-color: #1e40af;
+>>>>>>> Stashed changes
+    color: #fff;
+}
+
+.table tbody tr:hover {
+<<<<<<< Updated upstream
+    background-color: #546E7A;
+    color: #ECEFF1;
+}
+
+.table-bordered {
+    border-color: #0277BD;
+=======
+    background-color: #1e293b;
+    color: #f1f5f9;
+}
+
+.table-bordered {
+    border-color: #1e40af;
+>>>>>>> Stashed changes
+}
+
+.table-bordered td,
+.table-bordered th {
+<<<<<<< Updated upstream
+    border-color: #1A237E;
+=======
+    border-color: #1e3a8a;
+>>>>>>> Stashed changes
+}
+
+/* ===== FORMULARIOS GENERALES ===== */
+.form-control,
+.form-select {
+<<<<<<< Updated upstream
+    background-color: #546E7A;
+    border: 2px solid #0277BD;
+    color: #ECEFF1;
+=======
+    background-color: #1e293b;
+    border: 2px solid #1e40af;
+    color: #f1f5f9;
+>>>>>>> Stashed changes
+    border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+<<<<<<< Updated upstream
+    background-color: #546E7A;
+    border-color: #0277BD;
+    color: #ECEFF1;
+    box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.3);
+}
+
+.form-label {
+    color: #ECEFF1;
+=======
+    background-color: #1e293b;
+    border-color: #3b82f6;
+    color: #f1f5f9;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.form-label {
+    color: #cbd5e1;
+>>>>>>> Stashed changes
+    font-weight: 500;
+}
+
+/* ===== ALERTS / BADGES ===== */
+.badge.bg-primary {
+<<<<<<< Updated upstream
+    background-color: #0277BD !important;
+}
+
+.alert-info {
+    background-color: #1A237E;
+    border-color: #0277BD;
+    color: #ECEFF1;
+=======
+    background-color: #2563eb !important;
+}
+
+.alert-info {
+    background-color: #1e293b;
+    border-color: #1e40af;
+    color: #93c5fd;
+>>>>>>> Stashed changes
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+<<<<<<< Updated upstream
+    background: #0D0D0D;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #1A237E;
+=======
+    background: #0a0e1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #1e40af;
+>>>>>>> Stashed changes
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+<<<<<<< Updated upstream
+    background-color: #0277BD;
+=======
+    background-color: #3b82f6;
+>>>>>>> Stashed changes
 }
