@@ -16,15 +16,12 @@
         <p class="text-white-50">Desarrolla tu potencial deportivo mientras te formas profesionalmente</p>
     </header>
 
-
-
     <!-- Sección Disciplinas -->
     <section class="container mb-5">
         <h2 class="text-center text-white section-title">Nuestras Disciplinas Deportivas</h2>
         <p class="text-center text-white-50 mb-4">Explora las diferentes actividades deportivas disponibles en el SENA</p>
         
         <div class="row g-4">
-            <!-- Futsal -->
             <div class="col-md-4">
                 <div class="sport-card">
                     <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" class="card-icon">
@@ -32,7 +29,6 @@
                     <p>Participa en torneos inter-fichas e inter-centros. Desarrolla trabajo en equipo y liderazgo.</p>
                 </div>
             </div>
-            <!-- Baloncesto -->
             <div class="col-md-4">
                 <div class="sport-card">
                     <img src="https://cdn-icons-png.flaticon.com/512/731/731943.png" class="card-icon">
@@ -40,7 +36,6 @@
                     <p>Competencias emocionantes en nuestras canchas profesionales. Mejora tu técnica y estrategia.</p>
                 </div>
             </div>
-            <!-- Voleibol -->
             <div class="col-md-4">
                 <div class="sport-card">
                     <img src="https://cdn-icons-png.flaticon.com/512/1165/1165187.png" class="card-icon">
@@ -127,25 +122,12 @@
                     <div class="tab-pane fade" id="registerPanel" role="tabpanel">
                         <form id="registerForm" novalidate>
 
-                            <!-- Rol (siempre primero) -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Rol <span class="text-danger">*</span></label>
-                                <select id="rolSelect" class="form-select custom-input" required>
-                                    <option value="">-- Selecciona tu rol --</option>
-                                    <option value="administrador">Administrador</option>
-                                    <option value="instructor">Instructor</option>
-                                    <option value="aprendiz">Aprendiz</option>
-                                </select>
-                            </div>
-
-                            <!-- Campos dinámicos -->
-                            <div id="camposComunes" class="d-none">
+                            <div id="camposComunes">
                                 <div class="row g-3">
 
-                                    <!-- Solo Aprendiz -->
-                                    <div class="col-12" id="campoTipoDoc" style="display:none!important">
+                                    <div class="col-12">
                                         <label class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
-                                        <select class="form-select custom-input" name="tipo_documento" id="tipoDocumento">
+                                        <select class="form-select custom-input" name="tipo_documento" id="tipoDocumento" required>
                                             <option value="">-- Selecciona --</option>
                                             <option value="CC">Cédula de Ciudadanía</option>
                                             <option value="TI">Tarjeta de Identidad</option>
@@ -185,10 +167,9 @@
                                         </select>
                                     </div>
 
-                                    <!-- Solo Aprendiz -->
-                                    <div class="col-12" id="campoEstado" style="display:none!important">
+                                    <div class="col-12">
                                         <label class="form-label">Estado <span class="text-danger">*</span></label>
-                                        <select class="form-select custom-input" name="estado" id="estadoAprendiz">
+                                        <select class="form-select custom-input" name="estado" id="estadoAprendiz" required>
                                             <option value="">-- Selecciona --</option>
                                             <option value="activo">Activo</option>
                                             <option value="inactivo">Inactivo</option>

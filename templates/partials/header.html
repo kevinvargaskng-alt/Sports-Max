@@ -9,20 +9,14 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-           <!-- Barra de Navegación Interna (Estilo Imagen) -->
-    <nav class="custom-nav d-flex justify-content-around py-2 mb-5">
-        <a href="#" data-bs-toggle="modal" data-bs-target="#modalForm">Iniciar sesión</a>
-        <a href="{% url "interfichas" %}">Inter-Fichas</a>
-        <a class="nav-link" href="{% url 'intercentros' %}">
-    <i class="fas fa-building me-1"></i>Inter-centros
-</a>
-        <a class="nav-link" href="{% url 'gimnasio' %}">
-    <i class="fas fa-dumbbell me-1"></i>Gimnasio
-</a>
-        <a class="nav-link" href="{% url 'inventario' %}">
-    <i class="fas fa-box me-1"></i>Inventario
-</a>
-    </nav>
+            <nav class="custom-nav d-flex justify-content-around py-2 mb-5">
+                <a href="{% url 'home' %}"><i class="fas fa-home me-1"></i>Inicio</a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modalForm"><i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión</a>
+                <a href="{% url 'interfichas' %}"><i class="fas fa-shield-alt me-1"></i>Inter-Fichas</a>
+                <a href="{% url 'intercentros' %}"><i class="fas fa-building me-1"></i>Inter-centros</a>
+                <a href="{% url 'gimnasio' %}"><i class="fas fa-dumbbell me-1"></i>Gimnasio</a>
+                <a href="{% url 'inventario' %}"><i class="fas fa-box me-1"></i>Inventario</a>
+            </nav>
         </div>
     </div>
 </nav>
