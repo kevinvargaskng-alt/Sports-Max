@@ -70,113 +70,87 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ================================================================
-    // ===== REGISTRO =================================================
-    // ================================================================
-    const rolSelect     = document.getElementById('rolSelect');
-    const camposComunes = document.getElementById('camposComunes');
-    const campoTipoDoc  = document.getElementById('campoTipoDoc');
-    const campoEstado   = document.getElementById('campoEstado');
-    const tipoDocumento = document.getElementById('tipoDocumento');
-    const estadoAprendiz= document.getElementById('estadoAprendiz');
-    const registerAlert = document.getElementById('registerAlert');
-    const registerForm  = document.getElementById('registerForm');
+   // ================================================================
+// ===== REGISTRO (solo aprendiz) =================================
+// ================================================================
+const camposComunes = document.getElementById('camposComunes');
+const campoTipoDoc  = document.getElementById('campoTipoDoc');
+const campoEstado   = document.getElementById('campoEstado');
+const tipoDocumento = document.getElementById('tipoDocumento');
+const estadoAprendiz= document.getElementById('estadoAprendiz');
+const registerAlert = document.getElementById('registerAlert');
+const registerForm  = document.getElementById('registerForm');
 
-    // Mostrar/ocultar campos según rol
-    if (rolSelect) {
-        rolSelect.addEventListener('change', function () {
-            const rol = this.value;
-            if (!rol) {
-                camposComunes?.classList.add('d-none');
-                return;
-            }
-            camposComunes?.classList.remove('d-none');
+// Mostrar campos al cargar (siempre aprendiz)
+camposComunes?.classList.remove('d-none');
+campoTipoDoc?.style.setProperty('display', 'block', 'important');
+campoEstado?.style.setProperty('display', 'block', 'important');
+if (tipoDocumento)  tipoDocumento.required  = true;
+if (estadoAprendiz) estadoAprendiz.required = true;
 
-            if (rol === 'aprendiz') {
-                campoTipoDoc?.style.setProperty('display', 'block', 'important');
-                campoEstado?.style.setProperty('display', 'block', 'important');
-                if (tipoDocumento)  tipoDocumento.required  = true;
-                if (estadoAprendiz) estadoAprendiz.required = true;
-            } else {
-                campoTipoDoc?.style.setProperty('display', 'none', 'important');
-                campoEstado?.style.setProperty('display', 'none', 'important');
-                if (tipoDocumento)  tipoDocumento.required  = false;
-                if (estadoAprendiz) estadoAprendiz.required = false;
-            }
-        });
-    }
+// Submit registro
+if (registerForm && registerAlert) {
+    registerForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        hideAlert(registerAlert);
 
-    // Submit registro
-    if (registerForm && registerAlert) {
-        registerForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            hideAlert(registerAlert);
+        const contrasena = this.contrasena?.value;
+        const confirmar  = document.getElementById('confirmarContrasena')?.value;
+        const btn        = this.querySelector('button[type="submit"]');
 
-            const rol        = rolSelect?.value;
-            const contrasena = this.contrasena?.value;
-            const confirmar  = document.getElementById('confirmarContrasena')?.value;
-            const btn        = this.querySelector('button[type="submit"]');
+        if (contrasena !== confirmar) {
+            showAlert(registerAlert, 'Las contraseñas no coinciden.', 'danger');
+            return;
+        }
+        if (!this.checkValidity()) {
+            this.reportValidity();
+            return;
+        }
 
-            if (!rol) {
-                showAlert(registerAlert, 'Selecciona un rol para continuar.', 'warning');
-                return;
-            }
-            if (contrasena !== confirmar) {
-                showAlert(registerAlert, 'Las contraseñas no coinciden.', 'danger');
-                return;
-            }
-            if (!this.checkValidity()) {
-                this.reportValidity();
-                return;
-            }
+        // Animación
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registrando...';
+        btn.disabled  = true;
 
-            // Animación
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registrando...';
-            btn.disabled  = true;
+        setTimeout(() => {
+            const nuevoUsuario = {
+                numero_documento: this.numero_documento?.value.trim(),
+                nombres:          this.nombres?.value.trim(),
+                apellidos:        this.apellidos?.value.trim(),
+                telefono:         this.telefono?.value.trim(),
+                genero:           this.genero?.value,
+                rol:              'aprendiz',
+                contrasena,
+                tipo_documento:   tipoDocumento?.value,
+                estado:           estadoAprendiz?.value,
+            };
 
-            setTimeout(() => {
-                const nuevoUsuario = {
-                    numero_documento: this.numero_documento?.value.trim(),
-                    nombres:          this.nombres?.value.trim(),
-                    apellidos:        this.apellidos?.value.trim(),
-                    telefono:         this.telefono?.value.trim(),
-                    genero:           this.genero?.value,
-                    rol,
-                    contrasena,
-                };
-                if (rol === 'aprendiz') {
-                    nuevoUsuario.tipo_documento = tipoDocumento?.value;
-                    nuevoUsuario.estado         = estadoAprendiz?.value;
-                }
-
-                const existe = registeredUsers.find(u => u.numero_documento === nuevoUsuario.numero_documento);
-                if (existe) {
-                    showAlert(registerAlert, 'Ya existe un usuario con ese número de documento.', 'warning');
-                    btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Crear Cuenta';
-                    btn.disabled  = false;
-                    return;
-                }
-
-                registeredUsers.push(nuevoUsuario);
-                showAlert(registerAlert,
-                    `<i class="fas fa-check-circle me-1"></i> ¡Registro exitoso! Ahora puedes ` +
-                    `<a href="#" id="goToLogin" class="alert-link fw-bold">iniciar sesión</a>.`,
-                    'success'
-                );
-                registerForm.reset();
-                camposComunes?.classList.add('d-none');
+            const existe = registeredUsers.find(u => u.numero_documento === nuevoUsuario.numero_documento);
+            if (existe) {
+                showAlert(registerAlert, 'Ya existe un usuario con ese número de documento.', 'warning');
                 btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Crear Cuenta';
                 btn.disabled  = false;
+                return;
+            }
 
-                setTimeout(() => {
-                    document.getElementById('goToLogin')?.addEventListener('click', function (ev) {
-                        ev.preventDefault();
-                        document.getElementById('login-tab')?.click();
-                    });
-                }, 50);
-            }, 1000);
-        });
-    }
+            registeredUsers.push(nuevoUsuario);
+            showAlert(registerAlert,
+                `<i class="fas fa-check-circle me-1"></i> ¡Registro exitoso! Ahora puedes ` +
+                `<a href="#" id="goToLogin" class="alert-link fw-bold">iniciar sesión</a>.`,
+                'success'
+            );
+            registerForm.reset();
+            btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Crear Cuenta';
+            btn.disabled  = false;
+
+            setTimeout(() => {
+                document.getElementById('goToLogin')?.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    document.getElementById('login-tab')?.click();
+                });
+            }, 50);
+        }, 1000);
+    });
+}
 
     // ================================================================
     // ===== INTER-FICHAS =============================================
