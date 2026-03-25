@@ -11,7 +11,20 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <nav class="custom-nav d-flex justify-content-around py-2 mb-5">
                 <a href="{% url 'home' %}"><i class="fas fa-home me-1"></i>Inicio</a>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#modalForm"><i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión</a>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'perfil' %}">
+                        <i class="fas fa-user-circle me-1"></i>{{ user.first_name }}
+                    </a>
+                    <a href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                    </a>
+                {% else %}
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalForm">
+                        <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
+                    </a>
+                {% endif %}
+
                 <a href="{% url 'interfichas' %}"><i class="fas fa-shield-alt me-1"></i>Inter-Fichas</a>
                 <a href="{% url 'intercentros' %}"><i class="fas fa-building me-1"></i>Inter-centros</a>
                 <a href="{% url 'gimnasio' %}"><i class="fas fa-dumbbell me-1"></i>Gimnasio</a>

@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'intercentros',
     'gimnasio',
     'inventario',
+    'usuarios',  # ← NUEVO
 ]
 
 MIDDLEWARE = [
@@ -90,3 +91,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Configuración de campos automáticos
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ── AUTENTICACIÓN ── NUEVO ──────────────────────────────
+AUTH_USER_MODEL = 'usuarios.Usuario'
+LOGIN_URL = 'home'
+LOGIN_REDIRECT_URL = 'perfil'
+LOGOUT_REDIRECT_URL = 'home'
+# ────────────────────────────────────────────────────────

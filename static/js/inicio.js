@@ -1,10 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ================================================================
-    // ===== STORE TEMPORAL DE USUARIOS (reemplazar con AJAX/Django) ===
-    // ================================================================
-    const registeredUsers = [];
-
     // ── Helpers de alerta ──
     function showAlert(el, msg, type = 'danger') {
         el.className = `alert alert-${type} mt-2`;
@@ -13,14 +8,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function hideAlert(el) { el.classList.add('d-none'); }
 
+    // ── Helper para obtener CSRF token ──
+    function getCsrf() {
+        return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+    }
+
     // ================================================================
-    // ===== LOGIN ====================================================
+    // ===== LOGIN (conectado a Django) ================================
     // ================================================================
     const loginForm  = document.getElementById('loginForm');
     const loginAlert = document.getElementById('loginAlert');
 
     if (loginForm && loginAlert) {
-        loginForm.addEventListener('submit', function (e) {
+        loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             hideAlert(loginAlert);
 
@@ -33,131 +33,126 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Animación de carga
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Cargando...';
             btn.disabled  = true;
 
-            setTimeout(() => {
-                const user = registeredUsers.find(u => u.numero_documento === doc && u.contrasena === password);
+            try {
+                const res = await fetch('/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCsrf()
+                    },
+                    body: new URLSearchParams({ username: doc, password })
+                });
 
-                if (user) {
-                    // ✅ Login exitoso
-                    showAlert(loginAlert, `<i class="fas fa-check-circle me-1"></i> ¡Bienvenido, ${user.nombres}!`, 'success');
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt me-1"></i> Ingresar al Sistema';
-                    btn.disabled  = false;
-                    // window.location.href = '/dashboard/';  // ← descomentar en producción
+                const data = await res.json();
+
+                if (data.success) {
+                    showAlert(loginAlert, '<i class="fas fa-check-circle me-1"></i> ¡Bienvenido! Redirigiendo...', 'success');
+                    setTimeout(() => window.location.href = data.redirect || '/perfil/', 800);
                 } else {
-                    // ❌ No encontrado → sugerir registro
                     showAlert(loginAlert,
-                        '<i class="fas fa-exclamation-triangle me-1"></i> Usuario no encontrado. ' +
-                        '¿Deseas <a href="#" id="goToRegister" class="alert-link fw-bold">registrarte</a>?',
+                        '<i class="fas fa-exclamation-triangle me-1"></i> ' + (data.error || 'Credenciales incorrectas') +
+                        '. ¿Deseas <a href="#" id="goToRegister" class="alert-link fw-bold">registrarte</a>?',
                         'warning'
                     );
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt me-1"></i> Ingresar al Sistema';
-                    btn.disabled  = false;
-
                     setTimeout(() => {
-                        const link = document.getElementById('goToRegister');
-                        if (link) {
-                            link.addEventListener('click', function (ev) {
-                                ev.preventDefault();
-                                document.getElementById('register-tab')?.click();
-                            });
-                        }
+                        document.getElementById('goToRegister')?.addEventListener('click', function (ev) {
+                            ev.preventDefault();
+                            document.getElementById('register-tab')?.click();
+                        });
                     }, 50);
                 }
-            }, 1000);
+            } catch (err) {
+                showAlert(loginAlert, '<i class="fas fa-times-circle me-1"></i> Error de conexión. Intenta de nuevo.', 'danger');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt me-1"></i> Ingresar al Sistema';
+                btn.disabled  = false;
+            }
         });
     }
 
-   // ================================================================
-// ===== REGISTRO (solo aprendiz) =================================
-// ================================================================
-const camposComunes = document.getElementById('camposComunes');
-const campoTipoDoc  = document.getElementById('campoTipoDoc');
-const campoEstado   = document.getElementById('campoEstado');
-const tipoDocumento = document.getElementById('tipoDocumento');
-const estadoAprendiz= document.getElementById('estadoAprendiz');
-const registerAlert = document.getElementById('registerAlert');
-const registerForm  = document.getElementById('registerForm');
+    // ================================================================
+    // ===== REGISTRO (conectado a Django) ============================
+    // ================================================================
+    const camposComunes  = document.getElementById('camposComunes');
+    const campoTipoDoc   = document.getElementById('campoTipoDoc');
+    const campoEstado    = document.getElementById('campoEstado');
+    const tipoDocumento  = document.getElementById('tipoDocumento');
+    const estadoAprendiz = document.getElementById('estadoAprendiz');
+    const registerAlert  = document.getElementById('registerAlert');
+    const registerForm   = document.getElementById('registerForm');
 
-// Mostrar campos al cargar (siempre aprendiz)
-camposComunes?.classList.remove('d-none');
-campoTipoDoc?.style.setProperty('display', 'block', 'important');
-campoEstado?.style.setProperty('display', 'block', 'important');
-if (tipoDocumento)  tipoDocumento.required  = true;
-if (estadoAprendiz) estadoAprendiz.required = true;
+    // Mostrar campos al cargar (siempre aprendiz)
+    camposComunes?.classList.remove('d-none');
+    campoTipoDoc?.style.setProperty('display', 'block', 'important');
+    campoEstado?.style.setProperty('display', 'block', 'important');
+    if (tipoDocumento)  tipoDocumento.required  = true;
+    if (estadoAprendiz) estadoAprendiz.required = true;
 
-// Submit registro
-if (registerForm && registerAlert) {
-    registerForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        hideAlert(registerAlert);
+    if (registerForm && registerAlert) {
+        registerForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideAlert(registerAlert);
 
-        const contrasena = this.contrasena?.value;
-        const confirmar  = document.getElementById('confirmarContrasena')?.value;
-        const btn        = this.querySelector('button[type="submit"]');
+            const contrasena = this.querySelector('[name=contrasena]')?.value;
+            const confirmar  = document.getElementById('confirmarContrasena')?.value;
+            const btn        = this.querySelector('button[type="submit"]');
 
-        if (contrasena !== confirmar) {
-            showAlert(registerAlert, 'Las contraseñas no coinciden.', 'danger');
-            return;
-        }
-        if (!this.checkValidity()) {
-            this.reportValidity();
-            return;
-        }
-
-        // Animación
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registrando...';
-        btn.disabled  = true;
-
-        setTimeout(() => {
-            const nuevoUsuario = {
-                numero_documento: this.numero_documento?.value.trim(),
-                nombres:          this.nombres?.value.trim(),
-                apellidos:        this.apellidos?.value.trim(),
-                telefono:         this.telefono?.value.trim(),
-                genero:           this.genero?.value,
-                rol:              'aprendiz',
-                contrasena,
-                tipo_documento:   tipoDocumento?.value,
-                estado:           estadoAprendiz?.value,
-            };
-
-            const existe = registeredUsers.find(u => u.numero_documento === nuevoUsuario.numero_documento);
-            if (existe) {
-                showAlert(registerAlert, 'Ya existe un usuario con ese número de documento.', 'warning');
-                btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Crear Cuenta';
-                btn.disabled  = false;
+            if (contrasena !== confirmar) {
+                showAlert(registerAlert, '<i class="fas fa-times-circle me-1"></i> Las contraseñas no coinciden.', 'danger');
+                return;
+            }
+            if (!this.checkValidity()) {
+                this.reportValidity();
                 return;
             }
 
-            registeredUsers.push(nuevoUsuario);
-            showAlert(registerAlert,
-                `<i class="fas fa-check-circle me-1"></i> ¡Registro exitoso! Ahora puedes ` +
-                `<a href="#" id="goToLogin" class="alert-link fw-bold">iniciar sesión</a>.`,
-                'success'
-            );
-            registerForm.reset();
-            btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Crear Cuenta';
-            btn.disabled  = false;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registrando...';
+            btn.disabled  = true;
 
-            setTimeout(() => {
-                document.getElementById('goToLogin')?.addEventListener('click', function (ev) {
-                    ev.preventDefault();
-                    document.getElementById('login-tab')?.click();
+            try {
+                const formData = new FormData(this);
+                // Aseguramos que contrasena va con el nombre correcto
+                formData.set('contrasena', contrasena);
+
+                const res = await fetch('/registro/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCsrf() },
+                    body: formData
                 });
-            }, 50);
-        }, 1000);
-    });
-}
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showAlert(registerAlert,
+                        '<i class="fas fa-check-circle me-1"></i> ¡Registro exitoso! Redirigiendo a tu perfil...',
+                        'success'
+                    );
+                    setTimeout(() => window.location.href = data.redirect || '/perfil/', 800);
+                } else {
+                    const errorMsg = data.error || JSON.stringify(data.errors) || 'Error al registrarse.';
+                    showAlert(registerAlert,
+                        '<i class="fas fa-times-circle me-1"></i> ' + errorMsg,
+                        'danger'
+                    );
+                }
+            } catch (err) {
+                showAlert(registerAlert, '<i class="fas fa-times-circle me-1"></i> Error de conexión. Intenta de nuevo.', 'danger');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-user-plus me-1"></i> Crear Cuenta';
+                btn.disabled  = false;
+            }
+        });
+    }
 
     // ================================================================
     // ===== INTER-FICHAS =============================================
     // ================================================================
-    const botonesAccion = document.querySelectorAll('.btn-accion');
-    const panel         = document.getElementById('panel-interfichas');
-    const panelContenido= document.getElementById('panel-contenido');
+    const botonesAccion  = document.querySelectorAll('.btn-accion');
+    const panel          = document.getElementById('panel-interfichas');
+    const panelContenido = document.getElementById('panel-contenido');
 
     const contenidos = {
         torneos: `
@@ -200,9 +195,9 @@ if (registerForm && registerAlert) {
     // ================================================================
     // ===== INTER-CENTROS ============================================
     // ================================================================
-    const botonesAccionCentro   = document.querySelectorAll('.btn-accion-centro');
-    const panelCentro           = document.getElementById('panel-intercentros');
-    const panelContenidoCentro  = document.getElementById('panel-contenido-centro');
+    const botonesAccionCentro  = document.querySelectorAll('.btn-accion-centro');
+    const panelCentro          = document.getElementById('panel-intercentros');
+    const panelContenidoCentro = document.getElementById('panel-contenido-centro');
 
     const contenidosCentro = {
         torneos: `
