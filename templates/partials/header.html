@@ -1,47 +1,40 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top px-3">
-    <div class="container-fluid">
-        <!-- Logo a la izquierda -->
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-            <i class="fas fa-futbol me-2 text-warning"></i>
-            <span class="fw-bold">Gestión Deportiva</span>
-        </a>
+<div class="d-flex align-items-center px-4" style="position: sticky; top: 0; z-index: 1030; padding: 12px 0;">
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- Brand izquierda (fuera de la píldora) -->
+    <a class="navbar-brand d-flex align-items-center me-auto" href="{% url 'home' %}">
+        <i class="fas fa-futbol me-2 text-warning"></i>
+        <span class="fw-bold text-white">Gestión Deportiva</span>
+    </a>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Navegación Central -->
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 custom-nav-links">
-                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'interfichas' %}">Inter-Fichas</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'intercentros' %}">Inter-Centros</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'gimnasio' %}">Gimnasio</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'inventario' %}">Inventario</a></li>
+    <!-- Píldora central con solo los links -->
+    <nav class="nav-pill-center">
+        <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+        <a class="nav-link" href="{% url 'interfichas' %}">Inter-Fichas</a>
+        <a class="nav-link" href="{% url 'intercentros' %}">Inter-Centros</a>
+        <a class="nav-link" href="{% url 'gimnasio' %}">Gimnasio</a>
+        <a class="nav-link" href="{% url 'inventario' %}">Inventario</a>
+    </nav>
+
+    <!-- Perfil derecha (fuera de la píldora) -->
+    <div class="ms-auto">
+        {% if user.is_authenticated %}
+        <div class="dropdown">
+            <a class="btn-profile dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle fs-5"></i>
+                <span>{{ user.first_name|default:user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow">
+                <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-id-badge me-2"></i>Mi Perfil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
             </ul>
-
-            <!-- Perfil en la Esquina Superior Derecha -->
-            <div class="d-flex align-items-center ms-auto user-profile-section">
-                {% if user.is_authenticated %}
-                    <div class="dropdown">
-                        <a class="btn btn-outline-warning dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle fs-5 me-2"></i>
-                            <span>{{ user.first_name|default:user.username }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-id-badge me-2"></i>Mi Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
-                        </ul>
-                    </div>
-                {% else %}
-                    <button class="btn btn-warning fw-bold px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalForm">
-                        <i class="fas fa-sign-in-alt me-2"></i>Ingresar
-                    </button>
-                {% endif %}
-            </div>
         </div>
+        {% else %}
+        <button class="btn-ingresar" data-bs-toggle="modal" data-bs-target="#modalForm">
+            <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+        </button>
+        {% endif %}
     </div>
-</nav>
 
+</div>
