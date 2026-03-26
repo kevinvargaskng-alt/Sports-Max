@@ -2,7 +2,6 @@
    PALETA DEPORTIVA — #1A237E · #0277BD · #546E7A · #0D0D0D
    ============================================ */
 
-/* Reset general */
 *,
 *::before,
 *::after {
@@ -15,75 +14,189 @@ html, body {
     margin: 0;
     padding: 0;
     background-color: #0D0D0D;
-}
-
-/* Fondo General */
-.main-container {
-    background-color: #0D0D0D;
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ECEFF1;
 }
 
-/* Logo Principal */
+/* ============================================
+   NUEVO: IMAGEN DE FONDO LOCAL (SÍRVE SIEMPRE)
+   ============================================ */
+body::before {
+    content: "";
+    position: fixed; /* Se mantiene fijo al hacer scroll */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* IMPORTANTE: La imagen debe estar en static/img/balon.png */
+    background-image: url('/static/img/balon.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15; /* Opacidad baja para no distraer */
+    z-index: -1; /* Detrás de todo el contenido */
+    pointer-events: none; /* No interfiere con clicks o selección de texto */
+}
+
+.main-container {
+    position: relative;
+    min-height: 100vh;
+    z-index: 1; /* Asegura que el contenido esté sobre el fondo */
+}
+
 .main-logo {
     width: 80px;
     filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(2, 119, 189, 0.9));
 }
 
-/* Barra de Navegación */
-.custom-nav {
+/* ============================================
+   NAVBAR — Píldora central, brand y perfil fuera
+   ============================================ */
+
+.d-flex.align-items-center.px-4 {
+    background-color: rgba(13, 13, 13, 0.8); 
+    padding: 10px 32px !important;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    backdrop-filter: blur(5px); 
+}
+
+/* Píldora central */
+.nav-pill-center {
+    display: flex;
+    align-items: center;
     background-color: #1A237E;
     border: 2px solid #0277BD;
-    margin: 0 10%;
-    padding: 8px 16px;
-    border-radius: 8px;
-}
-
-.custom-nav .navbar-nav {
+    border-radius: 50px;
+    padding: 7px 20px;
     gap: 4px;
-    align-items: center;
+    box-shadow: 0 4px 20px rgba(2, 119, 189, 0.25);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.custom-nav .nav-link,
-.custom-nav a {
+.nav-pill-center .nav-link {
     color: #ECEFF1 !important;
-    text-decoration: none;
     font-weight: 500;
-    font-size: 0.9rem;
-    padding: 8px 16px !important;
-    margin: 0 2px;
-    border-radius: 6px;
+    font-size: 1rem;
+    padding: 7px 18px !important;
+    border-radius: 50px;
     transition: background-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
 }
 
-.custom-nav .nav-link:hover,
-.custom-nav a:hover {
-    color: #fff !important;
+.nav-pill-center .nav-link:hover {
     background-color: #0277BD;
-}
-
-.custom-nav .nav-link.active,
-.custom-nav a.active {
     color: #fff !important;
+}
+
+.nav-pill-center .nav-link.active {
     background-color: #0277BD;
+    color: #fff !important;
 }
 
-/* Iconos nav */
-.custom-nav i,
-.custom-nav .fa {
-    color: #ECEFF1;
+/* Brand fuera de la píldora */
+.navbar-brand {
+    color: #ECEFF1 !important;
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-decoration: none;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Navbar toggler (móvil) */
-.custom-nav .navbar-toggler {
-    border-color: #0277BD;
+.navbar-brand:hover {
+    color: #fff !important;
 }
 
-.custom-nav .navbar-toggler-icon {
-    filter: invert(1);
+/* Botón perfil fuera de la píldora */
+.btn-profile {
+    color: #ECEFF1 !important;
+    background-color: #1A237E;
+    border: 2px solid #0277BD;
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
 }
 
-/* Títulos de Sección */
+.btn-profile:hover,
+.btn-profile:focus {
+    background-color: #0277BD;
+    color: #fff !important;
+    box-shadow: 0 0 8px rgba(2, 119, 189, 0.6);
+}
+
+/* Botón Ingresar */
+.btn-ingresar {
+    background-color: #0277BD;
+    border: 2px solid #0277BD;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-ingresar:hover {
+    background-color: #01579B;
+    box-shadow: 0 0 10px rgba(2, 119, 189, 0.5);
+}
+
+/* Dropdown */
+.dropdown-menu-dark {
+    background-color: #1A237E !important;
+    border: 2px solid #0277BD !important;
+    border-radius: 12px !important;
+    min-width: 180px;
+    padding: 4px 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: #ECEFF1 !important;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu-dark .dropdown-item:hover,
+.dropdown-menu-dark .dropdown-item:focus {
+    background-color: #0277BD !important;
+    color: #fff !important;
+}
+
+.dropdown-divider {
+    border-top: 1px solid #0277BD !important;
+    margin: 0;
+}
+
+.dropdown-menu-dark .dropdown-item.text-danger {
+    color: #ff6b6b !important;
+}
+
+.dropdown-menu-dark .dropdown-item.text-danger:hover {
+    background-color: #c0392b !important;
+    color: #fff !important;
+}
+
+/* ============================================
+   TÍTULOS DE SECCIÓN
+   ============================================ */
 .section-title {
     border-bottom: 2px solid #0277BD;
     display: inline-block;
@@ -92,10 +205,12 @@ html, body {
     color: #ECEFF1;
 }
 
-/* Tarjetas de Disciplinas y Servicios */
+/* ============================================
+   TARJETAS
+   ============================================ */
 .sport-card,
 .service-card {
-    background-color: #1A237E;
+    background-color: rgba(26, 35, 126, 0.9); /* Transparencia para ver el fondo */
     border: 2px solid #0277BD;
     border-radius: 15px;
     padding: 25px;
@@ -110,7 +225,6 @@ html, body {
     box-shadow: 0 0 20px rgba(2, 119, 189, 0.4);
 }
 
-/* Iconos tarjetas */
 .card-icon {
     width: 80px;
     margin-bottom: 15px;
@@ -132,7 +246,9 @@ html, body {
     line-height: 1.3;
 }
 
-/* Modal */
+/* ============================================
+   MODAL
+   ============================================ */
 .custom-modal {
     background-color: #1A237E;
     border: 3px solid #0277BD;
@@ -155,14 +271,16 @@ html, body {
     outline: none;
 }
 
-/* ===== INTER-FICHAS ===== */
+/* ============================================
+   INTER-FICHAS
+   ============================================ */
 .modulo-header i {
     color: #ECEFF1;
     filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
 }
 
 .panel-interfichas {
-    background-color: #1A237E;
+    background-color: rgba(26, 35, 126, 0.9);
     border: 2px solid #0277BD;
     border-radius: 15px;
     padding: 25px;
@@ -171,14 +289,8 @@ html, body {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 #tabla-torneos thead {
@@ -194,45 +306,47 @@ html, body {
     color: #ECEFF1;
 }
 
-.modulo-header .fa-building {
-    color: #ECEFF1;
-    filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
-}
-
+.modulo-header .fa-building,
 .modulo-header .fa-dumbbell {
     color: #ECEFF1;
     filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
 }
 
-/* ===== INVENTARIO ===== */
+/* ============================================
+   INVENTARIO
+   ============================================ */
 .modulo-header .fa-box {
     color: #546E7A;
     filter: drop-shadow(0 0 10px rgba(84, 110, 122, 0.6));
 }
 
-/* ===== BOTONES GENERALES ===== */
+/* ============================================
+   BOTONES GENERALES
+   ============================================ */
 .btn-primary {
-    background-color: #0277BD;
-    border-color: #1A237E;
+    background-color: #0277BD !important;
+    border-color: #1A237E !important;
 }
 
 .btn-primary:hover {
-    background-color: #1A237E;
-    border-color: #0277BD;
+    background-color: #1A237E !important;
+    border-color: #0277BD !important;
 }
 
 .btn-outline-primary {
-    color: #0277BD;
-    border-color: #0277BD;
+    color: #0277BD !important;
+    border-color: #0277BD !important;
 }
 
 .btn-outline-primary:hover {
-    background-color: #0277BD;
-    border-color: #0277BD;
-    color: #fff;
+    background-color: #0277BD !important;
+    border-color: #0277BD !important;
+    color: #fff !important;
 }
 
-/* ===== TABLAS GENERALES ===== */
+/* ============================================
+   TABLAS GENERALES
+   ============================================ */
 .table {
     color: #ECEFF1;
 }
@@ -256,29 +370,32 @@ html, body {
     border-color: #1A237E;
 }
 
-/* ===== FORMULARIOS GENERALES ===== */
+/* ============================================
+   FORMULARIOS GENERALES
+   ============================================ */
 .form-control,
 .form-select {
-    background-color: #546E7A;
-    border: 2px solid #0277BD;
-    color: #ECEFF1;
+    background-color: #546E7A !important;
+    border: 2px solid #0277BD !important;
+    color: #ECEFF1 !important;
     border-radius: 8px;
 }
 
 .form-control:focus,
 .form-select:focus {
-    background-color: #546E7A;
-    border-color: #0277BD;
-    color: #ECEFF1;
-    box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.3);
+    background-color: #546E7A !important;
+    border-color: #0277BD !important;
+    color: #ECEFF1 !important;
+    box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.3) !important;
 }
 
-.form-label {
-    color: #ECEFF1;
-    font-weight: 500;
+.form-control::placeholder {
+    color: #ECEFF1aa;
 }
 
-/* ===== ALERTS / BADGES ===== */
+/* ============================================
+   ALERTS / BADGES
+   ============================================ */
 .badge.bg-primary {
     background-color: #0277BD !important;
 }
@@ -289,20 +406,10 @@ html, body {
     color: #ECEFF1;
 }
 
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #0D0D0D;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #1A237E;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: #0277BD;
-}
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0D0D0D; }
+::-webkit-scrollbar-thumb { background-color: #1A237E; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background-color: #0277BD; }
