@@ -18,7 +18,6 @@
             <p class="text-white-50">Gestiona reservas y entrenamientos del gimnasio SENA</p>
         </div>
         
-
         <!-- Tarjetas de acciones -->
         <div class="row g-4 mb-5">
             <div class="col-md-4">
@@ -52,13 +51,6 @@
                 </div>
             </div>
         </div>
-
-     
-       
-
-
-
-        
 
         <!-- Panel dinámico -->
         <div id="panel-gimnasio" class="panel-interfichas d-none mb-4">
@@ -128,8 +120,7 @@
                             <th>Hora</th>
                             <th>Acciones</th>
                         </tr>
-                    </thead>
-                    
+                    </thead>                  
                     <tbody>
                         {% for e in entrenamientos %}
                         <tr>
@@ -155,8 +146,7 @@
 
     </div>
 </div>
-                
-
+            
 <!-- MODAL RESERVA -->
 <div class="modal fade" id="modalReserva" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -249,51 +239,15 @@
                     <button type="submit" class="btn btn-dark w-100 py-2">
                         <i class="fas fa-check me-2"></i>Guardar Entrenamiento
                     </button>
-                    <div class="mb-4">
-                        
+                    <div class="mb-4">                     
                 </form>
-                </div>
+               </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- EJERCICIO -->
-<div class="mx-auto p-2 w-50" >
-<div id="carouselExampleIndicators" class="carousel slide">
-  <div class="carousel-indicators">
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-  </div>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="https://cdn.colombia.com/sdi/2022/10/21/death-note-nueva-version-netflix-guionista-confirmada-halia-abdel-meguid-1076998-1.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="https://cdn.colombia.com/sdi/2022/10/21/death-note-nueva-version-netflix-guionista-confirmada-halia-abdel-meguid-1076998-1.jpg" class="d-block w-100" alt="">
-    </div>
-    <div class="carousel-item">
-      <img src="https://cdn.colombia.com/sdi/2022/10/21/death-note-nueva-version-netflix-guionista-confirmada-halia-abdel-meguid-1076998-1.jpg" class="d-block w-100" alt="...">
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
-</div>
-
-
-
-
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
 {% endblock %}
-
