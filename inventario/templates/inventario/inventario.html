@@ -73,7 +73,7 @@
                 <i class="fas fa-boxes text-warning me-2"></i>Elementos Deportivos
             </h5>
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
+                <table id="tablaElementos" data-edit-url-template="{% url 'editar_elemento' 0 %}" class="table table-dark table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -87,7 +87,20 @@
                     </thead>
                     <tbody>
                         {% for e in elementos %}
-                        <tr>
+                        <tr
+                            data-id="{{ e.codigo_elemento }}"
+                            data-tipo="{{ e.tipo_maquina|default:''|escapejs }}"
+                            data-cantidad="{{ e.cantidad_total }}"
+                            data-estado="{{ e.estado_general|default:''|escapejs }}"
+                            data-docente="{{ e.docente_responsable|default:''|escapejs }}"
+                            data-fecha="{{ e.fecha_adquisicion|default:'' }}"
+                            data-descripcion="{{ e.descripcion|default:''|escapejs }}"
+                            data-imagen="{% if e.imagen %}{{ e.imagen.url|escapejs }}{% else %}{% endif %}"
+                            data-edit-url="{% url 'editar_elemento' e.codigo_elemento %}"
+                            data-delete-url="{% url 'eliminar_elemento' e.codigo_elemento %}"
+                            role="button"
+                            style="cursor: pointer;"
+                        >
                             <td>{{ e.codigo_elemento }}</td>
                             <td>{{ e.tipo_maquina }}</td>
                             <td>{{ e.cantidad_total }}</td>
@@ -178,9 +191,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST">
+                <form id="formElemento" method="POST" action="{% url 'inventario' %}" enctype="multipart/form-data">
                     {% csrf_token %}
+                    <!-- ahora puede usarse tanto para crear como para editar -->
                     <input type="hidden" name="accion" value="crear_elemento">
+                    <input type="hidden" name="elemento_id" id="elementoIdInput" value="">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tipo / Nombre del Elemento</label>
                         <input type="text" name="tipo_maquina" class="form-control custom-input" placeholder="Ej: Balón de Fútbol" required>
@@ -208,6 +223,13 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Descripción</label>
                         <textarea name="descripcion" class="form-control custom-input" rows="2" placeholder="Descripción opcional"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Imagen del Elemento</label>
+                        <input type="file" name="imagen_elemento" class="form-control custom-input" accept="image/*" id="inputImagenElemento">
+                        <div class="mt-2">
+                            <img id="previewImagenElemento" src="#" alt="Vista previa imagen" style="max-width: 100%; display: none; border-radius: 5px;">
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-dark w-100 py-2">
                         <i class="fas fa-check me-2"></i>Guardar Elemento
