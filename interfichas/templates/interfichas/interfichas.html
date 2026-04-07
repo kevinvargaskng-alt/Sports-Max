@@ -56,7 +56,18 @@
                 <div class="modal-body">
                     <h5 class="fw-bold mb-3">Crear Nuevo Torneo</h5>
                     <input type="text" name="nombre" class="form-control custom-input mb-2" placeholder="Nombre del Torneo" required>
-                    <input type="text" name="disciplina" class="form-control custom-input mb-2" placeholder="Disciplina" required>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Disciplina</label>
+                        <select name="disciplina" class="form-select custom-input" id="id_disciplina"required>
+                            <option value="">Seleccionar disciplina...</option>
+                            <option value="Fútbol">Fútbol</option>
+                            <option value="Futsal">Futsal</option>
+                            <option value="Baloncesto">Baloncesto</option>
+                            <option value="Voleibol">Voleibol</option>
+                            <option value="Tenis de Mesa">Tenis de Mesa</option>
+                            <option value="Ajedrez">Ajedrez</option>
+                        </select>
+                    </div>
                     <input type="date" name="fecha" class="form-control custom-input mb-2" required>
                     <input type="time" name="hora" class="form-control custom-input mb-2" required>
                     <input type="text" name="lugar" class="form-control custom-input mb-2" placeholder="Lugar/Cancha" required>
