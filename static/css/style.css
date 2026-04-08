@@ -406,6 +406,69 @@ body::before {
     color: #ECEFF1;
 }
 
+/* Ajuste de Encabezado Centrado */
+.modulo-header .main-icon-glow {
+    color: #fff;
+    filter: drop-shadow(0 0 10px rgba(0, 123, 255, 0.6));
+}
+
+.badge-estado {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Tarjetas Estilo la Imagen 3 */
+.sport-card {
+    background-color: #1a1d20 !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    padding: 30px 20px !important;
+}
+
+.icon-box {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
+}
+
+/* Tabla Minimalista */
+.panel-interfichas {
+    background-color: #1a1d20;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table thead th {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    border: none;
+}
+
+.table tbody td {
+    border-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================================ */
+/* CAMBIO AQUÍ: Botones unificados con estilo de borde (Outline) */
+/* ============================================================ */
+.btn-primary { 
+    background-color: transparent !important; 
+    border: 1px solid #007bff !important; 
+    color: #007bff !important; 
+}
+
+.btn-primary:hover {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.btn-outline-info { border: 1px solid #17a2b8 !important; color: #17a2b8 !important; }
+.btn-outline-warning { border: 1px solid #ffc107 !important; color: #ffc107 !important; }
+
 /* ============================================
    SCROLLBAR
    ============================================ */
