@@ -2,6 +2,9 @@ from django.db import models
 
 class ElementoDeportivo(models.Model):
     codigo_elemento = models.AutoField(primary_key=True)
+    # ===== NUEVO CAMPO PARA LA IMAGEN =====
+    imagen = models.ImageField(upload_to='elementos/', null=True, blank=True)
+    # ========================================
     tipo_maquina = models.CharField(max_length=100)
     cantidad_total = models.IntegerField(default=0)
     estado_general = models.CharField(max_length=50)

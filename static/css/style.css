@@ -1,415 +1,390 @@
-/* ============================================
-   PALETA DEPORTIVA — #1A237E · #0277BD · #546E7A · #0D0D0D
-   ============================================ */
+/* ============================================================
+   ESTILO MAESTRO DEPORTIVO — GLASSMORPHISM & NEON PRO (V3.5)
+   SISTEMA UNIFICADO: INVENTARIO, TORNEOS, USUARIOS Y GIMNASIO
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap');
 
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --primary-dark: #0D0D0D;
+    --accent-blue: #0277BD;
+    --accent-hover: #039BE5;
+    --deep-blue: #1A237E;
+    --text-white: #ECEFF1;
+    --glass-bg: rgba(26, 35, 126, 0.25);
+    --neon-border: rgba(2, 119, 189, 0.5);
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --danger: #f85149;
+    --success: #238636;
+    --warning: #ffc107;
+    --info: #58a6ff;
+}
+
+/* ============================================================
+   CONFIGURACIÓN GLOBAL Y FONDO
+   ============================================================ */
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
 }
 
 html, body {
-    margin: 0;
-    padding: 0;
-    background-color: #0D0D0D;
+    background-color: var(--primary-dark);
     min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #ECEFF1;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-white);
+    overflow-x: hidden;
 }
 
-/* ============================================
-   NUEVO: IMAGEN DE FONDO LOCAL (SÍRVE SIEMPRE)
-   ============================================ */
 body::before {
     content: "";
-    position: fixed; /* Se mantiene fijo al hacer scroll */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* IMPORTANTE: La imagen debe estar en static/img/balon.png */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
     background-image: url('/static/img/balon.png'); 
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.15; /* Opacidad baja para no distraer */
-    z-index: -1; /* Detrás de todo el contenido */
-    pointer-events: none; /* No interfiere con clicks o selección de texto */
+    opacity: 0.12; 
+    z-index: -1;
+    pointer-events: none;
 }
 
-.main-container {
-    position: relative;
-    min-height: 100vh;
-    z-index: 1; /* Asegura que el contenido esté sobre el fondo */
+/* Scrollbar Personalizada */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--primary-dark); }
+::-webkit-scrollbar-thumb { 
+    background: var(--accent-blue); 
+    border-radius: 10px;
 }
 
-.main-logo {
-    width: 80px;
-    filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(2, 119, 189, 0.9));
-}
-
-/* ============================================
-   NAVBAR — Píldora central, brand y perfil fuera
-   ============================================ */
-
+/* ============================================================
+   NAVBAR & PÍLDORA CENTRAL (HEADER FLOTANTE)
+   ============================================================ */
 .d-flex.align-items-center.px-4 {
-    background-color: rgba(13, 13, 13, 0.8); 
-    padding: 10px 32px !important;
+    background: rgba(13, 13, 13, 0.9) !important;
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--neon-border);
+    padding: 12px 40px !important;
     position: sticky;
     top: 0;
-    z-index: 1030;
-    backdrop-filter: blur(5px); 
+    z-index: 1050;
 }
 
-/* Píldora central */
 .nav-pill-center {
-    display: flex;
+    display: flex !important;
+    flex-direction: row !important;
     align-items: center;
-    background-color: #1A237E;
-    border: 2px solid #0277BD;
+    justify-content: center;
+    background: var(--glass-bg);
+    padding: 6px 20px;
     border-radius: 50px;
-    padding: 7px 20px;
-    gap: 4px;
-    box-shadow: 0 4px 20px rgba(2, 119, 189, 0.25);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.nav-pill-center .nav-link {
-    color: #ECEFF1 !important;
-    font-weight: 500;
-    font-size: 1rem;
-    padding: 7px 18px !important;
-    border-radius: 50px;
-    transition: background-color 0.2s, color 0.2s;
-    white-space: nowrap;
-    text-decoration: none;
-}
-
-.nav-pill-center .nav-link:hover {
-    background-color: #0277BD;
-    color: #fff !important;
-}
-
-.nav-pill-center .nav-link.active {
-    background-color: #0277BD;
-    color: #fff !important;
-}
-
-/* Brand fuera de la píldora */
-.navbar-brand {
-    color: #ECEFF1 !important;
-    font-weight: 700;
-    font-size: 1.15rem;
-    text-decoration: none;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
+    border: 1px solid var(--neon-border);
     gap: 8px;
 }
 
-.navbar-brand:hover {
-    color: #fff !important;
-}
-
-/* Botón perfil fuera de la píldora */
-.btn-profile {
-    color: #ECEFF1 !important;
-    background-color: #1A237E;
-    border: 2px solid #0277BD;
+.nav-link {
+    color: var(--text-white) !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 15px !important;
     border-radius: 50px;
-    padding: 6px 18px;
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    text-decoration: none;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    transition: var(--transition);
     white-space: nowrap;
 }
 
-.btn-profile:hover,
-.btn-profile:focus {
-    background-color: #0277BD;
-    color: #fff !important;
-    box-shadow: 0 0 8px rgba(2, 119, 189, 0.6);
+.nav-link:hover, .nav-link.active {
+    background: var(--accent-blue) !important;
+    color: white !important;
+    box-shadow: 0 0 15px var(--accent-blue);
+    transform: translateY(-2px);
 }
 
-/* Botón Ingresar */
-.btn-ingresar {
-    background-color: #0277BD;
-    border: 2px solid #0277BD;
-    color: #fff;
-    font-weight: 700;
-    border-radius: 50px;
-    padding: 6px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s, box-shadow 0.2s;
+.navbar-brand {
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-white) !important;
+    text-decoration: none;
 }
 
-.btn-ingresar:hover {
-    background-color: #01579B;
-    box-shadow: 0 0 10px rgba(2, 119, 189, 0.5);
+/* ============================================================
+   PANELES, TARJETAS Y HERO
+   ============================================================ */
+.hero-header {
+    background: radial-gradient(circle at top, rgba(26, 35, 126, 0.4) 0%, rgba(13, 13, 13, 1) 100%);
+    border-radius: 0 0 60px 60px;
+    padding: 60px 20px;
+    margin-bottom: 40px;
+    border-bottom: 2px solid var(--deep-blue);
 }
 
-/* Dropdown */
-.dropdown-menu-dark {
-    background-color: #1A237E !important;
-    border: 2px solid #0277BD !important;
-    border-radius: 12px !important;
-    min-width: 180px;
-    padding: 4px 0;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+.panel-modulo, .main-card, .sport-card, .service-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--neon-border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: var(--transition);
 }
 
-.dropdown-menu-dark .dropdown-item {
-    color: #ECEFF1 !important;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
+.main-card { padding: 0; overflow: hidden; } /* Específico para Tablas */
 
-.dropdown-menu-dark .dropdown-item:hover,
-.dropdown-menu-dark .dropdown-item:focus {
-    background-color: #0277BD !important;
-    color: #fff !important;
-}
-
-.dropdown-divider {
-    border-top: 1px solid #0277BD !important;
-    margin: 0;
-}
-
-.dropdown-menu-dark .dropdown-item.text-danger {
-    color: #ff6b6b !important;
-}
-
-.dropdown-menu-dark .dropdown-item.text-danger:hover {
-    background-color: #c0392b !important;
-    color: #fff !important;
-}
-
-/* ============================================
-   TÍTULOS DE SECCIÓN
-   ============================================ */
-.section-title {
-    border-bottom: 2px solid #0277BD;
-    display: inline-block;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    color: #ECEFF1;
-}
-
-/* ============================================
-   TARJETAS
-   ============================================ */
-.sport-card,
-.service-card {
-    background-color: rgba(26, 35, 126, 0.9); /* Transparencia para ver el fondo */
-    border: 2px solid #0277BD;
-    border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    height: 100%;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.sport-card:hover,
-.service-card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 20px rgba(2, 119, 189, 0.4);
+.sport-card:hover, .service-card:hover {
+    background: rgba(2, 119, 189, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(2, 119, 189, 0.2);
 }
 
 .card-icon {
     width: 80px;
     margin-bottom: 15px;
-    filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(2, 119, 189, 0.8));
+    filter: drop-shadow(0 0 8px var(--accent-blue));
 }
 
-.sport-card h5,
-.service-card h5 {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #ECEFF1;
-    margin-bottom: 10px;
+.main-logo {
+    width: 100px;
+    filter: drop-shadow(0 0 20px var(--accent-blue));
+    animation: floating 4s infinite ease-in-out;
 }
 
-.sport-card p,
-.service-card p {
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+/* ============================================================
+   TABLAS CYBERPUNK Y FILAS EXPANDIBLES
+   ============================================================ */
+.table-responsive {
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid var(--neon-border);
+}
+
+.table { color: var(--text-white) !important; background: rgba(0, 0, 0, 0.4); margin-bottom: 0; }
+
+.table thead {
+    background: rgba(26, 35, 126, 0.5); /* Fondo deep blue translúcido */
+    color: var(--info);
+    text-transform: uppercase;
     font-size: 0.85rem;
-    color: #ECEff1cc;
-    line-height: 1.3;
+    letter-spacing: 1px;
+    font-weight: 800;
 }
 
-/* ============================================
-   MODAL
-   ============================================ */
-.custom-modal {
-    background-color: #1A237E;
-    border: 3px solid #0277BD;
-    border-radius: 20px;
-    color: #ECEFF1;
+.table th, .table td {
+    border-color: rgba(2, 119, 189, 0.1);
+    vertical-align: middle;
+    padding: 15px;
 }
 
-.custom-input {
-    border: 2px solid #0277BD;
-    border-radius: 8px;
-    background-color: #546E7A;
-    color: #ECEFF1;
+.table tbody tr:hover { 
+    background: rgba(2, 119, 189, 0.08) !important; 
 }
 
-.custom-input:focus {
-    border-color: #0277BD;
-    box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.3);
-    background-color: #546E7A;
-    color: #ECEFF1;
+/* Fila Detalle (Inyectada por JS) */
+.fila-detalle {
+    background: rgba(26, 35, 126, 0.1) !important;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.fila-detalle td {
+    border-bottom: 2px solid var(--accent-blue) !important;
+}
+
+/* Badges Dinámicos */
+.badge-ficha, .badge-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border: 1px solid transparent;
+}
+.badge-ficha { background: rgba(88, 166, 255, 0.1); color: var(--info); border-color: rgba(88, 166, 255, 0.4); }
+.status-active { background: rgba(35, 134, 54, 0.1); color: #3fb950; border-color: #3fb950; }
+.status-danger { background: rgba(248, 81, 73, 0.1); color: var(--danger); border-color: var(--danger); }
+
+/* ============================================================
+   BOTONES Y ACCIONES
+   ============================================================ */
+.btn-primary, .btn-ingresar {
+    background: linear-gradient(45deg, var(--deep-blue), var(--accent-blue)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border-radius: 50px !important;
+    padding: 10px 30px !important;
+    font-weight: 700 !important;
+    transition: var(--transition) !important;
+}
+
+.btn-primary:hover, .btn-ingresar:hover {
+    box-shadow: 0 0 20px var(--accent-blue);
+    transform: scale(1.03);
+}
+
+.btn-profile {
+    background: rgba(26, 35, 126, 0.4) !important;
+    border: 2px solid var(--accent-blue) !important;
+    color: #ECEFF1 !important;
+    border-radius: 50px !important;
+    padding: 8px 22px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none !important;
+    box-shadow: 0 0 10px rgba(2, 119, 189, 0.3);
+    transition: var(--transition);
+}
+
+.btn-outline-info { color: var(--info) !important; border-color: var(--info) !important; }
+.btn-outline-danger { color: var(--danger) !important; border-color: var(--danger) !important; }
+.btn-outline-info:hover, .btn-outline-danger:hover { color: white !important; transform: scale(1.1); }
+
+.btn-expand {
+    background: var(--glass-bg);
+    border: 1px solid var(--accent-blue);
+    color: white;
+    border-radius: 50%;
+    width: 35px; height: 35px;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-expand:hover { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); transform: scale(1.1); }
+
+/* Botón Cámara / Perfil */
+.btn-camera {
+    position: absolute; bottom: 0; right: 0;
+    background: var(--accent-blue); color: #000;
+    border: 2px solid var(--primary-dark);
+    border-radius: 50%;
+    width: 35px; height: 35px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: var(--transition);
+}
+.btn-camera:hover { background: var(--accent-hover); color: white; transform: scale(1.1); }
+
+/* ============================================================
+   FORMULARIOS Y MODALES
+   ============================================================ */
+.custom-input, .form-control, .form-select, .jira-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--neon-border) !important;
+    border-radius: 12px !important;
+    color: white !important;
+    transition: 0.2s;
+}
+
+.custom-input:focus, .form-control:focus, .form-select:focus, .jira-input:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 15px rgba(2, 119, 189, 0.4) !important;
     outline: none;
 }
 
-/* ============================================
-   INTER-FICHAS
-   ============================================ */
-.modulo-header i {
-    color: #ECEFF1;
-    filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
+.form-select option {
+    background-color: #1a1a1a !important;
+    color: var(--text-white) !important;
 }
 
-.panel-interfichas {
-    background-color: rgba(26, 35, 126, 0.9);
-    border: 2px solid #0277BD;
-    border-radius: 15px;
-    padding: 25px;
-    animation: fadeIn 0.4s ease;
-    color: #ECEFF1;
+.custom-modal {
+    background: rgba(13, 13, 13, 0.98) !important;
+    backdrop-filter: blur(25px);
+    border: 2px solid var(--accent-blue);
+    border-radius: 30px;
+    box-shadow: 0 0 40px rgba(2, 119, 189, 0.4);
 }
 
+.btn-close-white { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* Forzar color de iconos en inputs date/time */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+/* ============================================================
+   TABS Y TOOLTIPS
+   ============================================================ */
+.nav-tabs { border-bottom: 1px solid var(--neon-border) !important; }
+
+.nav-tabs .nav-link {
+    color: var(--text-white) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid transparent !important;
+    border-radius: 12px 12px 0 0 !important;
+    margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active, .nav-pills .nav-link.active {
+    background-color: var(--accent-blue) !important;
+    color: white !important;
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 -5px 15px rgba(2, 119, 189, 0.3) !important;
+}
+
+/* Tabs Botones (Inventario/Interfichas) */
+.inter-ficha-btn, .inter-centro-btn {
+    background: transparent;
+    border: 2px solid var(--neon-border);
+    color: var(--text-white);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-right: 10px; margin-bottom: 15px;
+}
+
+.inter-ficha-btn:hover, .inter-centro-btn:hover,
+.inter-ficha-btn.active, .inter-centro-btn.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 15px var(--accent-blue);
+    color: white;
+}
+
+.tooltip-inner {
+    background: rgba(13, 13, 13, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--accent-blue) !important;
+    color: var(--text-white) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 25px rgba(2, 119, 189, 0.4) !important;
+}
+
+/* ============================================================
+   ANIMACIONES, IMÁGENES Y OTROS
+   ============================================================ */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-#tabla-torneos thead {
-    background-color: #0277BD;
-    color: #fff;
+#previewImagenElemento {
+    border: 2px dashed var(--accent-blue);
+    border-radius: 12px;
+    background: rgba(0,0,0,0.3);
+    max-height: 200px;
+    object-fit: cover;
 }
 
-#tabla-torneos tbody tr:hover {
-    background-color: #546E7A;
+.empty-state {
+    text-align: center;
+    padding: 60px;
+    color: rgba(255,255,255,0.2);
 }
+.empty-state i { font-size: 3.5rem; margin-bottom: 15px; display: block; }
 
-#tabla-torneos {
-    color: #ECEFF1;
+.modulo-header {
+    display: flex; align-items: center; gap: 15px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--glass-bg);
+    padding-bottom: 15px;
 }
-
-.modulo-header .fa-building,
-.modulo-header .fa-dumbbell {
-    color: #ECEFF1;
-    filter: drop-shadow(0 0 10px rgba(236, 239, 241, 0.4));
+.modulo-header i {
+    font-size: 2.2rem;
+    color: var(--accent-blue);
+    text-shadow: 0 0 10px var(--accent-blue);
 }
-
-/* ============================================
-   INVENTARIO
-   ============================================ */
-.modulo-header .fa-box {
-    color: #546E7A;
-    filter: drop-shadow(0 0 10px rgba(84, 110, 122, 0.6));
-}
-
-/* ============================================
-   BOTONES GENERALES
-   ============================================ */
-.btn-primary {
-    background-color: #0277BD !important;
-    border-color: #1A237E !important;
-}
-
-.btn-primary:hover {
-    background-color: #1A237E !important;
-    border-color: #0277BD !important;
-}
-
-.btn-outline-primary {
-    color: #0277BD !important;
-    border-color: #0277BD !important;
-}
-
-.btn-outline-primary:hover {
-    background-color: #0277BD !important;
-    border-color: #0277BD !important;
-    color: #fff !important;
-}
-
-/* ============================================
-   TABLAS GENERALES
-   ============================================ */
-.table {
-    color: #ECEFF1;
-}
-
-.table thead {
-    background-color: #0277BD;
-    color: #fff;
-}
-
-.table tbody tr:hover {
-    background-color: #546E7A;
-    color: #ECEFF1;
-}
-
-.table-bordered {
-    border-color: #0277BD;
-}
-
-.table-bordered td,
-.table-bordered th {
-    border-color: #1A237E;
-}
-
-/* ============================================
-   FORMULARIOS GENERALES
-   ============================================ */
-.form-control,
-.form-select {
-    background-color: #546E7A !important;
-    border: 2px solid #0277BD !important;
-    color: #ECEFF1 !important;
-    border-radius: 8px;
-}
-
-.form-control:focus,
-.form-select:focus {
-    background-color: #546E7A !important;
-    border-color: #0277BD !important;
-    color: #ECEFF1 !important;
-    box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.3) !important;
-}
-
-.form-control::placeholder {
-    color: #ECEFF1aa;
-}
-
-/* ============================================
-   ALERTS / BADGES
-   ============================================ */
-.badge.bg-primary {
-    background-color: #0277BD !important;
-}
-
-.alert-info {
-    background-color: #1A237E;
-    border-color: #0277BD;
-    color: #ECEFF1;
-}
-
-/* ============================================
-   SCROLLBAR
-   ============================================ */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #0D0D0D; }
-::-webkit-scrollbar-thumb { background-color: #1A237E; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background-color: #0277BD; }

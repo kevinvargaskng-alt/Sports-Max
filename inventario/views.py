@@ -9,8 +9,10 @@ def inventario_list(request):
     if request.method == 'POST':
         accion = request.POST.get('accion')
 
+        # 1. CREAR ELEMENTO (AHORA GUARDA IMAGEN)
         if accion == 'crear_elemento':
             ElementoDeportivo.objects.create(
+                imagen=request.FILES.get('imagen'),  # <--- AQUÍ SE RECIBE LA FOTO
                 tipo_maquina=request.POST.get('tipo_maquina'),
                 cantidad_total=request.POST.get('cantidad_total'),
                 estado_general=request.POST.get('estado_general'),
@@ -20,7 +22,28 @@ def inventario_list(request):
             )
             return redirect('inventario')
 
-        if accion == 'crear_prestamo':
+        # 2. EDITAR ELEMENTO DESDE EL MODAL (ESTO TE FALTABA)
+        elif accion == 'editar_elemento':
+            codigo = request.POST.get('codigo_elemento')
+            if codigo:
+                elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=codigo)
+                
+                # Si el usuario subió una nueva foto, la actualizamos
+                if 'imagen' in request.FILES:
+                    elemento.imagen = request.FILES.get('imagen')
+                
+                # Actualizamos los demás campos
+                elemento.tipo_maquina = request.POST.get('tipo_maquina')
+                elemento.cantidad_total = request.POST.get('cantidad_total')
+                elemento.estado_general = request.POST.get('estado_general')
+                elemento.fecha_adquisicion = request.POST.get('fecha_adquisicion')
+                elemento.descripcion = request.POST.get('descripcion')
+                elemento.docente_responsable = request.POST.get('docente_responsable')
+                elemento.save()
+            return redirect('inventario')
+
+        # 3. CREAR PRÉSTAMO
+        elif accion == 'crear_prestamo':
             Prestamo.objects.create(
                 elemento_id=request.POST.get('elemento'),
                 hora_prestamo=request.POST.get('hora_prestamo'),
@@ -37,14 +60,19 @@ def inventario_list(request):
         'sanciones': sanciones,
     })
 
+
 def eliminar_elemento(request, id):
     elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id)
     elemento.delete()
     return redirect('inventario')
 
+
+# (Opcional) Si usas una página de edición separada en vez del modal, también la arreglamos:
 def editar_elemento(request, id):
     elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id)
     if request.method == 'POST':
+        if 'imagen' in request.FILES:
+            elemento.imagen = request.FILES.get('imagen') # <--- También guarda foto aquí
         elemento.tipo_maquina = request.POST.get('tipo_maquina')
         elemento.cantidad_total = request.POST.get('cantidad_total')
         elemento.estado_general = request.POST.get('estado_general')
@@ -52,6 +80,7 @@ def editar_elemento(request, id):
         elemento.save()
         return redirect('inventario')
     return render(request, 'inventario/editar.html', {'elemento': elemento})
+
 
 def eliminar_prestamo(request, id):
     prestamo = get_object_or_404(Prestamo, codigo_prestamo=id)

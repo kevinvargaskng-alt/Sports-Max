@@ -1,77 +1,226 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="main-container py-4">
-    <div class="container">
-        <h2 class="text-white text-center mb-4">Gestión de Torneos Inter-Fichas</h2>
 
-        <!-- Botón para abrir modal de creación -->
-        <div class="text-end mb-3">
-            <button class="btn btn-dark border-white text-white" data-bs-toggle="modal" data-bs-target="#modalCrearTorneo">
-                <i class="fas fa-plus me-2"></i>Nuevo Torneo
+<div class="container py-4">
+    <!-- Encabezado y Botones de Acción -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-white fw-bold mb-0">Gestión de Torneos Inter-Fichas</h2>
+            <small class="text-secondary">Panel de control de torneos, equipos y programas</small>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-light fw-bold" data-bs-toggle="modal" data-bs-target="#modalEquipo">
+                <i class="fas fa-users me-2"></i>INSCRIBIR EQUIPO
+            </button>
+            <button class="btn btn-primary fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalTorneo">
+                <i class="fas fa-plus me-2"></i>NUEVO TORNEO
             </button>
         </div>
+    </div>
 
-        <!-- Tabla con datos de la DB -->
-        <div class="sport-card">
-            <table class="table table-dark table-hover">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Disciplina</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for t in torneos %}
-                    <tr>
-                        <td>{{ t.nombre_torneo }}</td>
-                        <td>{{ t.disciplina }}</td>
-                        <td>{{ t.fecha_torneo_fichas }}</td>
-                        <td><span class="badge bg-success">{{ t.estado }}</span></td>
-                        <td>
-                            <a href="{% url 'eliminar_torneo' t.codigo_torneo_fichas %}" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
+    <!-- Alertas de Sistema -->
+    {% if messages %}
+        {% for m in messages %}
+            <div class="alert {% if m.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} bg-dark text-white border-secondary alert-dismissible fade show shadow-sm">
+                <i class="fas {% if m.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                {{ m }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Tabla Principal de Gestión -->
+    <div class="main-card shadow-lg">
+        <table class="table table-dark table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th class="ps-4 py-3">TORNEO</th>
+                    <th>FICHA / EQUIPO</th>
+                    <th>DISCIPLINA</th>
+                    <th>LUGAR / FECHA</th>
+                    <th class="text-center">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in equipos %}
+                <tr class="border-bottom border-secondary">
+                    <td class="ps-4">
+                        <div class="fw-bold text-white">{{ e.torneo.nombre_torneo }}</div>
+                        <small class="text-muted">ID: {{ e.torneo.codigo_torneo_fichas }}</small>
+                    </td>
+                    <td>
+                        {% if e.ficha == 0 %}
+                            <span class="text-info small fw-bold"><i class="fas fa-user-tie me-1"></i>PASANTES</span>
+                        {% else %}
+                            <span class="badge-ficha ficha-val">{{ e.ficha }}</span>
+                        {% endif %}
+                        <div class="small text-secondary mt-1">{{ e.nombre_equipo }}</div>
+                    </td>
+                    <td><span class="badge bg-secondary px-2 py-1">{{ e.disciplina }}</span></td>
+                    <td>
+                        <div class="small fw-bold text-light">{{ e.torneo.lugar }}</div>
+                        <div class="small text-muted">{{ e.torneo.fecha_torneo_fichas }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-info border-0" 
+                                    onclick="abrirEditarTorneo('{{ e.torneo.codigo_torneo_fichas }}', '{{ e.torneo.nombre_torneo }}', '{{ e.disciplina }}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <a href="{% url 'eliminar_torneo' e.torneo.codigo_torneo_fichas %}" class="btn btn-sm btn-outline-danger border-0">
+                                <i class="fas fa-trash-alt"></i>
                             </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No hay torneos registrados.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        <i class="fas fa-folder-open d-block mb-2"></i>
+                        No hay datos registrados en el sistema.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- MODAL PARA CREAR TORNEO -->
-<div class="modal fade" id="modalCrearTorneo" tabindex="-1">
-    <div class="modal-dialog">
+<!-- ====================== MODAL 1: CREAR TORNEO ====================== -->
+<div class="modal fade" id="modalTorneo" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold">Configurar Nuevo Torneo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
             <form method="POST">
                 {% csrf_token %}
-                <div class="modal-body">
-                    <h5 class="fw-bold mb-3">Crear Nuevo Torneo</h5>
-                    <input type="text" name="nombre" class="form-control custom-input mb-2" placeholder="Nombre del Torneo" required>
-                    <select name="disciplina" class="form-select custom-input mb-2" required>
-                        <option value="">Seleccionar disciplina...</option>
-                        <option value="Fútbol">Fútbol</option>
-                        <option value="Baloncesto">Baloncesto</option>
-                        <option value="Voleibol">Voleibol</option>
-                        <option value="Tenis de Mesa">Tenis de Mesa</option>
-                        <option value="Ajedrez">Ajedrez</option>
-                        <!-- Puedes agregar más aquí fácilmente -->
-                    </select>
-                    <input type="date" name="fecha" class="form-control custom-input mb-2" required>
-                    <input type="time" name="hora" class="form-control custom-input mb-2" required>
-                    <input type="text" name="lugar" class="form-control custom-input mb-2" placeholder="Lugar/Cancha" required>
-                    <button type="submit" class="btn btn-dark w-100">Guardar Torneo</button>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small text-secondary mb-1">Nombre del Torneo</label>
+                        <input type="text" name="nombre" class="form-control jira-input" placeholder="Ej: Copa SENA 2026" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="small text-secondary mb-1">Disciplina</label>
+                            <select name="disciplina" class="form-select jira-input" required>
+                                <option value="Fútbol">Fútbol</option>
+                                <option value="Futsal">Futsal</option>
+                                <option value="Baloncesto">Baloncesto</option>
+                                <option value="Voleibol">Voleibol</option>
+                                <option value="Ajedrez">Ajedrez</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-secondary mb-1">Fecha</label>
+                            <input type="date" name="fecha" class="form-control jira-input" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-secondary mb-1">Lugar del Encuentro</label>
+                        <select name="lugar" class="form-select jira-input" required>
+                            <option value="Gimnasio">Gimnasio</option>
+                            <option value="Cancha múltiple">Cancha múltiple</option>
+                            <option value="Cancha fútbol">Cancha fútbol</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">REGISTRAR TORNEO</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- ====================== MODAL 2: INSCRIBIR EQUIPO ====================== -->
+<div class="modal fade" id="modalEquipo" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold"><i class="fas fa-users me-2"></i> Inscribir Equipo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formEquipo">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Nombre del Equipo</label>
+                            <input type="text" id="nombreEquipo" class="form-control jira-input" placeholder="Ej: Los Legendarios" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Programa</label>
+                            <select id="selectPrograma" class="form-select jira-input" required>
+                                <option value="ADSO">Análisis y Desarrollo de Software</option>
+                                <option value="Minería">Supervisión Minera</option>
+                                <option value="Pasantes">Pasantes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Número de Ficha</label>
+                            <input type="number" id="inputFicha" class="form-control jira-input" required>
+                            <div id="errorFicha" class="text-danger smaller mt-1" style="display:none;">⚠️ Ficha ya inscrita</div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Jugadores Dinámica -->
+                    <div class="mt-4 p-3 rounded" style="background: rgba(0,0,0,0.2);">
+                        <label class="form-label fw-bold small">Añadir Jugadores</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="nuevoJugador" class="form-control jira-input" placeholder="Nombre completo">
+                            <button type="button" class="btn btn-primary" onclick="agregarJugador()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Total: <span id="contadorJugadores" class="fw-bold">0</span></small>
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="limpiarJugadores()">Limpiar Todo</button>
+                        </div>
+                        <ul id="listaJugadores" class="list-group list-group-flush"></ul>
+                        <div id="jugadoresVacio" class="text-center py-3 text-secondary">Aún no hay jugadores añadidos</div>
+                    </div>
+                    
+                    <button type="button" onclick="guardarEquipo()" id="btnSave" class="btn btn-success w-100 mt-4 fw-bold">FINALIZAR INSCRIPCIÓN</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== MODAL 3: EDITAR REGISTRO ====================== -->
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold">Editar Torneo / Inscripción</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditar" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="id_editar" id="id_editar">
+                    <div class="mb-3">
+                        <label class="small text-secondary mb-1">Nombre del Torneo</label>
+                        <input type="text" name="nombre" id="edit_nombre" class="form-control jira-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-secondary mb-1">Disciplina</label>
+                        <select name="disciplina" id="edit_disciplina" class="form-select jira-input">
+                            <option value="Fútbol">Fútbol</option>
+                            <option value="Baloncesto">Baloncesto</option>
+                            <option value="Voleibol">Voleibol</option>
+                            <option value="Ajedrez">Ajedrez</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-primary px-4">GUARDAR CAMBIOS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

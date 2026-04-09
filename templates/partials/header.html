@@ -20,9 +20,17 @@
     <div class="ms-auto">
         {% if user.is_authenticated %}
         <div class="dropdown">
-            <a class="btn-profile dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user-circle fs-5"></i>
-                <span>{{ user.first_name|default:user.username }}</span>
+            <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                
+                <!-- NUEVO: Lógica para mostrar la foto o el ícono -->
+                {% if user.foto_perfil %}
+                    <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle" style="width: 25px; height: 25px; object-fit: cover; border: 1px solid var(--accent-blue);">
+                {% else %}
+                    <i class="fas fa-user-circle fs-5"></i>
+                {% endif %}
+                
+                <!-- El nombre se pone en mayúsculas (upper) para que se vea como en tu imagen -->
+                <span>{{ user.first_name|default:user.username|upper }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow">
                 <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-id-badge me-2"></i>Mi Perfil</a></li>
