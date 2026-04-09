@@ -4,7 +4,7 @@
 {% block title %}Inventario - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -13,66 +13,70 @@
 
         <!-- 1. ENCABEZADO -->
         <header class="modulo-header text-center mb-5">
-            <i class="fas fa-box fa-3x mb-3 text-warning"></i>
+            <i class="fas fa-boxes fa-3x mb-3 text-warning"></i>
             <h2 class="fw-bold text-white">Módulo Inventario</h2>
-            <p class="text-white-50">Gestión de existencias, préstamos y control de materiales deportivos</p>
+            <p class="text-white-50">Gestión de existencias y control de préstamos para <strong>{{ user.get_full_name }}</strong></p>
         </header>
 
         <!-- 2. TARJETAS DE ACCIÓN PRINCIPAL -->
-        <nav class="row g-4 mb-5">
-            <div class="col-md-3">
+        <nav class="row g-4 mb-5 justify-content-center">
+            
+            <div class="col-6 col-md-3">
                 <div class="sport-card text-center">
                     <i class="fas fa-plus-circle fa-2x mb-3 text-warning"></i>
-                    <h5>NUEVO ELEMENTO</h5>
-                    <p class="small text-white-50">Registrar material con imagen.</p>
+                    <h6 class="fw-bold text-white">NUEVO ELEMENTO</h6>
                     <button class="btn btn-warning btn-sm mt-2 w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalElemento" id="btnNuevoElemento">
-                        <i class="fas fa-plus me-1"></i>Agregar
+                        <i class="fas fa-plus me-1"></i>AGREGAR
                     </button>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="sport-card text-center">
-                    <i class="fas fa-hand-holding fa-2x mb-3 text-warning"></i>
-                    <h5>NUEVO PRÉSTAMO</h5>
-                    <p class="small text-white-50">Asignar material a un aprendiz.</p>
-                    <button class="btn btn-dark btn-sm mt-2 w-100" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
-                        <i class="fas fa-plus me-1"></i>Prestar
+
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center border-info">
+                    <i class="fas fa-hand-holding fa-2x mb-3 text-info"></i>
+                    <h6 class="fw-bold text-info">NUEVO PRÉSTAMO</h6>
+                    <button class="btn btn-info btn-sm mt-2 w-100 fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
+                        <i class="fas fa-plus me-1"></i>SOLICITAR
                     </button>
                 </div>
             </div>
-            <div class="col-md-3">
+
+            <div class="col-6 col-md-3">
                 <div class="sport-card text-center">
-                    <i class="fas fa-undo fa-2x mb-3 text-warning"></i>
-                    <h5>DEVOLUCIONES</h5>
-                    <p class="small text-white-50">Gestionar reingreso de equipos.</p>
-                    <button class="btn btn-dark btn-sm mt-2 w-100 btn-accion-inv" data-seccion="devoluciones">
-                        <i class="fas fa-eye me-1"></i>Ver
+                    <i class="fas fa-undo fa-2x mb-3 text-success"></i>
+                    <h6 class="fw-bold text-white">DEVOLUCIONES</h6>
+                    <button class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold" onclick="mostrarSeccion('devoluciones')">
+                        <i class="fas fa-eye me-1"></i>VER
                     </button>
                 </div>
             </div>
-            <div class="col-md-3">
+
+            <div class="col-6 col-md-3">
                 <div class="sport-card text-center">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
-                    <h5>SANCIONES</h5>
-                    <p class="small text-white-50">Reportes de pérdida o daño.</p>
-                    <button class="btn btn-dark btn-sm mt-2 w-100 btn-accion-inv" data-seccion="sanciones">
-                        <i class="fas fa-eye me-1"></i>Ver
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-danger"></i>
+                    <h6 class="fw-bold text-white">SANCIONES</h6>
+                    <button class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold" onclick="mostrarSeccion('sanciones')">
+                        <i class="fas fa-eye me-1"></i>VER
                     </button>
                 </div>
             </div>
         </nav>
 
-        <!-- 3. PANEL DINÁMICO (Contenedor para Devoluciones/Sanciones) -->
-        <div id="panel-inventario" class="d-none mb-4">
-            <div id="panel-contenido-inventario" class="sport-card border-warning">
-                <!-- Contenido cargado por JS -->
+        <!-- 3. PANEL DINÁMICO (Devoluciones/Sanciones) -->
+        <div id="seccion-extra" class="d-none mb-5">
+            <div class="sport-card border-secondary">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 id="titulo-seccion" class="fw-bold mb-0"></h5>
+                    <button class="btn-close btn-close-white" onclick="cerrarSeccion()"></button>
+                </div>
+                <div id="contenido-seccion" class="text-white-50"></div>
             </div>
         </div>
 
-        <!-- 4. TABLA DE ELEMENTOS (INVENTARIO) -->
+        <!-- 4. TABLA DE ELEMENTOS -->
         <section class="sport-card text-start mb-4">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-boxes text-warning me-2"></i>Existencias en Inventario
+            <h5 class="fw-bold mb-4">
+                <i class="fas fa-list text-warning me-2"></i>Existencias en Inventario
             </h5>
             <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle mb-0" id="tablaElementos">
@@ -99,46 +103,48 @@
                             data-imagen="{% if e.imagen %}{{ e.imagen.url }}{% endif %}">
                             
                             <td>
-                                <button class="btn btn-outline-warning btn-sm btn-expand">
+                                <button class="btn btn-expand">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </td>
                             <td>
                                 {% if e.imagen %}
-                                    <img src="{{ e.imagen.url }}" class="img-thumbnail bg-dark" style="width: 45px; height: 45px; object-fit: cover;">
+                                    <img src="{{ e.imagen.url }}" class="table-img">
                                 {% else %}
-                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                    <div class="table-img d-flex align-items-center justify-content-center bg-dark border border-secondary">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
                                 {% endif %}
                             </td>
                             <td><strong>{{ e.tipo_maquina }}</strong></td>
-                            <td>{{ e.cantidad_total }}</td>
+                            <td><span class="badge bg-dark border border-secondary">{{ e.cantidad_total }}</span></td>
                             <td>
-                                <span class="badge {% if e.estado_general == 'Bueno' %}bg-success{% elif e.estado_general == 'Regular' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                <span class="badge-status {% if e.estado_general == 'Bueno' %}bg-success{% elif e.estado_general == 'Regular' %}bg-warning{% else %}bg-danger{% endif %}">
                                     {{ e.estado_general }}
                                 </span>
                             </td>
                             <td>{{ e.docente_responsable }}</td>
                             <td class="text-center">
+                                <button class="btn btn-info btn-sm text-dark fw-bold me-1" onclick="prestamoRapido('{{ e.codigo_elemento }}')" title="Préstamo Rápido">
+                                    <i class="fas fa-hand-pointer"></i>
+                                </button>
                                 <button class="btn btn-warning btn-sm btn-editar-elemento" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <a href="{% url 'eliminar_elemento' e.codigo_elemento %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este elemento?')">
-                                    <i class="fas fa-trash"></i>
-                                </a>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="7" class="text-center py-4">No hay elementos registrados.</td></tr>
+                        <tr><td colspan="7" class="text-center py-4 text-white-50">No hay elementos registrados.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- 5. TABLA DE PRÉSTAMOS ACTIVOS -->
+        <!-- 5. TABLA DE PRÉSTAMOS -->
         <section class="sport-card text-start">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-hand-holding text-warning me-2"></i>Préstamos en Curso
+            <h5 class="fw-bold mb-4 text-info">
+                <i class="fas fa-history me-2"></i>Mis Préstamos en Curso
             </h5>
             <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle mb-0">
@@ -148,28 +154,22 @@
                             <th>Elemento</th>
                             <th>Cant.</th>
                             <th>Fecha Salida</th>
-                            <th>Devolución Pactada</th>
+                            <th>Devolución</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for p in prestamos %}
                         <tr>
-                            <td>{{ p.codigo_prestamo }}</td>
-                            <td>{{ p.elemento }}</td>
+                            <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                            <td>{{ p.elemento.tipo_maquina }}</td>
                             <td>{{ p.cantidad_prestada }}</td>
-                            <td>{{ p.fecha_prestamo }}</td>
-                            <td>{{ p.fecha_devolucion }}</td>
-                            <td><span class="badge bg-info text-dark">{{ p.estado_prestamo }}</span></td>
-                            <td>
-                                <a href="{% url 'eliminar_prestamo' p.codigo_prestamo %}" class="btn btn-danger btn-sm" title="Finalizar Préstamo">
-                                    <i class="fas fa-check-circle"></i>
-                                </a>
-                            </td>
+                            <td>{{ p.fecha_prestamo|date:"d/m/Y" }}</td>
+                            <td class="text-warning fw-bold">{{ p.fecha_devolucion|date:"d/m/Y" }}</td>
+                            <td><span class="badge bg-primary">{{ p.estado_prestamo }}</span></td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="7" class="text-center py-4">No hay préstamos activos.</td></tr>
+                        <tr><td colspan="6" class="text-center py-4 text-white-50">No tienes préstamos activos.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -180,13 +180,11 @@
 </div>
 
 <!-- ==========================================
-     MODALES
+     MODAL ELEMENTO (CREAR / EDITAR)
      ========================================== -->
-
-<!-- MODAL ELEMENTO (CREAR / EDITAR) -->
 <div class="modal fade" id="modalElemento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal bg-dark text-white shadow-lg">
+        <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold" id="modalTitle">Nuevo Elemento Deportivo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -197,28 +195,34 @@
                     <input type="hidden" name="accion" id="inputAccion" value="crear_elemento">
                     <input type="hidden" name="codigo_elemento" id="inputCodigo">
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Imagen del Elemento</label>
-                        <div class="preview-box mb-2" style="width: 100%; height: 160px; border: 2px dashed #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #111; overflow: hidden;">
-                            <img id="previewImagen" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
-                            <span id="previewPlaceholder" class="text-muted small">Haz clic abajo para subir imagen</span>
-                        </div>
-                        <input type="file" name="imagen" id="inputImagen" class="form-control bg-secondary text-white border-0" accept="image/*">
+                    <div class="mb-3 text-center" id="containerPreview" style="display: none;">
+                        <img id="previewImagen" src="#" alt="Vista previa" class="img-thumbnail bg-dark" style="max-height: 150px;">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nombre / Tipo de Implemento</label>
-                        <input type="text" name="tipo_maquina" id="inputTipo" class="form-control bg-secondary text-white border-0" placeholder="Ej: Balón Microfútbol" required>
+                        <label class="form-label fw-bold small text-white">Imagen del Producto</label>
+                        <input type="file" name="imagen" id="inputImagen" class="form-control custom-input" accept="image/*">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-white">Nombre / Tipo</label>
+                        <input type="text" name="tipo_maquina" id="inputTipo" class="form-control custom-input" placeholder="Ej: Balón de Fútbol" required>
+                    </div>
+
+                    <!-- CAMPO REINTEGRADO: DESCRIPCIÓN -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-white">Descripción del Elemento</label>
+                        <textarea name="descripcion" id="inputDescripcion" class="form-control custom-input" rows="3" placeholder="Detalles técnicos, marca, peso, etc."></textarea>
                     </div>
 
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">Cantidad Total</label>
-                            <input type="number" name="cantidad_total" id="inputCantidad" class="form-control bg-secondary text-white border-0" min="1" required>
+                            <label class="form-label fw-bold small text-white">Cantidad</label>
+                            <input type="number" name="cantidad_total" id="inputCantidad" class="form-control custom-input" min="1" required>
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">Estado General</label>
-                            <select name="estado_general" id="inputEstado" class="form-select bg-secondary text-white border-0">
+                            <label class="form-label fw-bold small text-white">Estado</label>
+                            <select name="estado_general" id="inputEstado" class="form-select custom-input">
                                 <option value="Bueno">Bueno</option>
                                 <option value="Regular">Regular</option>
                                 <option value="Malo">Malo</option>
@@ -227,22 +231,17 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Docente Responsable</label>
-                        <input type="text" name="docente_responsable" id="inputDocente" class="form-control bg-secondary text-white border-0" required>
+                        <label class="form-label fw-bold small text-white">Docente Responsable</label>
+                        <input type="text" name="docente_responsable" id="inputDocente" class="form-control custom-input" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha Adquisición</label>
-                        <input type="date" name="fecha_adquisicion" id="inputFecha" class="form-control bg-secondary text-white border-0" required>
+                        <label class="form-label fw-bold small text-white">Fecha Adquisición</label>
+                        <input type="date" name="fecha_adquisicion" id="inputFecha" class="form-control custom-input" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Descripción / Observaciones</label>
-                        <textarea name="descripcion" id="inputDescripcion" class="form-control bg-secondary text-white border-0" rows="2"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-warning w-100 py-2 fw-bold shadow-sm">
-                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    <button type="submit" class="btn btn-warning w-100 fw-bold text-dark py-2">
+                        <i class="fas fa-save me-2"></i>GUARDAR ELEMENTO
                     </button>
                 </form>
             </div>
@@ -250,52 +249,61 @@
     </div>
 </div>
 
-<!-- MODAL PRÉSTAMO -->
+<!-- ==========================================
+     MODAL PRÉSTAMO
+     ========================================== -->
 <div class="modal fade" id="modalPrestamo" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal bg-dark text-white">
+        <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">Registrar Nuevo Préstamo</h5>
+                <h5 class="modal-title fw-bold text-info"><i class="fas fa-file-signature me-2"></i>Solicitud de Préstamo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST">
+                <form method="POST" id="formPrestamo">
                     {% csrf_token %}
                     <input type="hidden" name="accion" value="crear_prestamo">
                     
+                    <div class="mb-3 p-3 rounded bg-dark border border-secondary">
+                        <small class="text-white-50 d-block">Aprendiz Responsable:</small>
+                        <span class="fw-bold d-block">{{ user.get_full_name }}</span>
+                        <small class="text-info">Ficha: {{ user.ficha }} | {{ user.programa_formacion }}</small>
+                    </div>
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Seleccionar Material</label>
-                        <select name="elemento" class="form-select bg-secondary text-white border-0" required>
-                            <option value="">-- Buscar en Inventario --</option>
+                        <label class="form-label fw-bold small text-white">Seleccionar Implemento</label>
+                        <select name="elemento" id="selectElemento" class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Buscar en Inventario --</option>
                             {% for e in elementos %}
-                            <option value="{{ e.codigo_elemento }}">{{ e.tipo_maquina }} (Disp: {{ e.cantidad_total }})</option>
+                            <option value="{{ e.codigo_elemento }}">{{ e.tipo_maquina }} (Stock: {{ e.cantidad_total }})</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">Cantidad</label>
-                            <input type="number" name="cantidad_prestada" class="form-control bg-secondary text-white border-0" min="1" required>
+                            <label class="form-label fw-bold small text-white">Cantidad</label>
+                            <input type="number" name="cantidad_prestada" class="form-control custom-input" min="1" value="1" required>
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">Días Estimados</label>
-                            <input type="number" name="dias_prestamo" class="form-control bg-secondary text-white border-0" min="1" required>
+                            <label class="form-label fw-bold small text-white">¿Cuántos días?</label>
+                            <input type="number" id="inputDias" name="dias_prestamo" class="form-control custom-input" min="1" max="15" placeholder="Ej: 3" required>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha de Devolución</label>
-                        <input type="date" name="fecha_devolucion" class="form-control bg-secondary text-white border-0" required>
+                    <div id="infoFecha" class="fecha-calculada mb-3 text-center" style="display:none;">
+                        <i class="fas fa-calendar-check me-2 text-info"></i> 
+                        Retorno: <strong id="textoFecha" class="text-info"></strong>
+                        <input type="hidden" name="fecha_devolucion" id="inputFechaDev">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Observaciones de Salida</label>
-                        <textarea name="observacion" class="form-control bg-secondary text-white border-0" rows="2" placeholder="Ej: Se entrega sin inflar"></textarea>
+                        <label class="form-label fw-bold small text-white">Observaciones de Salida</label>
+                        <textarea name="observacion" class="form-control custom-input" rows="2" placeholder="Estado del material al recibirlo..."></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-warning w-100 fw-bold">
-                        <i class="fas fa-check-circle me-2"></i>Generar Préstamo
+                    <button type="submit" class="btn btn-info w-100 fw-bold text-dark py-2">
+                        <i class="fas fa-check-circle me-2"></i>CONFIRMAR PRÉSTAMO
                     </button>
                 </form>
             </div>

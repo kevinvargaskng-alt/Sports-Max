@@ -388,3 +388,32 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     color: var(--accent-blue);
     text-shadow: 0 0 10px var(--accent-blue);
 }
+.fecha-calculada {
+        background: rgba(0, 210, 255, 0.1);
+        border: 1px solid var(--accent-blue);
+        color: #00d2ff;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .badge-stock {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    .table-img {
+        width: 45px; 
+        height: 45px; 
+        object-fit: cover; 
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }

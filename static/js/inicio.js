@@ -1,7 +1,7 @@
 // inicio.js
 document.addEventListener('DOMContentLoaded', function () {
 
-    // === INICIALIZAR TOOLTIPS DE BOOTSTRAP (Las burbujas de ayuda) ===
+    // === INICIALIZAR TOOLTIPS DE BOOTSTRAP ===
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -30,8 +30,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const tablaElementos = document.getElementById('tablaElementos');
 
     // ============================================================
-    // 2. SISTEMA DE SEGURIDAD (LOGIN & REGISTRO)
+    // 2. SISTEMA DE SEGURIDAD (LOGIN, REGISTRO & VALIDACIÓN)
     // ============================================================
+
+    // Detección automática de modal de login por URL (?login=1)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === '1') {
+        const modalAuth = document.getElementById('modalForm');
+        if (modalAuth) {
+            var myModal = new bootstrap.Modal(modalAuth);
+            myModal.show();
+        }
+    }
 
     function setupToggle(btnId, inputId) {
         const btn = document.getElementById(btnId);
@@ -49,12 +59,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     
-    // IDs compatibles con ambos scripts
     setupToggle('togglePassword', 'id_password');
-    setupToggle('togglePassword2', 'id_contrasena'); // Registro
+    setupToggle('togglePassword2', 'id_contrasena'); 
     setupToggle('togglePassword3', 'confirmarContrasena');
 
-    // Medidor de fortaleza
+    // Medidor de fortaleza de contraseña
     const contrasenaInput = document.getElementById('id_contrasena');
     if (contrasenaInput) {
         contrasenaInput.addEventListener('input', function () {
@@ -108,8 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     loginAlert.className = `alert alert-${data.status === 'success' ? 'success' : 'danger'}`;
                     loginAlert.innerHTML = data.message;
                 }
-                
-                // Redirección directa al perfil si es exitoso
                 if (data.status === 'success') {
                     setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 1000);
                 }
@@ -124,13 +131,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // REGISTRO AJAX 
+    // REGISTRO AJAX CON VALIDACIÓN DE SEGURIDAD
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', function (e) {
             e.preventDefault(); 
-            
+            const form = e.target;
             const registerAlert = document.getElementById('registerAlert');
+
+            // --- NUEVA SEGURIDAD: VALIDACIÓN DE CAMPOS REQUERIDOS ---
+            if (!form.checkValidity()) {
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                if (registerAlert) {
+                    registerAlert.classList.remove('d-none');
+                    registerAlert.className = 'alert alert-danger mt-3';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Por favor, completa todos los campos obligatorios (*).';
+                }
+                return;
+            }
+
             const pass = document.getElementById('id_contrasena').value;
             const confPass = document.getElementById('confirmarContrasena').value;
 
@@ -144,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const formData = new FormData(this);
-            
             if (registerAlert) {
                 registerAlert.classList.remove('d-none');
                 registerAlert.className = 'alert alert-info mt-3';
@@ -156,19 +175,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error de conexión con el servidor (' + response.status + ').');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (registerAlert) {
                     registerAlert.className = `alert alert-${data.status === 'success' ? 'success' : 'danger'} mt-3`;
                     registerAlert.innerHTML = data.message;
                 }
-                
-                // Como el backend lo loguea automáticamente, lo mandamos directo al perfil
                 if (data.status === 'success') {
                     setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 1500);
                 }
@@ -177,15 +189,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error en Registro:', error);
                 if (registerAlert) {
                     registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i>' + error.message;
+                    registerAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i> Error en la conexión.';
                 }
             });
         });
     }
 
     // ============================================================
-    // 3. MÓDULO INVENTARIO (LÓGICA UNIFICADA)
+    // 3. MÓDULO INVENTARIO & PRÉSTAMOS
     // ============================================================
+
+    const inputDias = document.getElementById('inputDias');
+    const infoFecha = document.getElementById('infoFecha') || document.getElementById('infoFechaPrestamo');
+    const spanFecha = document.getElementById('spanFecha') || document.getElementById('textoFecha');
+    const inputFechaHidden = document.getElementById('inputFechaHidden') || document.getElementById('inputFechaDev');
+
+    if (inputDias) {
+        inputDias.addEventListener('input', function() {
+            const dias = parseInt(this.value);
+            if (dias > 0) {
+                let fechaActual = new Date();
+                fechaActual.setDate(fechaActual.getDate() + dias);
+                
+                const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                if (spanFecha) spanFecha.innerText = fechaActual.toLocaleDateString('es-ES', opciones);
+                
+                const yyyy = fechaActual.getFullYear();
+                let mm = fechaActual.getMonth() + 1;
+                let dd = fechaActual.getDate();
+                if (dd < 10) dd = '0' + dd;
+                if (mm < 10) mm = '0' + mm;
+                
+                if (inputFechaHidden) inputFechaHidden.value = yyyy + '-' + mm + '-' + dd;
+                if (infoFecha) infoFecha.style.display = 'block';
+            } else {
+                if (infoFecha) infoFecha.style.display = 'none';
+            }
+        });
+    }
 
     if (inputImagenElemento) {
         inputImagenElemento.addEventListener('change', function () {
@@ -220,7 +261,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!modalElemento) return;
         if (formElemento) formElemento.reset();
 
-        document.getElementById('modalTitle').innerText = 'Editar Elemento Deportivo';
+        const tituloModal = document.getElementById('modalTitle');
+        if (tituloModal) tituloModal.innerText = 'Editar Elemento Deportivo';
+
         const inputAccion = document.getElementById('inputAccion') || formElemento.querySelector('[name="accion"]');
         const inputCodigo = document.getElementById('inputCodigo') || document.getElementById('elementoIdInput');
         
@@ -311,34 +354,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const btnNuevo = document.getElementById('btnNuevoElemento') || document.querySelector('[data-bs-target="#modalElemento"]');
-    if (btnNuevo) {
-        btnNuevo.addEventListener('click', function() {
-            if (formElemento) formElemento.reset();
-            const inputAccion = document.getElementById('inputAccion') || formElemento?.querySelector('[name="accion"]');
-            if (inputAccion) inputAccion.value = 'crear_elemento';
-            const titulo = modalElemento?.querySelector('.modal-title');
-            if (titulo) titulo.innerHTML = '<i class="fas fa-plus me-2"></i>Nuevo Elemento Deportivo';
-            if (previewImagenElemento) previewImagenElemento.style.display = 'none';
-            if (previewPlaceholder) previewPlaceholder.style.display = 'block';
-        });
-    }
-
     // ============================================================
-    // 4. OTROS (TABS Y PANELES)
+    // 4. OTROS (TABS, PANELES & EFECTOS)
     // ============================================================
 
-    document.querySelectorAll('.btn-accion-inv').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const seccion = this.dataset.seccion;
-            const panel = document.getElementById('panel-inventario');
-            const contenido = document.getElementById('panel-contenido-inventario');
-            if (panel && contenido) {
-                panel.classList.remove('d-none');
-                contenido.innerHTML = `<div class="text-center p-4"><i class="fas fa-sync fa-spin"></i> Cargando ${seccion}...</div>`;
+    window.prestamoRapido = function(id) {
+        const select = document.getElementById('selectElemento');
+        if (select) {
+            select.value = id;
+            const modalP = document.getElementById('modalPrestamo');
+            if (modalP) {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalP);
+                modal.show();
             }
-        });
-    });
+        }
+    };
+
+    window.mostrarSeccion = function(tipo) {
+        const panel = document.getElementById('seccion-extra');
+        const titulo = document.getElementById('titulo-seccion');
+        const contenido = document.getElementById('contenido-seccion');
+
+        if (panel) {
+            panel.classList.remove('d-none');
+            if (tipo === 'devoluciones') {
+                titulo.innerHTML = '<i class="fas fa-undo text-success me-2"></i>DEVOLUCIONES PENDIENTES';
+                contenido.innerHTML = '<p class="text-white-50 p-4">Cargando implementos pendientes por entregar...</p>';
+            } else {
+                titulo.innerHTML = '<i class="fas fa-exclamation-triangle text-danger me-2"></i>HISTORIAL DE SANCIONES';
+                contenido.innerHTML = '<p class="text-white-50 p-4">Consultando historial de sanciones...</p>';
+            }
+            panel.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    window.cerrarSeccion = function() {
+        const panel = document.getElementById('seccion-extra');
+        if (panel) panel.classList.add('d-none');
+    };
 
     document.querySelectorAll('.sport-card').forEach(card => {
         card.onmousemove = e => {
@@ -365,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ============================================================
-// 5. PREVISUALIZAR FOTO DE PERFIL (MODAL EDITAR)
+// 5. PREVISUALIZAR FOTO DE PERFIL
 // ============================================================
 window.previewProfileImage = function(event) {
     var reader = new FileReader();

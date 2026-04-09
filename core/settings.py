@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 # Directorio base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Tus aplicaciones
     'inicio',
     'interfichas',
     'intercentros',
     'gimnasio',
     'inventario',
-    'usuarios',  # ← NUEVO
+    'usuarios', 
 ]
 
 MIDDLEWARE = [
@@ -50,6 +53,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.programas_context',
             ],
         },
     },
@@ -79,21 +83,50 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# Archivos Estáticos (CSS, JavaScript, Imágenes de diseño)
+# Archivos Estáticos (CSS, JavaScript)
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Usar solo en producción
 
-# Archivos Multimedia (Fotos subidas por usuarios, fotos de inventario)
+# Archivos Multimedia (Fotos de perfil, inventario, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuración de campos automáticos
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ── AUTENTICACIÓN ── NUEVO ──────────────────────────────
+# ── AUTENTICACIÓN PERSONALIZADA ──────────────────────────
 AUTH_USER_MODEL = 'usuarios.Usuario'
 LOGIN_URL = 'home'
 LOGIN_REDIRECT_URL = 'perfil'
 LOGOUT_REDIRECT_URL = 'home'
-# ────────────────────────────────────────────────────────
+
+# ── CONFIGURACIÓN DE CORREO (GMAIL REAL) ─────────────────
+# Se activa el envío real a través de los servidores de Google
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Reemplaza con tu correo real y tu contraseña de aplicación de 16 letras
+EMAIL_HOST_USER = 'kevinvargaskng@gmail.com' 
+EMAIL_HOST_PASSWORD = 'pows bgxm pmvc zxvz' 
+
+# Nombre que aparecerá en el remitente del correo
+DEFAULT_FROM_EMAIL = 'Gestión Deportiva <tu_correo@gmail.com>'
+
+# ── SUGERENCIAS DE UX Y SEGURIDAD ────────────────────────
+
+# Mapeo de mensajes de Django a clases de Bootstrap 5
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
+# La sesión expira al cerrar el navegador (Seguridad para equipos compartidos)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Tiempo de vida de la sesión (2 horas)
+SESSION_COOKIE_AGE = 7200

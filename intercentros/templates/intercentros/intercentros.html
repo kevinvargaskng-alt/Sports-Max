@@ -4,7 +4,7 @@
 {% block title %}Inter-Centros - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -85,12 +85,15 @@
                         <input type="number" name="ficha" class="form-control custom-input" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Programa de Formación </label>
-                        <select name="programa" class="form-select custom-input"  required>
-                            <option value="">Seleccionar...</option>
-                            <option>Análisis y Desarrollo de Software</option>
-                            <option>Química Aplicada a la Industria</option>
-                        </select>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-cap">Programa de formación</label>
+                            <select name="programa" class="form-select custom-input" required>
+                                <option value="" selected disabled>-- Seleccione un programa --</option>
+                                {% for programa in PROGRAMAS_GLOBALES %}
+                                    <option value="{{ programa }}">{{ programa }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Disciplina</label>

@@ -4,7 +4,7 @@
 {% block title %}Inicio - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -126,29 +126,33 @@
                 </ul>
 
                 <div class="tab-content" id="authTabsContent">
-                    <!-- PANEL LOGIN -->
-                    <div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
-                        <form id="loginForm" novalidate autocomplete="off">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Número de Documento</label>
-                                <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678" required pattern="\d{5,20}" title="Ingresa un documento válido (solo números sin espacios)" data-bs-toggle="tooltip" data-bs-placement="top">
-                                <div class="invalid-feedback">Ingresa solo números.</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Contraseña</label>
-                                <div class="input-group">
-                                    <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta" required minlength="8">
-                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="loginAlert" class="alert d-none" role="alert"></div>
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">INGRESAR AL SISTEMA</button>
-                        </form>
-                    </div>
-
+                  <!-- PANEL LOGIN (Fragmento actualizado) -->
+<div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
+    <form id="loginForm" novalidate autocomplete="off">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-white">Número de Documento</label>
+            <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678" required pattern="\d{5,20}" title="Ingresa un documento válido" data-bs-toggle="tooltip">
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-white">Contraseña</label>
+            <div class="input-group">
+                <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta" required minlength="8">
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <!-- ENLACE DE RECUPERACIÓN AGREGADO AQUÍ -->
+            <div class="text-end mt-2">
+                <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none fw-bold" title="Te enviaremos un correo para restablecerla" data-bs-toggle="tooltip">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+        </div>
+        <div id="loginAlert" class="alert d-none" role="alert"></div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">INGRESAR AL SISTEMA</button>
+    </form>
+</div>
                     <!-- PANEL REGISTRO -->
                     <div class="tab-pane fade" id="registerPanel" role="tabpanel">
                         <form id="registerForm" novalidate autocomplete="off">
@@ -259,4 +263,15 @@
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Revisamos si la URL tiene el parámetro login=1
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('login') === '1') {
+            // Buscamos el modal por su ID y lo abrimos
+            var myModal = new bootstrap.Modal(document.getElementById('modalForm'));
+            myModal.show();
+        }
+    });
+</script>
 {% endblock %}

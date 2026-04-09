@@ -3,8 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
-from django.db import IntegrityError  # Importación clave para manejar duplicados
-from .models import Usuario # Importamos tu modelo personalizado
+from django.db import IntegrityError
+from .models import Usuario 
+
+# --- IMPORTACIÓN DESDE TU APP DE INVENTARIO ---
+# Asegúrate de que 'inventario' sea el nombre exacto de la carpeta de esa app
+from inventario.models import Prestamo 
 
 def login_view(request):
     """Procesa el inicio de sesión vía AJAX"""
@@ -31,90 +35,91 @@ def login_view(request):
 
 
 def registro_view(request):
-    """Procesa el registro vía AJAX"""
+    """Procesa el registro con validaciones de seguridad"""
     if request.method == 'POST':
-        numero_documento = request.POST.get('numero_documento')
-        nombres          = request.POST.get('nombres')
-        apellidos        = request.POST.get('apellidos')
-        contrasena       = request.POST.get('contrasena')
-        correo           = request.POST.get('email')  # <-- Capturamos el correo
-        
-        # Validación de documento duplicado
-        if Usuario.objects.filter(numero_documento=numero_documento).exists():
-            return JsonResponse({'status': 'error', 'success': False, 'message': 'El documento ya está registrado'}, status=400)
+        numero_documento = request.POST.get('numero_documento', '').strip()
+        nombres          = request.POST.get('nombres', '').strip()
+        apellidos        = request.POST.get('apellidos', '').strip()
+        contrasena       = request.POST.get('contrasena', '').strip()
+        correo           = request.POST.get('email', '').strip()
+        tipo_doc         = request.POST.get('tipo_documento', '').strip()
+        telefono         = request.POST.get('telefono', '').strip()
+        ficha            = request.POST.get('ficha', '').strip()
+        programa         = request.POST.get('programa_formacion', '').strip()
 
-        # Validación de correo duplicado
+        required_fields = {
+            'numero_documento': numero_documento, 'nombres': nombres,
+            'apellidos': apellidos, 'contrasena': contrasena,
+            'email': correo, 'tipo_documento': tipo_doc,
+            'telefono': telefono, 'ficha': ficha, 'programa_formacion': programa
+        }
+
+        for field, value in required_fields.items():
+            if not value:
+                return JsonResponse({'status': 'error', 'message': f'El campo {field} es obligatorio.'}, status=400)
+
+        if Usuario.objects.filter(numero_documento=numero_documento).exists():
+            return JsonResponse({'status': 'error', 'message': 'El documento ya existe'}, status=400)
+
         if Usuario.objects.filter(email=correo).exists():
-            return JsonResponse({'status': 'error', 'success': False, 'message': 'Este correo ya está en uso'}, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Este correo ya está en uso'}, status=400)
 
         try:
-            # Creamos el usuario agregando el email
             user = Usuario.objects.create_user(
-                username=numero_documento,
-                email=correo,  # <-- Guardamos el correo en el sistema nativo
-                password=contrasena,
-                first_name=nombres,
-                last_name=apellidos
+                username=numero_documento, email=correo, password=contrasena,
+                first_name=nombres, last_name=apellidos
             )
-
-            # Asignamos los campos extra
             user.numero_documento = numero_documento
-            user.tipo_documento   = request.POST.get('tipo_documento')
-            user.telefono         = request.POST.get('telefono')
-            user.genero           = request.POST.get('genero')
-            user.ficha            = request.POST.get('ficha') 
-            user.programa_formacion = request.POST.get('programa_formacion') 
+            user.tipo_documento   = tipo_doc
+            user.telefono         = telefono
+            user.ficha            = ficha
+            user.programa_formacion = programa
             user.rol              = 'aprendiz'
             user.save()
 
-            # Lo logueamos de una vez
             login(request, user)
-            return JsonResponse({
-                'status': 'success', 
-                'success': True, 
-                'redirect': '/perfil/', 
-                'message': 'Registro exitoso. Redirigiendo...'
-            })
+            return JsonResponse({'status': 'success', 'redirect': '/perfil/', 'message': 'Registro exitoso'})
         
-        # Atrapamos errores de duplicados (por si fallan las validaciones de arriba)
         except IntegrityError:
-            return JsonResponse({
-                'status': 'error', 
-                'success': False, 
-                'message': 'Error de integridad: El documento o correo ya existen en el sistema.'
-            }, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Error de base de datos'}, status=400)
             
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'success': False, 'message': str(e)}, status=500)
-
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
 def logout_view(request):
-    """Cierra la sesión y manda al inicio"""
     logout(request)
     return redirect('home')
 
 
 @login_required(login_url='home')
 def perfil_view(request):
-    """Muestra y edita el perfil (Solo usuarios logueados)"""
+    """Muestra el perfil con los préstamos del usuario logueado"""
     usuario = request.user
 
+    # GESTIÓN DE EDICIÓN DE PERFIL (POST)
     if request.method == 'POST':
         email = request.POST.get('email')
         celular = request.POST.get('celular') 
 
-        if email:
-            usuario.email = email
-        if celular is not None:
-            usuario.telefono = celular 
-
-        if 'imagen' in request.FILES:
-            usuario.foto_perfil = request.FILES.get('imagen')
+        if email: usuario.email = email
+        if celular: usuario.telefono = celular 
+        if 'imagen' in request.FILES: usuario.foto_perfil = request.FILES.get('imagen')
 
         usuario.save()
-        messages.success(request, '¡Tu perfil ha sido actualizado correctamente!')
+        messages.success(request, '¡Perfil actualizado!')
         return redirect('perfil')
 
-    return render(request, 'usuarios/perfil.html', {'usuario': usuario})
+    # --- CARGA DE DATOS PARA LAS TABLAS DEL PERFIL ---
+    # Traemos solo los préstamos que le pertenecen a este usuario
+    prestamos = Prestamo.objects.filter(usuario=usuario).order_by('-fecha_prestamo')
+    
+    # Aquí puedes agregar más filtros si tienes modelos de Gimnasio o Interfichas:
+    # reservas_gimnasio = ReservaGimnasio.objects.filter(aprendiz=usuario)
+
+    contexto = {
+        'usuario': usuario,
+        'prestamos': prestamos,
+        # 'reservas_gimnasio': reservas_gimnasio,
+    }
+
+    return render(request, 'usuarios/perfil.html', contexto)

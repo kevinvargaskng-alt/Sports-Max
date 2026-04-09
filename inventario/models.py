@@ -1,8 +1,9 @@
 from django.db import models
+from django.conf import settings # Necesario para vincular el Usuario
 
 class ElementoDeportivo(models.Model):
     codigo_elemento = models.AutoField(primary_key=True)
-    # ===== NUEVO CAMPO PARA LA IMAGEN =====
+    # ===== CAMPO PARA LA IMAGEN =====
     imagen = models.ImageField(upload_to='elementos/', null=True, blank=True)
     # ========================================
     tipo_maquina = models.CharField(max_length=100)
@@ -17,9 +18,18 @@ class ElementoDeportivo(models.Model):
 
 class Prestamo(models.Model):
     codigo_prestamo = models.AutoField(primary_key=True)
+    # === CAMPO NUEVO: VINCULA AL APRENDIZ QUE PIDE EL PRÉSTAMO ===
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='prestamos_realizados',
+        null=True, 
+        blank=True
+    )
+    # =============================================================
     elemento = models.ForeignKey(ElementoDeportivo, on_delete=models.CASCADE, related_name='prestamos')
     fecha_prestamo = models.DateField(auto_now_add=True)
-    hora_prestamo = models.TimeField()
+    hora_prestamo = models.TimeField(auto_now_add=True)
     dias_prestamo = models.IntegerField(default=1)
     fecha_devolucion = models.DateField()
     cantidad_prestada = models.IntegerField(default=1)
