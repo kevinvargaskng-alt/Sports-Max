@@ -1,122 +1,223 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Inter-Centros - Gestión Deportiva{% endblock %}
+{% block title %}Gestión Intercentros - CBA{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    html, body { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; }
+    body { display: flex; flex-direction: column; background: #0b0e14 !important; color: #f0f6fc !important; }
+    .main-wrapper { flex: 1; padding: 40px 20px; }
+
+    /* Hero Banner */
+    .hero-banner {
+        width: 100%; max-width: 1100px; margin: 0 auto 40px;
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border: 1px solid #374151; border-radius: 20px; padding: 30px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* Grid de Acciones */
+    .action-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 25px; width: 100%; max-width: 1100px; margin: 0 auto 50px;
+    }
+
+    .action-card {
+        background: #161b22; border: 1px solid #30363d; border-radius: 16px;
+        padding: 30px; text-align: center; transition: 0.3s;
+    }
+    .action-card:hover { transform: translateY(-5px); border-color: #f97316; }
+    .action-card i { color: #f97316; margin-bottom: 20px; }
+    
+    /* Botones Dobles */
+    .btn-group-custom { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-group-custom .btn { flex: 1; font-size: 0.75rem; font-weight: bold; }
+
+    .custom-input { background: #0d1117 !important; border: 1px solid #30363d !important; color: white !important; }
+
+    /* Tabla */
+    .table-container { width: 100%; max-width: 1100px; margin: 0 auto; }
+    .custom-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    .custom-table tr { background: #161b22; }
+    .custom-table td { padding: 18px; text-align: center; border-top: 1px solid #30363d; border-bottom: 1px solid #30363d; }
+    .custom-table td:first-child { border-left: 1px solid #30363d; border-radius: 12px 0 0 12px; }
+    .custom-table td:last-child { border-right: 1px solid #30363d; border-radius: 0 12px 12px 0; }
+
+    footer { padding: 25px; background: #090c10; border-top: 1px solid #30363d; margin-top: auto; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="main-container py-4">
-    <div class="container">
+<div class="main-wrapper">
 
-        <!-- Encabezado -->
-        <div class="modulo-header text-center mb-5">
-            <i class="fas fa-building fa-3x mb-3"></i>
-            <h2 class="fw-bold text-white">Torneos Inter-Centros</h2>
-            <p class="text-white-50">Mantente informado sobre toda la información relacionada con la conformación de equipos <br>que representaran al SENA Centro MInero en los torneos Inter-centros. </p>
+    <div class="hero-banner">
+        <div>
+            <h2 class="fw-bold mb-1">Intercentros Centro Minero</h2>
+            <p class="text-white-50 m-0 small">Sistema de Gestión Deportiva Regional</p>
+        </div>
+        <div class="text-end">
+            <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#modalTorneo">
+                <i class="fas fa-plus-circle me-2"></i>NUEVA CONVOCATORIA
+            </button>
+        </div>
+    </div>
+
+    <div class="action-grid">
+        <div class="action-card">
+            <i class="fas fa-user-edit fa-3x"></i>
+            <h5>Postulaciones</h5>
+            <p class="small text-white-50">Inscripción automática con datos de aprendiz.</p>
+            <button class="btn btn-outline-warning w-100 fw-bold mt-2" data-bs-toggle="modal" data-bs-target="#modalInscribir">
+                INSCRIBIRME AHORA
+            </button>
         </div>
 
-        <!-- Tarjetas de acciones -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="sport-card">
-                    <i class="fas fa-user-plus fa-2x mb-3 text-warning"></i>
-                    <h5>INSCRIBIR APRENDIZ</h5>
-                    <p>Registrate para tener la oportunidad de representar al Centro Minero en los torneos inter-centros.</p>
-                    <button class="btn btn-dark btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalCrearTorneo">
-                        <i class="fas fa-plus me-3"></i>INSCRIBIR
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="sport-card">
-                    <i class="fas fa-list-alt fa-2x mb-3 text-warning"></i>
-                    <h5>ENTRENAMIENTOS</h5>
-                    <p>Consulta la hora y el lugar de los entrenamientos segun tu disciplina.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-centro" data-seccion="torneos">
-                        <i class="fas fa-eye me-3"></i>CONSULTAR
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="sport-card">
-                    <i class="fas fa-chart-bar fa-2x mb-3 text-warning"></i>
-                    <h5>NOVEDADES</h5>
-                    <p>Mantente enterado sobre los aprendices que quedaron seleccionados para representr al Centro Mineroen.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-centro" data-seccion="resultados">
-                        <i class="fas fa-poll me-3"></i>VER
-                    </button>
-                </div>
+        <div class="action-card">
+            <i class="fas fa-calendar-alt fa-3x"></i>
+            <h5>Entrenamientos</h5>
+            <p class="small text-white-50">Gestión de horarios de preparación deportiva.</p>
+            <div class="btn-group-custom">
+                <button class="btn btn-outline-info">VER AGENDA</button>
+                <button class="btn btn-info text-dark" data-bs-toggle="modal" data-bs-target="#modalEntrenamiento">PROGRAMAR</button>
             </div>
         </div>
 
-        <!-- Panel dinámico -->
-        
-        <!-- Tabla de Torneos -->
+        <div class="action-card">
+            <i class="fas fa-bullhorn fa-3x"></i>
+            <h5>Avisos y Novedades</h5>
+            <p class="small text-white-50">Información de seleccionados y resultados.</p>
+            <div class="btn-group-custom">
+                <button class="btn btn-outline-light">VER AVISOS</button>
+                <button class="btn btn-light text-dark" data-bs-toggle="modal" data-bs-target="#modalNovedad">CREAR</button>
+            </div>
+        </div>
+    </div>
 
+    <div class="table-container">
+        <h6 class="fw-bold text-white-50 mb-3 text-uppercase small">Próximos Torneos Seleccionados</h6>
+        <table class="custom-table">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>EVENTO</th>
+                    <th>DEPORTE</th>
+                    <th>CIUDAD / LUGAR</th>
+                    <th>FECHA</th>
+                    <th>ACCIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in torneos %}
+                <tr>
+                    <td class="text-white fw-bold">{{ t.nombre_torneo }}</td>
+                    <td class="text-warning fw-bold">{{ t.disciplina }}</td>
+                    <td class="small">{{ t.lugar }}</td>
+                    <td>{{ t.fecha_torneo|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'eliminar_torneo' t.codigo_torneo_centro %}" class="text-danger opacity-50" onclick="return confirm('¿Eliminar?')">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="py-5 text-white-50">No hay convocatorias activas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- MODAL CREAR TORNEO -->
-<div class="modal fade" id="modalCrearTorneo" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalTorneo" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-plus me-2"></i>Inscribir Aprendiz
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST">
-                    {% csrf_token %}
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold text-white">Publicar Torneo</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear_torneo">
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label small fw-bold">Nombre</label><input type="text" name="nombre" class="form-control custom-input" required></div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nombres</label>
-                        <input type="text" name="nombre" class="form-control custom-input" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Apellidos </label>
-                        <input type="text" name="apellido" class="form-control custom-input" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Ficha</label>
-                        <input type="number" name="ficha" class="form-control custom-input" required>
-                    </div>
-                    <div class="mb-3">
-                        <div class="col-md-12">
-                            <label class="form-label small fw-bold text-cap">Programa de formación</label>
-                            <select name="programa" class="form-select custom-input" required>
-                                <option value="" selected disabled>-- Seleccione un programa --</option>
-                                {% for programa in PROGRAMAS_GLOBALES %}
-                                    <option value="{{ programa }}">{{ programa }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Disciplina</label>
+                        <label class="form-label small fw-bold">Disciplina</label>
                         <select name="disciplina" class="form-select custom-input" required>
-                            <option value="">Seleccionar</option>
-                            <option value="Fútbol">Fútbol</option>
-                            <option value="Futsal">Futsal</option>
-                            <option value="Baloncesto">Baloncesto</option>
+                            <option value="Futbol">Fútbol</option>
+                            <option value="Futbol Sala">Fútbol Sala</option>
                             <option value="Voleibol">Voleibol</option>
                             <option value="Tenis de Mesa">Tenis de Mesa</option>
-                            <option value="Ajedrez">Ajedrez</option>
+                            <option value="Baloncesto">Baloncesto</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-dark w-100 py-2">
-                        <i class="fas fa-check me-2"></i>Registrar Aprendiz
-                    </button>
+                    <div class="row">
+                        <div class="col-6 mb-3"><label class="form-label small fw-bold">Fecha</label><input type="date" name="fecha" class="form-control custom-input" required></div>
+                        <div class="col-6 mb-3"><label class="form-label small fw-bold">Sede</label><input type="text" name="lugar" class="form-control custom-input" required></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0"><button type="submit" class="btn btn-warning w-100 fw-bold">GUARDAR EVENTO</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEntrenamiento" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white">
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Nuevo Entrenamiento</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="small fw-bold">Deporte</label>
+                        <select class="form-select custom-input">
+                            <option>Fútbol</option><option>Fútbol Sala</option><option>Voleibol</option><option>Tenis de Mesa</option><option>Baloncesto</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3"><label class="small fw-bold">Fecha</label><input type="date" class="form-control custom-input"></div>
+                        <div class="col-6 mb-3"><label class="small fw-bold">Hora</label><input type="time" class="form-control custom-input"></div>
+                    </div>
+                    <button type="button" class="btn btn-info w-100 fw-bold mt-2">CONFIRMAR HORARIO</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/inicio.js' %}"></script>
+<div class="modal fade" id="modalNovedad" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold text-white">Publicar Aviso</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3"><label class="small fw-bold text-white-50">Título</label><input type="text" class="form-control custom-input" placeholder="Ej: Citación Seleccionados Fútbol"></div>
+                    <div class="mb-3"><label class="small fw-bold text-white-50">Contenido</label><textarea class="form-control custom-input" rows="3"></textarea></div>
+                    <button type="button" class="btn btn-light w-100 fw-bold">ENVIAR AVISO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalInscribir" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold text-white">Inscripción Intercentros</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="p-2 mb-3 rounded bg-dark border border-secondary small text-white-50">
+                    ID: {{ user.numero_documento }} | Ficha: {{ user.ficha }}
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="inscribir_aprendiz">
+                    <select name="disciplina" class="form-select custom-input mb-3" required>
+                        <option value="" disabled selected>-- Elige tu Deporte --</option>
+                        <option>Fútbol</option><option>Fútbol Sala</option><option>Voleibol</option><option>Tenis de Mesa</option><option>Baloncesto</option>
+                    </select>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">POSTULARME</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="text-center"><small class="text-white-50 opacity-50">© 2026 Centro Minero CBA · Gestión Intercentros</small></div>
+</footer>
 {% endblock %}
