@@ -4,6 +4,26 @@ from django.contrib import messages
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion, Revision
 from datetime import datetime
 
+
+# ─── FUNCIÓN HELPER ───────────────────────────────────────
+def _actualizar_campos_elemento(elemento, post_data, files=None):
+    """
+    Helper para actualizar campos de un elemento deportivo.
+    Evita duplicación de código entre vistas.
+    """
+    if files and 'imagen' in files:
+        elemento.imagen = files.get('imagen')
+    
+    elemento.tipo_maquina = post_data.get('tipo_maquina')
+    elemento.cantidad_total = post_data.get('cantidad_total')
+    elemento.estado_general = post_data.get('estado_general')
+    elemento.fecha_adquisicion = post_data.get('fecha_adquisicion')
+    elemento.descripcion = post_data.get('descripcion')
+    elemento.docente_responsable = post_data.get('docente_responsable')
+    elemento.save()
+
+
+# ─── VISTAS ───────────────────────────────────────────────
 @login_required
 def inventario_list(request):
     elementos = ElementoDeportivo.objects.all()
@@ -32,17 +52,7 @@ def inventario_list(request):
             codigo = request.POST.get('codigo_elemento')
             if codigo:
                 elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=codigo)
-                
-                if 'imagen' in request.FILES:
-                    elemento.imagen = request.FILES.get('imagen')
-                
-                elemento.tipo_maquina = request.POST.get('tipo_maquina')
-                elemento.cantidad_total = request.POST.get('cantidad_total')
-                elemento.estado_general = request.POST.get('estado_general')
-                elemento.fecha_adquisicion = request.POST.get('fecha_adquisicion')
-                elemento.descripcion = request.POST.get('descripcion')
-                elemento.docente_responsable = request.POST.get('docente_responsable')
-                elemento.save()
+                _actualizar_campos_elemento(elemento, request.POST, request.FILES)
                 messages.success(request, "Elemento actualizado correctamente.")
             return redirect('inventario')
 
@@ -100,10 +110,4 @@ def editar_elemento(request, id):
         messages.success(request, "Elemento actualizado correctamente.")
         return redirect('inventario')
     return render(request, 'inventario/editar.html', {'elemento': elemento})
-
-@login_required
-def eliminar_prestamo(request, id):
-    prestamo = get_object_or_404(Prestamo, codigo_prestamo=id)
-    prestamo.delete()
-    messages.info(request, "Préstamo finalizado/eliminado.")
-    return redirect('inventario')
+_actualizar_campos_elemento(elemento, request.POST, request.FILESnventario')
