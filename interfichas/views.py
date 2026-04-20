@@ -32,6 +32,16 @@ def interfichas_list(request):
             if len(nombre_disc) > 50:
                 messages.error(request, "El nombre de la disciplina no puede exceder 50 caracteres.")
                 return redirect('interfichas')
+            
+            obj, created = Disciplina.objects.get_or_create(nombre_disciplina=nombre_disc)
+            if created:
+                messages.success(request, f"Disciplina '{nombre_disc}' creada exitosamente.")
+            else:
+                messages.info(request, f"La disciplina '{nombre_disc}' ya existe en el sistema.")
+            return redirect('interfichas')
+
+        # --- ACTUALIZADO: LÓGICA CREAR TORNEO (Seleccionando disciplina existente) ---
+        elif accion == 'crear_torneo':
             # Validar y sanitizar datos
             nombre = request.POST.get('nombre', '').strip()
             fecha_str = request.POST.get('fecha', '').strip()
@@ -47,6 +57,31 @@ def interfichas_list(request):
             if len(nombre) > 100 or len(lugar) > 100:
                 messages.error(request, "Nombre o lugar demasiado largo (máx. 100 caracteres).")
                 return redirect('interfichas')
+            
+            # Validar fecha
+            try:
+                fecha = __import__('datetime').datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                if fecha < date.today():
+                    messages.error(request, "La fecha del torneo debe ser igual o posterior a hoy.")
+                    return redirect('interfichas')
+            except (ValueError, TypeError):
+                messages.error(request, "Formato de fecha inválido.")
+                return redirect('interfichas')
+            
+            # Obtenemos la disciplina seleccionada del select
+            disciplina_obj = get_object_or_404(Disciplina, pk=id_disciplina)
+            
+            TorneoInterfichas.objects.create(
+                nombre_torneo=nombre,
+                fecha_torneo_fichas=fecha,
+                lugar=lugar,
+                disciplina=disciplina_obj
+            )
+            messages.success(request, "Torneo programado correctamente.")
+            return redirect('interfichas')
+
+        # --- LÓGICA INSCRIBIR EQUIPO ---
+        elif accion == 'inscribir_equipo':
             # Validar y sanitizar datos
             torneo_id = request.POST.get('torneo_id', '').strip()
             nombre_equipo = request.POST.get('nombre_equipo', '').strip()
@@ -81,42 +116,7 @@ def interfichas_list(request):
             for nombre in jugadores_nombres:
                 nombre_limpio = nombre.strip()
                 if nombre_limpio:
-                    JugadorEquipo.objects.create(nombre_completo=nombre_limpio
-        # --- ACTUALIZADO: LÓGICA CREAR TORNEO (Seleccionando disciplina existente) ---
-        elif accion == 'crear_torneo':
-            id_disciplina = request.POST.get('disciplina_id')
-            # Obtenemos la disciplina seleccionada del select
-            disciplina_obj = get_object_or_404(Disciplina, pk=id_disciplina)
-            
-            TorneoInterfichas.objects.create(
-                nombre_torneo=request.POST.get('nombre'),
-                fecha_torneo_fichas=request.POST.get('fecha'),
-                lugar=request.POST.get('lugar'),
-                disciplina=disciplina_obj
-            )
-            messages.success(request, "Torneo programado correctamente.")
-            return redirect('interfichas')
-
-        # --- LÓGICA INSCRIBIR EQUIPO ---
-        elif accion == 'inscribir_equipo':
-            torneo_id = request.POST.get('torneo_id')
-            torneo_obj = get_object_or_404(TorneoInterfichas, pk=torneo_id)
-            
-            nuevo_equipo = EquipoInterfichas.objects.create(
-                torneo=torneo_obj,
-                nombre_equipo=request.POST.get('nombre_equipo'),
-                capitan=request.POST.get('capitan'),
-                ficha=request.POST.get('ficha'),
-                programa=request.POST.get('programa'),
-                disciplina=torneo_obj.disciplina,
-                usuario_registra=request.user
-            )
-
-            # Procesar lista de jugadores
-            jugadores_nombres = request.POST.getlist('jugadores[]')
-            for nombre in jugadores_nombres:
-                if nombre.strip():
-                    JugadorEquipo.objects.create(nombre_completo=nombre, equipo=nuevo_equipo)
+                    JugadorEquipo.objects.create(nombre_completo=nombre_limpio, equipo=nuevo_equipo)
             
             messages.success(request, f"Equipo '{nuevo_equipo.nombre_equipo}' inscrito exitosamente.")
             return redirect('interfichas')

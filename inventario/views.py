@@ -1,15 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
+﻿from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion, Revision
 from datetime import datetime
 
 
-# ─── FUNCIÓN HELPER ───────────────────────────────────────
+# â”€â”€â”€ FUNCIÃ“N HELPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def _actualizar_campos_elemento(elemento, post_data, files=None):
     """
     Helper para actualizar campos de un elemento deportivo.
-    Evita duplicación de código entre vistas.
+    Evita duplicaciÃ³n de cÃ³digo entre vistas.
     """
     if files and 'imagen' in files:
         elemento.imagen = files.get('imagen')
@@ -23,7 +23,7 @@ def _actualizar_campos_elemento(elemento, post_data, files=None):
     elemento.save()
 
 
-# ─── VISTAS ───────────────────────────────────────────────
+# â”€â”€â”€ VISTAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @login_required
 def inventario_list(request):
     elementos = ElementoDeportivo.objects.all()
@@ -56,30 +56,30 @@ def inventario_list(request):
                 messages.success(request, "Elemento actualizado correctamente.")
             return redirect('inventario')
 
-        # 3. CREAR PRÉSTAMO (AUTOMATIZADO PARA EL USUARIO LOGUEADO)
+        # 3. CREAR PRÃ‰STAMO (AUTOMATIZADO PARA EL USUARIO LOGUEADO)
         elif accion == 'crear_prestamo':
             id_elemento = request.POST.get('elemento')
             cantidad = int(request.POST.get('cantidad_prestada', 0))
             elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id_elemento)
 
-            # Validación de Stock
+            # ValidaciÃ³n de Stock
             if cantidad > elemento.cantidad_total:
                 messages.error(request, f"No hay suficiente stock. Disponible: {elemento.cantidad_total}")
                 return redirect('inventario')
 
-            # Se crea el préstamo vinculando automáticamente al usuario que inició sesión
+            # Se crea el prÃ©stamo vinculando automÃ¡ticamente al usuario que iniciÃ³ sesiÃ³n
             Prestamo.objects.create(
-                usuario=request.user,  # Vinculación automática
+                usuario=request.user,  # VinculaciÃ³n automÃ¡tica
                 elemento=elemento,
                 cantidad_prestada=cantidad,
-                # Soporta tanto 'hora_prestamo' (si existe en el modelo) como los días calculados
+                # Soporta tanto 'hora_prestamo' (si existe en el modelo) como los dÃ­as calculados
                 dias_prestamo=request.POST.get('dias_prestamo'),
                 fecha_devolucion=request.POST.get('fecha_devolucion'), 
                 observacion_prestamo=request.POST.get('observacion'),
                 estado_prestamo='Activo'
             )
             
-            messages.success(request, "Solicitud de préstamo registrada correctamente.")
+            messages.success(request, "Solicitud de prÃ©stamo registrada correctamente.")
             return redirect('inventario')
 
     return render(request, 'inventario/inventario.html', {
@@ -95,7 +95,7 @@ def eliminar_elemento(request, id):
     messages.warning(request, "Elemento eliminado del inventario.")
     return redirect('inventario')
 
-# Vista para edición en página separada (si se llega a usar)
+# Vista para ediciÃ³n en pÃ¡gina separada (si se llega a usar)
 @login_required
 def editar_elemento(request, id):
     elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id)
@@ -110,4 +110,3 @@ def editar_elemento(request, id):
         messages.success(request, "Elemento actualizado correctamente.")
         return redirect('inventario')
     return render(request, 'inventario/editar.html', {'elemento': elemento})
-_actualizar_campos_elemento(elemento, request.POST, request.FILESnventario')
