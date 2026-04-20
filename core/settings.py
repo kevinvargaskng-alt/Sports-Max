@@ -1,18 +1,19 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
+from decouple import config
 
 # Directorio base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SEGURIDAD: ¡Mantén esta clave en secreto en producción!
-SECRET_KEY = 'django-insecure--+k6(v(s%fu$4wf6!f_n(=1*5(^txum^g-@4p8sxybqvna6g4x'
+# SEGURIDAD: Variables de entorno desde .env
+SECRET_KEY = config('SECRET_KEY')
 
 # SEGURIDAD: No uses DEBUG = True en producción
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# CAMBIO AQUÍ: Se agrega tu IP local y '*' para permitir acceso desde el celular
-ALLOWED_HOSTS = ['192.168.1.9', 'localhost', '127.0.0.1', '*']
+# Hosts permitidos desde .env
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
@@ -107,9 +108,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Reemplaza con tu correo real y tu contraseña de aplicación de 16 letras
-EMAIL_HOST_USER = 'kevinvargaskng@gmail.com' 
-EMAIL_HOST_PASSWORD = 'pows bgxm pmvc zxvz' 
+# Variables de entorno desde .env
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD') 
 
 # Nombre que aparecerá en el remitente del correo
 DEFAULT_FROM_EMAIL = 'Gestión Deportiva <kevinvargaskng@gmail.com>'
