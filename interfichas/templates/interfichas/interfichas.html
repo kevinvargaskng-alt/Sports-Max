@@ -13,27 +13,14 @@
     .text-legible { color: rgba(255, 255, 255, 0.85) !important; }
     .subtexto-visible { color: rgba(255, 255, 255, 0.6) !important; }
 
-    /* =========================================================
-       NUEVOS AJUSTES RESPONSIVE (TABLA A TARJETAS)
-       ========================================================= */
     @media (max-width: 768px) {
-        /* Encabezado y botones */
         .fs-responsive-h2 { font-size: 1.5rem !important; }
         .btn-responsive { width: 100%; margin-bottom: 8px; }
-
-        /* Transformación de Tablas */
-        .table-responsive thead {
-            display: none; /* Escondemos cabecera en móvil */
-        }
-
+        .table-responsive thead { display: none; }
         .table-responsive table, 
         .table-responsive tbody, 
         .table-responsive tr, 
-        .table-responsive td {
-            display: block;
-            width: 100%;
-        }
-
+        .table-responsive td { display: block; width: 100%; }
         .table-responsive tr {
             margin-bottom: 20px;
             border: 1px solid #30363d !important;
@@ -41,16 +28,13 @@
             background: #161b22;
             padding: 10px 0;
         }
-
         .table-responsive td {
             text-align: left !important;
             padding: 12px 20px !important;
             border: none !important;
             position: relative;
-            padding-top: 35px !important; /* Espacio para el título del dato */
+            padding-top: 35px !important;
         }
-
-        /* Etiqueta flotante (data-label) */
         .table-responsive td::before {
             content: attr(data-label);
             position: absolute;
@@ -62,11 +46,7 @@
             color: #58a6ff;
             letter-spacing: 1px;
         }
-
-        /* Ajuste de modales para que no se peguen a los bordes */
-        .custom-modal {
-            margin: 10px;
-        }
+        .custom-modal { margin: 10px; }
     }
 </style>
 {% endblock %}
@@ -82,13 +62,11 @@
             <button class="btn btn-outline-warning btn-cap btn-responsive" data-bs-toggle="modal" data-bs-target="#modalNuevaDisciplina">
                 <i class="fas fa-running me-2"></i>Nueva Disciplina
             </button>
-
             {% if torneos %}
                 <button class="btn btn-outline-info btn-cap btn-responsive" data-bs-toggle="modal" data-bs-target="#modalEquipo">
                     <i class="fas fa-users me-2"></i>Inscribir equipo
                 </button>
             {% endif %}
-            
             <button class="btn btn-primary btn-cap px-4 btn-responsive shadow" data-bs-toggle="modal" data-bs-target="#modalTorneo">
                 <i class="fas fa-plus me-2"></i>Nuevo torneo
             </button>
@@ -105,6 +83,7 @@
         {% endfor %}
     {% endif %}
 
+    <!-- TORNEOS ACTIVOS -->
     <section class="mb-5 text-start">
         <h4 class="text-white fw-bold text-cap mb-3"><i class="fas fa-trophy text-warning me-2"></i>Torneos activos</h4>
         <div class="main-card shadow-lg table-responsive">
@@ -130,6 +109,16 @@
                                 <button class="btn btn-sm btn-outline-info border-0" onclick="abrirEditarTorneo('{{ t.codigo_torneo_fichas }}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
+                                <!-- NUEVO: Botón cerrar torneo -->
+                                {% if t.estado != 'cerrado' %}
+                                <button class="btn btn-sm btn-outline-success border-0"
+                                    onclick="abrirCierreTorneo('{{ t.codigo_torneo_fichas }}', '{{ t.nombre_torneo|lower }}')"
+                                    title="Cerrar torneo">
+                                    <i class="fas fa-flag-checkered"></i>
+                                </button>
+                                {% else %}
+                                <span class="badge bg-secondary ms-1">Cerrado</span>
+                                {% endif %}
                                 <a href="{% url 'eliminar_torneo' t.codigo_torneo_fichas %}" class="btn btn-sm btn-outline-danger border-0" onclick="confirm('¿Eliminar torneo?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
@@ -144,6 +133,7 @@
         </div>
     </section>
 
+    <!-- EQUIPOS Y NÓMINAS -->
     <section class="text-start">
         <h4 class="text-white fw-bold text-cap mb-3"><i class="fas fa-users-cog text-info me-2"></i>Equipos y nóminas</h4>
         <div class="main-card shadow-lg table-responsive">
@@ -182,6 +172,7 @@
     </section>
 </div>
 
+<!-- MODAL: Nueva Disciplina -->
 <div class="modal fade" id="modalNuevaDisciplina" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
@@ -204,6 +195,7 @@
     </div>
 </div>
 
+<!-- MODAL: Nuevo Torneo -->
 <div class="modal fade" id="modalTorneo" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
@@ -245,6 +237,7 @@
     </div>
 </div>
 
+<!-- MODAL: Inscribir Equipo -->
 <div class="modal fade" id="modalEquipo" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
@@ -256,7 +249,6 @@
                 <form id="formEquipo" method="POST" action="{% url 'interfichas' %}">
                     {% csrf_token %}
                     <input type="hidden" name="accion_tipo" value="inscribir_equipo">
-                    
                     <div class="mb-4">
                         <label class="form-label small text-info fw-bold text-cap">Torneo de destino</label>
                         <select name="torneo_id" class="form-select custom-input border-info" required>
@@ -289,7 +281,6 @@
                             <input type="text" name="capitan" class="custom-input form-control border-warning" placeholder="Nombre completo" required>
                         </div>
                     </div>
-
                     <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.05);">
                         <label class="form-label fw-bold small text-white-50 text-cap">Nómina de jugadores</label>
                         <div class="input-group mb-3">
@@ -300,15 +291,121 @@
                         </div>
                         <ul id="listaJugadoresUI" class="list-group list-group-flush bg-transparent"></ul>
                     </div>
-                    
                     <button type="submit" class="btn btn-success w-100 mt-4 fw-bold btn-cap py-2 shadow">Finalizar inscripción y guardar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- ============================================================
+     MODAL NUEVO: Cierre de Torneo
+     ============================================================ -->
+<div class="modal fade" id="modalCierreTorneo" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-cap">
+                    <i class="fas fa-flag-checkered text-success me-2"></i>Cierre de torneo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formCierreTorneo">
+                {% csrf_token %}
+                <div class="modal-body p-4 text-start">
+
+                    <p class="text-white-50 small mb-4 text-cap">
+                        Torneo: <span id="nombreTorneoCierre" class="text-info fw-bold"></span>
+                    </p>
+
+                    <!-- PASO 1: Declarar Ganador -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-cap">
+                            <i class="fas fa-trophy text-warning me-2"></i>1. Declarar ganador
+                        </label>
+                        <select name="ganador_id" id="selectGanadorCierre" class="form-select custom-input" required>
+                            <option value="" selected disabled>-- Seleccione el equipo ganador --</option>
+                        </select>
+                    </div>
+
+                    <!-- PASO 2: Generar Diplomas -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-cap">
+                            <i class="fas fa-certificate text-info me-2"></i>2. Generar diplomas
+                        </label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="checkDiplomas" name="generar_diplomas" value="1" checked>
+                            <label class="form-check-label text-white-50 small text-cap" for="checkDiplomas">
+                                Generar diplomas para el equipo ganador al cerrar
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- PASO 3: Archivar Resultados -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-cap">
+                            <i class="fas fa-archive text-secondary me-2"></i>3. Archivar resultados
+                        </label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="checkArchivar" name="archivar" value="1" checked>
+                            <label class="form-check-label text-white-50 small text-cap" for="checkArchivar">
+                                Archivar torneo y bloquear ediciones futuras
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning py-2 small text-cap">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Esta acción es permanente. El torneo quedará cerrado.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-cap" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="accion" value="archivar" class="btn btn-success btn-cap px-4 shadow">
+                        <i class="fas fa-lock me-2"></i>Cerrar torneo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
+<script>
+// Datos de equipos por torneo pasados desde Django
+const equiposPorTorneo = {
+    {% for t in torneos %}
+    "{{ t.codigo_torneo_fichas }}": [
+        {% for e in t.equipos.all %}
+        { id: "{{ e.id }}", nombre: "{{ e.nombre_equipo }}" },
+        {% endfor %}
+    ],
+    {% endfor %}
+};
+
+function abrirCierreTorneo(codigo, nombre) {
+    // Mostrar nombre del torneo
+    document.getElementById('nombreTorneoCierre').textContent = nombre;
+
+    // Actualizar action del form
+    document.getElementById('formCierreTorneo').action = `/torneo/${codigo}/cerrar/`;
+
+    // Cargar equipos del torneo en el select
+    const select = document.getElementById('selectGanadorCierre');
+    select.innerHTML = '<option value="" selected disabled>-- Seleccione el equipo ganador --</option>';
+    const equipos = equiposPorTorneo[codigo] || [];
+    equipos.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.nombre;
+        select.appendChild(opt);
+    });
+
+    // Abrir modal
+    new bootstrap.Modal(document.getElementById('modalCierreTorneo')).show();
+}
+</script>
 {% endblock %}

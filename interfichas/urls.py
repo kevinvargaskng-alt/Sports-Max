@@ -10,4 +10,7 @@ urlpatterns = [
     
     # Editar torneo (Cambio importante: No requiere ID en la URL si usas el modal)
     path('editar/', views.editar_torneo, name='editar_torneo'),
+    
+    # Cerrar torneo (Nuevo endpoint para cerrar el torneo y registrar resultados)
+    path('torneo/<str:codigo_torneo>/cerrar/', views.cerrar_torneo, name='cerrar_torneo'),
 ]

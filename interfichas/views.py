@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import TorneoInterfichas, EquipoInterfichas, Disciplina, JugadorEquipo
 from django.contrib.auth.decorators import login_required
+from .models import ResultadoTorneo
 
 @login_required
 def interfichas_list(request):
@@ -93,4 +94,44 @@ def editar_torneo(request):
         torneo.disciplina = disciplina_obj
         torneo.save()
         messages.info(request, "Torneo actualizado.")
+    return redirect('interfichas')
+
+
+
+
+def cerrar_torneo(request, codigo_torneo):
+    torneo = get_object_or_404(TorneoInterfichas, codigo_torneo_fichas=codigo_torneo)
+
+    if torneo.estado == 'cerrado':
+        messages.error(request, 'Este torneo ya está cerrado.')
+        return redirect('interfichas')
+
+    equipos = torneo.equipos.all()
+
+    if request.method == 'POST':
+        ganador_id = request.POST.get('ganador_id')
+        accion = request.POST.get('accion')
+
+        if not ganador_id:
+            messages.error(request, 'Debes seleccionar un equipo ganador.')
+            return redirect('interfichas')
+
+        ganador = get_object_or_404(EquipoInterfichas, id=ganador_id, torneo=torneo)
+
+        resultado, _ = ResultadoTorneo.objects.update_or_create(
+            torneo=torneo,
+            defaults={'ganador': ganador}
+        )
+
+        if accion == 'archivar':
+            resultado.archivado = True
+            resultado.save()
+            torneo.estado = 'cerrado'
+            torneo.save()
+            messages.success(request, f'Torneo "{torneo.nombre_torneo}" cerrado y archivado correctamente.')
+            return redirect('interfichas')
+
+        messages.success(request, f'¡{ganador.nombre_equipo} declarado como ganador!')
+        return redirect('interfichas')
+
     return redirect('interfichas')

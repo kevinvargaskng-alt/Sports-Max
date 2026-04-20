@@ -22,11 +22,12 @@ class TorneoInterfichas(models.Model):
     # Relación con Disciplina
     disciplina = models.ForeignKey(Disciplina, on_delete=models.SET_NULL, null=True, related_name='torneos')
     
-    estado = models.CharField(max_length=20, default='Activo')
+    estado = models.CharField(max_length=20, default='activo')
     fecha_registro = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.nombre_torneo} ({self.disciplina})"
+    
 
 
 # 3. MODELO DE EQUIPOS
@@ -69,3 +70,14 @@ class JugadorEquipo(models.Model):
 
     def __str__(self):
         return self.nombre_completo
+    
+#resultados de los torneos, con relación uno a uno con el torneo para almacenar el ganador y fecha de cierre
+class ResultadoTorneo(models.Model):
+    torneo = models.OneToOneField('TorneoInterfichas', on_delete=models.CASCADE, related_name='resultado')
+    ganador = models.ForeignKey('EquipoInterfichas', on_delete=models.SET_NULL, null=True, related_name='torneos_ganados')
+    fecha_cierre = models.DateTimeField(auto_now_add=True)
+    archivado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Resultado de {self.torneo.nombre_torneo}"
+    
