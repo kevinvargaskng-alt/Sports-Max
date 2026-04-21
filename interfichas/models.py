@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 
 # 1. MODELO DE DISCIPLINAS
-# Almacena los nombres: Fútbol, Baloncesto, etc.
 class Disciplina(models.Model):
     nombre_disciplina = models.CharField(max_length=50, unique=True)
 
@@ -11,17 +10,13 @@ class Disciplina(models.Model):
 
 
 # 2. MODELO DE TORNEOS
-# Representa el evento deportivo principal
 class TorneoInterfichas(models.Model):
     codigo_torneo_fichas = models.AutoField(primary_key=True)
     nombre_torneo = models.CharField(max_length=100)
     fecha_torneo_fichas = models.DateField()
     horario_torneo_fichas = models.TimeField(default='08:00')
     lugar = models.CharField(max_length=100)
-    
-    # Relación con Disciplina
     disciplina = models.ForeignKey(Disciplina, on_delete=models.SET_NULL, null=True, related_name='torneos')
-    
     estado = models.CharField(max_length=20, default='Activo')
     fecha_registro = models.DateTimeField(auto_now_add=True)
 
@@ -30,30 +25,20 @@ class TorneoInterfichas(models.Model):
 
 
 # 3. MODELO DE EQUIPOS
-# Representa la inscripción de una ficha a un torneo específico
 class EquipoInterfichas(models.Model):
     codigo_equipo_interfichas = models.AutoField(primary_key=True)
-    
-    # Datos de la Ficha y el Programa
-    ficha = models.IntegerField() 
-    programa = models.CharField(max_length=150) # ADSO, Minería, etc.
+    ficha = models.IntegerField()
+    programa = models.CharField(max_length=150)
     nombre_equipo = models.CharField(max_length=100)
-    
-    # Campo de Capitán (Responsable del equipo)
     capitan = models.CharField(max_length=100)
-    
-    # Relaciones
     torneo = models.ForeignKey(TorneoInterfichas, on_delete=models.CASCADE, related_name='equipos')
     disciplina = models.ForeignKey(Disciplina, on_delete=models.SET_NULL, null=True)
-    
-    # Quién realizó la inscripción (Aprendiz/Admin logueado)
     usuario_registra = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL, 
-        null=True, 
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True
     )
-
     fecha_inscripcion = models.DateField(auto_now_add=True)
     estado = models.CharField(max_length=20, default='Inscrito')
 
@@ -61,11 +46,70 @@ class EquipoInterfichas(models.Model):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
 
 
-# 4. MODELO DE JUGADORES (NÓMINA)
-# Almacena la lista dinámica de aprendices por equipo
+# 4. MODELO DE JUGADORES
 class JugadorEquipo(models.Model):
     nombre_completo = models.CharField(max_length=150)
     equipo = models.ForeignKey(EquipoInterfichas, on_delete=models.CASCADE, related_name='jugadores')
 
     def __str__(self):
         return self.nombre_completo
+
+
+# =====================================================
+# 5. MODELO DE GRUPOS (Fase de grupos: A, B, C, D)
+# =====================================================
+class GrupoInterfichas(models.Model):
+    torneo = models.ForeignKey(TorneoInterfichas, on_delete=models.CASCADE, related_name='grupos')
+    nombre_grupo = models.CharField(max_length=10)  # "A", "B", "C", "D"
+    equipos = models.ManyToManyField(EquipoInterfichas, related_name='grupos')
+
+    def __str__(self):
+        return f"Grupo {self.nombre_grupo} - {self.torneo.nombre_torneo}"
+
+
+# =====================================================
+# 6. MODELO DE PARTIDOS
+# =====================================================
+FASE_CHOICES = [
+    ('grupo', 'Fase de Grupos'),
+    ('cuartos', 'Cuartos de Final'),
+    ('semifinal', 'Semifinal'),
+    ('final', 'Final'),
+]
+
+class PartidoInterfichas(models.Model):
+    torneo = models.ForeignKey(TorneoInterfichas, on_delete=models.CASCADE, related_name='partidos')
+    grupo = models.ForeignKey(GrupoInterfichas, on_delete=models.SET_NULL, null=True, blank=True, related_name='partidos')
+    fase = models.CharField(max_length=20, choices=FASE_CHOICES, default='grupo')
+
+    equipo_local = models.ForeignKey(EquipoInterfichas, on_delete=models.CASCADE, related_name='partidos_local')
+    equipo_visitante = models.ForeignKey(EquipoInterfichas, on_delete=models.CASCADE, related_name='partidos_visitante')
+
+    fecha_partido = models.DateField(null=True, blank=True)
+    hora_partido = models.TimeField(null=True, blank=True)
+
+    goles_local = models.IntegerField(null=True, blank=True)
+    goles_visitante = models.IntegerField(null=True, blank=True)
+    jugado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.equipo_local} vs {self.equipo_visitante} ({self.fase})"
+
+    def puntos_local(self):
+        if not self.jugado:
+            return 0
+        if self.goles_local > self.goles_visitante:
+            return 3
+        elif self.goles_local == self.goles_visitante:
+            return 1
+        return 0
+
+    def puntos_visitante(self):
+        if not self.jugado:
+            return 0
+        if self.goles_visitante > self.goles_local:
+            return 3
+        elif self.goles_local == self.goles_visitante:
+            return 1
+        return 0
+    

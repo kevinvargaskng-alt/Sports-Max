@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
     /* =========================================================
-       AJUSTES RESPONSIVE (TABLA A TARJETAS)
+       AJUSTES RESPONSIVE (TABLA A TARJETAS) Y LIMPIEZA
        ========================================================= */
     @media (max-width: 768px) {
         /* Ocultamos cabeceras */
@@ -30,8 +30,9 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
 
-        /* ARREGLO FINAL: Ocultamos la fila de expansión vieja que causaba la mancha gris */
-        tr.expansion-row {
+        /* ARREGLO EXTREMO: Ocultar cualquier fila inyectada por JS o HTML */
+        tr.expansion-row, 
+        tr.fila-detalle {
             display: none !important;
         }
 
@@ -40,7 +41,7 @@
             padding: 12px 25px !important;
             border: none !important;
             position: relative;
-            padding-top: 38px !important; /* Espacio para el título azul */
+            padding-top: 38px !important;
         }
 
         /* Títulos de los datos en azul */
@@ -81,8 +82,12 @@
             border: 2px solid #30363d;
         }
 
-        /* Ocultar botón Detalle (+) en móvil para limpiar la vista */
-        td[data-label="Detalle"] { display: none !important; }
+        /* BLOQUEO DEL BOTÓN "+": Desaparece por completo en celular */
+        td[data-label="Detalle"], 
+        .btn-expand { 
+            display: none !important; 
+            pointer-events: none !important;
+        }
 
         .btn-group-mobile {
             display: flex;
@@ -113,7 +118,7 @@
                 <div class="sport-card text-center p-3">
                     <i class="fas fa-plus-circle fa-2x mb-3 text-warning"></i>
                     <h6 class="fw-bold text-white small">NUEVO ELEMENTO</h6>
-                    <button class="btn btn-warning btn-sm mt-2 w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalElemento">
+                    <button class="btn btn-warning btn-sm mt-2 w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalElemento" onclick="document.getElementById('formElemento').reset(); document.getElementById('inputAccion').value='crear_elemento'; document.getElementById('modalTitle').innerText='Nuevo Elemento'; document.getElementById('previewImagen').style.display='none';">
                         <i class="fas fa-plus me-1"></i>AGREGAR
                     </button>
                 </div>
@@ -133,7 +138,7 @@
                 <div class="sport-card text-center p-3">
                     <i class="fas fa-undo fa-2x mb-3 text-success"></i>
                     <h6 class="fw-bold text-white small">DEVOLUCIONES</h6>
-                    <button class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold">
+                    <button class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold" onclick="mostrarSeccion('devoluciones')">
                         <i class="fas fa-eye me-1"></i>VER
                     </button>
                 </div>
@@ -143,7 +148,7 @@
                 <div class="sport-card text-center p-3">
                     <i class="fas fa-exclamation-triangle fa-2x mb-3 text-danger"></i>
                     <h6 class="fw-bold text-white small">SANCIONES</h6>
-                    <button class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold">
+                    <button class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold" onclick="mostrarSeccion('sanciones')">
                         <i class="fas fa-eye me-1"></i>VER
                     </button>
                 </div>
@@ -169,7 +174,16 @@
                     </thead>
                     <tbody>
                         {% for e in elementos %}
-                        <tr class="main-row" data-id="{{ e.codigo_elemento }}">
+                        <tr class="main-row" 
+                            data-id="{{ e.codigo_elemento }}"
+                            data-tipo="{{ e.tipo_maquina }}"
+                            data-cantidad="{{ e.cantidad_total }}"
+                            data-estado="{{ e.estado_general }}"
+                            data-docente="{{ e.docente_responsable }}"
+                            data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
+                            data-descripcion="{{ e.descripcion }}"
+                            {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}>
+                            
                             <td data-label="Detalle">
                                 <button class="btn btn-expand text-info"><i class="fas fa-plus"></i></button>
                             </td>
@@ -197,10 +211,11 @@
 
                             <td data-label="Acciones" class="text-center">
                                 <div class="btn-group-mobile">
-                                    <button class="btn btn-info btn-sm text-dark fw-bold">
+                                    <button type="button" class="btn btn-info btn-sm text-dark fw-bold" onclick="prestamoRapido('{{ e.codigo_elemento }}')" title="Solicitar Préstamo">
                                         <i class="fas fa-hand-pointer"></i>
                                     </button>
-                                    <button class="btn btn-warning btn-sm">
+                                    
+                                    <button type="button" class="btn btn-warning btn-sm btn-editar-elemento" title="Editar Elemento">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
@@ -214,6 +229,8 @@
                                 </div>
                             </td>
                         </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center py-4 text-white-50">No hay elementos registrados en el inventario.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -258,33 +275,36 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">Elemento Deportivo</h5>
+                <h5 class="modal-title fw-bold" id="modalTitle">Elemento Deportivo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-start">
-                <form method="POST" enctype="multipart/form-data">
+                <form id="formElemento" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="crear_elemento">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">Imagen</label>
-                        <input type="file" name="imagen" class="form-control custom-input" accept="image/*">
+                    <input type="hidden" name="accion" id="inputAccion" value="crear_elemento">
+                    <input type="hidden" name="codigo_elemento" id="inputCodigo">
+                    
+                    <div class="mb-3 text-center">
+                        <img id="previewImagen" src="" style="display:none; width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin: 0 auto 10px; border: 2px solid var(--accent-blue);">
+                        <label class="form-label fw-bold small d-block">Imagen (Opcional)</label>
+                        <input type="file" id="inputImagen" name="imagen" class="form-control custom-input" accept="image/*">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Nombre / Tipo</label>
-                        <input type="text" name="tipo_maquina" class="form-control custom-input" required>
+                        <input type="text" id="inputTipoMaquina" name="tipo_maquina" class="form-control custom-input" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Descripción</label>
-                        <textarea name="descripcion" class="form-control custom-input" rows="3"></textarea>
+                        <textarea id="inputDescripcion" name="descripcion" class="form-control custom-input" rows="3"></textarea>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold small">Cantidad</label>
-                            <input type="number" name="cantidad_total" class="form-control custom-input" required>
+                            <input type="number" id="inputCantidadTotal" name="cantidad_total" class="form-control custom-input" required min="0">
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold small">Estado</label>
-                            <select name="estado_general" class="form-select custom-input">
+                            <select id="inputEstadoGeneral" name="estado_general" class="form-select custom-input">
                                 <option value="Bueno">Bueno</option>
                                 <option value="Regular">Regular</option>
                                 <option value="Malo">Malo</option>
@@ -293,13 +313,13 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Responsable</label>
-                        <input type="text" name="docente_responsable" class="form-control custom-input" required>
+                        <input type="text" id="inputDocenteResponsable" name="docente_responsable" class="form-control custom-input" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Fecha</label>
-                        <input type="date" name="fecha_adquisicion" class="form-control custom-input" required>
+                        <label class="form-label fw-bold small">Fecha Adquisición</label>
+                        <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion" class="form-control custom-input" required>
                     </div>
-                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2">GUARDAR</button>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 mt-3 shadow-lg">GUARDAR ELEMENTO</button>
                 </form>
             </div>
         </div>
@@ -310,11 +330,10 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-info"><i class="fas fa-file-signature me-2"></i>Solicitud</h5>
+                <h5 class="modal-title fw-bold text-info"><i class="fas fa-file-signature me-2"></i>Solicitud de Préstamo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-start">
-                <!-- Información del Solicitante -->
                 <div class="mb-4 p-3 rounded" style="background: rgba(88, 166, 255, 0.05); border: 1px solid rgba(88, 166, 255, 0.2);">
                     <h6 class="text-info fw-bold small text-uppercase mb-2"><i class="fas fa-user me-2"></i>Datos del Solicitante</h6>
                     <div class="row g-2 small text-white">
@@ -337,15 +356,29 @@
                     <input type="hidden" name="accion" value="crear_prestamo">
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Seleccionar Implemento</label>
-                        <select name="elemento" class="form-select custom-input" required>
-                            {% for e in elementos %}<option value="{{ e.codigo_elemento }}">{{ e.tipo_maquina }}</option>{% endfor %}
+                        <select name="elemento" id="selectElemento" class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Elige un elemento --</option>
+                            {% for e in elementos %}
+                                <option value="{{ e.codigo_elemento }}">{{ e.tipo_maquina }} (Disp: {{ e.cantidad_total }})</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="row">
-                        <div class="col-6 mb-3"><label class="form-label fw-bold small">Cantidad</label><input type="number" name="cantidad_prestada" class="form-control custom-input" min="1" value="1" required></div>
-                        <div class="col-6 mb-3"><label class="form-label fw-bold small">Días</label><input type="number" name="dias_prestamo" class="form-control custom-input" min="1" max="15" required></div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Cantidad</label>
+                            <input type="number" name="cantidad_prestada" class="form-control custom-input" min="1" value="1" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Días a prestar</label>
+                            <input type="number" name="dias_prestamo" id="inputDias" class="form-control custom-input" min="1" max="15" required>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark">CONFIRMAR</button>
+                    
+                    <div id="infoFecha" class="alert alert-info small py-2 mb-4 text-center border-0" style="display: none; background: rgba(0, 210, 255, 0.1);">
+                        <i class="fas fa-calendar-alt me-2 text-info"></i>Fecha de devolución: <strong id="spanFecha"></strong>
+                    </div>
+
+                    <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg">CONFIRMAR SOLICITUD</button>
                 </form>
             </div>
         </div>

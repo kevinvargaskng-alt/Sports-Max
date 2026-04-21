@@ -11,8 +11,8 @@ SECRET_KEY = 'django-insecure--+k6(v(s%fu$4wf6!f_n(=1*5(^txum^g-@4p8sxybqvna6g4x
 # SEGURIDAD: No uses DEBUG = True en producción
 DEBUG = True
 
-# CAMBIO AQUÍ: Se agrega tu IP local y '*' para permitir acceso desde el celular
-ALLOWED_HOSTS = ['192.168.1.9', 'localhost', '127.0.0.1', '*']
+# CAMBIO: Se actualiza a la nueva IP y se mantiene el comodín para mayor flexibilidad
+ALLOWED_HOSTS = ['192.168.3.199', 'localhost', '127.0.0.1', '*']
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
@@ -107,16 +107,13 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Reemplaza con tu correo real y tu contraseña de aplicación de 16 letras
 EMAIL_HOST_USER = 'kevinvargaskng@gmail.com' 
 EMAIL_HOST_PASSWORD = 'pows bgxm pmvc zxvz' 
 
-# Nombre que aparecerá en el remitente del correo
 DEFAULT_FROM_EMAIL = 'Gestión Deportiva <kevinvargaskng@gmail.com>'
 
 # ── SUGERENCIAS DE UX Y SEGURIDAD ────────────────────────
 
-# Mapeo de mensajes de Django a clases de Bootstrap 5
 MESSAGE_TAGS = {
     messages.DEBUG: 'secondary',
     messages.INFO: 'info',
@@ -125,8 +122,5 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-# La sesión expira al cerrar el navegador (Seguridad para equipos compartidos)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# Tiempo de vida de la sesión (2 horas)
 SESSION_COOKIE_AGE = 7200
