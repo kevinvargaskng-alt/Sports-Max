@@ -1,0 +1,50 @@
+<!-- _partido_card.html — Tarjeta de partido para eliminatorias -->
+<div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %} flex-column align-items-start p-3 gap-2">
+
+    <!-- Equipos -->
+    <div class="d-flex w-100 align-items-center gap-2">
+        <div class="equipo-nombre flex-fill text-end">{{ partido.equipo_local.nombre_equipo }}</div>
+        <div class="text-center" style="min-width:90px;">
+            {% if partido.jugado %}
+                <span class="resultado-display">{{ partido.goles_local }} – {{ partido.goles_visitante }}</span>
+            {% else %}
+                <span class="vs-badge">VS</span>
+            {% endif %}
+        </div>
+        <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
+    </div>
+
+    <!-- Fecha + botón -->
+    <div class="d-flex w-100 justify-content-between align-items-center mt-1">
+        <small class="text-white-50">
+            {% if partido.fecha_partido %}
+                <i class="fas fa-calendar me-1"></i>{{ partido.fecha_partido|date:"d/m/Y" }}
+                {% if partido.hora_partido %} · {{ partido.hora_partido|time:"H:i" }}{% endif %}
+            {% else %}
+                <span class="text-white-50 fst-italic">Sin fecha asignada</span>
+            {% endif %}
+        </small>
+        <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
+                onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo }}','{{ partido.equipo_visitante.nombre_equipo }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}')"
+                title="{% if partido.jugado %}Editar resultado{% else %}Registrar resultado{% endif %}">
+            <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %} me-1"></i>
+            {% if partido.jugado %}Editar{% else %}Resultado{% endif %}
+        </button>
+    </div>
+
+    <!-- Ganador badge -->
+    {% if partido.jugado %}
+    <div class="w-100 text-center mt-1">
+        <small class="text-success fw-bold">
+            <i class="fas fa-check-circle me-1"></i>Clasifica:
+            {% if partido.goles_local > partido.goles_visitante %}
+                {{ partido.equipo_local.nombre_equipo }}
+            {% elif partido.goles_visitante > partido.goles_local %}
+                {{ partido.equipo_visitante.nombre_equipo }}
+            {% else %}
+                Definir por penales (sorteo al generar siguiente fase)
+            {% endif %}
+        </small>
+    </div>
+    {% endif %}
+</div>
