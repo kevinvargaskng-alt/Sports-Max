@@ -24,6 +24,9 @@ urlpatterns = [
     # Generar cuartos de final (POST)
     path('gestionar/<int:torneo_id>/generar-cuartos/', views.generar_cuartos, name='generar_cuartos'),
 
-    # Generar semifinal o final (POST) — recibe fase_origen en body
+    # Generar semifinal o final (POST)
     path('gestionar/<int:torneo_id>/siguiente-fase/', views.generar_siguiente_fase, name='generar_siguiente_fase'),
+
+    # Cerrar torneo
+    path('torneo/<int:codigo_torneo>/cerrar/', views.cerrar_torneo, name='cerrar_torneo'),
 ]
