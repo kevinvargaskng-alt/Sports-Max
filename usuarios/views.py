@@ -7,7 +7,6 @@ from django.db import IntegrityError
 from .models import Usuario 
 
 # --- IMPORTACIÓN DESDE TU APP DE INVENTARIO ---
-# Asegúrate de que 'inventario' sea el nombre exacto de la carpeta de esa app
 from inventario.models import Prestamo 
 
 def login_view(request):
@@ -65,23 +64,35 @@ def registro_view(request):
             return JsonResponse({'status': 'error', 'message': 'Este correo ya está en uso'}, status=400)
 
         try:
-            user = Usuario.objects.create_user(
-                username=numero_documento, email=correo, password=contrasena,
-                first_name=nombres, last_name=apellidos
+            # Creamos el usuario en memoria con TODOS los datos de una vez
+            user = Usuario(
+                username=numero_documento,
+                email=correo,
+                first_name=nombres,
+                last_name=apellidos,
+                numero_documento=numero_documento,
+                tipo_documento=tipo_doc,
+                telefono=telefono,
+                ficha=ficha,
+                programa_formacion=programa,
+                rol='aprendiz'
             )
-            user.numero_documento = numero_documento
-            user.tipo_documento   = tipo_doc
-            user.telefono         = telefono
-            user.ficha            = ficha
-            user.programa_formacion = programa
-            user.rol              = 'aprendiz'
+            # Encriptamos la contraseña de forma segura
+            user.set_password(contrasena)
+            
+            # Guardamos todo en la base de datos en un solo paso
             user.save()
 
             login(request, user)
             return JsonResponse({'status': 'success', 'redirect': '/perfil/', 'message': 'Registro exitoso'})
         
-        except IntegrityError:
-            return JsonResponse({'status': 'error', 'message': 'Error de base de datos'}, status=400)
+        except IntegrityError as e:
+            print(f"\n[❌ ERROR DE INTEGRIDAD EN LA BASE DE DATOS] -> {e}\n")
+            return JsonResponse({'status': 'error', 'message': 'Error de base de datos. Revisa la consola.'}, status=400)
+        
+        except Exception as e:
+            print(f"\n[⚠️ ERROR INESPERADO AL REGISTRAR] -> {e}\n")
+            return JsonResponse({'status': 'error', 'message': 'Ocurrió un error inesperado.'}, status=500)
             
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
@@ -110,7 +121,6 @@ def perfil_view(request):
         return redirect('perfil')
 
     # --- CARGA DE DATOS PARA LAS TABLAS DEL PERFIL ---
-    # Traemos solo los préstamos que le pertenecen a este usuario
     prestamos = Prestamo.objects.filter(usuario=usuario).order_by('-fecha_prestamo')
     
     # Aquí puedes agregar más filtros si tienes modelos de Gimnasio o Interfichas:
