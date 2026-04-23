@@ -8,6 +8,7 @@ from usuarios.models import Usuario
 
 @login_required
 def inventario_list(request):
+    estaSancionado= Sancion.objects.filter(usuario=request.user, estado_sancion='Activa').exists()
     elementos = ElementoDeportivo.objects.all()
     # Solo muestra los préstamos del usuario logueado
     prestamos = Prestamo.objects.filter(usuario=request.user).order_by('-fecha_prestamo')
@@ -93,6 +94,7 @@ def inventario_list(request):
         'elementos': elementos,
         'prestamos': prestamos,
         'sanciones': sanciones,
+        'estaSancionado': estaSancionado,
     })
 
 
