@@ -121,4 +121,3 @@ class ResultadoTorneo(models.Model):
 
     def __str__(self):
         return f"Resultado de {self.torneo.nombre_torneo}"
-    

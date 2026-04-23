@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sanciones - Gestión Deportiva{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .badge-status { padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .sancion-card {
+        border: 1px solid #30363d;
+        border-radius: 16px;
+        background: #161b22;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: border-color 0.2s;
+    }
+    .sancion-card:hover { border-color: #58a6ff; }
+    .sancion-card.activa  { border-left: 4px solid #f85149; }
+    .sancion-card.cerrada { border-left: 4px solid #3fb950; opacity: 0.6; }
+
+    @media (max-width: 768px) {
+        thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tr { margin-bottom: 20px; border: 1px solid #30363d; border-radius: 16px;
+             background: #161b22; padding: 12px 0; }
+        td { padding: 10px 20px !important; border: none !important;
+             position: relative; padding-top: 34px !important; }
+        td::before { content: attr(data-label); position: absolute; top: 10px; left: 20px;
+                     font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+                     color: #58a6ff; letter-spacing: 1px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+    <div class="container text-start">
+
+        <header class="modulo-header text-center mb-5">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3 text-danger"></i>
+            <h2 class="fw-bold text-white">Módulo Sanciones</h2>
+            <p class="text-white-50">Registro de sanciones activas e historial</p>
+        </header>
+
+        <!-- Nav rápida -->
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm fw-bold">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Inventario
+            </a>
+            <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm fw-bold">
+                <i class="fas fa-undo me-1"></i>Ir a Devoluciones
+            </a>
+            {% if user.is_staff %}
+            <button class="btn btn-danger btn-sm fw-bold ms-auto"
+                    data-bs-toggle="modal" data-bs-target="#modalCrearSancion">
+                <i class="fas fa-plus me-1"></i>Nueva Sanción
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             RESUMEN ESTADÍSTICAS
+        ══════════════════════════════════════════ -->
+        <div class="row g-3 mb-5">
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <div class="fs-2 fw-bold text-danger">
+                        {{ sanciones|length }}
+                    </div>
+                    <div class="small text-white-50 mt-1">Total</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <div class="fs-2 fw-bold text-warning">
+                        {% with activas=0 %}
+                        {% for s in sanciones %}{% if s.estado_sancion == 'Activa' %}{% with activas=activas|add:1 %}{% endwith %}{% endif %}{% endfor %}
+                        {{ sanciones|dictsort:"estado_sancion"|length }}
+                        {% endwith %}
+                    </div>
+                    <div class="small text-white-50 mt-1">Activas</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <div class="fs-2 fw-bold text-success">
+                        {% for s in sanciones %}{% if s.estado_sancion == 'Cerrada' %}✓{% endif %}{% endfor %}
+                    </div>
+                    <div class="small text-white-50 mt-1">Cerradas</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <div class="fs-2 fw-bold text-info">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="small text-white-50 mt-1">Módulo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             TABLA SANCIONES
+        ══════════════════════════════════════════ -->
+        <section class="sport-card text-start">
+            <h5 class="fw-bold mb-4 text-danger">
+                <i class="fas fa-list me-2"></i>Registro de Sanciones
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Estado</th>
+                            {% if user.is_staff %}<th class="text-center">Acción</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in sanciones %}
+                        <tr>
+                            <td data-label="#" class="fw-bold text-danger">{{ s.codigo_sancion }}</td>
+                            <td data-label="Tipo" class="fw-bold">{{ s.tipo_sancion }}</td>
+                            <td data-label="Descripción" class="text-white-50 small">
+                                {{ s.descripcion_sancion|truncatechars:80 }}
+                            </td>
+                            <td data-label="Inicio">{{ s.fecha_inicio_sancion|date:"d/m/Y" }}</td>
+                            <td data-label="Fin" class="text-warning">{{ s.fecha_fin_sancion|date:"d/m/Y" }}</td>
+                            <td data-label="Estado">
+                                <span class="badge-status {% if s.estado_sancion == 'Activa' %}bg-danger{% else %}bg-success{% endif %}">
+                                    {% if s.estado_sancion == 'Activa' %}
+                                        <i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>
+                                    {% else %}
+                                        <i class="fas fa-check me-1"></i>
+                                    {% endif %}
+                                    {{ s.estado_sancion }}
+                                </span>
+                            </td>
+                            {% if user.is_staff %}
+                            <td data-label="Acción" class="text-center">
+                                {% if s.estado_sancion == 'Activa' %}
+                                <form method="POST" style="display:inline;"
+                                      onsubmit="return confirm('¿Cerrar esta sanción?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="accion"        value="cerrar_sancion">
+                                    <input type="hidden" name="codigo_sancion" value="{{ s.codigo_sancion }}">
+                                    <button type="submit" class="btn btn-outline-success btn-sm fw-bold">
+                                        <i class="fas fa-lock me-1"></i>Cerrar
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-white-50 small">Cerrada</span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% if s.descripcion_sancion and s.descripcion_sancion|length > 80 %}
+                        <tr style="background: #0d1117;">
+                            <td colspan="{% if user.is_staff %}7{% else %}6{% endif %}" class="text-white-50 small py-2 px-4">
+                                <i class="fas fa-comment-dots text-info me-2"></i>{{ s.descripcion_sancion }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if user.is_staff %}7{% else %}6{% endif %}"
+                                class="text-center py-5 text-white-50">
+                                <i class="fas fa-shield-alt fa-2x mb-3 d-block text-success"></i>
+                                No hay sanciones registradas.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL CREAR SANCIÓN (solo staff)
+══════════════════════════════════════════ -->
+{% if user.is_staff %}
+<div class="modal fade" id="modalCrearSancion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-danger">
+                    <i class="fas fa-plus-circle me-2"></i>Nueva Sanción
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-start">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="crear_sancion">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Tipo de Sanción</label>
+                        <input type="text" name="tipo_sancion" class="form-control custom-input"
+                               placeholder="Ej: Pérdida de balón" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Fecha Inicio</label>
+                            <input type="date" name="fecha_inicio_sancion" class="form-control custom-input" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Fecha Fin</label>
+                            <input type="date" name="fecha_fin_sancion" class="form-control custom-input" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Descripción</label>
+                        <textarea name="descripcion_sancion" class="form-control custom-input" rows="4"
+                                  placeholder="Detalla el motivo y las condiciones de la sanción..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2">
+                        <i class="fas fa-save me-2"></i>CREAR SANCIÓN
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
