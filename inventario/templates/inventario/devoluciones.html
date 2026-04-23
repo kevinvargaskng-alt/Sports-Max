@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Devoluciones - Gestión Deportiva{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .badge-status { padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    #panelNovedad { display: none; }
+
+    @media (max-width: 768px) {
+        thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tr { margin-bottom: 20px; border: 1px solid #30363d; border-radius: 16px;
+             background: #161b22; padding: 12px 0; }
+        td { padding: 10px 20px !important; border: none !important;
+             position: relative; padding-top: 34px !important; }
+        td::before { content: attr(data-label); position: absolute; top: 10px; left: 20px;
+                     font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+                     color: #58a6ff; letter-spacing: 1px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+    <div class="container text-start">
+
+        <header class="modulo-header text-center mb-5">
+            <i class="fas fa-undo fa-3x mb-3 text-success"></i>
+            <h2 class="fw-bold text-white">Módulo Devoluciones</h2>
+            <p class="text-white-50">Registra la entrega de tus elementos prestados, <strong>{{ user.get_full_name }}</strong></p>
+        </header>
+
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm fw-bold">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Inventario
+            </a>
+            <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm fw-bold">
+                <i class="fas fa-exclamation-triangle me-1"></i>Ver Sanciones
+            </a>
+        </div>
+
+        {% if prestamos_activos %}
+        <section class="sport-card text-start mb-5">
+            <h5 class="fw-bold mb-4 text-success">
+                <i class="fas fa-hand-holding me-2"></i>Registrar Nueva Devolución
+            </h5>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="registrar_devolucion">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-white-50">Préstamo a Devolver</label>
+                    <select name="prestamo" id="selectPrestamo" class="form-select custom-input" required>
+                        <option value="" disabled selected>-- Selecciona un préstamo activo --</option>
+                        {% for p in prestamos_activos %}
+                        <option value="{{ p.codigo_prestamo }}"
+                                data-cantidad="{{ p.cantidad_prestada }}"
+                                data-elemento="{{ p.elemento.tipo_maquina }}"
+                                data-vence="{{ p.fecha_devolucion|date:'d/m/Y' }}">
+                            #{{ p.codigo_prestamo }} — {{ p.elemento.tipo_maquina }}
+                            ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.fecha_devolucion|date:"d/m/Y" }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="infoPrestamo" class="alert small py-2 mb-3 border-0"
+                     style="display:none; background: rgba(88,166,255,0.08);
+                            border: 1px solid rgba(88,166,255,0.2) !important; border-radius: 10px;">
+                    <i class="fas fa-info-circle text-info me-2"></i>
+                    Elemento: <strong id="infoElemento"></strong> ·
+                    Cant. prestada: <strong id="infoCantidad"></strong> ·
+                    Fecha límite: <strong id="infoVence" class="text-warning"></strong>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-white-50">Cantidad a Devolver</label>
+                        <input type="number" name="cantidad_devuelta" id="inputCantDevuelta"
+                               class="form-control custom-input" min="1" value="1" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-white-50">Estado del Elemento</label>
+                        <select name="estado_elemento_devolucion" class="form-select custom-input" required>
+                            <option value="Bueno">Bueno</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Malo">Malo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="checkNovedad" name="tiene_novedad">
+                    <label class="form-check-label fw-bold text-warning" for="checkNovedad">
+                        <i class="fas fa-exclamation-circle me-1"></i>¿El elemento tiene una novedad?
+                    </label>
+                </div>
+
+                <div id="panelNovedad" class="p-3 mb-3"
+                     style="background: rgba(255,85,85,0.07);
+                            border: 1px solid rgba(255,85,85,0.25); border-radius: 12px;">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-white-50">Tipo de Novedad</label>
+                        <select name="tipo_novedad_devolucion" class="form-select custom-input">
+                            <option value="">Sin novedad</option>
+                            <option value="Daño">Daño</option>
+                            <option value="Pérdida">Pérdida</option>
+                            <option value="Suciedad">Suciedad</option>
+                            <option value="Desgaste">Desgaste</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <small class="text-danger mt-1 d-block">
+                            <i class="fas fa-info-circle me-1"></i>
+                            "Daño" o "Pérdida" generan una sanción automática de 30 días.
+                        </small>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold small text-white-50">Observaciones</label>
+                        <textarea name="observaciones_devolucion" class="form-control custom-input" rows="3"
+                                  placeholder="Describe la novedad encontrada..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 mt-2 shadow-lg">
+                    <i class="fas fa-check-circle me-2"></i>CONFIRMAR DEVOLUCIÓN
+                </button>
+            </form>
+        </section>
+        {% else %}
+        <div class="alert text-center py-5 mb-5"
+             style="background: rgba(46,160,67,0.08); border: 1px solid rgba(46,160,67,0.2); border-radius: 16px;">
+            <i class="fas fa-check-circle fa-3x text-success mb-3 d-block"></i>
+            <h5 class="text-white fw-bold">¡Sin préstamos activos!</h5>
+            <p class="text-white-50 mb-0">No tienes elementos pendientes de devolución.</p>
+        </div>
+        {% endif %}
+
+        <section class="sport-card text-start">
+            <h5 class="fw-bold mb-4 text-info">
+                <i class="fas fa-history me-2"></i>Historial de Devoluciones
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Préstamo</th>
+                            <th>Elemento</th>
+                            <th>Cant.</th>
+                            <th>Fecha</th>
+                            <th>Estado Elem.</th>
+                            <th>Novedad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in devoluciones %}
+                        <tr>
+                            <td data-label="#">{{ d.codigo_devolucion }}</td>
+                            <td data-label="Préstamo" class="text-info fw-bold">#{{ d.prestamo.codigo_prestamo }}</td>
+                            <td data-label="Elemento">{{ d.prestamo.elemento.tipo_maquina }}</td>
+                            <td data-label="Cant.">{{ d.cantidad_devuelta }}</td>
+                            <td data-label="Fecha" class="text-warning">{{ d.fecha_devolucion|date:"d/m/Y" }}</td>
+                            <td data-label="Estado Elem.">
+                                <span class="badge-status
+                                    {% if d.estado_elemento_devolucion == 'Bueno' %}bg-success
+                                    {% elif d.estado_elemento_devolucion == 'Regular' %}bg-warning
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ d.estado_elemento_devolucion }}
+                                </span>
+                            </td>
+                            <td data-label="Novedad">
+                                {% if d.tiene_novedad %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-exclamation me-1"></i>{{ d.tipo_novedad_devolucion|default:"Sí" }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-white-50 small">Sin novedad</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-white-50">
+                                No hay devoluciones registradas aún.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('selectPrestamo').addEventListener('change', function () {
+        const opt = this.options[this.selectedIndex];
+        document.getElementById('infoElemento').textContent  = opt.dataset.elemento;
+        document.getElementById('infoCantidad').textContent  = opt.dataset.cantidad;
+        document.getElementById('infoVence').textContent     = opt.dataset.vence;
+        document.getElementById('inputCantDevuelta').max     = opt.dataset.cantidad;
+        document.getElementById('inputCantDevuelta').value   = opt.dataset.cantidad;
+        document.getElementById('infoPrestamo').style.display = 'block';
+    });
+
+    document.getElementById('checkNovedad').addEventListener('change', function () {
+        document.getElementById('panelNovedad').style.display = this.checked ? 'block' : 'none';
+    });
+</script>
+{% endblock %}
