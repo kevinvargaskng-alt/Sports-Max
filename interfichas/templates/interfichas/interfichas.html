@@ -6,119 +6,12 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
-    .text-cap  { text-transform: capitalize !important; }
-    .btn-cap   { text-transform: capitalize !important; font-weight: 600; }
-    .alert-floating {
-        position: fixed; top: 20px; right: 20px; z-index: 1060;
-        min-width: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
+    .text-cap { text-transform: capitalize !important; }
+    .btn-cap { text-transform: capitalize !important; font-weight: 600; }
+    .alert-floating { position: fixed; top: 20px; right: 20px; z-index: 1060; min-width: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     .table-dark thead th { color: #00d2ff; font-size: 0.85rem; letter-spacing: 0.5px; }
-    .text-legible   { color: rgba(255,255,255,0.85) !important; }
-    .subtexto-visible { color: rgba(255,255,255,0.6) !important; }
-
-    /* ── Buscador ── */
-    .search-wrapper {
-        position: relative;
-        margin-bottom: 1rem;
-    }
-    .search-wrapper .fa-search {
-        position: absolute; left: 14px; top: 50%;
-        transform: translateY(-50%);
-        color: rgba(255,255,255,0.35);
-        pointer-events: none;
-        font-size: 0.85rem;
-    }
-    .search-input {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid #30363d !important;
-        border-radius: 10px !important;
-        color: #e6edf3 !important;
-        padding-left: 36px !important;
-        font-size: 0.875rem;
-        height: 40px;
-        width: 100%;
-        transition: border-color .2s;
-    }
-    .search-input:focus {
-        outline: none;
-        border-color: #58a6ff !important;
-        background: rgba(88,166,255,0.06) !important;
-    }
-    .search-input::placeholder { color: rgba(255,255,255,0.3); }
-
-    /* Chips de disciplina */
-    .chip-disciplina {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        cursor: pointer;
-        border: 1px solid #30363d;
-        background: transparent;
-        color: #8b949e;
-        transition: all .15s;
-        white-space: nowrap;
-    }
-    .chip-disciplina.active, .chip-disciplina:hover {
-        background: #58a6ff;
-        border-color: #58a6ff;
-        color: #0d1117;
-    }
-
-    /* Fila oculta por filtro */
-    tr.fila-oculta { display: none !important; }
-
-    /* Indicador sin resultados */
-    .sin-resultados {
-        display: none;
-        padding: 2rem;
-        text-align: center;
-        color: rgba(255,255,255,0.35);
-        font-size: 0.875rem;
-    }
-
-    /* ── Grupos por torneo ── */
-    .torneo-grupo { transition: opacity .2s; }
-    .torneo-grupo.grupo-oculto { display: none !important; }
-
-    .torneo-grupo-header {
-        background: rgba(255,255,255,0.04);
-        border-radius: 14px 14px 0 0;
-        border: 1px solid #30363d;
-        border-bottom: none;
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .torneo-grupo .main-card {
-        border-radius: 0 0 14px 14px !important;
-        border-top: 1px solid rgba(0,210,255,0.15) !important;
-    }
-
-    /* Botón Ver más */
-    .btn-ver-mas {
-        background: transparent;
-        border: none;
-        font-size: 0.82rem;
-        color: #58a6ff;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        padding: 6px 16px;
-        transition: color .2s;
-        cursor: pointer;
-    }
-    .btn-ver-mas:hover { color: #79bfff; }
-
-    .ver-mas-wrapper {
-        border-top: 1px solid #30363d;
-        text-align: center;
-        padding: 6px 0;
-    }
+    .text-legible { color: rgba(255, 255, 255, 0.85) !important; }
+    .subtexto-visible { color: rgba(255, 255, 255, 0.6) !important; }
 
     @media (max-width: 768px) {
         .fs-responsive-h2 { font-size: 1.5rem !important; }
@@ -150,77 +43,47 @@
             text-transform: uppercase;
             color: #58a6ff; letter-spacing: 1px;
         }
+        .custom-modal { margin: 10px; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-
-    <!-- ══════════════════════════════════════════
-         CABECERA
-    ══════════════════════════════════════════ -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
         <div>
             <h2 class="text-white fw-bold mb-0 text-cap fs-responsive-h2">Gestión de torneos inter-fichas</h2>
             <p class="text-white-50 mb-0 text-cap small">Administración central de eventos deportivos y nóminas de aprendices.</p>
         </div>
         <div class="d-flex flex-column d-md-flex flex-md-row gap-2 w-100 w-md-auto">
-            <button class="btn btn-outline-warning btn-cap btn-responsive"
-                    data-bs-toggle="modal" data-bs-target="#modalNuevaDisciplina">
+            <button class="btn btn-outline-warning btn-cap btn-responsive" data-bs-toggle="modal" data-bs-target="#modalNuevaDisciplina">
                 <i class="fas fa-running me-2"></i>Nueva Disciplina
             </button>
             {% if torneos %}
-            <button class="btn btn-outline-info btn-cap btn-responsive"
-                    data-bs-toggle="modal" data-bs-target="#modalEquipo">
-                <i class="fas fa-users me-2"></i>Inscribir equipo
-            </button>
+                <button class="btn btn-outline-info btn-cap btn-responsive" data-bs-toggle="modal" data-bs-target="#modalEquipo">
+                    <i class="fas fa-users me-2"></i>Inscribir equipo
+                </button>
             {% endif %}
-            <button class="btn btn-primary btn-cap px-4 btn-responsive shadow"
-                    data-bs-toggle="modal" data-bs-target="#modalTorneo">
+            <button class="btn btn-primary btn-cap px-4 btn-responsive shadow" data-bs-toggle="modal" data-bs-target="#modalTorneo">
                 <i class="fas fa-plus me-2"></i>Nuevo torneo
             </button>
         </div>
     </div>
 
-    <!-- Mensajes -->
     {% if messages %}
         {% for m in messages %}
-        <div class="alert {% if m.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-floating alert-dismissible fade show">
-            <i class="fas {% if m.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
-            <span class="text-cap">{{ m }}</span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-        </div>
+            <div class="alert {% if m.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-floating alert-dismissible fade show">
+                <i class="fas {% if m.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                <span class="text-cap">{{ m }}</span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
-    <!-- ══════════════════════════════════════════
-         SECCIÓN TORNEOS
-    ══════════════════════════════════════════ -->
     <section class="mb-5 text-start">
-        <h4 class="text-white fw-bold text-cap mb-3">
-            <i class="fas fa-trophy text-warning me-2"></i>Torneos activos
-        </h4>
-
-        <!-- Filtros torneos -->
-        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-            <div class="search-wrapper flex-grow-1" style="max-width: 280px;">
-                <i class="fas fa-search"></i>
-                <input type="text" id="buscarTorneo" class="search-input"
-                       placeholder="Buscar torneo por nombre…">
-            </div>
-            <div class="d-flex flex-wrap gap-1" id="chipsDisc">
-                <button class="chip-disciplina active" data-disc="todos">Todos</button>
-                {% for d in disciplinas %}
-                <button class="chip-disciplina" data-disc="{{ d.nombre_disciplina|lower }}">
-                    {{ d.nombre_disciplina|lower }}
-                </button>
-                {% endfor %}
-            </div>
-        </div>
-
+        <h4 class="text-white fw-bold text-cap mb-3"><i class="fas fa-trophy text-warning me-2"></i>Torneos activos</h4>
         <div class="main-card shadow-lg table-responsive">
-            <table class="table table-dark table-hover mb-0 align-middle" id="tablaTorneos">
+            <table class="table table-dark table-hover mb-0 align-middle">
                 <thead>
                     <tr>
                         <th class="ps-4">NOMBRE DEL TORNEO</th>
@@ -231,14 +94,11 @@
                         <th class="text-center">GESTIÓN</th>
                     </tr>
                 </thead>
-                <tbody id="bodyTorneos">
+                <tbody>
                     {% for t in torneos %}
-                    <tr data-nombre="{{ t.nombre_torneo|lower }}"
-                        data-disc="{{ t.disciplina.nombre_disciplina|lower }}">
+                    <tr>
                         <td data-label="Nombre del Torneo" class="ps-4 fw-bold text-info text-cap">{{ t.nombre_torneo|lower }}</td>
-                        <td data-label="Disciplina">
-                            <span class="badge bg-secondary px-3 py-2 text-cap">{{ t.disciplina.nombre_disciplina|lower }}</span>
-                        </td>
+                        <td data-label="Disciplina"><span class="badge bg-secondary px-3 py-2 text-cap">{{ t.disciplina.nombre_disciplina|lower }}</span></td>
                         <td data-label="Lugar" class="text-legible text-cap">{{ t.lugar|lower }}</td>
                         <td data-label="Fecha" class="text-warning fw-bold">{{ t.fecha_torneo_fichas|date:"d/m/Y" }}</td>
                         <td data-label="Equipos">
@@ -249,166 +109,81 @@
                         <td data-label="Gestión" class="text-center">
                             <div class="btn-group">
                                 <a href="{% url 'gestionar_torneo' torneo_id=t.codigo_torneo_fichas %}"
-                                   class="btn btn-sm btn-primary border-0 fw-bold" title="Gestionar">
+                                   class="btn btn-sm btn-primary border-0 fw-bold"
+                                   title="Gestionar torneo (grupos, partidos, resultados)">
                                     <i class="fas fa-sitemap me-1"></i>Gestionar
                                 </a>
-                                <button class="btn btn-sm btn-outline-info border-0"
-                                        onclick="abrirEditarTorneo('{{ t.codigo_torneo_fichas }}')"
-                                        title="Editar">
+                                <button class="btn btn-sm btn-outline-info border-0" onclick="abrirEditarTorneo('{{ t.codigo_torneo_fichas }}')" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
+                                
                                 {% if t.estado != 'cerrado' %}
                                 <button class="btn btn-sm btn-outline-success border-0"
-                                        onclick="abrirCierreTorneo('{{ t.codigo_torneo_fichas }}', '{{ t.nombre_torneo|lower }}')"
-                                        title="Cerrar torneo">
+                                    onclick="abrirCierreTorneo('{{ t.codigo_torneo_fichas }}', '{{ t.nombre_torneo|lower }}')"
+                                    title="Cerrar torneo">
                                     <i class="fas fa-flag-checkered"></i>
                                 </button>
                                 {% else %}
-                                <span class="badge bg-secondary ms-1 align-self-center">Cerrado</span>
+                                <span class="badge bg-secondary ms-1">Cerrado</span>
                                 {% endif %}
-                                <a href="{% url 'eliminar_torneo' t.codigo_torneo_fichas %}"
-                                   class="btn btn-sm btn-outline-danger border-0"
-                                   onclick="return confirm('¿Eliminar torneo?')" title="Eliminar">
+
+                                <a href="{% url 'eliminar_torneo' t.codigo_torneo_fichas %}" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('¿Eliminar torneo?')" title="Eliminar">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
-                    <tr id="emptyTorneos">
-                        <td colspan="6" class="text-center py-5 text-white-50 text-cap">No hay torneos creados.</td>
-                    </tr>
+                    <tr><td colspan="6" class="text-center py-5 text-white-50 text-cap">No hay torneos creados.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <p class="sin-resultados" id="sinTorneos">
-                <i class="fas fa-search me-2"></i>Sin resultados para ese filtro.
-            </p>
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════
-         SECCIÓN EQUIPOS — agrupados por torneo
-    ══════════════════════════════════════════ -->
-    <section class="text-start mt-2">
-        <h4 class="text-white fw-bold text-cap mb-3">
-            <i class="fas fa-users-cog text-info me-2"></i>Equipos y nóminas
-        </h4>
-
-        <!-- Filtros globales de equipos -->
-        <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-            <div class="search-wrapper" style="max-width: 220px;">
-                <i class="fas fa-search"></i>
-                <input type="text" id="buscarEquipo" class="search-input" placeholder="Nombre de equipo…">
-            </div>
-            <div class="search-wrapper" style="max-width: 180px;">
-                <i class="fas fa-search"></i>
-                <input type="text" id="buscarFicha" class="search-input" placeholder="Nº ficha…">
-            </div>
-            <div class="search-wrapper" style="max-width: 220px;">
-                <i class="fas fa-search"></i>
-                <input type="text" id="buscarDiscEquipo" class="search-input" placeholder="Disciplina…">
-            </div>
+    <section class="text-start">
+        <h4 class="text-white fw-bold text-cap mb-3"><i class="fas fa-users-cog text-info me-2"></i>Equipos y nóminas</h4>
+        <div class="main-card shadow-lg table-responsive">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-4">TORNEO DESTINO</th>
+                        <th>EQUIPO / CAPITÁN</th>
+                        <th>FICHA / PROGRAMA</th>
+                        <th class="text-center">ESTADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in equipos %}
+                    <tr>
+                        <td data-label="Torneo Destino" class="ps-4">
+                            <div class="text-info fw-bold text-cap">{{ e.torneo.nombre_torneo|lower }}</div>
+                            <small class="subtexto-visible text-cap">{{ e.torneo.disciplina.nombre_disciplina|lower }}</small>
+                        </td>
+                        <td data-label="Equipo / Capitán">
+                            <div class="text-white fw-bold text-cap">{{ e.nombre_equipo|lower }}</div>
+                            <small class="text-warning text-cap">{{ e.capitan|lower }}</small>
+                        </td>
+                        <td data-label="Ficha / Programa">
+                            <span class="badge bg-dark border border-info text-info">{{ e.ficha }}</span>
+                            <div class="smaller text-legible mt-1 text-cap" style="font-size: 0.75rem;">{{ e.programa|lower }}</div>
+                        </td>
+                        <td data-label="Estado" class="text-center"><span class="badge bg-success opacity-75">Inscrito</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center py-5 text-white-50 text-cap">No hay equipos inscritos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <!-- Grupos por torneo -->
-        <div id="gruposTorneos">
-            {% regroup equipos by torneo as equipos_por_torneo %}
-            {% for grupo in equipos_por_torneo %}
-            <div class="torneo-grupo mb-4"
-                 data-torneo-nombre="{{ grupo.grouper.nombre_torneo|lower }}"
-                 data-torneo-disc="{{ grupo.grouper.disciplina.nombre_disciplina|lower }}">
-
-                <!-- Cabecera del grupo -->
-                <div class="torneo-grupo-header">
-                    <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <span class="text-warning fw-bold text-cap">
-                            <i class="fas fa-trophy me-2" style="font-size:0.85rem;"></i>
-                            {{ grupo.grouper.nombre_torneo|lower }}
-                        </span>
-                        <span class="badge bg-secondary px-2 py-1 text-cap" style="font-size:0.7rem;">
-                            {{ grupo.grouper.disciplina.nombre_disciplina|lower }}
-                        </span>
-                    </div>
-                    <span class="badge border border-info text-info bg-transparent" style="font-size:0.75rem;">
-                        <i class="fas fa-users me-1"></i>
-                        {{ grupo.list|length }} equipo{% if grupo.list|length != 1 %}s{% endif %}
-                    </span>
-                </div>
-
-                <!-- Tabla de equipos del grupo -->
-                <div class="main-card shadow-lg table-responsive" style="border-radius:0 0 14px 14px; border-top:1px solid rgba(0,210,255,0.12);">
-                    <table class="table table-dark table-hover mb-0 align-middle">
-                        <thead>
-                            <tr>
-                                <th class="ps-4">EQUIPO / CAPITÁN</th>
-                                <th>FICHA / PROGRAMA</th>
-                                <th class="text-center">ESTADO</th>
-                            </tr>
-                        </thead>
-                        <tbody class="cuerpo-equipos">
-                            {% for e in grupo.list %}
-                            <tr class="fila-equipo"
-                                data-equipo="{{ e.nombre_equipo|lower }}"
-                                data-ficha="{{ e.ficha }}"
-                                data-disc="{{ e.torneo.disciplina.nombre_disciplina|lower }}"
-                                data-extra="{% if forloop.counter > 3 %}1{% else %}0{% endif %}"
-                                {% if forloop.counter > 3 %}style="display:none;"{% endif %}>
-                                <td data-label="Equipo / Capitán" class="ps-4">
-                                    <div class="text-white fw-bold text-cap">{{ e.nombre_equipo|lower }}</div>
-                                    <small class="text-warning text-cap">{{ e.capitan|lower }}</small>
-                                </td>
-                                <td data-label="Ficha / Programa">
-                                    <span class="badge bg-dark border border-info text-info">{{ e.ficha }}</span>
-                                    <div class="text-legible mt-1 text-cap" style="font-size:0.75rem;">{{ e.programa|lower }}</div>
-                                </td>
-                                <td data-label="Estado" class="text-center">
-                                    <span class="badge bg-success opacity-75">Inscrito</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                    <!-- Botón Ver más / Ver menos solo si hay más de 3 -->
-                    {% if grupo.list|length > 3 %}
-                    <div class="ver-mas-wrapper">
-                        <button class="btn-ver-mas" onclick="toggleEquipos(this)" data-expandido="0">
-                            <i class="fas fa-chevron-down me-1"></i>
-                            Ver {{ grupo.list|length|add:"-3" }} más
-                        </button>
-                    </div>
-                    {% endif %}
-                </div>
-
-            </div>
-            {% empty %}
-            <div class="main-card shadow-lg text-center py-5">
-                <p class="text-white-50 text-cap mb-0">
-                    <i class="fas fa-users me-2"></i>No hay equipos inscritos.
-                </p>
-            </div>
-            {% endfor %}
-        </div>
-
-        <p class="sin-resultados" id="sinEquipos">
-            <i class="fas fa-search me-2"></i>Sin resultados para ese filtro.
-        </p>
     </section>
-
 </div>
 
-
-<!-- ══════════════════════════════════════════
-     MODAL: NUEVA DISCIPLINA
-══════════════════════════════════════════ -->
 <div class="modal fade" id="modalNuevaDisciplina" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-cap">
-                    <i class="fas fa-running text-warning me-2"></i>Registrar Disciplina
-                </h5>
+                <h5 class="modal-title fw-bold text-cap"><i class="fas fa-running text-warning me-2"></i>Registrar Disciplina</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST">
@@ -417,188 +192,116 @@
                 <div class="modal-body p-4 text-start">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-cap">Nombre del Deporte / Disciplina</label>
-                        <input type="text" name="nombre_disciplina" class="custom-input form-control"
-                               placeholder="Ej: Karate, Natación, Boxeo…" required>
+                        <input type="text" name="nombre_disciplina" class="custom-input form-control" placeholder="Ej: Karate, Natación, Boxeo..." required>
                     </div>
-                    <button type="submit" class="btn btn-warning w-100 btn-cap py-2 shadow">
-                        GUARDAR DISCIPLINA
-                    </button>
+                    <button type="submit" class="btn btn-warning w-100 btn-cap py-2 shadow">GUARDAR DISCIPLINA</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════
-     MODAL: NUEVO / EDITAR TORNEO
-══════════════════════════════════════════ -->
 <div class="modal fade" id="modalTorneo" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-cap" id="tituloModalTorneo">
-                    <i class="fas fa-trophy text-warning me-2"></i>Programar Torneo
-                </h5>
+                <h5 class="modal-title fw-bold text-cap"><i class="fas fa-trophy text-warning me-2"></i>Programar Torneo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" id="formTorneo">
+            <form method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="accion_tipo" id="accionTorneo" value="crear_torneo">
-                <input type="hidden" name="torneo_id"   id="inputTorneoId" value="">
+                <input type="hidden" name="accion_tipo" value="crear_torneo">
                 <div class="modal-body p-4 text-start">
-
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-cap">Nombre del torneo</label>
-                        <input type="text" name="nombre" id="inputNombreTorneo"
-                               class="custom-input form-control" required
-                               placeholder="Ej: Copa Interfichas 2025">
+                        <input type="text" name="nombre" class="custom-input form-control" required>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-cap">Seleccionar Disciplina</label>
-                        {% if disciplinas %}
-                        <select name="disciplina_id" id="selectDisc" class="form-select custom-input" required>
+                        <select name="disciplina_id" class="form-select custom-input" required>
                             <option value="" selected disabled>-- Elija una disciplina --</option>
                             {% for d in disciplinas %}
-                            <option value="{{ d.id_disciplina }}">{{ d.nombre_disciplina }}</option>
+                                <option value="{{ d.id_disciplina }}">{{ d.nombre_disciplina }}</option>
                             {% endfor %}
                         </select>
-                        {% else %}
-                        <div class="alert alert-warning py-2 small text-cap mb-0">
-                            <i class="fas fa-exclamation-triangle me-1"></i>
-                            No hay disciplinas registradas.
-                            <a href="#" class="text-warning fw-bold"
-                               data-bs-dismiss="modal"
-                               data-bs-toggle="modal"
-                               data-bs-target="#modalNuevaDisciplina">
-                                Crear una ahora
-                            </a>
-                        </div>
-                        {% endif %}
                     </div>
-
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label small fw-bold text-cap">Fecha</label>
-                            <input type="date" name="fecha" id="inputFechaTorneo"
-                                   class="custom-input form-control" required
-                                   min="{{ hoy }}">
+                            <input type="date" name="fecha" class="custom-input form-control" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label small fw-bold text-cap">Lugar</label>
-                            <select name="lugar" id="inputLugarTorneo"
-        class="custom-input form-select" required>
-    <option value="" selected disabled>-- Seleccione el lugar --</option>
-    <option value="Cancha Múltiple">Cancha Múltiple</option>
-    <option value="Gimnasio">Gimnasio</option>
-    <option value="Cancha de Fútbol">Cancha de Fútbol</option>
-</select>
+                            <input type="text" name="lugar" class="custom-input form-control" required>
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-cap">
-                            Observaciones <span class="text-white-50 fw-normal">(opcional)</span>
-                        </label>
-                        <textarea name="observaciones" id="inputObsTorneo"
-                                  class="custom-input form-control" rows="2"
-                                  placeholder="Reglas especiales, categorías, etc."></textarea>
-                    </div>
-
-                    <button type="submit" id="btnSubmitTorneo"
-                            class="btn btn-primary w-100 btn-cap py-2 shadow">
-                        <i class="fas fa-plus me-2"></i>CONFIGURAR EVENTO
-                    </button>
+                    <button type="submit" class="btn btn-primary w-100 btn-cap py-2 shadow">CONFIGURAR EVENTO</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════
-     MODAL: INSCRIBIR EQUIPO
-══════════════════════════════════════════ -->
 <div class="modal fade" id="modalEquipo" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-cap">
-                    <i class="fas fa-users me-2 text-info"></i>Inscripción de equipo
-                </h5>
+                <h5 class="modal-title fw-bold text-cap"><i class="fas fa-users me-2 text-info"></i>Inscripción de equipo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-3 p-md-4 text-start">
                 <form id="formEquipo" method="POST" action="{% url 'interfichas' %}">
                     {% csrf_token %}
                     <input type="hidden" name="accion_tipo" value="inscribir_equipo">
-
                     <div class="mb-4">
                         <label class="form-label small text-info fw-bold text-cap">Torneo de destino</label>
                         <select name="torneo_id" class="form-select custom-input border-info" required>
-                            <option value="" selected disabled>Seleccione el torneo disponible…</option>
+                            <option value="" selected disabled>Seleccione el torneo disponible...</option>
                             {% for t in torneos %}
-                            <option value="{{ t.codigo_torneo_fichas }}">
-                                {{ t.nombre_torneo }} ({{ t.disciplina.nombre_disciplina }})
-                            </option>
+                                <option value="{{ t.codigo_torneo_fichas }}">{{ t.nombre_torneo }} ({{ t.disciplina.nombre_disciplina }})</option>
                             {% endfor %}
                         </select>
                     </div>
-
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label small fw-bold text-cap">Programa de formación</label>
                             <select name="programa" class="form-select custom-input" required>
                                 <option value="" selected disabled>-- Seleccione un programa --</option>
                                 {% for programa in PROGRAMAS_GLOBALES %}
-                                <option value="{{ programa }}">{{ programa }}</option>
+                                    <option value="{{ programa }}">{{ programa }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label small fw-bold text-cap">Nombre del equipo</label>
-                            <input type="text" name="nombre_equipo" class="custom-input form-control"
-                                   placeholder="Ej: Los Galácticos" required>
+                            <input type="text" name="nombre_equipo" class="custom-input form-control" placeholder="Ej: Los Galácticos" required>
                         </div>
                         <div class="col-6 col-md-4">
                             <label class="form-label small fw-bold text-cap">Número de ficha</label>
-                            <input type="number" name="ficha" class="custom-input form-control"
-                                   placeholder="Ej: 2670687" required>
+                            <input type="number" name="ficha" class="custom-input form-control" placeholder="Ej: 2670687" required>
                         </div>
                         <div class="col-6 col-md-4">
                             <label class="form-label small text-warning fw-bold text-cap">Capitán</label>
-                            <input type="text" name="capitan" class="custom-input form-control border-warning"
-                                   placeholder="Nombre completo" required>
+                            <input type="text" name="capitan" class="custom-input form-control border-warning" placeholder="Nombre completo" required>
                         </div>
                     </div>
-
-                    <div class="mt-4 p-3 rounded" style="background:rgba(255,255,255,0.05);">
+                    <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.05);">
                         <label class="form-label fw-bold small text-white-50 text-cap">Nómina de jugadores</label>
                         <div class="input-group mb-3">
-                            <input type="text" id="nuevoJugador" class="custom-input form-control"
-                                   placeholder="Nombre del aprendiz">
-                            <button type="button" class="btn btn-info text-dark fw-bold"
-                                    onclick="agregarJugadorALista()">
+                            <input type="text" id="nuevoJugador" class="custom-input form-control" placeholder="Nombre del aprendiz">
+                            <button type="button" class="btn btn-info text-dark fw-bold" onclick="agregarJugadorALista()">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
                         <ul id="listaJugadoresUI" class="list-group list-group-flush bg-transparent"></ul>
                     </div>
-
-                    <button type="submit" class="btn btn-success w-100 mt-4 fw-bold btn-cap py-2 shadow">
-                        Finalizar inscripción y guardar
-                    </button>
+                    <button type="submit" class="btn btn-success w-100 mt-4 fw-bold btn-cap py-2 shadow">Finalizar inscripción y guardar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════
-     MODAL: CIERRE DE TORNEO
-══════════════════════════════════════════ -->
 <div class="modal fade" id="modalCierreTorneo" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom-modal text-white">
@@ -611,52 +314,52 @@
             <form method="POST" id="formCierreTorneo">
                 {% csrf_token %}
                 <div class="modal-body p-4 text-start">
+
                     <p class="text-white-50 small mb-4 text-cap">
                         Torneo: <span id="nombreTorneoCierre" class="text-info fw-bold"></span>
                     </p>
+
                     <div class="mb-4">
                         <label class="form-label fw-bold text-cap">
                             <i class="fas fa-trophy text-warning me-2"></i>1. Declarar ganador
                         </label>
-                        <select name="ganador_id" id="selectGanadorCierre"
-                                class="form-select custom-input" required>
+                        <select name="ganador_id" id="selectGanadorCierre" class="form-select custom-input" required>
                             <option value="" selected disabled>-- Seleccione el equipo ganador --</option>
                         </select>
                     </div>
+
                     <div class="mb-4">
                         <label class="form-label fw-bold text-cap">
                             <i class="fas fa-certificate text-info me-2"></i>2. Generar diplomas
                         </label>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="checkDiplomas"
-                                   name="generar_diplomas" value="1" checked>
+                            <input class="form-check-input" type="checkbox" id="checkDiplomas" name="generar_diplomas" value="1" checked>
                             <label class="form-check-label text-white-50 small text-cap" for="checkDiplomas">
                                 Generar diplomas para el equipo ganador al cerrar
                             </label>
                         </div>
                     </div>
+
                     <div class="mb-4">
                         <label class="form-label fw-bold text-cap">
                             <i class="fas fa-archive text-secondary me-2"></i>3. Archivar resultados
                         </label>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="checkArchivar"
-                                   name="archivar" value="1" checked>
+                            <input class="form-check-input" type="checkbox" id="checkArchivar" name="archivar" value="1" checked>
                             <label class="form-check-label text-white-50 small text-cap" for="checkArchivar">
                                 Archivar torneo y bloquear ediciones futuras
                             </label>
                         </div>
                     </div>
+
                     <div class="alert alert-warning py-2 small text-cap">
                         <i class="fas fa-exclamation-triangle me-1"></i>
                         Esta acción es permanente. El torneo quedará cerrado.
                     </div>
                 </div>
                 <div class="modal-footer border-0 gap-2">
-                    <button type="button" class="btn btn-outline-secondary btn-cap"
-                            data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="accion" value="archivar"
-                            class="btn btn-success btn-cap px-4 shadow">
+                    <button type="button" class="btn btn-outline-secondary btn-cap" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="accion" value="archivar" class="btn btn-success btn-cap px-4 shadow">
                         <i class="fas fa-lock me-2"></i>Cerrar torneo
                     </button>
                 </div>
@@ -670,9 +373,7 @@
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════
-   DATOS de equipos por torneo (para modal cierre)
-═══════════════════════════════════════════════════════════ */
+// Datos de equipos por torneo pasados desde Django
 const equiposPorTorneo = {
     {% for t in torneos %}
     "{{ t.codigo_torneo_fichas }}": [
@@ -683,199 +384,26 @@ const equiposPorTorneo = {
     {% endfor %}
 };
 
-/* ═══════════════════════════════════════════════════════════
-   FILTRO TORNEOS — búsqueda por nombre + chips disciplina
-═══════════════════════════════════════════════════════════ */
-const inputBuscarTorneo = document.getElementById('buscarTorneo');
-const chipsDisc         = document.querySelectorAll('#chipsDisc .chip-disciplina');
-let filtroDiscActivo    = 'todos';
-
-function filtrarTorneos() {
-    const texto = inputBuscarTorneo.value.toLowerCase().trim();
-    const filas = document.querySelectorAll('#bodyTorneos tr[data-nombre]');
-    let visibles = 0;
-
-    filas.forEach(tr => {
-        const nombre = tr.dataset.nombre || '';
-        const disc   = tr.dataset.disc   || '';
-        const matchTexto = nombre.includes(texto);
-        const matchDisc  = filtroDiscActivo === 'todos' || disc === filtroDiscActivo;
-
-        if (matchTexto && matchDisc) {
-            tr.classList.remove('fila-oculta');
-            visibles++;
-        } else {
-            tr.classList.add('fila-oculta');
-        }
-    });
-
-    document.getElementById('sinTorneos').style.display = visibles === 0 ? 'block' : 'none';
-}
-
-inputBuscarTorneo.addEventListener('input', filtrarTorneos);
-
-chipsDisc.forEach(chip => {
-    chip.addEventListener('click', function () {
-        chipsDisc.forEach(c => c.classList.remove('active'));
-        this.classList.add('active');
-        filtroDiscActivo = this.dataset.disc;
-        filtrarTorneos();
-    });
-});
-
-/* ═══════════════════════════════════════════════════════════
-   VER MÁS / VER MENOS por grupo de torneo
-═══════════════════════════════════════════════════════════ */
-function toggleEquipos(btn) {
-    const tbody    = btn.closest('.main-card').querySelector('tbody.cuerpo-equipos');
-    const extras   = tbody.querySelectorAll('tr.fila-equipo[data-extra="1"]');
-    const expandido = btn.dataset.expandido === '1';
-
-    extras.forEach(tr => {
-        tr.style.display = expandido ? 'none' : '';
-    });
-
-    btn.dataset.expandido = expandido ? '0' : '1';
-    const total   = tbody.querySelectorAll('tr.fila-equipo').length;
-    const ocultos = total - 3;
-
-    btn.innerHTML = expandido
-        ? `<i class="fas fa-chevron-down me-1"></i>Ver ${ocultos} más`
-        : `<i class="fas fa-chevron-up me-1"></i>Ver menos`;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   FILTRO EQUIPOS — nombre + ficha + disciplina
-   Opera sobre grupos completos y filas individuales
-═══════════════════════════════════════════════════════════ */
-const inputEquipo    = document.getElementById('buscarEquipo');
-const inputFicha     = document.getElementById('buscarFicha');
-const inputDiscEquip = document.getElementById('buscarDiscEquipo');
-
-function filtrarEquipos() {
-    const textoEquipo = inputEquipo.value.toLowerCase().trim();
-    const textoFicha  = inputFicha.value.trim();
-    const textoDisc   = inputDiscEquip.value.toLowerCase().trim();
-    const grupos      = document.querySelectorAll('.torneo-grupo');
-    let gruposVisibles = 0;
-
-    grupos.forEach(grupo => {
-        const discGrupo = grupo.dataset.torneoDisc || '';
-
-        if (textoDisc && !discGrupo.includes(textoDisc)) {
-            grupo.classList.add('grupo-oculto');
-            return;
-        }
-
-        const filas = grupo.querySelectorAll('tr.fila-equipo');
-        let filasVisibles = 0;
-
-        filas.forEach(tr => {
-            const equipo = tr.dataset.equipo || '';
-            const ficha  = String(tr.dataset.ficha || '');
-            const ok     = equipo.includes(textoEquipo) && ficha.includes(textoFicha);
-
-            if (ok) {
-                tr.style.display = '';
-                filasVisibles++;
-            } else {
-                tr.style.display = 'none';
-            }
-        });
-
-        if (filasVisibles === 0) {
-            grupo.classList.add('grupo-oculto');
-        } else {
-            grupo.classList.remove('grupo-oculto');
-            gruposVisibles++;
-        }
-    });
-
-    document.getElementById('sinEquipos').style.display = gruposVisibles === 0 ? 'block' : 'none';
-}
-
-inputEquipo.addEventListener('input', filtrarEquipos);
-inputFicha.addEventListener('input', filtrarEquipos);
-inputDiscEquip.addEventListener('input', filtrarEquipos);
-
-/* ═══════════════════════════════════════════════════════════
-   MODAL TORNEO — abrir en modo Editar
-═══════════════════════════════════════════════════════════ */
-function abrirEditarTorneo(codigo) {
-    document.getElementById('tituloModalTorneo').innerHTML =
-        '<i class="fas fa-edit text-info me-2"></i>Editar Torneo';
-    document.getElementById('accionTorneo').value  = 'editar_torneo';
-    document.getElementById('inputTorneoId').value = codigo;
-    document.getElementById('btnSubmitTorneo').innerHTML =
-        '<i class="fas fa-save me-2"></i>GUARDAR CAMBIOS';
-
-    new bootstrap.Modal(document.getElementById('modalTorneo')).show();
-}
-
-document.getElementById('modalTorneo').addEventListener('hidden.bs.modal', function () {
-    document.getElementById('tituloModalTorneo').innerHTML =
-        '<i class="fas fa-trophy text-warning me-2"></i>Programar Torneo';
-    document.getElementById('accionTorneo').value  = 'crear_torneo';
-    document.getElementById('inputTorneoId').value = '';
-    document.getElementById('btnSubmitTorneo').innerHTML =
-        '<i class="fas fa-plus me-2"></i>CONFIGURAR EVENTO';
-    document.getElementById('formTorneo').reset();
-});
-
-/* ═══════════════════════════════════════════════════════════
-   MODAL CIERRE
-═══════════════════════════════════════════════════════════ */
 function abrirCierreTorneo(codigo, nombre) {
+    // Mostrar nombre del torneo
     document.getElementById('nombreTorneoCierre').textContent = nombre;
+
+    // Actualizar action del form
     document.getElementById('formCierreTorneo').action = `/torneo/${codigo}/cerrar/`;
 
+    // Cargar equipos del torneo en el select
     const select = document.getElementById('selectGanadorCierre');
     select.innerHTML = '<option value="" selected disabled>-- Seleccione el equipo ganador --</option>';
-    (equiposPorTorneo[codigo] || []).forEach(e => {
+    const equipos = equiposPorTorneo[codigo] || [];
+    equipos.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
         opt.textContent = e.nombre;
         select.appendChild(opt);
     });
 
+    // Abrir modal
     new bootstrap.Modal(document.getElementById('modalCierreTorneo')).show();
 }
-
-/* ═══════════════════════════════════════════════════════════
-   NÓMINA DE JUGADORES
-═══════════════════════════════════════════════════════════ */
-const jugadores = [];
-
-function agregarJugadorALista() {
-    const input  = document.getElementById('nuevoJugador');
-    const nombre = input.value.trim();
-    if (!nombre) return;
-
-    jugadores.push(nombre);
-    input.value = '';
-
-    const li = document.createElement('li');
-    li.className = 'list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-secondary';
-    li.innerHTML = `
-        <span><i class="fas fa-user text-info me-2" style="font-size:0.85rem;"></i>${nombre}</span>
-        <button type="button" class="btn btn-sm btn-outline-danger border-0 py-0"
-                onclick="quitarJugador(this, '${nombre}')">
-            <i class="fas fa-times"></i>
-        </button>
-        <input type="hidden" name="jugadores" value="${nombre}">
-    `;
-    document.getElementById('listaJugadoresUI').appendChild(li);
-    input.focus();
-}
-
-function quitarJugador(btn, nombre) {
-    const idx = jugadores.indexOf(nombre);
-    if (idx > -1) jugadores.splice(idx, 1);
-    btn.closest('li').remove();
-}
-
-document.getElementById('nuevoJugador').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); agregarJugadorALista(); }
-});
 </script>
 {% endblock %}

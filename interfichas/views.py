@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from datetime import date  # <--- Importación agregada
 import random
 from itertools import combinations
 from .models import (
@@ -93,7 +92,6 @@ def interfichas_list(request):
         'equipos': equipos,
         'disciplinas': disciplinas,
         'PROGRAMAS_GLOBALES': PROGRAMAS_GLOBALES,
-        'hoy': date.today().isoformat(),  # <--- Contexto agregado
     })
 
 
