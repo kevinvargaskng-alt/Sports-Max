@@ -4,9 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import Usuario
+from django.utils import timezone
+from datetime import timedelta
 
+from .models import Usuario
 from inventario.models import Prestamo
+from gimnasio.models import Reserva
+from interfichas.models import EquipoInterfichas, TorneoInterfichas
+from intercentros.models import TorneoIntercentros, Postulacion
 
 
 def login_view(request):
@@ -100,15 +105,13 @@ def logout_view(request):
 
 @login_required(login_url='home')
 def perfil_view(request):
-    """Muestra el perfil. Si el usuario es staff, también muestra
-    los últimos registros y la lista completa de usuarios."""
     usuario = request.user
 
     # ── EDICIÓN DE PERFIL (POST) ──────────────────────────────────────────
     if request.method == 'POST':
         email   = request.POST.get('email')
         celular = request.POST.get('celular')
-        if email:  usuario.email    = email
+        if email:   usuario.email    = email
         if celular: usuario.telefono = celular
         if 'imagen' in request.FILES:
             usuario.foto_perfil = request.FILES.get('imagen')
@@ -116,34 +119,120 @@ def perfil_view(request):
         messages.success(request, '¡Perfil actualizado!')
         return redirect('perfil')
 
-    # ── DATOS DEL PERFIL NORMAL ───────────────────────────────────────────
-    prestamos = Prestamo.objects.filter(usuario=usuario).order_by('-fecha_prestamo')
+    hace_30_dias = timezone.now() - timedelta(days=30)
 
-    contexto = {
-        'usuario':  usuario,
-        'prestamos': prestamos,
-    }
-
-    # ── DATOS EXTRA SOLO PARA ADMINS (is_staff) ───────────────────────────
+    # ── DATOS PARA ADMIN ──────────────────────────────────────────────────
     if usuario.is_staff:
-        todos_usuarios    = Usuario.objects.all().order_by('-fecha_registro')
-        ultimos_usuarios  = todos_usuarios[:6]          # los 6 más recientes
-        total_usuarios    = todos_usuarios.count()
-        usuarios_activos  = todos_usuarios.filter(estado='activo').count()
 
-        contexto.update({
+        # Usuarios
+        todos_usuarios   = Usuario.objects.all().order_by('-fecha_registro')
+        ultimos_usuarios = todos_usuarios[:6]
+        total_usuarios   = todos_usuarios.count()
+        usuarios_activos = todos_usuarios.filter(estado='activo').count()
+        nuevos_mes       = todos_usuarios.filter(fecha_registro__gte=hace_30_dias).count()
+
+        # Préstamos — todos, con datos del usuario
+        todos_prestamos = (
+            Prestamo.objects
+            .select_related('usuario', 'elemento')
+            .order_by('-fecha_prestamo')
+        )
+        prestamos_recientes     = todos_prestamos.filter(fecha_prestamo__gte=hace_30_dias)
+        total_prestamos_recientes = prestamos_recientes.count()
+        prestamo_mas_reciente   = todos_prestamos.first()
+
+        # Gimnasio — todos los registros
+        todas_reservas = (
+            Reserva.objects
+            .order_by('-fecha_entrada', '-hora_entrada')
+        )
+        total_ingresos_gimnasio = todas_reservas.filter(
+            fecha_entrada__gte=hace_30_dias.date()
+        ).count()
+
+        # Inter-fichas — todos los equipos con torneo
+        todos_equipos_interfichas = (
+            EquipoInterfichas.objects
+            .select_related('torneo', 'disciplina')
+            .order_by('-torneo__fecha_torneo_fichas')
+        )
+        torneos_interfichas_activos = TorneoInterfichas.objects.exclude(estado='cerrado').count()
+
+        # Inter-centros — todos los equipos / postulaciones
+        todas_postulaciones = (
+            Postulacion.objects
+            .select_related('torneo')
+            .order_by('-fecha_postulacion')
+        )
+        torneos_intercentros_activos = TorneoIntercentros.objects.filter(estado='Activo').count()
+        total_torneos_activos = torneos_interfichas_activos + torneos_intercentros_activos
+
+        contexto = {
+            'usuario': usuario,
+
+            # Tabs con datos de TODOS
+            'prestamos':             todos_prestamos,
+            'reservas_gimnasio':     todas_reservas,
+            'equipos_interfichas':   todos_equipos_interfichas,
+            'equipos_intercentros':  todas_postulaciones,
+
+            # Panel admin — usuarios
             'todos_usuarios':   todos_usuarios,
             'ultimos_usuarios': ultimos_usuarios,
             'total_usuarios':   total_usuarios,
             'usuarios_activos': usuarios_activos,
-        })
+
+            # Novedades admin
+            'total_prestamos_recientes':  total_prestamos_recientes,
+            'prestamo_mas_reciente':      prestamo_mas_reciente,
+            'total_ingresos_gimnasio':    total_ingresos_gimnasio,
+            'total_torneos_activos':      total_torneos_activos,
+            'nuevos_usuarios_mes':        nuevos_mes,
+        }
+
+    # ── DATOS PARA APRENDIZ ───────────────────────────────────────────────
+    else:
+        nombre_completo = f"{usuario.first_name} {usuario.last_name}"
+
+        prestamos = (
+            Prestamo.objects
+            .filter(usuario=usuario)
+            .select_related('elemento')
+            .order_by('-fecha_prestamo')
+        )
+
+        reservas_gimnasio = (
+            Reserva.objects
+            .filter(usuario_solicitante=nombre_completo)
+            .order_by('-fecha_entrada', '-hora_entrada')
+        )
+
+        equipos_interfichas = (
+            EquipoInterfichas.objects
+            .filter(usuario_registra=usuario)
+            .select_related('torneo', 'disciplina')
+        )
+
+        equipos_intercentros = (
+            Postulacion.objects
+            .filter(numero_documento=str(usuario.numero_documento))
+            .select_related('torneo')
+            .order_by('-fecha_postulacion')
+        )
+
+        contexto = {
+            'usuario':              usuario,
+            'prestamos':            prestamos,
+            'reservas_gimnasio':    reservas_gimnasio,
+            'equipos_interfichas':  equipos_interfichas,
+            'equipos_intercentros': equipos_intercentros,
+        }
 
     return render(request, 'usuarios/perfil.html', contexto)
 
 
 @login_required(login_url='home')
 def toggle_usuario_estado(request, user_id):
-    """Activa o desactiva un usuario. Solo staff."""
     if not request.user.is_staff:
         messages.error(request, 'No tienes permisos.')
         return redirect('perfil')
@@ -163,12 +252,11 @@ def toggle_usuario_estado(request, user_id):
 
 @login_required(login_url='home')
 def cambiar_rol_usuario(request, user_id):
-    """Cambia el rol de un usuario. Solo staff."""
     if not request.user.is_staff:
         messages.error(request, 'No tienes permisos.')
         return redirect('perfil')
     if request.method == 'POST':
-        u        = get_object_or_404(Usuario, pk=user_id)
+        u         = get_object_or_404(Usuario, pk=user_id)
         nuevo_rol = request.POST.get('rol')
         if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
             u.rol      = nuevo_rol
@@ -178,45 +266,37 @@ def cambiar_rol_usuario(request, user_id):
     return redirect('perfil')
 
 
-# ── NUEVA VISTA PARA EDICIÓN COMPLETA DEL ADMINISTRADOR ────────────────────
 @login_required(login_url='home')
 def admin_editar_usuario(request, user_id):
-    """Permite al administrador editar todos los datos de un usuario a través del modal."""
     if not request.user.is_staff:
-        messages.error(request, 'Acceso denegado. No tienes permisos de administrador.')
+        messages.error(request, 'Acceso denegado.')
         return redirect('perfil')
 
     if request.method == 'POST':
-        usuario_editado = get_object_or_404(Usuario, pk=user_id)
+        u = get_object_or_404(Usuario, pk=user_id)
 
-        # Extraemos los datos del modal; si no viene alguno, conservamos el actual
-        usuario_editado.first_name = request.POST.get('first_name', usuario_editado.first_name).strip()
-        usuario_editado.last_name = request.POST.get('last_name', usuario_editado.last_name).strip()
-        usuario_editado.numero_documento = request.POST.get('numero_documento', usuario_editado.numero_documento).strip()
-        usuario_editado.ficha = request.POST.get('ficha', usuario_editado.ficha).strip()
-        usuario_editado.email = request.POST.get('email', usuario_editado.email).strip()
-        usuario_editado.telefono = request.POST.get('telefono', usuario_editado.telefono).strip()
+        u.first_name       = request.POST.get('first_name',       u.first_name).strip()
+        u.last_name        = request.POST.get('last_name',        u.last_name).strip()
+        u.numero_documento = request.POST.get('numero_documento', u.numero_documento).strip()
+        u.ficha            = request.POST.get('ficha',            u.ficha or '').strip()
+        u.email            = request.POST.get('email',            u.email).strip()
+        u.telefono         = request.POST.get('telefono',         u.telefono or '').strip()
+        u.username         = u.numero_documento  # mantener sincronizado
 
-        # Actualizamos el username para que coincida con el nuevo documento si este se cambió
-        usuario_editado.username = usuario_editado.numero_documento
-
-        # Rol y staff status
-        nuevo_rol = request.POST.get('rol', usuario_editado.rol)
+        nuevo_rol = request.POST.get('rol', u.rol)
         if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-            usuario_editado.rol = nuevo_rol
-            usuario_editado.is_staff = (nuevo_rol == 'admin')
+            u.rol      = nuevo_rol
+            u.is_staff = (nuevo_rol == 'admin')
 
-        # Estado y active status
-        nuevo_estado = request.POST.get('estado', usuario_editado.estado)
+        nuevo_estado = request.POST.get('estado', u.estado)
         if nuevo_estado in ['activo', 'inactivo']:
-            usuario_editado.estado = nuevo_estado
-            usuario_editado.is_active = (nuevo_estado == 'activo')
+            u.estado    = nuevo_estado
+            u.is_active = (nuevo_estado == 'activo')
 
-        # Guardamos en base de datos
         try:
-            usuario_editado.save()
-            messages.success(request, f'Los datos de {usuario_editado.get_full_name()} han sido actualizados correctamente.')
+            u.save()
+            messages.success(request, f'Datos de {u.get_full_name()} actualizados correctamente.')
         except IntegrityError:
-            messages.error(request, 'Error: Ya existe un usuario con ese número de documento o correo electrónico.')
+            messages.error(request, 'Error: ya existe un usuario con ese documento o correo.')
 
     return redirect('perfil')

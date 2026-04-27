@@ -1,0 +1,656 @@
+{% load static %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<svg style="position:absolute;width:0;height:0;" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <filter id="daltonismo-filter">
+            <feColorMatrix type="matrix"
+                values="0.625 0.375 0     0 0
+                        0.7   0.3   0     0 0
+                        0     0.3   0.7   0 0
+                        0     0     0     1 0"/>
+        </filter>
+    </defs>
+</svg>
+
+<style>
+/* ════════════════════════════════════════════════════
+   PANEL DE ACCESIBILIDAD — ESTILOS PROPIOS
+════════════════════════════════════════════════════ */
+
+/* Asegurar que los iconos usen la fuente correcta */
+.fas, .fa-solid {
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+}
+
+/* ── Botón flotante ── */
+#acc-toggle {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 9999;
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #0277bd, #00d2ff) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(0,210,255,0.45);
+    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.35rem !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+#acc-toggle:hover {
+    transform: scale(1.12) rotate(15deg);
+    box-shadow: 0 6px 28px rgba(0,210,255,0.65);
+}
+#acc-toggle .acc-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 16px !important; height: 16px !important;
+    background: #f9c52c !important;
+    border-radius: 50%;
+    font-size: 0.55rem !important;
+    font-weight: 900;
+    color: #050814 !important;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #050814;
+    line-height: 1 !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* ── Panel lateral ── */
+#acc-panel {
+    position: fixed !important;
+    bottom: 94px !important;
+    right: 28px !important;
+    z-index: 9998;
+    width: 290px !important;
+    max-height: calc(100vh - 120px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: #0d1526 !important;
+    border: 1px solid rgba(0,210,255,0.2) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    padding: 20px !important;
+    transform: scale(0.85) translateY(20px);
+    transform-origin: bottom right;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.34,1.56,0.64,1),
+                transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    color: #eceff1 !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+}
+#acc-panel.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1) translateY(0);
+}
+#acc-panel * {
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+    line-height: 1.5 !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    box-sizing: border-box;
+}
+
+/* ── Encabezado ── */
+.acc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.acc-header h6 {
+    margin: 0 !important;
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em !important;
+    color: #00d2ff !important;
+}
+.acc-reset {
+    font-size: 0.68rem !important;
+    color: rgba(255,255,255,0.35) !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 2px 6px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s;
+}
+.acc-reset:hover { color: #f85149 !important; background: rgba(248,81,73,0.1) !important; }
+
+/* ── Secciones ── */
+.acc-section { margin-bottom: 14px !important; }
+.acc-label {
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    color: rgba(255,255,255,0.4) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em !important;
+    margin-bottom: 7px !important;
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+}
+.acc-label i { color: #00d2ff !important; font-size: 0.7rem !important; }
+
+/* ── Botones ── */
+.acc-btn-group { display: flex !important; gap: 6px; flex-wrap: wrap; }
+.acc-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 6px !important;
+    border-radius: 9px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: rgba(255,255,255,0.65) !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+    white-space: nowrap;
+}
+.acc-btn:hover {
+    background: rgba(0,210,255,0.1) !important;
+    border-color: rgba(0,210,255,0.3) !important;
+    color: #fff !important;
+}
+.acc-btn.active {
+    background: rgba(0,210,255,0.18) !important;
+    border-color: #00d2ff !important;
+    color: #00d2ff !important;
+}
+
+/* ── Temas ── */
+.acc-theme-row {
+    display: flex !important;
+    gap: 8px;
+    padding-bottom: 20px !important;
+    justify-content: space-between;
+}
+.acc-theme-dot {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+    border: 2px solid transparent !important;
+    transition: all 0.2s;
+    position: relative;
+    flex-shrink: 0;
+}
+.acc-theme-dot:hover { transform: scale(1.12); }
+.acc-theme-dot.active { border-color: #fff !important; box-shadow: 0 0 0 2px rgba(255,255,255,0.4); }
+.acc-theme-dot .dot-label {
+    position: absolute;
+    bottom: -18px !important;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.55rem !important;
+    color: rgba(255,255,255,0.4) !important;
+    white-space: nowrap;
+}
+
+/* ── Slider ── */
+.acc-slider-wrap { display: flex !important; align-items: center; gap: 8px; }
+.acc-slider-wrap span { color: rgba(255,255,255,0.4) !important; width: 22px; text-align: center; }
+.acc-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px !important;
+    border-radius: 4px !important;
+    background: rgba(255,255,255,0.12) !important;
+    outline: none;
+    cursor: pointer;
+    border: none !important;
+}
+.acc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #00d2ff !important;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,210,255,0.5);
+    border: none;
+}
+
+/* ── Botón de voz ── */
+.acc-voice-btn {
+    width: 100% !important;
+    padding: 9px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: rgba(255,255,255,0.7) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.acc-voice-btn:hover {
+    background: rgba(249,197,44,0.12) !important;
+    border-color: rgba(249,197,44,0.4) !important;
+    color: #f9c52c !important;
+}
+.acc-voice-btn.speaking {
+    background: rgba(249,197,44,0.18) !important;
+    border-color: #f9c52c !important;
+    color: #f9c52c !important;
+    animation: acc-pulse 1s infinite;
+}
+.acc-voice-btn.speaking i { animation: acc-spin 1s linear infinite; }
+
+@keyframes acc-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(249,197,44,0.3); }
+    50%      { box-shadow: 0 0 0 6px rgba(249,197,44,0); }
+}
+@keyframes acc-spin { to { transform: rotate(360deg); } }
+
+/* ── Scrollbar del panel ── */
+#acc-panel::-webkit-scrollbar { width: 4px; }
+#acc-panel::-webkit-scrollbar-track { background: transparent; }
+#acc-panel::-webkit-scrollbar-thumb { background: rgba(0,210,255,0.3); border-radius: 4px; }
+#acc-panel::-webkit-scrollbar-thumb:hover { background: rgba(0,210,255,0.6); }
+
+/* ── Separador ── */
+.acc-divider { height: 1px !important; background: rgba(255,255,255,0.06) !important; margin: 12px 0 !important; }
+
+/* ════════════════════════════════════════════════════
+   TEMAS GLOBALES — REGLAS CORREGIDAS
+════════════════════════════════════════════════════ */
+
+/* Alto contraste */
+html.acc-alto-contraste body { background: #000 !important; }
+html.acc-alto-contraste body *:not(#acc-panel):not(#acc-panel *):not(#acc-toggle):not(#acc-toggle *) {
+    color: #ffff00 !important; border-color: #ffff00 !important;
+}
+html.acc-alto-contraste .sport-card, 
+html.acc-alto-contraste .main-container, 
+html.acc-alto-contraste .modal-content { background: #000 !important; border: 1px solid #ff0 !important; }
+
+/* Claro */
+html.acc-claro body { background: #f0f4f8 !important; }
+html.acc-claro body *:not(#acc-panel):not(#acc-panel *):not(#acc-toggle):not(#acc-toggle *) { color: #1a1a2e !important; }
+html.acc-claro .sport-card, html.acc-claro .main-container { background: #ffffff !important; }
+
+/* Sepia (CORREGIDO PARA EVITAR SALTO) */
+html.acc-sepia body { background-color: #f5e6d3 !important; }
+html.acc-sepia body *:not(#acc-panel):not(#acc-panel *):not(#acc-toggle):not(#acc-toggle *) { 
+    color: #3b2a1a !important; 
+}
+html.acc-sepia img { filter: sepia(0.5); }
+
+/* Daltonismo */
+html.acc-daltonismo body { filter: url('#daltonismo-filter'); }
+html.acc-daltonismo #acc-panel, html.acc-daltonismo #acc-toggle { filter: none !important; }
+
+/* Tamaño fuente */
+html.acc-font-sm  body { font-size: 14px !important; }
+html.acc-font-md  body { font-size: 16px !important; }
+html.acc-font-lg  body { font-size: 19px !important; }
+html.acc-font-xl  body { font-size: 22px !important; }
+
+/* Tipo fuente */
+html.acc-font-sans      body { font-family: 'Segoe UI', system-ui, sans-serif !important; }
+html.acc-font-serif     body { font-family: Georgia, 'Times New Roman', serif !important; }
+html.acc-font-mono      body { font-family: 'Courier New', Courier, monospace !important; }
+html.acc-font-dyslexic  body { font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.05em; word-spacing: 0.1em; line-height: 1.7 !important; }
+
+/* Interlineado */
+html.acc-line-normal body { line-height: 1.5 !important; }
+html.acc-line-wide   body { line-height: 1.9 !important; }
+html.acc-line-wider  body { line-height: 2.4 !important; }
+
+/* Foco */
+html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
+    outline: 3px solid #f9c52c !important;
+    outline-offset: 3px !important;
+    border-radius: 4px !important;
+}
+</style>
+
+<button id="acc-toggle" aria-label="Abrir panel de accesibilidad" title="Accesibilidad">
+    <i class="fas fa-universal-access"></i>
+    <span class="acc-badge" aria-hidden="true">A</span>
+</button>
+
+<div id="acc-panel" role="dialog" aria-label="Opciones de accesibilidad" aria-modal="false">
+
+    <div class="acc-header">
+        <h6><i class="fas fa-universal-access me-2"></i>Accesibilidad</h6>
+        <button class="acc-reset" id="acc-reset-all" title="Restablecer todo">
+            <i class="fas fa-rotate-left me-1"></i>Restablecer
+        </button>
+    </div>
+
+    <div class="acc-section">
+        <div class="acc-label"><i class="fas fa-palette"></i>Tema de color</div>
+        <div class="acc-theme-row">
+            <div class="acc-theme-dot active" data-theme="" title="Predeterminado"
+                 style="background:linear-gradient(135deg,#050814,#0d1b3e);">
+                <span class="dot-label">Default</span>
+            </div>
+            <div class="acc-theme-dot" data-theme="acc-claro" title="Tema claro"
+                 style="background:linear-gradient(135deg,#f0f4f8,#dde4ed);">
+                <span class="dot-label">Claro</span>
+            </div>
+            <div class="acc-theme-dot" data-theme="acc-sepia" title="Sepia"
+                 style="background:linear-gradient(135deg,#f5e6d3,#e8d5b7);">
+                <span class="dot-label">Sepia</span>
+            </div>
+            <div class="acc-theme-dot" data-theme="acc-alto-contraste" title="Alto contraste"
+                 style="background:#000; border:2px solid #ff0;">
+                <span class="dot-label">Contraste</span>
+            </div>
+            <div class="acc-theme-dot" data-theme="acc-daltonismo" title="Daltonismo"
+                 style="background:linear-gradient(135deg,#5b6abf,#b5651d);">
+                <span class="dot-label">Dalton.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-divider"></div>
+
+    <div class="acc-section">
+        <div class="acc-label"><i class="fas fa-text-height"></i>Tamaño de texto</div>
+        <div class="acc-slider-wrap">
+            <span style="font-size:0.65rem !important;">A</span>
+            <input type="range" class="acc-slider" id="acc-font-size"
+                   min="0" max="3" step="1" value="1" aria-label="Tamaño de fuente">
+            <span style="font-size:1rem !important;">A</span>
+        </div>
+        <div style="text-align:center;margin-top:4px;">
+            <span id="acc-font-label" style="font-size:0.65rem !important;color:rgba(255,255,255,0.3);">Normal (16px)</span>
+        </div>
+    </div>
+
+    <div class="acc-divider"></div>
+
+    <div class="acc-section">
+        <div class="acc-label"><i class="fas fa-font"></i>Tipo de fuente</div>
+        <div class="acc-btn-group">
+            <button class="acc-btn active" data-font="">Sans</button>
+            <button class="acc-btn" data-font="acc-font-serif">Serif</button>
+            <button class="acc-btn" data-font="acc-font-mono">Mono</button>
+            <button class="acc-btn" data-font="acc-font-dyslexic">
+                <i class="fas fa-brain me-1"></i>Dislexia
+            </button>
+        </div>
+    </div>
+
+    <div class="acc-divider"></div>
+
+    <div class="acc-section">
+        <div class="acc-label"><i class="fas fa-align-left"></i>Interlineado</div>
+        <div class="acc-btn-group">
+            <button class="acc-btn active" data-line="acc-line-normal">Normal</button>
+            <button class="acc-btn" data-line="acc-line-wide">Amplio</button>
+            <button class="acc-btn" data-line="acc-line-wider">Máximo</button>
+        </div>
+    </div>
+
+    <div class="acc-divider"></div>
+
+    <div class="acc-section">
+        <div class="acc-label"><i class="fas fa-crosshairs"></i>Indicador de foco</div>
+        <div class="acc-btn-group">
+            <button class="acc-btn active" data-foco="">Normal</button>
+            <button class="acc-btn" data-foco="acc-foco">Resaltado</button>
+        </div>
+    </div>
+
+    <div class="acc-divider"></div>
+
+    <div class="acc-section">
+        <div class="acc-label"><i class="fas fa-volume-up"></i>Lectura por voz</div>
+        <button class="acc-voice-btn" id="acc-voice-btn" title="Leer / detener lectura de la página">
+            <i class="fas fa-play" id="acc-voice-icon"></i>
+            <span id="acc-voice-label">Leer página</span>
+        </button>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+            <span style="font-size:0.65rem !important;color:rgba(255,255,255,0.3);">Velocidad</span>
+            <input type="range" class="acc-slider" id="acc-speed"
+                   min="0.5" max="2" step="0.25" value="1" style="flex:1;"
+                   aria-label="Velocidad de lectura">
+            <span id="acc-speed-label" style="font-size:0.65rem !important;color:rgba(255,255,255,0.3);width:26px;">1x</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var html   = document.documentElement;
+    var toggle = document.getElementById('acc-toggle');
+    var panel  = document.getElementById('acc-panel');
+    var KEY    = 'sena_acc_prefs';
+
+    var THEMES = ['acc-claro','acc-sepia','acc-alto-contraste','acc-daltonismo'];
+    var FONTS  = ['acc-font-sans','acc-font-serif','acc-font-mono','acc-font-dyslexic'];
+    var SIZES  = ['acc-font-sm','acc-font-md','acc-font-lg','acc-font-xl'];
+    var LINES  = ['acc-line-normal','acc-line-wide','acc-line-wider'];
+    var FOCOS  = ['acc-foco'];
+    var SIZE_LABELS = ['Pequeño (14px)','Normal (16px)','Grande (19px)','Muy grande (22px)'];
+
+    var prefs = { theme: '', font: '', size: 1, line: 'acc-line-normal', foco: '' };
+
+    function clearClasses(list) {
+        list.forEach(function(c){ html.classList.remove(c); });
+    }
+
+    function applyAll() {
+        clearClasses(THEMES.concat(FONTS, SIZES, LINES, FOCOS));
+        if (prefs.theme) html.classList.add(prefs.theme);
+        if (prefs.font)  html.classList.add(prefs.font);
+        html.classList.add(SIZES[prefs.size]);
+        if (prefs.line)  html.classList.add(prefs.line);
+        if (prefs.foco)  html.classList.add(prefs.foco);
+    }
+
+    function save() {
+        try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch(e){}
+    }
+
+    function load() {
+        try {
+            var stored = localStorage.getItem(KEY);
+            if (stored) {
+                var p = JSON.parse(stored);
+                for (var k in p) { if (prefs.hasOwnProperty(k)) prefs[k] = p[k]; }
+            }
+        } catch(e){}
+    }
+
+    function syncUI() {
+        document.querySelectorAll('.acc-theme-dot').forEach(function(el){
+            el.classList.toggle('active', (el.dataset.theme || '') === prefs.theme);
+        });
+        document.querySelectorAll('[data-font]').forEach(function(el){
+            el.classList.toggle('active', (el.dataset.font || '') === prefs.font);
+        });
+        var slider = document.getElementById('acc-font-size');
+        var lbl    = document.getElementById('acc-font-label');
+        if (slider) slider.value = prefs.size;
+        if (lbl)    lbl.textContent = SIZE_LABELS[prefs.size];
+        document.querySelectorAll('[data-line]').forEach(function(el){
+            el.classList.toggle('active', el.dataset.line === prefs.line);
+        });
+        document.querySelectorAll('[data-foco]').forEach(function(el){
+            el.classList.toggle('active', (el.dataset.foco || '') === prefs.foco);
+        });
+    }
+
+    /* ── Abrir / cerrar panel ── */
+    toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        panel.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', panel.classList.contains('open'));
+    });
+    document.addEventListener('click', function(e) {
+        if (!panel.contains(e.target) && e.target !== toggle)
+            panel.classList.remove('open');
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') panel.classList.remove('open');
+    });
+
+    /* ── Temas ── */
+    document.querySelectorAll('.acc-theme-dot').forEach(function(dot) {
+        dot.addEventListener('click', function() {
+            prefs.theme = this.dataset.theme || '';
+            applyAll(); syncUI(); save();
+        });
+    });
+
+    /* ── Fuentes ── */
+    document.querySelectorAll('[data-font]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            prefs.font = this.dataset.font || '';
+            applyAll(); syncUI(); save();
+        });
+    });
+
+    /* ── Tamaño ── */
+    var fontSlider = document.getElementById('acc-font-size');
+    var fontLabel  = document.getElementById('acc-font-label');
+    if (fontSlider) {
+        fontSlider.addEventListener('input', function() {
+            prefs.size = parseInt(this.value);
+            fontLabel.textContent = SIZE_LABELS[prefs.size];
+            applyAll(); save();
+        });
+    }
+
+    /* ── Interlineado ── */
+    document.querySelectorAll('[data-line]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            prefs.line = this.dataset.line;
+            applyAll(); syncUI(); save();
+        });
+    });
+
+    /* ── Foco ── */
+    document.querySelectorAll('[data-foco]').forEach(function(btn) {
+        btn.onclick = function() {
+            prefs.foco = this.dataset.foco || '';
+            applyAll(); syncUI(); save();
+        };
+    });
+
+    /* ── Restablecer ── */
+    document.getElementById('acc-reset-all').addEventListener('click', function() {
+        prefs = { theme:'', font:'', size:1, line:'acc-line-normal', foco:'' };
+        applyAll(); syncUI(); save();
+        stopSpeech();
+    });
+
+    /* ══════════════════════════════════════════════
+       LECTURA POR VOZ
+    ══════════════════════════════════════════════ */
+    var speaking    = false;
+    var utterance   = null;
+    var voiceBtn    = document.getElementById('acc-voice-btn');
+    var voiceIcon   = document.getElementById('acc-voice-icon');
+    var voiceLabel  = document.getElementById('acc-voice-label');
+    var speedSlider = document.getElementById('acc-speed');
+    var speedLabel  = document.getElementById('acc-speed-label');
+    var supported   = 'speechSynthesis' in window;
+
+    if (!supported && voiceBtn) {
+        voiceBtn.disabled = true;
+        voiceLabel.textContent = 'No disponible';
+    }
+
+    function stopSpeech() {
+        if (supported) window.speechSynthesis.cancel();
+        speaking = false;
+        if (voiceBtn)   voiceBtn.classList.remove('speaking');
+        if (voiceIcon)  voiceIcon.className = 'fas fa-play';
+        if (voiceLabel) voiceLabel.textContent = 'Leer página';
+    }
+
+    speedSlider && speedSlider.addEventListener('input', function() {
+        speedLabel.textContent = this.value + 'x';
+        if (utterance) utterance.rate = parseFloat(this.value);
+    });
+
+    function getPageText() {
+        var main = document.querySelector('main') || document.body;
+        var clone = main.cloneNode(true);
+        ['script','style','noscript','svg'].forEach(function(tag){
+            clone.querySelectorAll(tag).forEach(function(el){ el.remove(); });
+        });
+        return clone.innerText
+            .replace(/\s{2,}/g, ' ')
+            .replace(/\n{2,}/g, '. ')
+            .trim()
+            .substring(0, 5000);
+    }
+
+    voiceBtn && voiceBtn.addEventListener('click', function() {
+        if (!supported) return;
+        if (speaking) { stopSpeech(); return; }
+
+        var text = getPageText();
+        if (!text) return;
+
+        utterance        = new SpeechSynthesisUtterance(text);
+        utterance.lang   = 'es-CO';
+        utterance.rate   = parseFloat(speedSlider ? speedSlider.value : 1);
+        utterance.pitch  = 1;
+
+        var voices  = window.speechSynthesis.getVoices();
+        var esVoice = voices.find(function(v){ return v.lang.startsWith('es'); });
+        if (esVoice) utterance.voice = esVoice;
+
+        utterance.onstart = function() {
+            speaking = true;
+            voiceBtn.classList.add('speaking');
+            voiceIcon.className = 'fas fa-circle-notch fa-spin';
+            voiceLabel.textContent = 'Detener lectura';
+        };
+        utterance.onend   = stopSpeech;
+        utterance.onerror = stopSpeech;
+
+        window.speechSynthesis.speak(utterance);
+    });
+
+    if (supported) {
+        window.speechSynthesis.onvoiceschanged = function() {
+            window.speechSynthesis.getVoices();
+        };
+    }
+
+    /* ── Init ── */
+    load();
+    applyAll();
+    syncUI();
+
+})();
+</script>

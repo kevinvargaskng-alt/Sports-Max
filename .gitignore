@@ -1,8 +1,7 @@
 # Django
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
+
 media
 
 # Django Migrations
@@ -25,6 +24,8 @@ venv.bak/
 # Python
 *.pyc
 __pycache__/
+*/__pycache__/
 *.pyo
 *.pyd
 .Python
+core/__pycache__/__init__.cpython-313.pyc

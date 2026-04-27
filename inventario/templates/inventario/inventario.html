@@ -450,19 +450,9 @@
                         Fecha de devolución: <strong id="spanFecha" class="text-warning"></strong>
                     </div>
 
-                    {% if estaSancionado %}
-                        <div class="alert alert-danger text-center small mb-4">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            No puedes solicitar préstamos debido a sanciones activas.
-                        </div>
-                        <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg" disabled>
-                            <i class="fas fa-check me-2"></i>CONFIRMAR SOLICITUD
-                        </button>
-                    {% else %}
-                        <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg">
-                            <i class="fas fa-check me-2"></i>CONFIRMAR SOLICITUD
-                        </button>
-                    {% endif %}
+                    <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg">
+                        <i class="fas fa-check me-2"></i>CONFIRMAR SOLICITUD
+                    </button>
                 </form>
             </div>
         </div>

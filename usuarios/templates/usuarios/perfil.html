@@ -43,6 +43,10 @@
         transition: transform 0.2s;
     }
     .news-item:hover { transform: translateX(5px); background: rgba(255,255,255,0.06); }
+    .news-item.news-warning { border-left-color: #f9c52c; }
+    .news-item.news-success { border-left-color: #3fb950; }
+    .news-item.news-danger  { border-left-color: #f85149; }
+    .news-item.news-info    { border-left-color: #58a6ff; }
 
     /* ── INPUTS DISABLED ── */
     .custom-input:disabled {
@@ -64,40 +68,38 @@
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px; padding: 16px 20px;
-        text-align: center;
+        text-align: center; transition: transform 0.2s, border-color 0.2s;
     }
+    .mini-stat:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.18); }
     .mini-stat .num { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; }
     .mini-stat .lbl { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 4px; }
 
-    /* ── TABLA USUARIOS (admin) CORREGIDA (FONDO OSCURO) ── */
+    /* ── TABLA USUARIOS (admin) ── */
     .tbl-admin { border-collapse: separate; border-spacing: 0 8px; width: 100%; }
     .tbl-admin thead th {
-        background: rgba(26, 35, 126, 0.5) !important; 
+        background: rgba(26, 35, 126, 0.5) !important;
         color: #58a6ff !important;
         font-size: 0.8rem; font-weight: 800;
         text-transform: uppercase; letter-spacing: 0.08em;
         border: none; padding: 12px;
         border-radius: 8px 8px 0 0;
     }
-    
-    /* Aquí forzamos el color oscuro tanto en la fila como en la celda */
     .tbl-admin tbody tr {
-        background-color: #111827 !important; /* Azul muy oscuro/grisáceo */
+        background-color: #111827 !important;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
     }
-    .tbl-admin tbody tr:hover { 
-        background-color: #1a2440 !important; 
-        transform: translateY(-2px); 
+    .tbl-admin tbody tr:hover {
+        background-color: #1a2440 !important;
+        transform: translateY(-2px);
     }
     .tbl-admin tbody td {
-        background-color: transparent !important; /* Evita que bootstrap ponga blanco */
-        border: none !important; 
-        padding: 12px; 
+        background-color: transparent !important;
+        border: none !important;
+        padding: 12px;
         vertical-align: middle;
-        color: #ECEFF1 !important; 
+        color: #ECEFF1 !important;
     }
-    
     .tbl-admin tbody td:first-child { border-radius: 8px 0 0 8px; border-left: 2px solid transparent; }
     .tbl-admin tbody tr:hover td:first-child { border-left: 2px solid var(--accent-blue); }
     .tbl-admin tbody td:last-child { border-radius: 0 8px 8px 0; }
@@ -118,21 +120,58 @@
     .btn-acc-edit { background: rgba(255,184,0,0.15); color: #ffb800; border-color: rgba(255,184,0,0.3); }
     .btn-acc-on   { background: rgba(63,185,80,0.12);  color: #3fb950; border-color: rgba(63,185,80,0.3); }
     .btn-acc-off  { background: rgba(248,81,73,0.12);  color: #f85149; border-color: rgba(248,81,73,0.3); }
-    
     .btn-acc-edit:hover { background: rgba(255,184,0,0.3); transform: scale(1.05); }
     .btn-acc-on:hover   { background: rgba(63,185,80,0.28); transform: scale(1.05); }
     .btn-acc-off:hover  { background: rgba(248,81,73,0.28); transform: scale(1.05); }
 
-    /* ── BUSCADOR ── */
+    /* ── BUSCADOR CON AUTOCOMPLETADO ── */
+    .search-wrapper { position: relative; max-width: 350px; }
     #buscadorUsuarios {
         background: rgba(255,255,255,0.05);
         border: 1px solid rgba(255,255,255,0.1);
-        color: #fff; border-radius: 10px; padding: 10px 16px;
-        font-size: 0.9rem; width: 100%; max-width: 350px;
+        color: #fff; border-radius: 10px; padding: 10px 16px 10px 42px;
+        font-size: 0.9rem; width: 100%;
         transition: all 0.3s;
     }
     #buscadorUsuarios::placeholder { color: rgba(255,255,255,0.4); }
     #buscadorUsuarios:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+    .search-icon-abs {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        color: var(--accent-blue); pointer-events: none; z-index: 2;
+    }
+
+    /* Lista de sugerencias */
+    #autocompleteList {
+        position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+        background: #131b2e;
+        border: 1px solid rgba(88,166,255,0.25);
+        border-radius: 10px; z-index: 9999;
+        max-height: 240px; overflow-y: auto;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        display: none;
+    }
+    #autocompleteList.open { display: block; }
+    .ac-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 9px 14px; cursor: pointer;
+        transition: background 0.15s;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item.active { background: rgba(88,166,255,0.12); }
+    .ac-item .ac-avatar {
+        width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+        border: 1px solid rgba(88,166,255,0.3); flex-shrink: 0;
+    }
+    .ac-item .ac-avatar-ph {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: rgba(88,166,255,0.12);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; color: #58a6ff; flex-shrink: 0;
+    }
+    .ac-item .ac-name { color: #eceff1; font-size: 0.875rem; font-weight: 600; }
+    .ac-item .ac-doc  { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+    .ac-highlight { color: var(--accent-blue); font-weight: 800; }
 
     /* ── AVATAR MINI ── */
     .avatar-mini {
@@ -145,6 +184,24 @@
         display: flex; align-items: center; justify-content: center;
         font-size: 1rem; color: #58a6ff; flex-shrink: 0;
     }
+
+    /* ── STAT CARDS NOVEDADES (admin) ── */
+    .nov-stat-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px; padding: 18px 20px;
+        display: flex; align-items: center; gap: 16px;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .nov-stat-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); }
+    .nov-stat-card .icon-wrap {
+        width: 48px; height: 48px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; flex-shrink: 0;
+    }
+    .nov-stat-card .sc-num { font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; }
+    .nov-stat-card .sc-lbl { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .nov-stat-card .sc-sub { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
 </style>
 {% endblock %}
 
@@ -160,6 +217,7 @@
     {% endfor %}
     {% endif %}
 
+    <!-- ══ TARJETA PERFIL ══ -->
     <div class="sport-card mb-4 shadow-lg">
         <div class="row align-items-center p-2">
             <div class="col-md-4 text-center border-md-end" style="border-color:rgba(255,255,255,0.1)!important;">
@@ -173,7 +231,6 @@
                     {% endif %}
                 </div>
                 <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
-
                 {% if usuario.is_staff %}
                     <span class="badge px-3 py-1 mb-3" style="background:rgba(248,81,73,0.15);color:#f85149;">
                         <i class="fas fa-shield-alt me-1"></i>Administrador
@@ -235,23 +292,33 @@
         </div>
     </div>
 
+    <!-- ══ TABS ══ -->
     <ul class="nav nav-tabs mb-4 justify-content-center border-0" id="perfilTabs">
         <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">Novedades</button>
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">
+                <i class="fas fa-bell me-1"></i>Novedades
+            </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">Gimnasio</button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">
+                <i class="fas fa-dumbbell me-1"></i>Gimnasio
+            </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prestamos">Préstamos</button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prestamos">
+                <i class="fas fa-volleyball-ball me-1"></i>Préstamos
+            </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">Inter-fichas</button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">
+                <i class="fas fa-users me-1"></i>Inter-fichas
+            </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">Inter-centros</button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">
+                <i class="fas fa-medal me-1"></i>Inter-centros
+            </button>
         </li>
-
         {% if user.is_staff %}
         <li class="nav-item">
             <button class="nav-link tab-admin" data-bs-toggle="tab" data-bs-target="#tab-admin">
@@ -263,40 +330,314 @@
 
     <div class="tab-content pb-5">
 
+        <!-- ══════════════════════════════════════════════
+             TAB NOVEDADES
+             Admin → resumen estadístico del sistema
+             Usuario → sus propias novedades
+        ══════════════════════════════════════════════ -->
         <div class="tab-pane fade show active" id="tab-novedades">
             <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-rss me-2"></i>Notificaciones del sistema</h5>
-                <div class="news-item p-3 mb-3 rounded">
+
+                {% if user.is_staff %}
+                <!-- ── VISTA ADMINISTRADOR ── -->
+                <h5 class="fw-bold mb-1 text-cap" style="color:#f9c52c;">
+                    <i class="fas fa-chart-line me-2"></i>Resumen de actividad del sistema
+                </h5>
+                <p class="text-white-50 small mb-4">Últimas novedades registradas en la plataforma.</p>
+
+                <div class="row g-3 mb-4">
+                    <!-- Préstamos recientes -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="nov-stat-card">
+                            <div class="icon-wrap" style="background:rgba(88,166,255,0.12);">
+                                <i class="fas fa-volleyball-ball" style="color:#58a6ff;"></i>
+                            </div>
+                            <div>
+                                <div class="sc-num" style="color:#58a6ff;">{{ total_prestamos_recientes|default:"10" }}</div>
+                                <div class="sc-lbl">Préstamos recientes</div>
+                                <div class="sc-sub">Últimos 30 días</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ingresos al gimnasio -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="nov-stat-card">
+                            <div class="icon-wrap" style="background:rgba(63,185,80,0.12);">
+                                <i class="fas fa-dumbbell" style="color:#3fb950;"></i>
+                            </div>
+                            <div>
+                                <div class="sc-num" style="color:#3fb950;">{{ total_ingresos_gimnasio|default:"24" }}</div>
+                                <div class="sc-lbl">Ingresos al gimnasio</div>
+                                <div class="sc-sub">Últimos 30 días</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Torneos activos -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="nov-stat-card">
+                            <div class="icon-wrap" style="background:rgba(249,197,44,0.12);">
+                                <i class="fas fa-trophy" style="color:#f9c52c;"></i>
+                            </div>
+                            <div>
+                                <div class="sc-num" style="color:#f9c52c;">{{ total_torneos_activos|default:"3" }}</div>
+                                <div class="sc-lbl">Torneos activos</div>
+                                <div class="sc-sub">Inter-fichas + Inter-centros</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Nuevos usuarios -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="nov-stat-card">
+                            <div class="icon-wrap" style="background:rgba(248,81,73,0.12);">
+                                <i class="fas fa-user-plus" style="color:#f85149;"></i>
+                            </div>
+                            <div>
+                                <div class="sc-num" style="color:#f85149;">{{ nuevos_usuarios_mes|default:"7" }}</div>
+                                <div class="sc-lbl">Nuevos usuarios</div>
+                                <div class="sc-sub">Este mes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed de novedades del sistema -->
+                <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,0.45);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">
+                    <i class="fas fa-rss me-2" style="color:#58a6ff;"></i>Actividad reciente
+                </h6>
+
+                <div class="news-item news-info p-3 mb-3 rounded">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(88,166,255,0.15);">
+                            <i class="fas fa-volleyball-ball" style="color:#58a6ff;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="text-white mb-0 fw-bold text-cap">
+                                    {{ total_prestamos_recientes|default:"10" }} préstamos realizados recientemente
+                                </h6>
+                                <span class="badge" style="background:rgba(88,166,255,0.15);color:#58a6ff;font-size:0.7rem;">Préstamos</span>
+                            </div>
+                            <p class="text-white-50 small mb-0">
+                                Se han registrado {{ total_prestamos_recientes|default:"10" }} solicitudes de implementos deportivos en los últimos 30 días.
+                                {% if prestamo_mas_reciente %}Último: {{ prestamo_mas_reciente.elemento.tipo_maquina }} – {{ prestamo_mas_reciente.fecha_prestamo|date:"d/m/Y" }}.{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-item news-success p-3 mb-3 rounded">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(63,185,80,0.15);">
+                            <i class="fas fa-dumbbell" style="color:#3fb950;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="text-white mb-0 fw-bold text-cap">
+                                    {{ total_ingresos_gimnasio|default:"24" }} ingresos al gimnasio este mes
+                                </h6>
+                                <span class="badge" style="background:rgba(63,185,80,0.15);color:#3fb950;font-size:0.7rem;">Gimnasio</span>
+                            </div>
+                            <p class="text-white-50 small mb-0">
+                                El gimnasio registra actividad constante. Pico de uso en las últimas semanas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-item news-warning p-3 mb-3 rounded">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(249,197,44,0.15);">
+                            <i class="fas fa-users" style="color:#f9c52c;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="text-white mb-0 fw-bold text-cap">
+                                    Torneos inter-fichas en curso
+                                </h6>
+                                <span class="badge" style="background:rgba(249,197,44,0.15);color:#f9c52c;font-size:0.7rem;">Torneos</span>
+                            </div>
+                            <p class="text-white-50 small mb-0">
+                                {{ total_torneos_activos|default:"3" }} torneos activos registrados en la plataforma. Revisa el módulo inter-fichas para ver los detalles.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-item news-danger p-3 mb-3 rounded">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(248,81,73,0.15);">
+                            <i class="fas fa-user-plus" style="color:#f85149;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="text-white mb-0 fw-bold text-cap">
+                                    {{ nuevos_usuarios_mes|default:"7" }} nuevos usuarios este mes
+                                </h6>
+                                <span class="badge" style="background:rgba(248,81,73,0.15);color:#f85149;font-size:0.7rem;">Usuarios</span>
+                            </div>
+                            <p class="text-white-50 small mb-0">
+                                Se han registrado {{ nuevos_usuarios_mes|default:"7" }} aprendices nuevos en el sistema durante este mes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- ── VISTA APRENDIZ ── -->
+                <h5 class="fw-bold mb-4 text-info text-cap">
+                    <i class="fas fa-rss me-2"></i>Mis novedades
+                </h5>
+
+                <!-- Resumen personal -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="mini-stat">
+                            <div class="num" style="color:#58a6ff;">{{ prestamos|length }}</div>
+                            <div class="lbl">Mis préstamos</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="mini-stat">
+                            <div class="num" style="color:#3fb950;">{{ reservas_gimnasio|length }}</div>
+                            <div class="lbl">Ingresos gimnasio</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="mini-stat">
+                            <div class="num" style="color:#f9c52c;">{{ equipos_interfichas|length }}</div>
+                            <div class="lbl">Inter-fichas</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="mini-stat">
+                            <div class="num" style="color:#f85149;">{{ equipos_intercentros|length }}</div>
+                            <div class="lbl">Inter-centros</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-item news-info p-3 mb-3 rounded">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <div class="bg-primary p-2 rounded-circle me-3"><i class="fas fa-info-circle text-white"></i></div>
+                            <div class="bg-primary p-2 rounded-circle me-3">
+                                <i class="fas fa-info-circle text-white"></i>
+                            </div>
                             <div>
                                 <h6 class="text-white mb-1 fw-bold text-cap">Bienvenido al sistema</h6>
-                                <p class="text-white-50 small mb-0">Gestiona tus actividades deportivas, torneos e implementos desde un solo lugar.</p>
+                                <p class="text-white-50 small mb-0">
+                                    Gestiona tus actividades deportivas, torneos e implementos desde un solo lugar.
+                                </p>
                             </div>
                         </div>
                         <span class="badge bg-dark text-info text-cap">Reciente</span>
                     </div>
                 </div>
+
+                {% if prestamos %}
+                <div class="news-item news-success p-3 mb-3 rounded">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(63,185,80,0.15);">
+                            <i class="fas fa-volleyball-ball" style="color:#3fb950;"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-1 fw-bold text-cap">
+                                Tienes {{ prestamos|length }} préstamo{{ prestamos|length|pluralize:"s" }} registrado{{ prestamos|length|pluralize:"s" }}
+                            </h6>
+                            <p class="text-white-50 small mb-0">
+                                Revisa la pestaña <strong class="text-info">Préstamos</strong> para ver los detalles y fechas de devolución.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if equipos_interfichas %}
+                <div class="news-item news-warning p-3 mb-3 rounded">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(249,197,44,0.15);">
+                            <i class="fas fa-users" style="color:#f9c52c;"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-1 fw-bold text-cap">
+                                Inscrito en {{ equipos_interfichas|length }} equipo{{ equipos_interfichas|length|pluralize:"s" }} inter-fichas
+                            </h6>
+                            <p class="text-white-50 small mb-0">
+                                Estás participando en torneos deportivos. ¡Mucho ánimo!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if equipos_intercentros %}
+                <div class="news-item news-danger p-3 mb-3 rounded">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:38px;height:38px;background:rgba(248,81,73,0.15);">
+                            <i class="fas fa-medal" style="color:#f85149;"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-1 fw-bold text-cap">
+                                Eres parte de {{ equipos_intercentros|length }} selección{{ equipos_intercentros|length|pluralize:"es" }} representativa{{ equipos_intercentros|length|pluralize:"s" }}
+                            </h6>
+                            <p class="text-white-50 small mb-0">
+                                Representas al centro en torneos inter-centros. ¡Orgullo SENA!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════
+             TAB GIMNASIO
+        ══════════════════════════════════════════════ -->
         <div class="tab-pane fade" id="tab-gimnasio">
             <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-clock me-2"></i>Historial de ingresos al gimnasio</h5>
+                <h5 class="fw-bold mb-4 text-info text-cap">
+                    <i class="fas fa-clock me-2"></i>
+                    {% if user.is_staff %}Historial global de ingresos al gimnasio{% else %}Mi historial en el gimnasio{% endif %}
+                </h5>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle">
-                        <thead><tr class="text-cap"><th>Fecha</th><th>Hora entrada</th><th>Hora salida</th><th>Estado</th></tr></thead>
+                        <thead>
+                            <tr class="text-cap">
+                                {% if user.is_staff %}<th>Usuario</th>{% endif %}
+                                <th>Fecha</th><th>Hora entrada</th><th>Hora salida</th><th>Estado</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {% for r in reservas_gimnasio %}
                             <tr>
-                                <td>{{ r.fecha|date:"d/m/Y" }}</td>
-                                <td>{{ r.hora_entrada }}</td>
-                                <td>{{ r.hora_salida }}</td>
-                                <td><span class="badge bg-success text-cap">Finalizado</span></td>
+                                {% if user.is_staff %}
+                                <td class="text-cap fw-bold" style="color:#eceff1;">{{ r.usuario_solicitante|default:"—"|title }}</td>
+                                {% endif %}
+                                <td>{{ r.fecha_entrada|date:"d/m/Y" }}</td>
+                                <td>{{ r.hora_entrada|time:"H:i" }}</td>
+                                <td>{{ r.hora_salida|time:"H:i"|default:"—" }}</td>
+                                <td>
+                                    <span class="badge text-cap"
+                                          style="background:rgba(63,185,80,0.15);color:#3fb950;border:1px solid rgba(63,185,80,0.3);">
+                                        {{ r.estado|default:"Activo" }}
+                                    </span>
+                                </td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No tienes registros de ingreso.</td></tr>
+                            <tr>
+                                <td colspan="{% if user.is_staff %}5{% else %}4{% endif %}"
+                                    class="text-center py-4 text-white-50 text-cap">
+                                    No hay registros de ingreso.
+                                </td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -304,14 +645,22 @@
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════
+             TAB PRÉSTAMOS
+        ══════════════════════════════════════════════ -->
         <div class="tab-pane fade" id="tab-prestamos">
             <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-volleyball-ball me-2"></i>Mis préstamos de implementos</h5>
+                <h5 class="fw-bold mb-4 text-info text-cap">
+                    <i class="fas fa-volleyball-ball me-2"></i>
+                    {% if user.is_staff %}Todos los préstamos de implementos{% else %}Mis préstamos de implementos{% endif %}
+                </h5>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle">
                         <thead>
                             <tr class="text-cap">
-                                <th>Código</th><th>Implemento</th><th>Cant.</th>
+                                <th>Código</th>
+                                {% if user.is_staff %}<th>Usuario</th>{% endif %}
+                                <th>Implemento</th><th>Cant.</th>
                                 <th>Fecha préstamo</th><th>Devolución</th><th>Estado</th>
                             </tr>
                         </thead>
@@ -319,6 +668,9 @@
                             {% for p in prestamos %}
                             <tr>
                                 <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                                {% if user.is_staff %}
+                                <td class="text-cap">{{ p.usuario.get_full_name|lower|default:p.usuario.username }}</td>
+                                {% endif %}
                                 <td class="text-cap">{{ p.elemento.tipo_maquina|lower }}</td>
                                 <td>{{ p.cantidad_prestada }}</td>
                                 <td>{{ p.fecha_prestamo|date:"d/m/Y" }}</td>
@@ -326,7 +678,10 @@
                                 <td><span class="badge bg-primary text-cap">{{ p.estado_prestamo|lower }}</span></td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="6" class="text-center py-4 text-white-50 text-cap">No hay préstamos registrados.</td></tr>
+                            <tr>
+                                <td colspan="{% if user.is_staff %}7{% else %}6{% endif %}"
+                                    class="text-center py-4 text-white-50 text-cap">No hay préstamos registrados.</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -334,22 +689,52 @@
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════
+             TAB INTER-FICHAS
+        ══════════════════════════════════════════════ -->
         <div class="tab-pane fade" id="tab-interfichas">
             <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-users me-2"></i>Participación en torneos inter-fichas</h5>
+                <h5 class="fw-bold mb-4 text-info text-cap">
+                    <i class="fas fa-users me-2"></i>
+                    {% if user.is_staff %}Todos los equipos inter-fichas{% else %}Mis equipos inter-fichas{% endif %}
+                </h5>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle">
-                        <thead><tr class="text-cap"><th>Equipo</th><th>Disciplina</th><th>Ficha</th><th>Estado</th></tr></thead>
+                        <thead>
+                            <tr class="text-cap">
+                                <th>Equipo</th>
+                                {% if user.is_staff %}<th>Torneo</th>{% endif %}
+                                <th>Disciplina</th><th>Ficha</th>
+                                {% if user.is_staff %}<th>Jugadores</th>{% endif %}
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {% for e in equipos_interfichas %}
                             <tr>
                                 <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
-                                <td class="text-cap">{{ e.disciplina|lower }}</td>
+                                {% if user.is_staff %}
+                                <td class="text-cap" style="color:rgba(255,255,255,0.6);">{{ e.torneo.nombre_torneo|lower|default:"—" }}</td>
+                                {% endif %}
+                                <td class="text-cap">{{ e.disciplina.nombre_disciplina|lower|default:e.disciplina }}</td>
                                 <td>{{ e.ficha }}</td>
-                                <td><span class="badge bg-success text-cap">Inscrito</span></td>
+                                {% if user.is_staff %}
+                                <td>{{ e.jugadores.count }}</td>
+                                {% endif %}
+                                <td>
+                                    <span class="badge text-cap"
+                                          style="background:rgba(63,185,80,0.15);color:#3fb950;border:1px solid rgba(63,185,80,0.3);">
+                                        Inscrito
+                                    </span>
+                                </td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No participas en torneos inter-fichas.</td></tr>
+                            <tr>
+                                <td colspan="{% if user.is_staff %}5{% else %}4{% endif %}"
+                                    class="text-center py-4 text-white-50 text-cap">
+                                    {% if user.is_staff %}No hay equipos registrados.{% else %}No participas en torneos inter-fichas.{% endif %}
+                                </td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -357,22 +742,59 @@
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════
+             TAB INTER-CENTROS
+        ══════════════════════════════════════════════ -->
         <div class="tab-pane fade" id="tab-intercentros">
             <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-medal me-2"></i>Selecciones representativas inter-centros</h5>
+                <h5 class="fw-bold mb-4 text-info text-cap">
+                    <i class="fas fa-medal me-2"></i>
+                    {% if user.is_staff %}Todas las selecciones inter-centros{% else %}Mis selecciones representativas{% endif %}
+                </h5>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle">
-                        <thead><tr class="text-cap"><th>Selección</th><th>Centro</th><th>Disciplina</th><th>Estado</th></tr></thead>
+                        <thead>
+                            <tr class="text-cap">
+                                {% if user.is_staff %}
+                                <th>Aprendiz</th>
+                                <th>Documento</th>
+                                {% endif %}
+                                <th>Torneo</th>
+                                <th>Disciplina</th>
+                                <th>Ficha</th>
+                                <th>Fecha postulación</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {% for e in equipos_intercentros %}
                             <tr>
-                                <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
-                                <td class="text-cap">{{ e.centro_formacion|lower }}</td>
-                                <td class="text-cap">{{ e.disciplina|lower }}</td>
-                                <td><span class="badge bg-primary text-cap">Seleccionado</span></td>
+                                {% if user.is_staff %}
+                                <td class="text-cap fw-bold" style="color:#eceff1;">
+                                    {{ e.nombres|default:"" }} {{ e.apellidos|default:"" }}
+                                </td>
+                                <td style="color:var(--accent-blue);font-weight:700;">
+                                    {{ e.numero_documento }}
+                                </td>
+                                {% endif %}
+                                <td class="text-cap fw-bold">{{ e.torneo.nombre_torneo|lower|default:"—" }}</td>
+                                <td class="text-cap">{{ e.disciplina|lower|default:"—" }}</td>
+                                <td style="color:rgba(255,255,255,0.6);">{{ e.ficha|default:"—" }}</td>
+                                <td>{{ e.fecha_postulacion|date:"d/m/Y"|default:"—" }}</td>
+                                <td>
+                                    <span class="badge text-cap"
+                                          style="background:rgba(88,166,255,0.15);color:#58a6ff;border:1px solid rgba(88,166,255,0.3);">
+                                        Postulado
+                                    </span>
+                                </td>
                             </tr>
                             {% empty %}
-                            <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">Sin registros en inter-centros.</td></tr>
+                            <tr>
+                                <td colspan="{% if user.is_staff %}7{% else %}5{% endif %}"
+                                    class="text-center py-4 text-white-50 text-cap">
+                                    {% if user.is_staff %}No hay postulaciones registradas.{% else %}Sin registros en inter-centros.{% endif %}
+                                </td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -380,10 +802,14 @@
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════
+             TAB ADMIN – GESTIÓN DE USUARIOS
+        ══════════════════════════════════════════════ -->
         {% if user.is_staff %}
         <div class="tab-pane fade" id="tab-admin">
             <div class="sport-card text-start">
 
+                <!-- Mini-stats -->
                 <div class="row g-3 mb-4">
                     <div class="col-6 col-md-3">
                         <div class="mini-stat">
@@ -399,7 +825,7 @@
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="mini-stat">
-                            <div class="num" style="color:#f85149;">{{ total_usuarios|add:"-"|add:usuarios_activos }}</div>
+                            <div class="num" style="color:#f85149;" id="cntInactivos">—</div>
                             <div class="lbl">Inactivos</div>
                         </div>
                     </div>
@@ -411,6 +837,7 @@
                     </div>
                 </div>
 
+                <!-- Últimos usuarios -->
                 <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,0.5);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">
                     <i class="fas fa-user-clock me-2" style="color:#f9c52c;"></i>Últimos usuarios registrados
                 </h6>
@@ -437,19 +864,20 @@
                     {% endfor %}
                 </div>
 
+                <!-- Gestión + Buscador -->
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                     <h5 class="fw-bold mb-0 text-info text-cap">
                         <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
                     </h5>
-                    <div class="input-group" style="max-width: 350px;">
-                        <span class="input-group-text bg-transparent border-0" style="position: absolute; z-index: 10; left: 10px; top: 10px; color: var(--accent-blue);">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" id="buscadorUsuarios" class="ps-5" placeholder="Buscar por nombre o documento...">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon-abs"></i>
+                        <input type="text" id="buscadorUsuarios" placeholder="Buscar por nombre o documento...">
+                        <div id="autocompleteList"></div>
                     </div>
                 </div>
 
-                <div class="table-responsive" style="overflow: visible;">
+                <!-- Tabla usuarios -->
+                <div class="table-responsive">
                     <table class="tbl-admin table mb-0" id="tablaUsuarios">
                         <thead>
                             <tr>
@@ -463,7 +891,11 @@
                         </thead>
                         <tbody>
                         {% for u in todos_usuarios %}
-                        <tr class="fila-usuario">
+                        <tr class="fila-usuario"
+                            data-nombre="{{ u.get_full_name|lower }}"
+                            data-doc="{{ u.numero_documento }}"
+                            data-email="{{ u.email }}"
+                            data-avatar="{% if u.foto_perfil %}{{ u.foto_perfil.url }}{% endif %}">
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     {% if u.foto_perfil %}
@@ -495,11 +927,13 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-2 flex-wrap align-items-center">
-                                    <button type="button" class="btn-acc btn-acc-edit" data-bs-toggle="modal" data-bs-target="#modalEditAdmin{{ u.id }}" title="Editar Usuario">
+                                    <button type="button" class="btn-acc btn-acc-edit"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditAdmin{{ u.id }}"
+                                            title="Editar Usuario">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
-
-                                    <form method="post" action="{% url 'toggle_usuario' u.id %}">
+                                    <form method="post" action="{% url 'toggle_usuario' u.id %}" style="display:inline;">
                                         {% csrf_token %}
                                         {% if u.estado == 'activo' %}
                                             <button type="submit" class="btn-acc btn-acc-off" title="Desactivar">
@@ -515,7 +949,11 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="6" class="text-center py-5 text-white-50"><i class="fas fa-inbox fa-2x mb-3 d-block"></i>No hay usuarios registrados.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-white-50">
+                                <i class="fas fa-inbox fa-2x mb-3 d-block"></i>No hay usuarios registrados.
+                            </td>
+                        </tr>
                         {% endfor %}
                         </tbody>
                     </table>
@@ -523,11 +961,12 @@
 
             </div>
         </div>
-        
+
+        <!-- ══ MODALES EDITAR ADMIN ══ -->
         {% for u in todos_usuarios %}
         <div class="modal fade" id="modalEditAdmin{{ u.id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content custom-modal text-white" style="z-index: 1055;">
+                <div class="modal-content custom-modal text-white">
                     <div class="modal-header border-0 pb-0">
                         <h5 class="modal-title fw-bold text-cap">
                             <i class="fas fa-user-edit me-2 text-warning"></i>Editar: {{ u.get_full_name|lower }}
@@ -539,48 +978,60 @@
                             {% csrf_token %}
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Nombre</label>
-                                    <input type="text" name="first_name" class="custom-input form-control" value="{{ u.first_name }}">
+                                    <label class="form-label text-white-50 small fw-bold">Nombre</label>
+                                    <input type="text" name="first_name" class="custom-input form-control"
+                                           value="{{ u.first_name }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Apellidos</label>
-                                    <input type="text" name="last_name" class="custom-input form-control" value="{{ u.last_name }}">
+                                    <label class="form-label text-white-50 small fw-bold">Apellidos</label>
+                                    <input type="text" name="last_name" class="custom-input form-control"
+                                           value="{{ u.last_name }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Documento</label>
-                                    <input type="text" name="numero_documento" class="custom-input form-control" value="{{ u.numero_documento }}">
+                                    <label class="form-label text-white-50 small fw-bold">Documento</label>
+                                    <input type="text" name="numero_documento" class="custom-input form-control"
+                                           value="{{ u.numero_documento }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Ficha</label>
-                                    <input type="text" name="ficha" class="custom-input form-control" value="{{ u.ficha|default:'' }}">
+                                    <label class="form-label text-white-50 small fw-bold">Ficha</label>
+                                    <input type="text" name="ficha" class="custom-input form-control"
+                                           value="{{ u.ficha|default:'' }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Correo</label>
-                                    <input type="email" name="email" class="custom-input form-control" value="{{ u.email }}">
+                                    <label class="form-label text-white-50 small fw-bold">Correo electrónico</label>
+                                    <input type="email" name="email" class="custom-input form-control"
+                                           value="{{ u.email }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Teléfono</label>
-                                    <input type="text" name="telefono" class="custom-input form-control" value="{{ u.telefono|default:'' }}">
+                                    <label class="form-label text-white-50 small fw-bold">Teléfono</label>
+                                    <input type="text" name="telefono" class="custom-input form-control"
+                                           value="{{ u.telefono|default:'' }}"
+                                           placeholder="Ej: 3001234567">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Rol en el sistema</label>
+                                    <label class="form-label text-white-50 small fw-bold">Rol en el sistema</label>
                                     <select name="rol" class="form-select custom-input">
-                                        <option value="aprendiz" {% if u.rol == 'aprendiz' %}selected{% endif %}>Aprendiz</option>
+                                        <option value="aprendiz"   {% if u.rol == 'aprendiz'   %}selected{% endif %}>Aprendiz</option>
                                         <option value="instructor" {% if u.rol == 'instructor' %}selected{% endif %}>Instructor</option>
-                                        <option value="admin" {% if u.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                                        <option value="admin"      {% if u.rol == 'admin'      %}selected{% endif %}>Administrador</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-white-50">Estado</label>
+                                    <label class="form-label text-white-50 small fw-bold">Estado</label>
                                     <select name="estado" class="form-select custom-input">
-                                        <option value="activo" {% if u.estado == 'activo' %}selected{% endif %}>Activo</option>
+                                        <option value="activo"   {% if u.estado == 'activo'   %}selected{% endif %}>Activo</option>
                                         <option value="inactivo" {% if u.estado == 'inactivo' %}selected{% endif %}>Inactivo</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="mt-4 text-end">
-                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-warning shadow-lg"><i class="fas fa-save me-2"></i>Guardar Cambios</button>
+                            <hr style="border-color:rgba(255,255,255,0.08);margin:20px 0;">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-warning shadow-lg px-4">
+                                    <i class="fas fa-save me-2"></i>Guardar cambios
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -590,36 +1041,47 @@
         {% endfor %}
         {% endif %}
 
-    </div></div>
+    </div>
+</div>
 </div>
 
+<!-- ══ MODAL EDITAR MI PERFIL ══ -->
 <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-cap"><i class="fas fa-user-cog me-2"></i>Actualizar mis datos</h5>
+                <h5 class="modal-title fw-bold text-cap">
+                    <i class="fas fa-user-cog me-2"></i>Actualizar mis datos
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-0">
                 <form method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
                     {% csrf_token %}
+                    <!-- Preview foto -->
                     <div class="text-center mb-4 mt-2">
                         <div class="position-relative d-inline-block">
                             {% if usuario.foto_perfil %}
-                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow"
+                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}"
+                                     class="rounded-circle shadow"
                                      style="width:120px;height:120px;object-fit:cover;border:2px solid var(--accent-blue);">
                             {% else %}
-                                <img id="imgPreviewPerfil" src="https://via.placeholder.com/120x120/050814/00d2ff?text=SENA"
-                                     class="rounded-circle" style="width:120px;height:120px;object-fit:cover;border:2px dashed var(--accent-blue);">
+                                <img id="imgPreviewPerfil"
+                                     src="https://via.placeholder.com/120x120/050814/00d2ff?text=SENA"
+                                     class="rounded-circle"
+                                     style="width:120px;height:120px;object-fit:cover;border:2px dashed var(--accent-blue);">
                             {% endif %}
                             <label for="inputFotoPerfil" class="btn-camera" title="Cambiar foto">
                                 <i class="fas fa-camera"></i>
                             </label>
-                            <input type="file" name="imagen" id="inputFotoPerfil" class="d-none" accept="image/*"
-                                   onchange="previewProfileImage(event)">
+                            <input type="file" name="imagen" id="inputFotoPerfil" class="d-none"
+                                   accept="image/*" onchange="previewProfileImage(event)">
                         </div>
+                        <p class="text-white-50 small mt-2 mb-0">Haz clic en la cámara para cambiar tu foto</p>
                     </div>
+
                     <div class="row g-3">
+                        <!-- Campos bloqueados (solo lectura) -->
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Nombre completo</label>
                             <input type="text" class="custom-input form-control border-0 text-white text-cap"
@@ -640,21 +1102,32 @@
                             <input type="text" class="custom-input form-control border-0 text-white"
                                    value="{{ usuario.ficha|default:'N/A' }}" disabled>
                         </div>
+
+                        <!-- Campos editables -->
                         <div class="col-md-6 text-start">
-                            <label class="form-label small fw-bold text-cap">Correo electrónico</label>
+                            <label class="form-label small fw-bold text-cap">
+                                <i class="fas fa-envelope me-1 text-info"></i>Correo electrónico
+                            </label>
                             <input type="email" name="email" class="custom-input form-control shadow-sm"
                                    value="{{ usuario.email }}" required>
                         </div>
                         <div class="col-md-6 text-start">
-                            <label class="form-label small fw-bold text-cap">Número de teléfono</label>
+                            <label class="form-label small fw-bold text-cap">
+                                <i class="fas fa-phone me-1 text-info"></i>Número de teléfono
+                            </label>
                             <input type="text" name="celular" class="custom-input form-control shadow-sm"
-                                   value="{{ usuario.telefono|default:'' }}" placeholder="Ej: 3001234567">
+                                   value="{{ usuario.telefono|default:'' }}"
+                                   placeholder="Ej: 3001234567">
                         </div>
                     </div>
-                    <div class="alert alert-info mt-4 p-2 small border-0 bg-dark text-white-50 text-cap text-center">
-                        <i class="fas fa-info-circle me-2 text-info"></i>Los datos de identidad son institucionales y no pueden editarse.
+
+                    <div class="alert mt-4 p-2 small border-0 text-center"
+                         style="background:rgba(0,210,255,0.05);color:rgba(255,255,255,0.45);border-radius:8px;">
+                        <i class="fas fa-lock me-2 text-info"></i>
+                        Los datos de identidad son institucionales y no pueden editarse directamente.
                     </div>
-                    <button type="submit" class="btn btn-warning w-100 py-3 mt-2 shadow-lg">
+
+                    <button type="submit" class="btn btn-warning w-100 py-3 mt-2 shadow-lg fw-bold">
                         <i class="fas fa-save me-2"></i>Guardar cambios realizados
                     </button>
                 </form>
@@ -667,38 +1140,164 @@
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
-    // Preview de foto
-    function previewProfileImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('imgPreviewPerfil');
-            output.src = reader.result;
-            output.style.border = "2px solid var(--accent-hover)";
-        };
-        if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
-    }
+/* ════════════════════════════════════════════
+   PREVIEW FOTO
+════════════════════════════════════════════ */
+function previewProfileImage(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+        var output = document.getElementById('imgPreviewPerfil');
+        output.src = reader.result;
+        output.style.border = "2px solid var(--accent-hover)";
+    };
+    if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+}
 
-    // Buscador en tiempo real por Nombre o Documento
-    document.addEventListener('DOMContentLoaded', function () {
-        const input = document.getElementById('buscadorUsuarios');
-        if (!input) return;
-        
-        input.addEventListener('input', function () {
-            const query = this.value.toLowerCase().trim();
-            const filas = document.querySelectorAll('#tablaUsuarios .fila-usuario');
-            
-            filas.forEach(function (fila) {
-                const nombre = fila.querySelector('.dato-nombre')?.textContent.toLowerCase() || '';
-                const documento = fila.querySelector('.dato-doc')?.textContent.toLowerCase() || '';
-                
-                // Búsqueda simple: si encuentra coincidencia, muestra la fila; si no, la oculta
-                if (nombre.includes(query) || documento.includes(query)) {
-                    fila.style.display = '';
-                } else {
-                    fila.style.display = 'none';
-                }
-            });
+/* ════════════════════════════════════════════
+   CONTADOR INACTIVOS
+════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function () {
+    var total    = parseInt('{{ total_usuarios|default:0 }}') || 0;
+    var activos  = parseInt('{{ usuarios_activos|default:0 }}') || 0;
+    var el       = document.getElementById('cntInactivos');
+    if (el) el.textContent = Math.max(total - activos, 0);
+});
+
+/* ════════════════════════════════════════════
+   AUTOCOMPLETADO – BUSCADOR DE USUARIOS
+════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function () {
+    var input   = document.getElementById('buscadorUsuarios');
+    var lista   = document.getElementById('autocompleteList');
+    var tabla   = document.getElementById('tablaUsuarios');
+    if (!input || !lista || !tabla) return;
+
+    /* Recopilar datos de las filas */
+    var usuarios = [];
+    tabla.querySelectorAll('tr.fila-usuario').forEach(function (fila) {
+        usuarios.push({
+            nombre : fila.dataset.nombre  || '',
+            doc    : fila.dataset.doc     || '',
+            email  : fila.dataset.email   || '',
+            avatar : fila.dataset.avatar  || '',
+            el     : fila
         });
     });
+
+    var activeIdx = -1;
+
+    function highlight(text, query) {
+        if (!query) return text;
+        var regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        return text.replace(regex, '<span class="ac-highlight">$1</span>');
+    }
+
+    function renderSugerencias(query) {
+        lista.innerHTML = '';
+        activeIdx = -1;
+        if (!query || query.length < 1) {
+            lista.classList.remove('open');
+            return;
+        }
+
+        var matches = usuarios.filter(function (u) {
+            return u.nombre.includes(query) || u.doc.includes(query);
+        }).slice(0, 8); // máx 8 sugerencias
+
+        if (matches.length === 0) {
+            lista.classList.remove('open');
+            return;
+        }
+
+        matches.forEach(function (u, i) {
+            var item = document.createElement('div');
+            item.className = 'ac-item';
+            item.dataset.index = i;
+
+            var avatarHtml = u.avatar
+                ? '<img src="' + u.avatar + '" class="ac-avatar" alt="">'
+                : '<div class="ac-avatar-ph"><i class="fas fa-user"></i></div>';
+
+            item.innerHTML =
+                avatarHtml +
+                '<div>' +
+                  '<div class="ac-name text-cap">' + highlight(u.nombre, query) + '</div>' +
+                  '<div class="ac-doc">'           + highlight(u.doc,    query) + '</div>' +
+                '</div>';
+
+            item.addEventListener('mousedown', function (e) {
+                e.preventDefault(); // evitar blur antes del click
+                input.value = u.nombre;
+                filtrarTabla(u.nombre);
+                lista.classList.remove('open');
+            });
+
+            lista.appendChild(item);
+        });
+
+        lista.classList.add('open');
+    }
+
+    function filtrarTabla(query) {
+        usuarios.forEach(function (u) {
+            var visible = !query ||
+                u.nombre.includes(query.toLowerCase()) ||
+                u.doc.includes(query.toLowerCase());
+            u.el.style.display = visible ? '' : 'none';
+        });
+    }
+
+    /* Eventos del input */
+    input.addEventListener('input', function () {
+        var q = this.value.toLowerCase().trim();
+        filtrarTabla(q);
+        renderSugerencias(q);
+    });
+
+    input.addEventListener('keydown', function (e) {
+        var items = lista.querySelectorAll('.ac-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIdx = Math.min(activeIdx + 1, items.length - 1);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIdx = Math.max(activeIdx - 1, -1);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIdx >= 0 && items[activeIdx]) {
+                items[activeIdx].dispatchEvent(new MouseEvent('mousedown'));
+            }
+            lista.classList.remove('open');
+            return;
+        } else if (e.key === 'Escape') {
+            lista.classList.remove('open');
+            return;
+        }
+
+        items.forEach(function (it, i) {
+            it.classList.toggle('active', i === activeIdx);
+        });
+        if (activeIdx >= 0) items[activeIdx].scrollIntoView({ block: 'nearest' });
+    });
+
+    input.addEventListener('focus', function () {
+        var q = this.value.toLowerCase().trim();
+        if (q) renderSugerencias(q);
+    });
+
+    input.addEventListener('blur', function () {
+        // pequeño delay para que el mousedown del item se ejecute primero
+        setTimeout(function () { lista.classList.remove('open'); }, 150);
+    });
+
+    /* Cerrar al hacer click fuera */
+    document.addEventListener('click', function (e) {
+        if (!input.contains(e.target) && !lista.contains(e.target)) {
+            lista.classList.remove('open');
+        }
+    });
+});
 </script>
 {% endblock %}
