@@ -221,6 +221,7 @@ body::before {
 .btn-primary:hover, .btn-ingresar:hover {
     box-shadow: 0 0 20px var(--accent-blue);
     transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(2, 119, 189, 0.4);
 }
 
 .btn-profile {
