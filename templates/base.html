@@ -7,17 +7,18 @@
     <title>{% block title %}Sistema de Gestión Deportiva{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-{% include "partials/header.html" %}
 <body>
-   
+
+    {% include "partials/header.html" %}
+
     <main>
         {% block content %}{% endblock %}
     </main>
 
-  
+    {% include "partials/footer.html" %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
@@ -25,4 +26,3 @@
     <script src="{% static 'js/inicio.js' %}"></script>
 </body>
 </html>
-{% include "partials/footer.html" %}

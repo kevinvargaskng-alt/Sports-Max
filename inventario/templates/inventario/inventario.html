@@ -4,213 +4,367 @@
 {% block title %}Inventario - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    /* =========================================================
+       AJUSTES RESPONSIVE (TABLA A TARJETAS) Y LIMPIEZA
+       ========================================================= */
+    @media (max-width: 768px) {
+        #tablaElementos thead, .table-responsive thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+
+        tr.main-row {
+            margin-bottom: 30px !important;
+            border: 1px solid #30363d !important;
+            border-radius: 20px;
+            background: #161b22;
+            padding: 15px 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        tr.expansion-row,
+        tr.fila-detalle { display: none !important; }
+
+        td {
+            text-align: left !important;
+            padding: 12px 25px !important;
+            border: none !important;
+            position: relative;
+            padding-top: 38px !important;
+        }
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 12px; left: 25px;
+            font-size: 0.7rem; font-weight: 800;
+            text-transform: uppercase;
+            color: #58a6ff; letter-spacing: 1.2px;
+        }
+
+        td[data-label="Descripción"] {
+            background: rgba(88,166,255,0.03);
+            border-top: 1px solid #30363d !important;
+            margin-top: 10px;
+            font-size: 0.9rem; color: #c9d1d9; line-height: 1.5;
+        }
+        td[data-label="Imagen"] { padding-top: 15px !important; text-align: center !important; }
+        td[data-label="Imagen"]::before { display: none; }
+
+        .table-img {
+            width: 100px !important; height: 100px !important;
+            margin: 0 auto; border-radius: 15px; border: 2px solid #30363d;
+        }
+
+        td[data-label="Detalle"], .btn-expand {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        .btn-group-mobile { display: flex; gap: 12px; width: 100%; padding-top: 5px; }
+        .btn-group-mobile button { flex: 1; padding: 12px; }
+    }
+
+    .table-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #30363d; }
+    .badge-status { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
-    <div class="container">
+    <div class="container text-start">
 
-        <!-- Encabezado -->
-        <div class="modulo-header text-center mb-5">
-            <i class="fas fa-box fa-3x mb-3"></i>
-            <h2 class="fw-bold text-white">Módulo De Inventario</h2>
-            <p class="text-white-50">Gestiona elementos deportivos, préstamos y devoluciones</p>
-        </div>
+        <!-- HEADER -->
+        <header class="modulo-header text-center mb-5">
+            <i class="fas fa-boxes fa-3x mb-3 text-warning"></i>
+            <h2 class="fw-bold text-white">Módulo Inventario</h2>
+            <p class="text-white-50">Gestión de existencias para <strong>{{ user.get_full_name }}</strong></p>
+        </header>
 
-        <!-- Tarjetas de acciones -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="sport-card">
+        <!-- ══════════════════════════════════════════
+             NAVEGACIÓN PRINCIPAL  ← ACTUALIZADA
+        ══════════════════════════════════════════ -->
+        <nav class="row g-4 mb-5 justify-content-center">
+            <!-- Nuevo Elemento -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
                     <i class="fas fa-plus-circle fa-2x mb-3 text-warning"></i>
-                    <h5>NUEVO ELEMENTO</h5>
-                    <p>Registra un nuevo elemento deportivo al inventario.</p>
-                    <button class="btn btn-dark btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalElemento">
-                        <i class="fas fa-plus me-1"></i>Agregar
+                    <h6 class="fw-bold text-white small">NUEVO ELEMENTO</h6>
+                    <button class="btn btn-warning btn-sm mt-2 w-100 fw-bold"
+                            data-bs-toggle="modal" data-bs-target="#modalElemento"
+                            onclick="abrirModalCrear()">
+                        <i class="fas fa-plus me-1"></i>AGREGAR
                     </button>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="sport-card">
-                    <i class="fas fa-hand-holding fa-2x mb-3 text-warning"></i>
-                    <h5>NUEVO PRÉSTAMO</h5>
-                    <p>Registra el préstamo de un elemento a un aprendiz.</p>
-                    <button class="btn btn-dark btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
-                        <i class="fas fa-plus me-1"></i>Prestar
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="sport-card">
-                    <i class="fas fa-undo fa-2x mb-3 text-warning"></i>
-                    <h5>DEVOLUCIONES</h5>
-                    <p>Se Registra la devolución de elementos prestados.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-inv" data-seccion="devoluciones">
-                        <i class="fas fa-eye me-1"></i>Ver
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="sport-card">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
-                    <h5>SANCIONES</h5>
-                    <p>Consulta las sanciones activas por daño o pérdida.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-inv" data-seccion="sanciones">
-                        <i class="fas fa-eye me-1"></i>Ver
-                    </button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Panel dinámico -->
-        <div id="panel-inventario" class="panel-interfichas d-none mb-4">
-            <div id="panel-contenido-inventario"></div>
-        </div>
+            <!-- Nuevo Préstamo -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center border-info p-3">
+                    <i class="fas fa-hand-holding fa-2x mb-3 text-info"></i>
+                    <h6 class="fw-bold text-info small">NUEVO PRÉSTAMO</h6>
+                    <button class="btn btn-info btn-sm mt-2 w-100 fw-bold text-dark"
+                            data-bs-toggle="modal" data-bs-target="#modalPrestamo">
+                        <i class="fas fa-plus me-1"></i>SOLICITAR
+                    </button>
+                </div>
+            </div>
 
-        <!-- Tabla Elementos -->
-        <div class="sport-card text-start mb-4">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-boxes text-warning me-2"></i>Elementos Deportivos
+            <!-- Devoluciones → página propia -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <i class="fas fa-undo fa-2x mb-3 text-success"></i>
+                    <h6 class="fw-bold text-white small">DEVOLUCIONES</h6>
+                    <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold">
+                        <i class="fas fa-eye me-1"></i>VER
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sanciones → página propia -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-danger"></i>
+                    <h6 class="fw-bold text-white small">SANCIONES</h6>
+                    <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold">
+                        <i class="fas fa-eye me-1"></i>VER
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ══════════════════════════════════════════
+             TABLA INVENTARIO
+        ══════════════════════════════════════════ -->
+        <section class="sport-card text-start mb-4">
+            <h5 class="fw-bold mb-4">
+                <i class="fas fa-list text-warning me-2"></i>Existencias en Inventario
             </h5>
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
+                <table class="table table-dark table-hover align-middle mb-0" id="tablaElementos">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Detalle</th>
+                            <th>Imagen</th>
                             <th>Elemento</th>
-                            <th>Cantidad</th>
+                            <th>Stock</th>
                             <th>Estado</th>
-                            <th>Docente</th>
-                            <th>Fecha Adquisición</th>
-                            <th>Acciones</th>
+                            <th>Responsable</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for e in elementos %}
-                        <tr>
-                            <td>{{ e.codigo_elemento }}</td>
-                            <td>{{ e.tipo_maquina }}</td>
-                            <td>{{ e.cantidad_total }}</td>
-                            <td>
-                                {% if e.estado_general == 'Bueno' %}
-                                    <span class="badge bg-success">{{ e.estado_general }}</span>
-                                {% elif e.estado_general == 'Regular' %}
-                                    <span class="badge bg-warning text-dark">{{ e.estado_general }}</span>
+                        <tr class="main-row"
+                            data-id="{{ e.codigo_elemento }}"
+                            data-tipo="{{ e.tipo_maquina }}"
+                            data-cantidad="{{ e.cantidad_total }}"
+                            data-estado="{{ e.estado_general }}"
+                            data-docente="{{ e.docente_responsable }}"
+                            data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
+                            data-descripcion="{{ e.descripcion }}"
+                            {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}>
+
+                            <td data-label="Detalle">
+                                <button class="btn btn-expand text-info"><i class="fas fa-plus"></i></button>
+                            </td>
+                            <td data-label="Imagen">
+                                {% if e.imagen %}
+                                    <img src="{{ e.imagen.url }}" class="table-img">
                                 {% else %}
-                                    <span class="badge bg-danger">{{ e.estado_general }}</span>
+                                    <div class="table-img d-flex align-items-center justify-content-center bg-dark border border-secondary">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
                                 {% endif %}
                             </td>
-                            <td>{{ e.docente_responsable }}</td>
-                            <td>{{ e.fecha_adquisicion }}</td>
-                            <td>
-                                <a href="{% url 'editar_elemento' e.codigo_elemento %}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'eliminar_elemento' e.codigo_elemento %}" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                            <td data-label="Elemento"><strong>{{ e.tipo_maquina }}</strong></td>
+                            <td data-label="Stock">
+                                <span class="badge bg-dark border border-secondary px-3">{{ e.cantidad_total }}</span>
+                            </td>
+                            <td data-label="Estado">
+                                <span class="badge-status
+                                    {% if e.estado_general == 'Bueno' %}bg-success
+                                    {% elif e.estado_general == 'Regular' %}bg-warning
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ e.estado_general }}
+                                </span>
+                            </td>
+                            <td data-label="Responsable">{{ e.docente_responsable }}</td>
+
+                            <!-- Descripción solo en móvil -->
+                            <td data-label="Descripción" class="d-md-none">
+                                {{ e.descripcion|default:"Sin descripción adicional disponible." }}
+                            </td>
+
+                            <td data-label="Acciones" class="text-center">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <!-- Préstamo rápido -->
+                                    <button type="button"
+                                            class="btn btn-info btn-sm text-dark fw-bold"
+                                            onclick="prestamoRapido('{{ e.codigo_elemento }}')"
+                                            title="Solicitar Préstamo">
+                                        <i class="fas fa-hand-pointer"></i>
+                                    </button>
+                                    <!-- Editar -->
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm btn-editar-elemento"
+                                            title="Editar Elemento">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <!-- Eliminar (solo staff) -->
+                                    {% if user.is_staff %}
+                                    <a href="{% url 'eliminar_elemento' e.codigo_elemento %}"
+                                       class="btn btn-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Eliminar este elemento?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Fila expandida desktop -->
+                        <tr class="expansion-row" style="display:none; background:#0d1117;">
+                            <td colspan="7">
+                                <div class="p-3">
+                                    <h6 class="text-info fw-bold">Descripción Completa:</h6>
+                                    <p class="text-white-50 mb-0">{{ e.descripcion|default:"No hay descripción disponible." }}</p>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center">No hay elementos registrados.</td>
+                            <td colspan="7" class="text-center py-4 text-white-50">
+                                No hay elementos registrados en el inventario.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- Tabla Préstamos -->
-        <div class="sport-card text-start">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-hand-holding text-warning me-2"></i>Préstamos Activos
+        <!-- ══════════════════════════════════════════
+             MIS PRÉSTAMOS EN CURSO
+        ══════════════════════════════════════════ -->
+        <section class="sport-card text-start">
+            <h5 class="fw-bold mb-4 text-info">
+                <i class="fas fa-history me-2"></i>Mis Préstamos en Curso
             </h5>
             <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Código</th>
                             <th>Elemento</th>
-                            <th>Cantidad</th>
-                            <th>Fecha Préstamo</th>
-                            <th>Fecha Devolución</th>
+                            <th>Cant.</th>
+                            <th>Devolución</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th class="text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for p in prestamos %}
                         <tr>
-                            <td>{{ p.codigo_prestamo }}</td>
-                            <td>{{ p.elemento }}</td>
-                            <td>{{ p.cantidad_prestada }}</td>
-                            <td>{{ p.fecha_prestamo }}</td>
-                            <td>{{ p.fecha_devolucion }}</td>
-                            <td><span class="badge bg-info">{{ p.estado_prestamo }}</span></td>
-                            <td>
-                                <a href="{% url 'eliminar_prestamo' p.codigo_prestamo %}" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
+                            <td data-label="Código" class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                            <td data-label="Elemento">{{ p.elemento.tipo_maquina }}</td>
+                            <td data-label="Cant.">{{ p.cantidad_prestada }}</td>
+                            <td data-label="Devolución" class="text-warning fw-bold">
+                                {{ p.fecha_devolucion|date:"d/m/Y" }}
+                            </td>
+                            <td data-label="Estado">
+                                <span class="badge
+                                    {% if p.estado_prestamo == 'Activo' %}bg-primary
+                                    {% elif p.estado_prestamo == 'Devuelto' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ p.estado_prestamo }}
+                                </span>
+                            </td>
+                            <td data-label="Acción" class="text-center">
+                                <a href="{% url 'devoluciones' %}"
+                                   class="btn btn-outline-success btn-sm fw-bold"
+                                   title="Ir a Devoluciones">
+                                    <i class="fas fa-undo me-1"></i>Devolver
                                 </a>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center">No hay préstamos activos.</td>
+                            <td colspan="6" class="text-center py-4 text-white-50">
+                                No hay préstamos registrados.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
     </div>
 </div>
 
-<!-- MODAL ELEMENTO -->
+<!-- ══════════════════════════════════════════
+     MODAL ELEMENTO (Crear / Editar)
+══════════════════════════════════════════ -->
 <div class="modal fade" id="modalElemento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
+        <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-plus-circle me-2"></i>Nuevo Elemento Deportivo
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title fw-bold" id="modalTitle">Elemento Deportivo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form method="POST">
+            <div class="modal-body text-start">
+                <form id="formElemento" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="crear_elemento">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tipo / Nombre del Elemento</label>
-                        <input type="text" name="tipo_maquina" class="form-control custom-input" placeholder="Ej: Balón de Fútbol" required>
+                    <input type="hidden" name="accion"          id="inputAccion"  value="crear_elemento">
+                    <input type="hidden" name="codigo_elemento" id="inputCodigo">
+
+                    <div class="mb-3 text-center">
+                        <img id="previewImagen" src=""
+                             style="display:none; width:100px; height:100px; object-fit:cover;
+                                    border-radius:10px; margin:0 auto 10px;
+                                    border:2px solid var(--accent-blue);">
+                        <label class="form-label fw-bold small d-block">Imagen (Opcional)</label>
+                        <input type="file" id="inputImagen" name="imagen"
+                               class="form-control custom-input" accept="image/*">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Cantidad Total</label>
-                        <input type="number" name="cantidad_total" class="form-control custom-input" placeholder="Ej: 10" required>
+                        <label class="form-label fw-bold small">Nombre / Tipo</label>
+                        <input type="text" id="inputTipoMaquina" name="tipo_maquina"
+                               class="form-control custom-input" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Estado General</label>
-                        <select name="estado_general" class="form-select custom-input">
-                            <option value="Bueno">Bueno</option>
-                            <option value="Regular">Regular</option>
-                            <option value="Malo">Malo</option>
-                        </select>
+                        <label class="form-label fw-bold small">Descripción</label>
+                        <textarea id="inputDescripcion" name="descripcion"
+                                  class="form-control custom-input" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Cantidad</label>
+                            <input type="number" id="inputCantidadTotal" name="cantidad_total"
+                                   class="form-control custom-input" required min="0">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Estado</label>
+                            <select id="inputEstadoGeneral" name="estado_general" class="form-select custom-input">
+                                <option value="Bueno">Bueno</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Malo">Malo</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha de Adquisición</label>
-                        <input type="date" name="fecha_adquisicion" class="form-control custom-input" required>
+                        <label class="form-label fw-bold small">Responsable</label>
+                        <input type="text" id="inputDocenteResponsable" name="docente_responsable"
+                               class="form-control custom-input" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Docente Responsable</label>
-                        <input type="text" name="docente_responsable" class="form-control custom-input" placeholder="Nombre del docente" required>
+                        <label class="form-label fw-bold small">Fecha Adquisición</label>
+                        <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion"
+                               class="form-control custom-input" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Descripción</label>
-                        <textarea name="descripcion" class="form-control custom-input" rows="2" placeholder="Descripción opcional"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100 py-2">
-                        <i class="fas fa-check me-2"></i>Guardar Elemento
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 mt-3 shadow-lg">
+                        GUARDAR ELEMENTO
                     </button>
                 </form>
             </div>
@@ -218,61 +372,214 @@
     </div>
 </div>
 
-<!-- MODAL PRÉSTAMO -->
+<!-- ══════════════════════════════════════════
+     MODAL PRÉSTAMO
+══════════════════════════════════════════ -->
 <div class="modal fade" id="modalPrestamo" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
+        <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-hand-holding me-2"></i>Registrar Préstamo
+                <h5 class="modal-title fw-bold text-info">
+                    <i class="fas fa-file-signature me-2"></i>Solicitud de Préstamo
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-start">
+                <!-- Datos del solicitante -->
+                <div class="mb-4 p-3 rounded"
+                     style="background:rgba(88,166,255,0.05); border:1px solid rgba(88,166,255,0.2);">
+                    <h6 class="text-info fw-bold small text-uppercase mb-2">
+                        <i class="fas fa-user me-2"></i>Datos del Solicitante
+                    </h6>
+                    <div class="row g-2 small text-white">
+                        <div class="col-12 text-capitalize">
+                            <span class="text-white-50">Nombre:</span>
+                            <strong>{{ user.get_full_name|lower }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-white-50">Documento:</span>
+                            <strong>{{ user.numero_documento }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-white-50">Ficha:</span>
+                            <strong>{{ user.ficha|default:"N/A" }}</strong>
+                        </div>
+                        <div class="col-12 text-capitalize">
+                            <span class="text-white-50">Programa:</span>
+                            <strong>
+                                {{ user.get_programa_formacion_display|default:user.programa_formacion|lower|default:"No asignado" }}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="accion" value="crear_prestamo">
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Elemento</label>
-                        <select name="elemento" class="form-select custom-input" required>
-                            <option value="">Selecciona un elemento...</option>
+                        <label class="form-label fw-bold small">Seleccionar Implemento</label>
+                        <select name="elemento" id="selectElemento" class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Elige un elemento --</option>
                             {% for e in elementos %}
-                            <option value="{{ e.codigo_elemento }}">{{ e.tipo_maquina }} (Disponibles: {{ e.cantidad_total }})</option>
+                            <option value="{{ e.codigo_elemento }}"
+                                    data-disponible="{{ e.cantidad_total }}">
+                                {{ e.tipo_maquina }} (Disp: {{ e.cantidad_total }})
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Cantidad a Prestar</label>
-                        <input type="number" name="cantidad_prestada" class="form-control custom-input" min="1" required>
-                    </div>
+
                     <div class="row">
-                        <div class="col mb-3">
-                            <label class="form-label fw-bold">Hora Préstamo</label>
-                            <input type="time" name="hora_prestamo" class="form-control custom-input" required>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Cantidad</label>
+                            <input type="number" name="cantidad_prestada" id="inputCantPrestamo"
+                                   class="form-control custom-input" min="1" value="1" required>
                         </div>
-                        <div class="col mb-3">
-                            <label class="form-label fw-bold">Días Préstamo</label>
-                            <input type="number" name="dias_prestamo" class="form-control custom-input" min="1" required>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Días a prestar</label>
+                            <input type="number" name="dias_prestamo" id="inputDias"
+                                   class="form-control custom-input" min="1" max="15" required>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha Devolución</label>
-                        <input type="date" name="fecha_devolucion" class="form-control custom-input" required>
+
+                    <!-- Fecha de devolución calculada automáticamente -->
+                    <div id="infoFecha" class="alert small py-2 mb-4 text-center border-0"
+                         style="display:none; background:rgba(0,210,255,0.1); border-radius:10px;">
+                        <i class="fas fa-calendar-alt me-2 text-info"></i>
+                        Fecha de devolución: <strong id="spanFecha" class="text-warning"></strong>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Observaciones</label>
-                        <textarea name="observacion" class="form-control custom-input" rows="2"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100 py-2">
-                        <i class="fas fa-check me-2"></i>Confirmar Préstamo
-                    </button>
+
+                    {% if estaSancionado %}
+                        <div class="alert alert-danger text-center small mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No puedes solicitar préstamos debido a sanciones activas.
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg" disabled>
+                            <i class="fas fa-check me-2"></i>CONFIRMAR SOLICITUD
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg">
+                            <i class="fas fa-check me-2"></i>CONFIRMAR SOLICITUD
+                        </button>
+                    {% endif %}
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   MODAL ELEMENTO — abrir en modo "Crear"
+══════════════════════════════════════════════════════════ */
+function abrirModalCrear() {
+    document.getElementById('formElemento').reset();
+    document.getElementById('inputAccion').value = 'crear_elemento';
+    document.getElementById('modalTitle').innerText = 'Nuevo Elemento';
+    document.getElementById('previewImagen').style.display = 'none';
+    document.getElementById('inputCodigo').value = '';
+}
+
+/* ══════════════════════════════════════════════════════════
+   BOTONES EDITAR — cargan datos en el modal
+══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.btn-editar-elemento').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const row = this.closest('tr.main-row');
+        document.getElementById('inputAccion').value          = 'editar_elemento';
+        document.getElementById('modalTitle').innerText       = 'Editar Elemento';
+        document.getElementById('inputCodigo').value          = row.dataset.id;
+        document.getElementById('inputTipoMaquina').value     = row.dataset.tipo;
+        document.getElementById('inputCantidadTotal').value   = row.dataset.cantidad;
+        document.getElementById('inputEstadoGeneral').value   = row.dataset.estado;
+        document.getElementById('inputDocenteResponsable').value = row.dataset.docente;
+        document.getElementById('inputFechaAdquisicion').value   = row.dataset.fecha;
+        document.getElementById('inputDescripcion').value     = row.dataset.descripcion || '';
+
+        // Preview imagen si existe
+        const preview = document.getElementById('previewImagen');
+        if (row.dataset.imagen) {
+            preview.src = row.dataset.imagen;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+
+        new bootstrap.Modal(document.getElementById('modalElemento')).show();
+    });
+});
+
+/* Preview imagen al elegir archivo */
+document.getElementById('inputImagen').addEventListener('change', function () {
+    const preview = document.getElementById('previewImagen');
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+
+/* ══════════════════════════════════════════════════════════
+   MODAL PRÉSTAMO — calcular fecha de devolución en vivo
+══════════════════════════════════════════════════════════ */
+document.getElementById('inputDias').addEventListener('input', calcularFecha);
+
+function calcularFecha() {
+    const dias = parseInt(document.getElementById('inputDias').value, 10);
+    const infoFecha = document.getElementById('infoFecha');
+    const spanFecha = document.getElementById('spanFecha');
+
+    if (dias >= 1) {
+        const fecha = new Date();
+        fecha.setDate(fecha.getDate() + dias);
+        const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        spanFecha.textContent = fecha.toLocaleDateString('es-CO', opciones);
+        infoFecha.style.display = 'block';
+    } else {
+        infoFecha.style.display = 'none';
+    }
+}
+
+/* Validar que cantidad no supere el disponible al elegir elemento */
+document.getElementById('selectElemento').addEventListener('change', function () {
+    const disponible = parseInt(this.options[this.selectedIndex].dataset.disponible, 10);
+    const inputCant  = document.getElementById('inputCantPrestamo');
+    inputCant.max    = disponible;
+    if (parseInt(inputCant.value, 10) > disponible) inputCant.value = disponible;
+});
+
+/* ══════════════════════════════════════════════════════════
+   PRÉSTAMO RÁPIDO — abre modal y preselecciona elemento
+══════════════════════════════════════════════════════════ */
+function prestamoRapido(codigoElemento) {
+    const select = document.getElementById('selectElemento');
+    for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value == codigoElemento) {
+            select.selectedIndex = i;
+            select.dispatchEvent(new Event('change'));
+            break;
+        }
+    }
+    new bootstrap.Modal(document.getElementById('modalPrestamo')).show();
+}
+
+/* ══════════════════════════════════════════════════════════
+   EXPAND ROW — mostrar descripción en desktop
+══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.btn-expand').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const expansionRow = this.closest('tr').nextElementSibling;
+        const isOpen = expansionRow.style.display !== 'none';
+        expansionRow.style.display = isOpen ? 'none' : 'table-row';
+        this.innerHTML = isOpen
+            ? '<i class="fas fa-plus"></i>'
+            : '<i class="fas fa-minus"></i>';
+    });
+});
+</script>
 {% endblock %}

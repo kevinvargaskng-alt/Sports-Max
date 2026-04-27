@@ -1,160 +1,716 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Inter-Centros - Gestión Deportiva{% endblock %}
+{% block title %}Gestión Intercentros - CBA{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+<style>
+    html, body { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; }
+    body { display: flex; flex-direction: column; background: #0b0e14 !important; color: #f0f6fc !important; }
+    .main-wrapper { flex: 1; padding: 40px 20px; }
+
+    .hero-banner {
+        width: 100%; max-width: 1100px; margin: 0 auto 40px;
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border: 1px solid #374151; border-radius: 20px; padding: 30px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 25px; width: 100%; max-width: 1100px; margin: 0 auto 60px;
+    }
+    .action-card {
+        background: #161b22; border: 1px solid #30363d; border-radius: 16px;
+        padding: 30px; text-align: center; transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .action-card:hover { transform: translateY(-8px); }
+    .action-card i { margin-bottom: 20px; transition: transform 0.3s; }
+    .action-card:hover i { transform: scale(1.1); }
+    
+    /* Modificadores de color por tarjeta */
+    .card-primary:hover { border-color: #58a6ff; box-shadow: 0 10px 25px rgba(88, 166, 255, 0.15); }
+    .card-primary i { color: #58a6ff; }
+    
+    .card-success:hover { border-color: #2ea043; box-shadow: 0 10px 25px rgba(46, 160, 67, 0.15); }
+    .card-success i { color: #2ea043; }
+    
+    .card-info:hover { border-color: #38bdf8; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15); }
+    .card-info i { color: #38bdf8; }
+    
+    .card-warning:hover { border-color: #f1e05a; box-shadow: 0 10px 25px rgba(241, 224, 90, 0.15); }
+    .card-warning i { color: #f1e05a; }
+
+    .btn-group-custom { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-group-custom .btn { flex: 1; font-size: 0.75rem; font-weight: bold; }
+
+    .custom-input { background: #0d1117 !important; border: 1px solid #30363d !important; color: white !important; }
+    .custom-input option { background: #161b22; color: white; }
+
+    .table-container { width: 100%; max-width: 1100px; margin: 0 auto; }
+    .custom-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    .custom-table tr { background: #161b22; }
+    .custom-table td { padding: 18px; text-align: center; border-top: 1px solid #30363d; border-bottom: 1px solid #30363d; }
+    .custom-table td:first-child { border-left: 1px solid #30363d; border-radius: 12px 0 0 12px; }
+    .custom-table td:last-child  { border-right: 1px solid #30363d; border-radius: 0 12px 12px 0; }
+
+    /* ── Sección expandible ── */
+    .seccion-expandible { width: 100%; max-width: 1100px; margin: 0 auto 30px; }
+    .seccion-header {
+        display: flex; align-items: center; justify-content: space-between;
+        background: #161b22; border: 1px solid #30363d; border-radius: 14px;
+        padding: 14px 20px; cursor: pointer; transition: border-color .2s;
+    }
+    .seccion-header:hover { border-color: #f97316; }
+    .seccion-header h6 { margin: 0; font-size: 0.85rem; letter-spacing: 0.5px; color: #8b949e; }
+    .seccion-header .icono-toggle { transition: transform .3s; color: #f97316; }
+    .seccion-header.abierto .icono-toggle { transform: rotate(180deg); }
+    .seccion-cuerpo { display: none; padding-top: 16px; }
+    .seccion-cuerpo.visible { display: block; }
+
+    /* ── Filtros de sección ── */
+    .filtros-seccion {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+    }
+    .filtros-seccion select {
+        background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+        color: #e6edf3; font-size: 0.8rem; padding: 6px 12px; cursor: pointer;
+        transition: border-color .2s;
+    }
+    .filtros-seccion select:focus { outline: none; border-color: #f97316; }
+
+    /* ── Cards de entrenamiento / aviso ── */
+    .card-item {
+        background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+        padding: 16px 20px; margin-bottom: 10px;
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+    .card-item .badge-disc {
+        font-size: 0.7rem; font-weight: 700; padding: 3px 10px;
+        border-radius: 20px; background: rgba(249,115,22,0.15);
+        color: #f97316; border: 1px solid rgba(249,115,22,0.3);
+        white-space: nowrap;
+    }
+    .card-item .badge-tipo {
+        font-size: 0.68rem; font-weight: 700; padding: 3px 9px;
+        border-radius: 20px; white-space: nowrap;
+    }
+    .badge-tipo-info   { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .badge-tipo-alerta { background: rgba(234,179,8,0.15);  color: #facc15; border: 1px solid rgba(234,179,8,0.3); }
+    .badge-tipo-result { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+
+    .card-item .meta { font-size: 0.75rem; color: #8b949e; margin-top: 4px; }
+    .empty-state { text-align: center; padding: 30px; color: rgba(255,255,255,0.25); font-size: 0.85rem; }
+
+    /* ── Alertas flotantes ── */
+    .alert-floating {
+        position: fixed; top: 20px; right: 20px; z-index: 1060;
+        min-width: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    }
+
+    footer { padding: 25px; background: #090c10; border-top: 1px solid #30363d; margin-top: auto; }
+
+    @media (max-width: 768px) {
+        .main-wrapper { padding: 20px 15px; }
+        .hero-banner { flex-direction: column; text-align: center; gap: 20px; padding: 20px; }
+        .hero-banner .btn { width: 100%; }
+        .custom-table thead { display: none; }
+        .custom-table, .custom-table tbody, .custom-table tr, .custom-table td { display: block; width: 100%; }
+        .custom-table tr { margin-bottom: 15px; border: 1px solid #30363d; border-radius: 15px; padding: 10px; }
+        .custom-table td { text-align: left; padding: 10px 15px; border: none; position: relative; padding-left: 45%; }
+        .custom-table td::before { content: attr(data-label); position: absolute; left: 15px; font-weight: bold; color: #f97316; text-transform: uppercase; font-size: 0.7rem; }
+        .custom-table td:first-child, .custom-table td:last-child { border-radius: 0; }
+        .filtros-seccion select { width: 100%; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="main-container py-4">
-    <div class="container">
+<div class="main-wrapper">
 
-        <!-- Encabezado -->
-        <div class="modulo-header text-center mb-5">
-            <i class="fas fa-building fa-3x mb-3"></i>
-            <h2 class="fw-bold text-white">Torneos Inter-Centros</h2>
-            <p class="text-white-50">Gestiona los torneos entre centros de formación del SENA</p>
+    {% if messages %}
+        {% for m in messages %}
+        <div class="alert {% if m.tags == 'error' %}alert-danger{% elif m.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %} alert-floating alert-dismissible fade show">
+            <i class="fas {% if m.tags == 'error' %}fa-exclamation-circle{% elif m.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-check-circle{% endif %} me-2"></i>
+            {{ m }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="hero-banner">
+        <div>
+            <h2 class="fw-bold mb-1">Intercentros Centro Minero</h2>
+            <p class="text-white-50 m-0 small">Sistema de Gestión Deportiva Regional</p>
+        </div>
+        <div class="text-end">
+            <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#modalTorneo">
+                <i class="fas fa-plus-circle me-2"></i>NUEVA CONVOCATORIA
+            </button>
+        </div>
+    </div>
+
+    <div class="action-grid">
+
+        <div class="action-card card-primary">
+            <i class="fas fa-user-edit fa-3x"></i>
+            <h5>Postulaciones</h5>
+            <p class="small text-white-50">Inscripción a convocatorias Intercentros activas.</p>
+            {% if torneos %}
+            <button class="btn btn-outline-primary w-100 fw-bold mt-2"
+                    data-bs-toggle="modal" data-bs-target="#modalInscribir">
+                INSCRIBIRME AHORA
+            </button>
+            {% else %}
+            <button class="btn btn-outline-secondary w-100 fw-bold mt-2" disabled title="No hay convocatorias activas">
+                <i class="fas fa-lock me-2"></i>SIN CONVOCATORIAS
+            </button>
+            <small class="text-white-50 d-block mt-2" style="font-size:0.72rem;">
+                No hay torneos activos para postularse.
+            </small>
+            {% endif %}
         </div>
 
-        <!-- Tarjetas de acciones -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="sport-card">
-                    <i class="fas fa-list-alt fa-2x mb-3 text-warning"></i>
-                    <h5>VER TORNEOS</h5>
-                    <p>Consulta todos los torneos activos y finalizados por disciplina.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-centro" data-seccion="torneos">
-                        <i class="fas fa-eye me-1"></i>Ver
-                    </button>
+        <div class="action-card card-success">
+            <i class="fas fa-clipboard-list fa-3x"></i>
+            <h5>Mis Postulaciones</h5>
+            <p class="small text-white-50">Historial de tus inscripciones a convocatorias.</p>
+            {% if mis_postulaciones %}
+            <span class="badge rounded-pill mb-2" style="background:rgba(46,160,67,0.15); color:#2ea043; border:1px solid rgba(46,160,67,0.35); font-size:0.75rem;">
+                {{ mis_postulaciones|length }} inscripción{% if mis_postulaciones|length != 1 %}es{% endif %}
+            </span>
+            {% endif %}
+            <button class="btn btn-outline-success w-100 fw-bold mt-1"
+                    onclick="toggleSeccion('seccion-postulaciones')">
+                <i class="fas fa-eye me-2"></i>VER MIS INSCRIPCIONES
+            </button>
+        </div>
+
+        <div class="action-card card-info">
+            <i class="fas fa-calendar-alt fa-3x"></i>
+            <h5>Entrenamientos</h5>
+            <p class="small text-white-50">Gestión de horarios de preparación deportiva.</p>
+            <div class="btn-group-custom">
+                <button class="btn btn-outline-info"
+                        onclick="toggleSeccion('seccion-entrenamientos')">
+                    VER AGENDA
+                </button>
+                <button class="btn btn-info text-dark"
+                        data-bs-toggle="modal" data-bs-target="#modalEntrenamiento">
+                    PROGRAMAR
+                </button>
+            </div>
+        </div>
+
+        <div class="action-card card-warning">
+            <i class="fas fa-bullhorn fa-3x"></i>
+            <h5>Avisos y Novedades</h5>
+            <p class="small text-white-50">Información de seleccionados y resultados.</p>
+            <div class="btn-group-custom">
+                <button class="btn btn-outline-warning"
+                        onclick="toggleSeccion('seccion-avisos')">
+                    VER AVISOS
+                </button>
+                <button class="btn btn-warning text-dark"
+                        data-bs-toggle="modal" data-bs-target="#modalAviso">
+                    CREAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="seccion-expandible" id="seccion-postulaciones" style="display:none;">
+        <div class="seccion-header" onclick="toggleSeccion('seccion-postulaciones')">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-clipboard-list text-warning"></i>
+                <h6 class="text-uppercase">Mis postulaciones</h6>
+            </div>
+            <i class="fas fa-chevron-up icono-toggle"></i>
+        </div>
+        <div class="seccion-cuerpo visible">
+            {% for p in mis_postulaciones %}
+            <div class="card-item">
+                <div style="flex:1;">
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <span class="badge-disc">{{ p.disciplina }}</span>
+                        <span class="text-white-50" style="font-size:0.75rem;">
+                            <i class="fas fa-trophy me-1" style="font-size:0.7rem;"></i>
+                            {{ p.torneo.nombre_torneo }}
+                        </span>
+                    </div>
+                    <div class="fw-bold text-white" style="font-size:0.9rem;">
+                        {{ p.torneo.lugar }}
+                        <span class="text-warning ms-2" style="font-size:0.82rem;">
+                            {{ p.torneo.fecha_torneo|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    <div class="meta mt-1">
+                        Postulado el {{ p.fecha_postulacion|date:"d/m/Y" }}
+                    </div>
+                </div>
+                <span class="badge align-self-start mt-1"
+                      style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); font-size:0.7rem; padding:4px 10px; border-radius:20px;">
+                    <i class="fas fa-check me-1"></i>Inscrito
+                </span>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-inbox d-block mb-2" style="font-size:1.5rem; opacity:.3;"></i>
+                Aún no te has postulado a ninguna convocatoria.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="seccion-expandible" id="seccion-entrenamientos" style="display:none;">
+        <div class="seccion-header" onclick="toggleSeccion('seccion-entrenamientos')">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-calendar-alt text-info"></i>
+                <h6 class="text-uppercase">Agenda de entrenamientos</h6>
+            </div>
+            <i class="fas fa-chevron-up icono-toggle"></i>
+        </div>
+        <div class="seccion-cuerpo visible">
+
+            <form method="GET" class="filtros-seccion" id="form-filtro-ent">
+                <input type="hidden" name="torneo_av"  value="{{ filtro_torneo_av }}">
+                <input type="hidden" name="disc_av"    value="{{ filtro_disc_av }}">
+                <select name="disc_ent" onchange="this.form.submit()">
+                    <option value="">Todos los deportes</option>
+                    {% for d in disciplinas %}
+                    <option value="{{ d }}" {% if filtro_disc_ent == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+                <select name="torneo_ent" onchange="this.form.submit()">
+                    <option value="">Todas las convocatorias</option>
+                    {% for t in torneos %}
+                    <option value="{{ t.codigo_torneo_centro }}"
+                            {% if filtro_torneo_ent == t.codigo_torneo_centro|stringformat:"s" %}selected{% endif %}>
+                        {{ t.nombre_torneo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+
+            {% for e in entrenamientos %}
+            <div class="card-item">
+                <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <span class="badge-disc">{{ e.disciplina }}</span>
+                        {% if e.torneo %}
+                        <span class="text-white-50" style="font-size:0.75rem;">
+                            <i class="fas fa-trophy me-1" style="font-size:0.7rem;"></i>{{ e.torneo.nombre_torneo }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="fw-bold text-white" style="font-size:0.9rem;">
+                        <i class="fas fa-calendar me-2 text-info" style="font-size:0.8rem;"></i>
+                        {{ e.fecha|date:"d/m/Y" }}
+                        <span class="text-white-50 ms-2">{{ e.hora|time:"H:i" }}</span>
+                        {% if e.lugar %}
+                        <span class="text-white-50 ms-2">
+                            <i class="fas fa-map-marker-alt me-1" style="font-size:0.75rem;"></i>{{ e.lugar }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if e.observacion %}
+                    <div class="meta mt-1">{{ e.observacion }}</div>
+                    {% endif %}
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="sport-card">
-                    <i class="fas fa-user-plus fa-2x mb-3 text-warning"></i>
-                    <h5>INSCRIBIR EQUIPO</h5>
-                    <p>Registra tu centro en los torneos disponibles.</p>
-                    <button class="btn btn-dark btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalCrearTorneo">
-                        <i class="fas fa-plus me-1"></i>Nuevo Torneo
-                    </button>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times d-block mb-2" style="font-size:1.5rem; opacity:.3;"></i>
+                No hay entrenamientos programados para este filtro.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="seccion-expandible" id="seccion-avisos" style="display:none;">
+        <div class="seccion-header" onclick="toggleSeccion('seccion-avisos')">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-bullhorn text-warning"></i>
+                <h6 class="text-uppercase">Avisos y novedades</h6>
+            </div>
+            <i class="fas fa-chevron-up icono-toggle"></i>
+        </div>
+        <div class="seccion-cuerpo visible">
+
+            <form method="GET" class="filtros-seccion" id="form-filtro-av">
+                <input type="hidden" name="torneo_ent" value="{{ filtro_torneo_ent }}">
+                <input type="hidden" name="disc_ent"   value="{{ filtro_disc_ent }}">
+                <select name="disc_av" onchange="this.form.submit()">
+                    <option value="">Todos los deportes</option>
+                    {% for d in disciplinas %}
+                    <option value="{{ d }}" {% if filtro_disc_av == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+                <select name="torneo_av" onchange="this.form.submit()">
+                    <option value="">Todas las convocatorias</option>
+                    {% for t in torneos %}
+                    <option value="{{ t.codigo_torneo_centro }}"
+                            {% if filtro_torneo_av == t.codigo_torneo_centro|stringformat:"s" %}selected{% endif %}>
+                        {{ t.nombre_torneo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+
+            {% for a in avisos %}
+            <div class="card-item">
+                <div style="flex:1;">
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <span class="badge-tipo
+                            {% if a.tipo == 'info' %}badge-tipo-info
+                            {% elif a.tipo == 'alerta' %}badge-tipo-alerta
+                            {% else %}badge-tipo-result{% endif %}">
+                            {% if a.tipo == 'info' %}Información
+                            {% elif a.tipo == 'alerta' %}Alerta
+                            {% else %}Resultado{% endif %}
+                        </span>
+                        {% if a.disciplina %}
+                        <span class="badge-disc">{{ a.disciplina }}</span>
+                        {% endif %}
+                        {% if a.torneo %}
+                        <span class="text-white-50" style="font-size:0.72rem;">
+                            <i class="fas fa-trophy me-1" style="font-size:0.65rem;"></i>{{ a.torneo.nombre_torneo }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="fw-bold text-white" style="font-size:0.9rem;">{{ a.titulo }}</div>
+                    <div class="meta">{{ a.cuerpo }}</div>
+                    <div class="meta mt-1" style="font-size:0.7rem; opacity:.5;">
+                        {{ a.creado_en|date:"d/m/Y H:i" }}
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="sport-card">
-                    <i class="fas fa-chart-bar fa-2x mb-3 text-warning"></i>
-                    <h5>RESULTADOS</h5>
-                    <p>Revisa marcadores, tabla de posiciones y estadísticas.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-centro" data-seccion="resultados">
-                        <i class="fas fa-poll me-1"></i>Ver Resultados
-                    </button>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-bell-slash d-block mb-2" style="font-size:1.5rem; opacity:.3;"></i>
+                No hay avisos publicados para este filtro.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="table-container mt-4">
+        <h6 class="fw-bold text-white-50 mb-3 text-uppercase small">
+            <i class="fas fa-trophy me-2 text-warning" style="font-size:0.8rem;"></i>
+            Próximas Convocatorias Activas
+        </h6>
+        <table class="custom-table">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>EVENTO</th>
+                    <th>DEPORTE</th>
+                    <th>SEDE</th>
+                    <th>FECHA</th>
+                    <th>ACCIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in torneos %}
+                <tr>
+                    <td data-label="Evento" class="text-white fw-bold">{{ t.nombre_torneo }}</td>
+                    <td data-label="Deporte" class="text-warning fw-bold">{{ t.disciplina }}</td>
+                    <td data-label="Sede"    class="small text-white-50">{{ t.lugar }}</td>
+                    <td data-label="Fecha">{{ t.fecha_torneo|date:"d/m/Y" }}</td>
+                    <td data-label="Acción">
+                        <a href="{% url 'eliminar_torneo' t.codigo_torneo_centro %}"
+                           class="text-danger small fw-bold"
+                           onclick="return confirm('¿Eliminar esta convocatoria?')">
+                            <i class="fas fa-trash-alt me-1"></i>Borrar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-5 text-white-50 text-center">
+                        No hay convocatorias activas.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div><div class="modal fade" id="modalTorneo" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-trophy text-warning me-2"></i>Publicar Convocatoria
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear_torneo">
+                <div class="modal-body text-start">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nombre del evento</label>
+                        <input type="text" name="nombre" class="form-control custom-input"
+                               placeholder="Ej: Copa Intercentros 2025" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Disciplina</label>
+                        <select name="disciplina" class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Seleccione --</option>
+                            {% for d in disciplinas %}
+                            <option value="{{ d }}">{{ d }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold">Fecha</label>
+                            <input type="date" name="fecha" class="form-control custom-input" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold">Sede</label>
+                            <input type="text" name="lugar" class="form-control custom-input"
+                                   placeholder="Ciudad / Lugar" required>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">GUARDAR CONVOCATORIA</button>
+                </div>
+            </form>
         </div>
-
-        <!-- Panel dinámico -->
-        <div id="panel-intercentros" class="panel-interfichas d-none mb-4">
-            <div id="panel-contenido-centro"></div>
-        </div>
-
-        <!-- Tabla de Torneos -->
-        <div class="sport-card text-start mt-2">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-fire text-warning me-2"></i>Torneos Registrados
-            </h5>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Disciplina</th>
-                            <th>Fecha</th>
-                            <th>Lugar</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for t in torneos %}
-                        <tr>
-                            <td>{{ t.codigo_torneo_centro }}</td>
-                            <td>{{ t.nombre_torneo }}</td>
-                            <td>{{ t.disciplina }}</td>
-                            <td>{{ t.fecha_torneo }}</td>
-                            <td>{{ t.lugar }}</td>
-                            <td><span class="badge bg-success">{{ t.estado }}</span></td>
-                            <td>
-                                <a href="{% url 'editar_torneo_centro' t.codigo_torneo_centro %}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'eliminar_torneo_centro' t.codigo_torneo_centro %}" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center">No hay torneos registrados.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 </div>
 
-<!-- MODAL CREAR TORNEO -->
-<div class="modal fade" id="modalCrearTorneo" tabindex="-1" aria-hidden="true">
+
+{% if torneos %}
+<div class="modal fade" id="modalInscribir" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
+        <div class="modal-content bg-dark border-secondary text-white">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold">
-                    <i class="fas fa-plus me-2"></i>Nuevo Torneo Inter-Centros
+                    <i class="fas fa-user-edit text-warning me-2"></i>Inscripción Intercentros
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-start">
+                <div class="p-2 mb-3 rounded border border-secondary small text-white-50"
+                     style="background: rgba(255,255,255,0.03);">
+                    <i class="fas fa-id-card me-2"></i>
+                    Doc: {{ user.numero_documento }}
+                    {% if user.ficha %}&nbsp;|&nbsp; Ficha: {{ user.ficha }}{% endif %}
+                </div>
                 <form method="POST">
                     {% csrf_token %}
+                    <input type="hidden" name="accion" value="inscribir_aprendiz">
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nombre del Torneo</label>
-                        <input type="text" name="nombre" class="form-control custom-input" placeholder="Ej: Copa Intercentros 2026" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Disciplina</label>
-                        <select name="disciplina" class="form-select custom-input" id="id_disciplina"required>
-                            <option value="">Seleccionar disciplina...</option>
-                            <option value="Fútbol">Fútbol</option>
-                            <option value="Futsal">Futsal</option>
-                            <option value="Baloncesto">Baloncesto</option>
-                            <option value="Voleibol">Voleibol</option>
-                            <option value="Tenis de Mesa">Tenis de Mesa</option>
-                            <option value="Ajedrez">Ajedrez</option>
+                        <label class="form-label small fw-bold">Convocatoria</label>
+                        <select name="torneo_id" class="form-select custom-input" required
+                                id="selectTorneoInsc" onchange="actualizarDiscInsc(this)">
+                            <option value="" disabled selected>-- Seleccione el torneo --</option>
+                            {% for t in torneos %}
+                            <option value="{{ t.codigo_torneo_centro }}"
+                                    data-disc="{{ t.disciplina }}">
+                                {{ t.nombre_torneo }} ({{ t.disciplina }})
+                            </option>
+                            {% endfor %}
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha</label>
-                        <input type="date" name="fecha" class="form-control custom-input" required>
+                        <label class="form-label small fw-bold">Deporte</label>
+                        <input type="text" name="disciplina" id="inputDiscInsc"
+                               class="form-control custom-input"
+                               placeholder="Se llena al seleccionar torneo"
+                               readonly>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Lugar</label>
-                        <input type="text" name="lugar" class="form-control custom-input" placeholder="Ej: Cancha Principal SENA" required>
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100 py-2">
-                        <i class="fas fa-check me-2"></i>Guardar Torneo
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">
+                        <i class="fas fa-paper-plane me-2"></i>POSTULARME
                     </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endif %}
 
-{% block extra_js %}
-<script src="{% static 'js/inicio.js' %}"></script>
+
+<div class="modal fade" id="modalEntrenamiento" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-calendar-alt text-info me-2"></i>Programar Entrenamiento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear_entrenamiento">
+                <div class="modal-body text-start">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Deporte</label>
+                        <select name="disciplina" class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Seleccione --</option>
+                            {% for d in disciplinas %}
+                            <option value="{{ d }}">{{ d }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Convocatoria asociada <span class="text-white-50 fw-normal">(opcional)</span></label>
+                        <select name="torneo_id" class="form-select custom-input">
+                            <option value="">-- Sin convocatoria --</option>
+                            {% for t in torneos %}
+                            <option value="{{ t.codigo_torneo_centro }}">
+                                {{ t.nombre_torneo }} ({{ t.disciplina }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold">Fecha</label>
+                            <input type="date" name="fecha" class="form-control custom-input" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold">Hora</label>
+                            <input type="time" name="hora" class="form-control custom-input" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Lugar</label>
+                        <input type="text" name="lugar_ent" class="form-control custom-input"
+                               placeholder="Ej: Cancha principal">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Observaciones <span class="text-white-50 fw-normal">(opcional)</span></label>
+                        <textarea name="observacion" class="form-control custom-input" rows="2"
+                                  placeholder="Indicaciones adicionales…"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-info text-dark w-100 fw-bold">
+                        <i class="fas fa-check me-2"></i>CONFIRMAR HORARIO
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalAviso" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-bullhorn text-warning me-2"></i>Publicar Aviso
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear_aviso">
+                <div class="modal-body text-start">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tipo de aviso</label>
+                        <select name="tipo" class="form-select custom-input" required>
+                            <option value="info">Información</option>
+                            <option value="alerta">Alerta</option>
+                            <option value="result">Resultado</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Título</label>
+                        <input type="text" name="titulo" class="form-control custom-input"
+                               placeholder="Ej: Convocatoria seleccionados Fútbol" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Mensaje</label>
+                        <textarea name="cuerpo" class="form-control custom-input" rows="3"
+                                  placeholder="Contenido del aviso…" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold">Deporte <span class="text-white-50 fw-normal">(opcional)</span></label>
+                            <select name="disciplina" class="form-select custom-input">
+                                <option value="">General</option>
+                                {% for d in disciplinas %}
+                                <option value="{{ d }}">{{ d }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold">Convocatoria <span class="text-white-50 fw-normal">(opcional)</span></label>
+                            <select name="torneo_id" class="form-select custom-input">
+                                <option value="">General</option>
+                                {% for t in torneos %}
+                                <option value="{{ t.codigo_torneo_centro }}">{{ t.nombre_torneo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">
+                        <i class="fas fa-paper-plane me-2"></i>PUBLICAR AVISO
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script>
+/* ── Toggle secciones expandibles ── */
+function toggleSeccion(id) {
+    const sec = document.getElementById(id);
+    if (!sec) return;
+    const abierto = sec.style.display !== 'none';
+    sec.style.display = abierto ? 'none' : 'block';
+}
+
+/* ── Auto-rellenar disciplina al elegir torneo en inscripción ── */
+function actualizarDiscInsc(select) {
+    const opt  = select.options[select.selectedIndex];
+    const disc = opt ? opt.dataset.disc : '';
+    const inp  = document.getElementById('inputDiscInsc');
+    if (inp) inp.value = disc || '';
+}
+
+/* ── Abrir sección si viene con filtro activo ── */
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('disc_ent') || params.get('torneo_ent')) {
+        const s = document.getElementById('seccion-entrenamientos');
+        if (s) s.style.display = 'block';
+    }
+    if (params.get('disc_av') || params.get('torneo_av')) {
+        const s = document.getElementById('seccion-avisos');
+        if (s) s.style.display = 'block';
+    }
+
+    /* Auto-cerrar alertas flotantes */
+    setTimeout(() => {
+        document.querySelectorAll('.alert-floating').forEach(a => {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(a);
+            if (bsAlert) bsAlert.close();
+        });
+    }, 4000);
+});
+</script>
 {% endblock %}

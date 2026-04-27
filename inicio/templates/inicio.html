@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inicio - Gestión Deportiva{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- Encabezado Visual (Hero Section) -->
+    <header class="hero-header text-center py-5">
+        <div class="container">
+            <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Logo Deporte" class="main-logo mb-3">
+            <h1 class="text-white fw-bold display-4">Sistema de Gestión Deportiva</h1>
+            <p class="text-white-50 fs-5 mb-4">Desarrolla tu potencial deportivo mientras te formas profesionalmente en el SENA</p>
+            
+            <!-- BOTÓN DINÁMICO DE ACCESO -->
+            <div class="mt-4">
+                {% if not aprendiz_logueado %}
+                    <button type="button" class="btn btn-ingresar shadow-lg" data-bs-toggle="modal" data-bs-target="#modalForm">
+                        <i class="fas fa-user-circle me-2"></i>ACCEDER AL SISTEMA
+                    </button>
+                {% else %}
+                    <div class="d-flex flex-column align-items-center">
+                        <p class="text-white mb-2">Bienvenido de nuevo, <strong>{{ nombre_usuario }}</strong></p>
+                        <a href="{% url 'perfil' %}" class="btn btn-ingresar shadow-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>IR A MI PERFIL
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Sección Disciplinas -->
+    <section class="container mb-5">
+        <div class="text-start mb-5">
+            <h2 class="section-title text-white">Nuestras Disciplinas Deportivas</h2>
+            <p class="text-white-50">Actividades disponibles para todos los aprendices</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="sport-card">
+                    <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" class="card-icon" alt="Fútbol">
+                    <h5>FUTSAL / FÚTBOL</h5>
+                    <p>Participa en torneos inter-fichas e inter-centros. Desarrolla trabajo en equipo y liderazgo competitivo.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sport-card">
+                    <img src="https://cdn-icons-png.flaticon.com/512/731/731943.png" class="card-icon" alt="Baloncesto">
+                    <h5>BALONCESTO</h5>
+                    <p>Competencias emocionantes en nuestras canchas profesionales. Mejora tu técnica, agilidad y estrategia.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sport-card">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1165/1165187.png" class="card-icon" alt="Voleibol">
+                    <h5>VOLEIBOL</h5>
+                    <p>Torneos mixtos y especializados. Fortalece tu coordinación y reflejos en cada partido intenso.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Servicios -->
+    <section class="container pb-5">
+        <div class="text-start mb-5">
+            <h2 class="section-title text-white">¿Qué Encontrarás Aquí?</h2>
+            <p class="text-white-50">Gestiona tu vida deportiva de forma integral</p>
+        </div>
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="service-card text-start d-flex flex-column align-items-start p-4">
+            <i class="fas fa-trophy fa-3x mb-3 text-warning"></i>
+            <h5 class="fw-bold">TORNEOS INTER-FICHAS</h5>
+            <p>Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="service-card text-start d-flex flex-column align-items-start p-4">
+            <i class="fas fa-medal fa-3x mb-3 text-warning"></i>
+            <h5 class="fw-bold">INTER-CENTROS</h5>
+            <p>Representa a tu centro de formación y compite contra los mejores deportistas de la región.</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="service-card text-start d-flex flex-column align-items-start p-4">
+            <i class="fas fa-calendar-check fa-3x mb-3 text-warning"></i>
+            <h5 class="fw-bold">RESERVA GIMNASIO</h5>
+            <p>Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones de nuestro centro.</p>
+        </div>
+    </div>
+</div>
+    </section>
+</div>
+
+<!-- MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO) -->
+<div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="fas fa-shield-alt me-2 text-primary"></i>Gestión de Acceso
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body pt-2">
+                <!-- TABS DE NAVEGACIÓN -->
+                <ul class="nav nav-pills nav-fill mb-4 gap-2" id="authTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active fw-bold" id="login-tab" data-bs-toggle="pill" data-bs-target="#loginPanel" type="button" role="tab">
+                            <i class="fas fa-sign-in-alt me-1"></i> INICIAR SESIÓN
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link fw-bold" id="register-tab" data-bs-toggle="pill" data-bs-target="#registerPanel" type="button" role="tab">
+                            <i class="fas fa-user-plus me-1"></i> REGISTRARSE
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="authTabsContent">
+                  <!-- PANEL LOGIN (Fragmento actualizado) -->
+<div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
+    <form id="loginForm" novalidate autocomplete="off">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-white">Número de Documento</label>
+            <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678" required pattern="\d{5,20}" title="Ingresa un documento válido" data-bs-toggle="tooltip">
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-white">Contraseña</label>
+            <div class="input-group">
+                <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta" required minlength="8">
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <!-- ENLACE DE RECUPERACIÓN AGREGADO AQUÍ -->
+            <div class="text-end mt-2">
+                <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none fw-bold" title="Te enviaremos un correo para restablecerla" data-bs-toggle="tooltip">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+        </div>
+        <div id="loginAlert" class="alert d-none" role="alert"></div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">INGRESAR AL SISTEMA</button>
+    </form>
+</div>
+                    <!-- PANEL REGISTRO -->
+                    <div class="tab-pane fade" id="registerPanel" role="tabpanel">
+                        <form id="registerForm" novalidate autocomplete="off">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Tipo Documento <span class="text-danger">*</span></label>
+                                    <select class="form-select custom-input" name="tipo_documento" required>
+                                        <option value="" selected disabled>-- Selecciona --</option>
+                                        <option value="CC">Cédula de Ciudadanía</option>
+                                        <option value="TI">Tarjeta de Identidad</option>
+                                        <option value="CE">Cédula de Extranjería</option>
+                                        <option value="PA">Pasaporte</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Número Documento <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control custom-input" name="numero_documento" required pattern="\d{5,20}" maxlength="20" title="Debe contener entre 5 y 20 números sin espacios" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Nombres <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" required minlength="2" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras y espacios" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Apellidos <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" required minlength="2" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras y espacios" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                </div>
+
+                                <!-- CAMPO GÉNERO (OPCIONAL) -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Género <span class="text-muted fw-normal small">(Opcional)</span></label>
+                                    <select class="form-select custom-input" name="genero" title="Selecciona tu género" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                        <option value="" selected>-- Selecciona (Opcional) --</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                        <option value="O">Otro</option>
+                                        <option value="NR">Prefiero no decirlo</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Teléfono <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control custom-input" name="telefono" required pattern="\d{7,15}" maxlength="15" title="Ingresa un número de teléfono válido (mínimo 7 dígitos)" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold text-white">Programa de Formación <span class="text-danger">*</span></label>
+                                    <select class="form-select custom-input" name="programa_formacion" required>
+                                        <option value="" selected disabled>-- Selecciona tu programa --</option>
+                                        <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
+                                        <option value="MINERIA">Supervisión de Procesos Mineros</option>
+                                        <option value="SST">Gestión de la Seguridad y Salud en el Trabajo</option>
+                                        <option value="QUIMICA">Química Aplicada a la Industria</option>
+                                        <option value="TOPOGRAFIA">Levantamientos Topográficos y Georreferenciación</option>
+                                        <option value="VIAL">Construcción de Infraestructura Vial</option>
+                                        <option value="SANEAMIENTO">Sistemas de Agua y Saneamiento</option>
+                                        <option value="MAQUINARIA_PESADA">Operación de Maquinaria Pesada para Excavación</option>
+                                        <option value="MANTENIMIENTO_EQUIPO">Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte</option>
+                                    </select>
+                                </div>
+                                <!-- CAMPO CORREO ELECTRÓNICO -->
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold text-white">Correo Electrónico <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control custom-input" name="email" required title="Ingresa un correo electrónico válido (ej: nombre@correo.com)" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <div class="invalid-feedback">Por favor ingresa un correo válido.</div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold text-white">Número de Ficha <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" title="Ingresa el número de tu ficha de formación" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Contraseña <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" required minlength="8" maxlength="128" title="La contraseña debe tener al menos 8 caracteres" data-bs-toggle="tooltip" data-bs-placement="top">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword2" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="progress mt-2" style="height:6px;">
+                                        <div id="passwordStrengthBar" class="progress-bar" role="progressbar"></div>
+                                    </div>
+                                    <small id="passwordStrengthText" class="text-white-50"></small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-white">Confirmar Clave <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" id="confirmarContrasena" class="form-control custom-input" required minlength="8" maxlength="128">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword3" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="registerAlert" class="alert d-none mt-3" role="alert"></div>
+                            <button type="submit" class="btn btn-success w-100 py-2 mt-4 fw-bold">FINALIZAR REGISTRO</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/inicio.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Revisamos si la URL tiene el parámetro login=1
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('login') === '1') {
+            // Buscamos el modal por su ID y lo abrimos
+            var myModal = new bootstrap.Modal(document.getElementById('modalForm'));
+            myModal.show();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,7 +1,9 @@
 from django.db import models
+from django.conf import settings
 
 class ElementoDeportivo(models.Model):
     codigo_elemento = models.AutoField(primary_key=True)
+    imagen = models.ImageField(upload_to='elementos/', null=True, blank=True)
     tipo_maquina = models.CharField(max_length=100)
     cantidad_total = models.IntegerField(default=0)
     estado_general = models.CharField(max_length=50)
@@ -14,9 +16,16 @@ class ElementoDeportivo(models.Model):
 
 class Prestamo(models.Model):
     codigo_prestamo = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='prestamos_realizados',
+        null=True,
+        blank=True
+    )
     elemento = models.ForeignKey(ElementoDeportivo, on_delete=models.CASCADE, related_name='prestamos')
     fecha_prestamo = models.DateField(auto_now_add=True)
-    hora_prestamo = models.TimeField()
+    hora_prestamo = models.TimeField(auto_now_add=True)
     dias_prestamo = models.IntegerField(default=1)
     fecha_devolucion = models.DateField()
     cantidad_prestada = models.IntegerField(default=1)
@@ -53,6 +62,13 @@ class Devolucion(models.Model):
 
 class Sancion(models.Model):
     codigo_sancion = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='sanciones',
+        null=True,
+        blank=True
+    )
     tipo_sancion = models.CharField(max_length=100)
     fecha_inicio_sancion = models.DateField()
     fecha_fin_sancion = models.DateField()
