@@ -1,9 +1,13 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
+from dotenv import load_dotenv  # <--- NUEVO: Importamos dotenv para leer el archivo .env
 
 # Directorio base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# <--- NUEVO: Cargar las variables del archivo .env al sistema --->
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SEGURIDAD: ¡Mantén esta clave en secreto en producción!
 SECRET_KEY = 'django-insecure--+k6(v(s%fu$4wf6!f_n(=1*5(^txum^g-@4p8sxybqvna6g4x'
@@ -124,3 +128,7 @@ MESSAGE_TAGS = {
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 7200
+
+# ── CONFIGURACIÓN DE INTELIGENCIA ARTIFICIAL (GEMINI) ────
+# <--- NUEVO: Obtenemos la API key protegida desde tu archivo .env
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")

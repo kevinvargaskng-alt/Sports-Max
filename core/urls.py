@@ -4,6 +4,9 @@ from django.contrib.auth import views as auth_views # Importante para las vistas
 from django.conf import settings
 from django.conf.urls.static import static
 
+# --- IMPORTACIÓN DE LA VISTA DEL AGENTE IA (NUEVO) ---
+from core.views import chat_tux_api
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -13,7 +16,7 @@ urlpatterns = [
     # Usuarios (login, logout, registro, perfil)
     path('', include('usuarios.urls')),      # /login/, /registro/, /perfil/
 
-    # --- FLUJO DE RECUPERACIÓN DE CONTRASEÑA (NUEVO) ---
+    # --- FLUJO DE RECUPERACIÓN DE CONTRASEÑA ---
     # 1. El usuario solicita el reset
     path('reset_password/', 
          auth_views.PasswordResetView.as_view(template_name="usuarios/registration/password_reset.html"), 
@@ -40,6 +43,9 @@ urlpatterns = [
     path('intercentros/', include('intercentros.urls')),
     path('gimnasio/', include('gimnasio.urls')),
     path('inventario/', include('inventario.urls')),
+
+    # --- RUTA DEL AGENTE INTELIGENTE TUX (NUEVO) ---
+    path('api/chat-tux/', chat_tux_api, name='chat_tux_api'),
 
 ]
 
