@@ -3,6 +3,11 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from .models import Reserva
+import json
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import GimnasioConfig, FechaIngreso
 
 @login_required
 def gimnasio_list(request):
@@ -96,3 +101,131 @@ def editar_reserva(request, id):
         messages.info(request, "Información actualizada.")
         return redirect('gimnasio')
     return render(request, 'gimnasio/editar.html', {'reserva': reserva})
+
+
+
+import json
+from django.contrib.auth.decorators import user_passes_test
+from .models import GimnasioConfig, FechaIngreso
+
+
+def es_admin(user):
+    return user.is_staff or user.is_superuser
+
+
+# ── DISPONIBILIDAD ──────────────────────────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_disponibilidad(request):
+    config = GimnasioConfig.get_config()
+
+    if request.method == 'POST':
+        estado       = request.POST.get('estado', config.estado)
+        dias_json    = request.POST.get('dias_json', '[]')
+        try:
+            dias = json.loads(dias_json)
+        except (ValueError, TypeError):
+            dias = []
+
+        horario_apertura = request.POST.get('horario_apertura', '07:00')
+        horario_cierre   = request.POST.get('horario_cierre',   '17:00')
+        capacidad        = request.POST.get('capacidad_maxima', 40)
+
+        config.estado            = estado
+        config.dias_habilitados  = dias
+        config.horario_apertura  = horario_apertura
+        config.horario_cierre    = horario_cierre
+        config.capacidad_maxima  = int(capacidad)
+        config.actualizado_por   = request.user
+        config.save()
+
+        messages.success(request, 'Configuración actualizada correctamente.')
+        return redirect('admin_disponibilidad')
+
+    dias_semana = [
+        {'codigo': 'lun', 'label': 'LUN'},
+        {'codigo': 'mar', 'label': 'MAR'},
+        {'codigo': 'mie', 'label': 'MIÉ'},
+        {'codigo': 'jue', 'label': 'JUE'},
+        {'codigo': 'vie', 'label': 'VIE'},
+        {'codigo': 'sab', 'label': 'SÁB'},
+        {'codigo': 'dom', 'label': 'DOM'},
+    ]
+
+    return render(request, 'gimnasio/disponibilidad.html', {
+        'config':          config,
+        'dias_semana':     dias_semana,
+        'dias_activos':    config.dias_habilitados,
+        'seccion_activa':  'disponibilidad',
+    })
+
+
+# ── HORARIOS ────────────────────────────────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_horarios(request):
+    config = GimnasioConfig.get_config()
+    return render(request, 'gimnasio/admin_horarios.html', {
+        'config':         config,
+        'seccion_activa': 'horarios',
+    })
+
+
+# ── FECHAS DE INGRESO ───────────────────────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_fechas_ingreso(request):
+    config = GimnasioConfig.get_config()
+    fechas = FechaIngreso.objects.filter(config=config)
+
+    if request.method == 'POST':
+        fecha_str   = request.POST.get('fecha', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        habilitada  = request.POST.get('habilitada') == 'on'
+
+        if fecha_str:
+            FechaIngreso.objects.create(
+                config=config,
+                fecha=fecha_str,
+                descripcion=descripcion,
+                habilitada=habilitada,
+            )
+            messages.success(request, 'Fecha de ingreso agregada.')
+        else:
+            messages.error(request, 'Debes ingresar una fecha válida.')
+
+        return redirect('admin_fechas_ingreso')
+
+    return render(request, 'gimnasio/admin_fechas_ingreso.html', {
+        'fechas':         fechas,
+        'seccion_activa': 'fechas_ingreso',
+    })
+
+
+# ── ELIMINAR FECHA ──────────────────────────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_eliminar_fecha(request, pk):
+    get_object_or_404(FechaIngreso, pk=pk).delete()
+    messages.success(request, 'Fecha eliminada.')
+    return redirect('admin_fechas_ingreso')
+
+
+# ── CONFIGURACIÓN ───────────────────────────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_configuracion(request):
+    config = GimnasioConfig.get_config()
+    return render(request, 'gimnasio/admin_configuracion.html', {
+        'config':         config,
+        'seccion_activa': 'configuracion',
+    })
+
+
+# ── NUEVO REGISTRO ──────────────────────────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_nuevo_registro(request):
+    return render(request, 'gimnasio/admin_nuevo_registro.html', {
+        'seccion_activa': 'nuevo_registro',
+    })
