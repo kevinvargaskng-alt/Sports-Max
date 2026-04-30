@@ -72,31 +72,31 @@
             <h2 class="section-title text-white">¿Qué Encontrarás Aquí?</h2>
             <p class="text-white-50">Gestiona tu vida deportiva de forma integral</p>
         </div>
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="service-card text-start d-flex flex-column align-items-start p-4">
-            <i class="fas fa-trophy fa-3x mb-3 text-warning"></i>
-            <h5 class="fw-bold">TORNEOS INTER-FICHAS</h5>
-            <p>Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
-        </div>
-    </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="service-card text-start d-flex flex-column align-items-start p-4">
+                    <i class="fas fa-trophy fa-3x mb-3 text-warning"></i>
+                    <h5 class="fw-bold">TORNEOS INTER-FICHAS</h5>
+                    <p>Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
+                </div>
+            </div>
 
-    <div class="col-md-4">
-        <div class="service-card text-start d-flex flex-column align-items-start p-4">
-            <i class="fas fa-medal fa-3x mb-3 text-warning"></i>
-            <h5 class="fw-bold">INTER-CENTROS</h5>
-            <p>Representa a tu centro de formación y compite contra los mejores deportistas de la región.</p>
-        </div>
-    </div>
+            <div class="col-md-4">
+                <div class="service-card text-start d-flex flex-column align-items-start p-4">
+                    <i class="fas fa-medal fa-3x mb-3 text-warning"></i>
+                    <h5 class="fw-bold">INTER-CENTROS</h5>
+                    <p>Representa a tu centro de formación y compite contra los mejores deportistas de la región.</p>
+                </div>
+            </div>
 
-    <div class="col-md-4">
-        <div class="service-card text-start d-flex flex-column align-items-start p-4">
-            <i class="fas fa-calendar-check fa-3x mb-3 text-warning"></i>
-            <h5 class="fw-bold">RESERVA GIMNASIO</h5>
-            <p>Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones de nuestro centro.</p>
+            <div class="col-md-4">
+                <div class="service-card text-start d-flex flex-column align-items-start p-4">
+                    <i class="fas fa-calendar-check fa-3x mb-3 text-warning"></i>
+                    <h5 class="fw-bold">RESERVA GIMNASIO</h5>
+                    <p>Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones de nuestro centro.</p>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
     </section>
 </div>
 
@@ -127,41 +127,58 @@
                 </ul>
 
                 <div class="tab-content" id="authTabsContent">
-                  <!-- PANEL LOGIN (Fragmento actualizado) -->
-<div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
-    <form id="loginForm" novalidate autocomplete="off">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label class="form-label fw-semibold text-white">Número de Documento</label>
-            <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678" required pattern="\d{5,20}" title="Ingresa un documento válido" data-bs-toggle="tooltip">
-        </div>
-        <div class="mb-3">
-            <label class="form-label fw-semibold text-white">Contraseña</label>
-            <div class="input-group">
-                <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta" required minlength="8">
-                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-            <!-- ENLACE DE RECUPERACIÓN AGREGADO AQUÍ -->
-            <div class="text-end mt-2">
-                <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none fw-bold" title="Te enviaremos un correo para restablecerla" data-bs-toggle="tooltip">
-                    ¿Olvidaste tu contraseña?
-                </a>
-            </div>
-        </div>
-        <div id="loginAlert" class="alert d-none" role="alert"></div>
-        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">INGRESAR AL SISTEMA</button>
-    </form>
-</div>
+                    
+                    <!-- PANEL LOGIN -->
+                    <div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
+                        <form id="loginForm" novalidate>
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Número de Documento</label>
+                                <input type="text" 
+                                       name="username" 
+                                       class="form-control custom-input" 
+                                       placeholder="Ej: 1052345678" 
+                                       required 
+                                       pattern="\d{5,20}" 
+                                       title="Ingresa un documento válido"
+                                       autocomplete="username"
+                                       data-bs-toggle="tooltip">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" 
+                                           id="id_password" 
+                                           name="password" 
+                                           class="form-control custom-input" 
+                                           placeholder="Tu clave secreta" 
+                                           required 
+                                           minlength="8"
+                                           autocomplete="current-password">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="text-end mt-2">
+                                    <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none fw-bold" title="Te enviaremos un correo para restablecerla" data-bs-toggle="tooltip">
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="loginAlert" class="alert d-none" role="alert"></div>
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">INGRESAR AL SISTEMA</button>
+                        </form>
+                    </div>
+
                     <!-- PANEL REGISTRO -->
                     <div class="tab-pane fade" id="registerPanel" role="tabpanel">
-                        <form id="registerForm" novalidate autocomplete="off">
+                        <form id="registerForm" novalidate>
                             {% csrf_token %}
                             <div class="row g-3">
+                                <!-- Tipo Documento -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Tipo Documento <span class="text-danger">*</span></label>
-                                    <select class="form-select custom-input" name="tipo_documento" required>
+                                    <select class="form-select custom-input" name="tipo_documento" required autocomplete="off">
                                         <option value="" selected disabled>-- Selecciona --</option>
                                         <option value="CC">Cédula de Ciudadanía</option>
                                         <option value="TI">Tarjeta de Identidad</option>
@@ -169,25 +186,58 @@
                                         <option value="PA">Pasaporte</option>
                                     </select>
                                 </div>
+                                
+                                <!-- Número Documento -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Número Documento <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control custom-input" name="numero_documento" required pattern="\d{5,20}" maxlength="20" title="Debe contener entre 5 y 20 números sin espacios" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <input type="text" 
+                                           class="form-control custom-input" 
+                                           name="numero_documento" 
+                                           required 
+                                           pattern="\d{5,20}" 
+                                           maxlength="20" 
+                                           title="Debe contener entre 5 y 20 números sin espacios"
+                                           autocomplete="username"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="bottom">
                                 </div>
                                 
+                                <!-- Nombres -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Nombres <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" required minlength="2" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras y espacios" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <input type="text" 
+                                           class="form-control custom-input text-capitalize" 
+                                           name="nombres" 
+                                           required 
+                                           minlength="2" 
+                                           maxlength="100" 
+                                           pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" 
+                                           title="Solo se permiten letras y espacios"
+                                           autocomplete="given-name"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="bottom">
                                 </div>
                                 
+                                <!-- Apellidos -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Apellidos <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" required minlength="2" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras y espacios" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <input type="text" 
+                                           class="form-control custom-input text-capitalize" 
+                                           name="apellidos" 
+                                           required 
+                                           minlength="2" 
+                                           maxlength="100" 
+                                           pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" 
+                                           title="Solo se permiten letras y espacios"
+                                           autocomplete="family-name"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="bottom">
                                 </div>
 
-                                <!-- CAMPO GÉNERO (OPCIONAL) -->
+                                <!-- Género -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Género <span class="text-muted fw-normal small">(Opcional)</span></label>
-                                    <select class="form-select custom-input" name="genero" title="Selecciona tu género" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <select class="form-select custom-input" name="genero" autocomplete="sex" title="Selecciona tu género" data-bs-toggle="tooltip" data-bs-placement="bottom">
                                         <option value="" selected>-- Selecciona (Opcional) --</option>
                                         <option value="M">Masculino</option>
                                         <option value="F">Femenino</option>
@@ -196,14 +246,25 @@
                                     </select>
                                 </div>
 
+                                <!-- Teléfono -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Teléfono <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control custom-input" name="telefono" required pattern="\d{7,15}" maxlength="15" title="Ingresa un número de teléfono válido (mínimo 7 dígitos)" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <input type="text" 
+                                           class="form-control custom-input" 
+                                           name="telefono" 
+                                           required 
+                                           pattern="\d{7,15}" 
+                                           maxlength="15" 
+                                           title="Ingresa un número de teléfono válido (mínimo 7 dígitos)"
+                                           autocomplete="tel"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="bottom">
                                 </div>
 
+                                <!-- Programa de Formación -->
                                 <div class="col-md-12">
                                     <label class="form-label fw-semibold text-white">Programa de Formación <span class="text-danger">*</span></label>
-                                    <select class="form-select custom-input" name="programa_formacion" required>
+                                    <select class="form-select custom-input" name="programa_formacion" required autocomplete="off">
                                         <option value="" selected disabled>-- Selecciona tu programa --</option>
                                         <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
                                         <option value="MINERIA">Supervisión de Procesos Mineros</option>
@@ -216,22 +277,52 @@
                                         <option value="MANTENIMIENTO_EQUIPO">Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte</option>
                                     </select>
                                 </div>
-                                <!-- CAMPO CORREO ELECTRÓNICO -->
+                                
+                                <!-- Email -->
                                 <div class="col-md-12">
                                     <label class="form-label fw-semibold text-white">Correo Electrónico <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control custom-input" name="email" required title="Ingresa un correo electrónico válido (ej: nombre@correo.com)" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <input type="email" 
+                                           class="form-control custom-input" 
+                                           name="email" 
+                                           required 
+                                           title="Ingresa un correo electrónico válido (ej: nombre@correo.com)"
+                                           autocomplete="email"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="bottom">
                                     <div class="invalid-feedback">Por favor ingresa un correo válido.</div>
                                 </div>
                                 
+                                <!-- Ficha -->
                                 <div class="col-md-12">
                                     <label class="form-label fw-semibold text-white">Número de Ficha <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" title="Ingresa el número de tu ficha de formación" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                    <input type="text" 
+                                           class="form-control custom-input" 
+                                           name="ficha" 
+                                           id="id_ficha" 
+                                           required 
+                                           pattern="\d{5,20}" 
+                                           maxlength="20" 
+                                           title="Ingresa el número de tu ficha de formación"
+                                           autocomplete="off"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="bottom">
                                 </div>
 
+                                <!-- Contraseña -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Contraseña <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" required minlength="8" maxlength="128" title="La contraseña debe tener al menos 8 caracteres" data-bs-toggle="tooltip" data-bs-placement="top">
+                                        <input type="password" 
+                                               name="contrasena" 
+                                               id="id_contrasena" 
+                                               class="form-control custom-input" 
+                                               required 
+                                               minlength="8" 
+                                               maxlength="128" 
+                                               title="La contraseña debe tener al menos 8 caracteres"
+                                               autocomplete="new-password"
+                                               data-bs-toggle="tooltip" 
+                                               data-bs-placement="top">
                                         <button class="btn btn-outline-secondary" type="button" id="togglePassword2" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -241,10 +332,18 @@
                                     </div>
                                     <small id="passwordStrengthText" class="text-white-50"></small>
                                 </div>
+                                
+                                <!-- Confirmar Contraseña -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-white">Confirmar Clave <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <input type="password" id="confirmarContrasena" class="form-control custom-input" required minlength="8" maxlength="128">
+                                        <input type="password" 
+                                               id="confirmarContrasena" 
+                                               class="form-control custom-input" 
+                                               required 
+                                               minlength="8" 
+                                               maxlength="128"
+                                               autocomplete="new-password">
                                         <button class="btn btn-outline-secondary" type="button" id="togglePassword3" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -266,10 +365,8 @@
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Revisamos si la URL tiene el parámetro login=1
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('login') === '1') {
-            // Buscamos el modal por su ID y lo abrimos
             var myModal = new bootstrap.Modal(document.getElementById('modalForm'));
             myModal.show();
         }
