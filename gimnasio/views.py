@@ -10,13 +10,17 @@ from django.contrib import messages
 from .models import GimnasioConfig, FechaIngreso
 from django.db.models import Q 
 
+
+
 @login_required
 def gimnasio_list(request):
     """
     Controla el acceso al gimnasio y muestra el historial personal.
     """
+    
     # 1. DEFINIR IDENTIDAD PARA FILTRADO
     # Usamos el nombre completo tal como se guarda en el CharField del modelo
+    
     nombre_usuario_logueado = f"{request.user.first_name} {request.user.last_name}"
     
     # Traemos solo las reservas del usuario actual para su historial personal
@@ -81,10 +85,16 @@ def gimnasio_list(request):
             except Exception as e:
                 messages.error(request, f"Error técnico al registrar asistencia: {e}")
             
+            request.session['abrir_admin'] = True
+            request.session['seccion_admin'] = 'reservas'
             return redirect('gimnasio')
 
     # 4. RENDERIZADO
+    abrir_admin = request.session.pop('abrir_admin', False)
+    seccion_admin = request.session.pop('seccion_admin', '')
     return render(request, 'gimnasio/gimnasio.html', {
+    'abrir_admin': abrir_admin,
+    'seccion_activa': seccion_admin,
     'reservas': mis_reservas,
     'esta_abierto': esta_abierto,
     'ahora': ahora,
@@ -279,8 +289,10 @@ def cancelar_reserva_admin(request, id):
         request,
         'La reservación fue cancelada correctamente.'
     )
-
-    return redirect('admin_reservas')
+    
+    request.session['abrir_admin'] = True
+    request.session['seccion_admin'] = 'reservas'   
+    return redirect('gimnasio')
 
 
 # ── CERRAR / ABRIR GIMNASIO ──────────────────────────

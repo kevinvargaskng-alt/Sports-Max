@@ -689,12 +689,21 @@
     }
 
     /* ── Abrir admin en sección correcta tras un POST ── */
+    /* ── Abrir admin en sección correcta tras un POST ── */
+    const abrirAdminPanel = "{{ abrir_admin|yesno:'true,false' }}" === "true";
     const seccionActiva = "{{ seccion_activa|default:'' }}";
-    if (seccionActiva) {
-        abrirAdmin();
-        const linkActivo = document.querySelector(`[onclick*="'${seccionActiva}'"]`);
-        if (linkActivo) mostrarSec(seccionActiva, linkActivo);
+
+    if (abrirAdminPanel && seccionActiva) {
+    abrirAdmin();
+
+    const linkActivo = document.querySelector(
+        `[onclick*="'${seccionActiva}'"]`
+    );
+
+    if (linkActivo) {
+        mostrarSec(seccionActiva, linkActivo);
     }
+}
 
     /* ── Estado del gimnasio ── */
     function selEstado(btn) {
