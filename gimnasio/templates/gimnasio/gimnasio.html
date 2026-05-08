@@ -6,7 +6,7 @@
 {% block extra_css %}
 <style>
     /* ============================================================
-       ESTILOS VISTA APRENDIZ (original)
+       ESTILOS VISTA APRENDIZ
     ============================================================ */
     html, body { height: 100%; margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
     body {
@@ -73,10 +73,11 @@
 
     .action-panel { flex: 1.1; padding: 50px; }
 
+    /* ── DATA GRID CORREGIDO ── */
     .data-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        gap: 16px;
         margin-bottom: 40px;
     }
 
@@ -85,6 +86,7 @@
         padding: 18px;
         border-radius: 12px;
         border: 1px solid #30363d;
+        min-width: 0;
     }
     .data-card label {
         display: block;
@@ -95,6 +97,11 @@
         margin-bottom: 8px;
     }
     .data-card span { font-size: 1rem; color: #f0f6fc; }
+
+    /* Tarjetas de fila completa */
+    .data-card-full {
+        grid-column: 1 / -1;
+    }
 
     .btn-submit {
         width: 100%;
@@ -145,7 +152,6 @@
         --danger:      #da3633;
     }
 
-    /* Shell del admin — ocupa toda la pantalla cuando está activo */
     .admin-shell {
         display: none;
         position: fixed;
@@ -159,7 +165,6 @@
     }
     .admin-shell.visible { display: flex; }
 
-    /* Topbar admin */
     .adm-topbar {
         background: var(--bg-panel);
         border-bottom: 1px solid var(--border);
@@ -182,10 +187,8 @@
     }
     .adm-close:hover { border-color: var(--danger); color: #ff7b72; }
 
-    /* Body grid admin */
     .adm-body { display:grid; grid-template-columns:200px 1fr; overflow:hidden; flex:1; }
 
-    /* Sidebar admin */
     .adm-sidebar { background:var(--bg-panel); border-right:1px solid var(--border); padding:20px 0; overflow-y:auto; }
     .sb-lbl { font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--muted); padding:0 16px 8px; text-transform:uppercase; display:block; }
     .sb-nav { list-style:none; margin-bottom:20px; }
@@ -198,17 +201,13 @@
     .sb-nav a.active { color:var(--accent); background:rgba(31,143,209,.1); border-left-color:var(--accent); }
     .sb-nav svg { width:15px; height:15px; flex-shrink:0; }
 
-    /* Main admin */
     .adm-main { padding:28px 32px; overflow-y:auto; background:var(--bg-base); }
 
-    /* Secciones */
     .adm-sec { display:none; }
     .adm-sec.activa { display:block; }
 
-    /* Títulos */
     .sec-title { font-size:11px; font-weight:700; letter-spacing:2px; color:var(--accent); text-transform:uppercase; margin-bottom:18px; }
 
-    /* Botones estado */
     .estado-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:28px; }
     .btn-estado {
         background:var(--bg-card); border:1.5px solid var(--border); color:var(--text);
@@ -219,7 +218,6 @@
     .btn-estado:hover { border-color:var(--accent); color:var(--accent); }
     .btn-estado.sel  { border-color:var(--accent); background:var(--btn-active); color:var(--accent); }
 
-    /* Días */
     .dias-grid { display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap; }
     .btn-dia {
         background:var(--bg-card); border:1.5px solid var(--border); color:var(--muted);
@@ -229,7 +227,6 @@
     .btn-dia:hover  { border-color:var(--accent); color:var(--text); }
     .btn-dia.active { border-color:var(--accent); background:var(--btn-active); color:var(--accent); }
 
-    /* Input cards */
     .cards-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
     .icard      { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 18px; }
     .icard-full { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 18px; margin-bottom:20px; }
@@ -243,7 +240,6 @@
     .itime:focus,.inum:focus,.itext:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
     input[type=number].inum { appearance:textfield; }
 
-    /* Botón confirmar */
     .btn-confirm {
         width:100%; background:var(--bg-card); border:1.5px solid var(--border); color:var(--text);
         font-family:'Exo 2',sans-serif; font-size:13px; font-weight:700; letter-spacing:2px;
@@ -252,12 +248,10 @@
     }
     .btn-confirm:hover { border-color:var(--accent); background:var(--btn-active); color:var(--accent); }
 
-    /* Alertas admin */
     .adm-alert { padding:10px 14px; border-radius:6px; font-size:13px; margin-bottom:16px; }
     .adm-alert-ok  { background:rgba(46,160,67,.15);  border:1px solid var(--success); color:#56d364; }
     .adm-alert-err { background:rgba(218,54,51,.15);  border:1px solid var(--danger);  color:#ff7b72; }
 
-    /* Tabla fechas */
     .adm-tbl { width:100%; border-collapse:collapse; margin-top:10px; }
     .adm-tbl th { color:var(--label); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:8px 12px; text-align:left; border-bottom:1px solid var(--border); }
     .adm-tbl td { padding:11px 12px; border-bottom:1px solid var(--border); font-size:13px; }
@@ -282,6 +276,7 @@
         .action-panel { flex:none; padding:30px 20px; }
         .digital-clock { font-size: 2.5rem; }
         .data-grid { grid-template-columns: 1fr; gap: 12px; }
+        .data-card-full { grid-column: 1 / -1; }
         .data-card { padding: 12px; }
         .table-custom thead { display: none; }
         .table-custom, .table-custom tbody, .table-custom tr, .table-custom td { display:block; width:100%; }
@@ -289,7 +284,6 @@
         .table-custom td { text-align:left; padding:8px 15px; border:none; position:relative; padding-left:45%; }
         .table-custom td::before { content:attr(data-label); position:absolute; left:15px; font-weight:bold; color:#58a6ff; text-transform:uppercase; font-size:0.7rem; }
 
-        /* Admin responsive */
         .adm-body { grid-template-columns: 1fr; }
         .adm-sidebar { display: none; }
         .adm-main { padding: 20px 16px; }
@@ -302,7 +296,7 @@
 {% block content %}
 
 <!-- ════════════════════════════════════════════════════════════
-     VISTA APRENDIZ (visible por defecto)
+     VISTA APRENDIZ
 ════════════════════════════════════════════════════════════ -->
 <div class="main-wrapper" id="vista-aprendiz">
 
@@ -345,7 +339,6 @@
                 </div>
             </div>
 
-            <!-- Botón para abrir el panel admin (solo visible si es staff) -->
             {% if user.is_staff or user.is_superuser %}
             <button onclick="abrirAdmin()" style="
                 margin-top:20px; background:none; border:1.5px solid #1f8fd1;
@@ -361,14 +354,19 @@
             </div>
         </div>
 
+        <!-- ── ACTION PANEL CON DATA-GRID CORREGIDO ── -->
         <div class="action-panel">
             <h4 class="text-white fw-bold mb-4 text-center text-md-start">Registro de Entrada</h4>
 
             <div class="data-grid text-start">
-                <div class="data-card" style="grid-column: span 1 / -1;">
+
+                <!-- Fila 1: Nombre completo (ocupa las 2 columnas) -->
+                <div class="data-card data-card-full">
                     <label>Nombre del Aprendiz</label>
                     <span class="fw-bold d-block">{{ user.first_name }} {{ user.last_name }}</span>
                 </div>
+
+                <!-- Fila 2: Documento | Ficha (una en cada columna) -->
                 <div class="data-card">
                     <label>N° Documento</label>
                     <span class="d-block">{{ user.numero_documento|default:"N/A" }}</span>
@@ -377,10 +375,13 @@
                     <label>Ficha</label>
                     <span class="d-block">{{ user.ficha|default:"N/A" }}</span>
                 </div>
-                <div class="data-card" style="grid-column: span 1 / -1;">
+
+                <!-- Fila 3: Programa (ocupa las 2 columnas) -->
+                <div class="data-card data-card-full">
                     <label>Programa de Formación</label>
                     <span class="d-block">{{ user.programa_formacion|default:"No Asignado" }}</span>
                 </div>
+
             </div>
 
             <form method="POST">
@@ -389,14 +390,18 @@
                 {% if esta_abierto %}
                     <button type="submit" class="btn-submit btn-active shadow">Confirmar Registro</button>
                 {% else %}
-                    <button type="button" class="btn-submit" style="background:#21262d; color:#f85149; border:1px solid rgba(248,81,73,0.2); cursor:not-allowed;" disabled>
+                    <button type="button" class="btn-submit"
+                        style="background:#21262d; color:#f85149; border:1px solid rgba(248,81,73,0.2); cursor:not-allowed;"
+                        disabled>
                         SISTEMA BLOQUEADO
                     </button>
                 {% endif %}
             </form>
         </div>
+
     </div>
 
+    <!-- Historial -->
     <div class="history-container">
         <div class="history-header">
             <i class="fas fa-history me-2"></i> MIS ÚLTIMOS INGRESOS
@@ -415,9 +420,12 @@
                 <tr>
                     <td data-label="Fecha">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
                     <td data-label="Hora" class="text-info fw-bold">{{ r.hora_entrada|time:"H:i A" }}</td>
-                    <td data-label="Estado"><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3">Éxito</span></td>
+                    <td data-label="Estado">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3">Éxito</span>
+                    </td>
                     <td data-label="Borrar">
-                        <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger" onclick="return confirm('¿Borrar registro?')">
+                        <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger"
+                           onclick="return confirm('¿Borrar registro?')">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
@@ -434,12 +442,11 @@
 
 
 <!-- ════════════════════════════════════════════════════════════
-     PANEL ADMIN (oculto por defecto, solo para is_staff)
+     PANEL ADMIN
 ════════════════════════════════════════════════════════════ -->
 {% if user.is_staff or user.is_superuser %}
 <div class="admin-shell" id="admin-shell">
 
-    <!-- Topbar -->
     <header class="adm-topbar">
         <div class="adm-dots"><span></span><span></span><span></span><span></span></div>
         <span class="adm-title">Panel de administrador — Gimnasio</span>
@@ -450,7 +457,6 @@
 
     <div class="adm-body">
 
-        <!-- Sidebar -->
         <nav class="adm-sidebar">
             <span class="sb-lbl">Configuración</span>
             <ul class="sb-nav">
@@ -490,10 +496,8 @@
             </ul>
         </nav>
 
-        <!-- Main admin -->
         <main class="adm-main">
 
-            <!-- Alertas Django -->
             {% if messages %}
                 {% for msg in messages %}
                 <div class="adm-alert {% if msg.tags == 'success' %}adm-alert-ok{% else %}adm-alert-err{% endif %}">

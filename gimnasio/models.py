@@ -1,16 +1,7 @@
 from django.db import models
-
-
 from usuarios.models import Usuario
 
-class Entrenamiento(models.Model):
-    codigo_entrenamiento = models.AutoField(primary_key=True)
-    fecha = models.DateField()
-    hora = models.TimeField()
-    disciplina = models.CharField(max_length=50)
-
-    def __str__(self):
-        return f"{self.disciplina} - {self.fecha}"
+# Se eliminó la clase Entrenamiento
 
 class Reserva(models.Model):
     codigo_registro = models.AutoField(primary_key=True)
@@ -21,10 +12,7 @@ class Reserva(models.Model):
     fecha_permanencia = models.DateField()
     hora_salida = models.TimeField()
     fecha_salida = models.DateField()
-    entrenamiento = models.ForeignKey(
-        Entrenamiento, on_delete=models.SET_NULL,
-        null=True, blank=True, related_name='reservas'
-    )
+    # Se eliminó el campo ForeignKey a Entrenamiento
     estado = models.CharField(max_length=20, default='Pendiente')
 
     def __str__(self):

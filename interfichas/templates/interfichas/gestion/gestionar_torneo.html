@@ -7,231 +7,118 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
 /* ═══════════════════════════════════════════
-   GESTIÓN DE TORNEO — ESTILOS PROPIOS
+   GESTIÓN DE TORNEO
    ═══════════════════════════════════════════ */
-
-/* Encabezado hero del torneo */
 .torneo-hero {
     background: linear-gradient(135deg, #0D1B2A 0%, #1A237E 60%, #0277BD 100%);
-    border-radius: 16px;
-    padding: 2rem 2.5rem;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 2rem;
+    border-radius: 16px; padding: 2rem 2.5rem;
+    position: relative; overflow: hidden; margin-bottom: 2rem;
 }
 .torneo-hero::before {
-    content: '\f091';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute;
-    right: -20px;
-    top: -20px;
-    font-size: 10rem;
-    opacity: 0.05;
-    color: #fff;
+    content: '\f091'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    position: absolute; right: -20px; top: -20px;
+    font-size: 10rem; opacity: 0.05; color: #fff;
 }
-
-/* Tarjetas de grupo */
 .grupo-card {
-    background: #0d1117;
-    border: 1px solid #21262d;
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-    transition: border-color 0.3s;
+    background: #0d1117; border: 1px solid #21262d;
+    border-radius: 14px; overflow: hidden; margin-bottom: 1.5rem; transition: border-color 0.3s;
 }
 .grupo-card:hover { border-color: #58a6ff; }
-
 .grupo-header {
     background: linear-gradient(90deg, #1A237E, #0277BD);
-    padding: 0.75rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;
 }
 .grupo-badge {
-    width: 42px; height: 42px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; background: rgba(255,255,255,0.15);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; font-weight: 900; color: #fff;
 }
-
-/* Tabla de posiciones */
-.tabla-posiciones {
-    width: 100%;
-    font-size: 0.82rem;
-    border-collapse: collapse;
-}
+.tabla-posiciones { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
 .tabla-posiciones thead th {
-    background: rgba(255,255,255,0.04);
-    color: #58a6ff;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    padding: 8px 12px;
-    text-transform: uppercase;
-    border-bottom: 1px solid #21262d;
+    background: rgba(255,255,255,0.04); color: #58a6ff; font-size: 0.72rem;
+    font-weight: 800; letter-spacing: 0.8px; padding: 8px 12px;
+    text-transform: uppercase; border-bottom: 1px solid #21262d;
 }
-.tabla-posiciones tbody tr {
-    border-bottom: 1px solid #161b22;
-    transition: background 0.2s;
-}
+.tabla-posiciones tbody tr { border-bottom: 1px solid #161b22; transition: background 0.2s; }
 .tabla-posiciones tbody tr:hover { background: rgba(88,166,255,0.05); }
 .tabla-posiciones tbody td { padding: 8px 12px; color: rgba(255,255,255,0.8); }
 .tabla-posiciones .clasificado-1 td:first-child { border-left: 3px solid #f0c040; }
 .tabla-posiciones .clasificado-2 td:first-child { border-left: 3px solid #58a6ff; }
 
-/* Partidos */
 .partido-item {
-    background: #161b22;
-    border: 1px solid #21262d;
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
-    margin-bottom: 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    background: #161b22; border: 1px solid #21262d; border-radius: 10px;
+    padding: 0.85rem 1rem; margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
 }
 .partido-item.jugado { border-color: #238636; }
 .partido-item.pendiente { border-color: #30363d; }
-
-.equipo-nombre {
-    font-weight: 700;
-    color: #e6edf3;
-    font-size: 0.88rem;
-    min-width: 120px;
-}
+.equipo-nombre { font-weight: 700; color: #e6edf3; font-size: 0.88rem; min-width: 120px; }
 .vs-badge {
-    font-size: 0.7rem;
-    font-weight: 900;
-    color: #8b949e;
-    letter-spacing: 1px;
-    padding: 2px 8px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 4px;
+    font-size: 0.7rem; font-weight: 900; color: #8b949e; letter-spacing: 1px;
+    padding: 2px 8px; background: rgba(255,255,255,0.06); border-radius: 4px;
 }
-.resultado-display {
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: #f0c040;
-    min-width: 60px;
-    text-align: center;
-}
+.resultado-display { font-size: 1.1rem; font-weight: 900; color: #f0c040; min-width: 60px; text-align: center; }
+.resultado-pts     { color: #79c0ff; }
+.resultado-sets    { color: #f0c040; }
+.parciales-sets    { font-size: 0.65rem; color: #8b949e; display: block; margin-top: 2px; }
 
-/* Fases eliminatorias */
-.fase-section {
-    margin-bottom: 2rem;
-}
+.fase-section { margin-bottom: 2rem; }
 .fase-title {
-    font-size: 1rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    font-size: 1rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; padding: 0.5rem 1rem; border-radius: 8px;
+    margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem;
 }
-.fase-cuartos { background: rgba(2,119,189,0.2); color: #58a6ff; border: 1px solid #0277BD; }
-.fase-semifinal { background: rgba(240,192,64,0.15); color: #f0c040; border: 1px solid #f0c040; }
-.fase-final { background: rgba(238,75,43,0.15); color: #ff6b6b; border: 1px solid #ff6b6b; }
+.fase-cuartos  { background: rgba(2,119,189,0.2);  color: #58a6ff; border: 1px solid #0277BD; }
+.fase-semifinal{ background: rgba(240,192,64,0.15); color: #f0c040; border: 1px solid #f0c040; }
+.fase-final    { background: rgba(238,75,43,0.15);  color: #ff6b6b; border: 1px solid #ff6b6b; }
 
-/* Botones de acción principales */
 .btn-action-primary {
-    background: linear-gradient(135deg, #1A237E, #0277BD);
-    border: none;
-    color: #fff;
-    font-weight: 700;
-    padding: 0.6rem 1.4rem;
-    border-radius: 8px;
-    transition: all 0.25s;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.82rem;
+    background: linear-gradient(135deg, #1A237E, #0277BD); border: none; color: #fff;
+    font-weight: 700; padding: 0.6rem 1.4rem; border-radius: 8px;
+    transition: all 0.25s; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.82rem;
 }
-.btn-action-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(2,119,189,0.4);
-    color: #fff;
-}
+.btn-action-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,119,189,0.4); color: #fff; }
 .btn-action-warning {
-    background: linear-gradient(135deg, #e65100, #f0c040);
-    border: none;
-    color: #0D0D0D;
-    font-weight: 700;
-    padding: 0.6rem 1.4rem;
-    border-radius: 8px;
-    transition: all 0.25s;
-    font-size: 0.82rem;
+    background: linear-gradient(135deg, #e65100, #f0c040); border: none; color: #0D0D0D;
+    font-weight: 700; padding: 0.6rem 1.4rem; border-radius: 8px;
+    transition: all 0.25s; font-size: 0.82rem;
 }
-.btn-action-warning:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(240,192,64,0.4);
-    color: #0D0D0D;
-}
+.btn-action-warning:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,192,64,0.4); color: #0D0D0D; }
 
-/* Modal resultado */
 .modal-resultado .modal-content {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 16px;
+    background: #0d1117; border: 1px solid #30363d; border-radius: 16px;
 }
 .score-input {
-    background: #161b22 !important;
-    border: 2px solid #30363d !important;
-    color: #fff !important;
-    border-radius: 10px !important;
-    font-size: 2rem !important;
-    font-weight: 900 !important;
-    text-align: center !important;
-    width: 80px !important;
-    height: 80px !important;
+    background: #161b22 !important; border: 2px solid #30363d !important;
+    color: #fff !important; border-radius: 10px !important;
+    font-size: 2rem !important; font-weight: 900 !important;
+    text-align: center !important; width: 80px !important; height: 80px !important;
 }
-.score-input:focus {
-    border-color: #58a6ff !important;
-    box-shadow: 0 0 0 3px rgba(88,166,255,0.2) !important;
+.score-input:focus { border-color: #58a6ff !important; box-shadow: 0 0 0 3px rgba(88,166,255,0.2) !important; }
+.set-input {
+    background: #161b22; border: 1px solid #30363d; color: #fff;
+    border-radius: 8px; width: 70px; text-align: center; padding: 6px;
 }
+.set-input:focus { border-color: #58a6ff; outline: none; }
 
-/* Panel de estado del torneo */
-.estado-panel {
-    background: #0d1117;
-    border: 1px solid #21262d;
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 2rem;
-}
+.estado-panel { background: #0d1117; border: 1px solid #21262d; border-radius: 12px; padding: 1.25rem; margin-bottom: 2rem; }
 .fase-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.82rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
 }
-.fase-indicator.inscripcion { background: rgba(139,148,158,0.2); color: #8b949e; }
-.fase-indicator.grupos { background: rgba(2,119,189,0.2); color: #58a6ff; }
-.fase-indicator.cuartos, .fase-indicator.cuartos_activos { background: rgba(88,166,255,0.2); color: #79c0ff; }
+.fase-indicator.inscripcion  { background: rgba(139,148,158,0.2); color: #8b949e; }
+.fase-indicator.grupos       { background: rgba(2,119,189,0.2);   color: #58a6ff; }
+.fase-indicator.cuartos, .fase-indicator.cuartos_activos   { background: rgba(88,166,255,0.2);  color: #79c0ff; }
 .fase-indicator.semifinal, .fase-indicator.semifinal_activos { background: rgba(240,192,64,0.2); color: #f0c040; }
-.fase-indicator.final, .fase-indicator.final_activa { background: rgba(255,107,107,0.2); color: #ff6b6b; }
-.fase-indicator.terminado { background: rgba(35,134,54,0.2); color: #3fb950; }
+.fase-indicator.final, .fase-indicator.final_activa         { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+.fase-indicator.terminado    { background: rgba(35,134,54,0.2);   color: #3fb950; }
 
-/* Ganador final */
 .ganador-card {
     background: linear-gradient(135deg, #1a2e0a, #0d4a1a);
-    border: 2px solid #3fb950;
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
+    border: 2px solid #3fb950; border-radius: 16px; padding: 2rem; text-align: center;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .torneo-hero { padding: 1.25rem; }
     .equipo-nombre { min-width: 90px; font-size: 0.8rem; }
@@ -243,14 +130,14 @@
 {% block content %}
 <div class="container py-4">
 
-    <!-- ── BREADCRUMB ─────────────────────────────────── -->
+    <!-- BREADCRUMB -->
     <nav class="mb-3">
         <a href="{% url 'interfichas' %}" class="text-white-50 text-decoration-none small">
             <i class="fas fa-arrow-left me-1"></i> Volver a Torneos
         </a>
     </nav>
 
-    <!-- ── HERO ─────────────────────────────────────────── -->
+    <!-- HERO -->
     <div class="torneo-hero">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
             <div>
@@ -263,6 +150,14 @@
                     <i class="fas fa-map-marker-alt me-1"></i>{{ torneo.lugar }}
                     &nbsp;·&nbsp;
                     <i class="fas fa-calendar me-1"></i>{{ torneo.fecha_torneo_fichas|date:"d/m/Y" }}
+                    &nbsp;·&nbsp;
+                    {% if tipo_marcador == 'sets' %}
+                        <i class="fas fa-table-tennis me-1 text-info"></i><span class="text-info">Sets</span>
+                    {% elif tipo_marcador == 'puntos' %}
+                        <i class="fas fa-basketball-ball me-1 text-warning"></i><span class="text-warning">Puntos</span>
+                    {% else %}
+                        <i class="fas fa-futbol me-1 text-success"></i><span class="text-success">Goles</span>
+                    {% endif %}
                 </p>
                 <span class="fase-indicator {{ fase_actual }}">
                     {% if fase_actual == 'inscripcion' %}<i class="fas fa-pen me-1"></i>Inscripciones abiertas
@@ -276,12 +171,16 @@
             </div>
             <div class="text-end">
                 <div class="text-white-50 small mb-1">Equipos inscritos</div>
-                <div class="display-6 fw-bold text-info">{{ num_equipos }}</div>
+                <div class="display-6 fw-bold text-info mb-2">{{ num_equipos }}</div>
+                <a href="{% url 'reporte_torneo' torneo_id=torneo.codigo_torneo_fichas %}"
+                   class="btn btn-sm btn-outline-success fw-bold" target="_blank">
+                    <i class="fas fa-file-alt me-1"></i>Reporte
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- ── MENSAJES ──────────────────────────────────────── -->
+    <!-- MENSAJES -->
     {% if messages %}
         {% for m in messages %}
         <div class="alert {% if m.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
@@ -292,15 +191,13 @@
         {% endfor %}
     {% endif %}
 
-    <!-- ════════════════════════════════════════════════════
-         SECCIÓN: GENERAR GRUPOS (solo si no hay grupos aún)
-         ════════════════════════════════════════════════════ -->
+    <!-- GENERAR GRUPOS (si no hay grupos) -->
     {% if not grupos_con_tabla %}
     <div class="estado-panel text-center py-5">
         <i class="fas fa-layer-group fa-3x text-white-50 mb-3"></i>
         <h5 class="text-white fw-bold mb-2">Generar Grupos del Torneo</h5>
         <p class="text-white-50 small mb-4">
-            Se distribuirán aleatoriamente los {{ num_equipos }} equipos inscritos en grupos de 4.
+            Se distribuirán aleatoriamente los {{ num_equipos }} equipos en grupos de 4.
             Los partidos de todos contra todos se crean automáticamente.
         </p>
         {% if num_equipos >= 4 %}
@@ -319,15 +216,12 @@
     </div>
     {% endif %}
 
-    <!-- ════════════════════════════════════════════════════
-         SECCIÓN: GRUPOS + TABLAS + PARTIDOS
-         ════════════════════════════════════════════════════ -->
+    <!-- GRUPOS + TABLAS + PARTIDOS -->
     {% if grupos_con_tabla %}
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <h4 class="text-white fw-bold mb-0">
             <i class="fas fa-layer-group text-info me-2"></i>Fase de Grupos
         </h4>
-        <!-- Re-sortear (solo si no hay resultados) -->
         {% if fase_actual == 'grupos' %}
         <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}"
               onsubmit="return confirm('¿Re-sortear grupos? Se borrarán todos los partidos actuales.')">
@@ -343,7 +237,6 @@
         {% for item in grupos_con_tabla %}
         <div class="col-12 col-lg-6">
             <div class="grupo-card">
-                <!-- Header del grupo -->
                 <div class="grupo-header">
                     <div class="grupo-badge">{{ item.grupo.nombre_grupo }}</div>
                     <div>
@@ -357,26 +250,25 @@
                     <table class="tabla-posiciones">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Equipo</th>
-                                <th>PJ</th>
-                                <th>PG</th>
-                                <th>PE</th>
+                                <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th>
                                 <th>PP</th>
-                                <th>GF</th>
-                                <th>GC</th>
-                                <th>DG</th>
-                                <th>PTS</th>
+                                {% if tipo_marcador == 'sets' %}
+                                    <th>SF</th><th>SC</th>
+                                {% elif tipo_marcador == 'puntos' %}
+                                    <th>PF</th><th>PC</th>
+                                {% else %}
+                                    <th>GF</th><th>GC</th>
+                                {% endif %}
+                                <th>DIF</th><th>PTS</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for fila in item.tabla %}
                             <tr class="{% if forloop.counter == 1 %}clasificado-1{% elif forloop.counter == 2 %}clasificado-2{% endif %}">
                                 <td class="fw-bold text-white-50">{{ forloop.counter }}</td>
-                                <td class="fw-bold text-white" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
-                                    title="{{ fila.equipo.nombre_equipo }}">
-                                    {{ fila.equipo.nombre_equipo }}
-                                </td>
+                                <td class="fw-bold text-white"
+                                    style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                                    title="{{ fila.equipo.nombre_equipo }}">{{ fila.equipo.nombre_equipo }}</td>
                                 <td>{{ fila.pj }}</td>
                                 <td class="text-success">{{ fila.pg }}</td>
                                 <td>{{ fila.pe }}</td>
@@ -404,38 +296,41 @@
                     </div>
                     {% for partido in item.partidos %}
                     <div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
-                        <!-- Equipos y resultado -->
                         <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
-                        <div class="text-center" style="min-width:90px;">
+                        <div class="text-center" style="min-width:100px;">
                             {% if partido.jugado %}
-                                <span class="resultado-display">{{ partido.goles_local }} – {{ partido.goles_visitante }}</span>
+                                {% if tipo_marcador == 'sets' %}
+                                    <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                    {% if partido.sets_local %}
+                                    <span class="parciales-sets">
+                                        {% for i in partido.sets_local %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
+                                        /
+                                        {% for i in partido.sets_visitante %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
+                                    </span>
+                                    {% endif %}
+                                {% elif tipo_marcador == 'puntos' %}
+                                    <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                    <span class="parciales-sets">pts</span>
+                                {% else %}
+                                    <span class="resultado-display">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                {% endif %}
                             {% else %}
                                 <span class="vs-badge">VS</span>
                             {% endif %}
                         </div>
                         <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
-
-                        <!-- Fecha / estado -->
                         <div class="ms-auto d-flex gap-2 align-items-center flex-wrap">
                             {% if partido.fecha_partido %}
-                            <small class="text-white-50">{{ partido.fecha_partido|date:"d/m" }}
+                            <small class="text-white-50">
+                                {{ partido.fecha_partido|date:"d/m" }}
                                 {% if partido.hora_partido %} {{ partido.hora_partido|time:"H:i" }}{% endif %}
                             </small>
                             {% endif %}
-                            <!-- Botón registrar resultado -->
-                            {% if not partido.jugado %}
-                            <button class="btn btn-sm btn-outline-success border-0 fw-bold"
-                                    onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo }}','{{ partido.equipo_visitante.nombre_equipo }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}')"
-                                    title="Registrar resultado / fecha">
-                                <i class="fas fa-pencil-alt"></i>
+                            <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
+                                    onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}')"
+                                    title="{% if partido.jugado %}Editar resultado{% else %}Registrar resultado{% endif %}">
+                                <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
                             </button>
-                            {% else %}
-                            <button class="btn btn-sm btn-outline-warning border-0"
-                                    onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo }}','{{ partido.equipo_visitante.nombre_equipo }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}')"
-                                    title="Editar resultado">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            {% endif %}
                         </div>
                     </div>
                     {% empty %}
@@ -453,8 +348,7 @@
         <div class="alert alert-success d-inline-block mb-3">
             <i class="fas fa-check-circle me-2"></i>
             Todos los partidos de grupo han sido jugados. ¡Es hora de las eliminatorias!
-        </div>
-        <br>
+        </div><br>
         <form method="POST" action="{% url 'generar_cuartos' torneo_id=torneo.codigo_torneo_fichas %}">
             {% csrf_token %}
             <button type="submit" class="btn-action-warning btn">
@@ -465,20 +359,14 @@
     {% endif %}
     {% endif %}
 
-    <!-- ════════════════════════════════════════════════════
-         SECCIÓN: ELIMINATORIAS
-         ════════════════════════════════════════════════════ -->
-
     <!-- CUARTOS DE FINAL -->
     {% if partidos_cuartos %}
     <div class="fase-section mt-4">
-        <div class="fase-title fase-cuartos">
-            <i class="fas fa-sitemap"></i> Cuartos de Final
-        </div>
+        <div class="fase-title fase-cuartos"><i class="fas fa-sitemap"></i> Cuartos de Final</div>
         <div class="row g-3">
             {% for partido in partidos_cuartos %}
             <div class="col-12 col-md-6">
-                {% include "interfichas/gestion/_partido_card.html" with partido=partido fase_label="Cuartos" %}
+                {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador %}
             </div>
             {% endfor %}
         </div>
@@ -499,13 +387,11 @@
     <!-- SEMIFINAL -->
     {% if partidos_semifinal %}
     <div class="fase-section mt-4">
-        <div class="fase-title fase-semifinal">
-            <i class="fas fa-bolt"></i> Semifinal
-        </div>
+        <div class="fase-title fase-semifinal"><i class="fas fa-bolt"></i> Semifinal</div>
         <div class="row g-3">
             {% for partido in partidos_semifinal %}
             <div class="col-12 col-md-6">
-                {% include "interfichas/gestion/_partido_card.html" with partido=partido fase_label="Semifinal" %}
+                {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador %}
             </div>
             {% endfor %}
         </div>
@@ -515,7 +401,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="fase_origen" value="semifinal">
                 <button type="submit" class="btn-action-warning btn">
-                    <i class="fas fa-star me-2"></i>Generar ¡La Final! (sorteo)
+                    <i class="fas fa-star me-2"></i>Generar ¡La Final!
                 </button>
             </form>
         </div>
@@ -526,37 +412,26 @@
     <!-- FINAL -->
     {% if partidos_final %}
     <div class="fase-section mt-4">
-        <div class="fase-title fase-final">
-            <i class="fas fa-star"></i> ¡Gran Final!
-        </div>
+        <div class="fase-title fase-final"><i class="fas fa-star"></i> ¡Gran Final!</div>
         <div class="row g-3">
             {% for partido in partidos_final %}
             <div class="col-12">
-                {% include "interfichas/gestion/_partido_card.html" with partido=partido fase_label="Final" es_final=True %}
+                {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador es_final=True %}
             </div>
             {% endfor %}
         </div>
-
-        <!-- Ganador -->
         {% if fase_actual == 'terminado' %}
-        {% for partido in partidos_final %}
-        {% if partido.jugado %}
+        {% for partido in partidos_final %}{% if partido.jugado %}
         <div class="ganador-card mt-4">
             <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
             <h3 class="text-white fw-bold mb-1">¡Campeón del Torneo!</h3>
             <h2 class="text-warning fw-bold mb-2">
-                {% if partido.goles_local > partido.goles_visitante %}
-                    {{ partido.equipo_local.nombre_equipo }}
-                {% else %}
-                    {{ partido.equipo_visitante.nombre_equipo }}
-                {% endif %}
+                {% if partido.goles_local > partido.goles_visitante %}{{ partido.equipo_local.nombre_equipo }}
+                {% else %}{{ partido.equipo_visitante.nombre_equipo }}{% endif %}
             </h2>
-            <p class="text-white-50 small">
-                {{ torneo.nombre_torneo }} · {{ torneo.disciplina }}
-            </p>
+            <p class="text-white-50 small">{{ torneo.nombre_torneo }} · {{ torneo.disciplina }}</p>
         </div>
-        {% endif %}
-        {% endfor %}
+        {% endif %}{% endfor %}
         {% endif %}
     </div>
     {% endif %}
@@ -564,7 +439,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════
-     MODAL: REGISTRAR RESULTADO / FECHA
+     MODAL: REGISTRAR / EDITAR RESULTADO (adaptativo)
      ══════════════════════════════════════════════════════ -->
 <div class="modal fade modal-resultado" id="modalResultado" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -572,7 +447,8 @@
             <div class="modal-header border-0 pb-0">
                 <div>
                     <h5 class="modal-title text-white fw-bold mb-0">
-                        <i class="fas fa-futbol text-info me-2"></i>Resultado del Partido
+                        <i class="fas fa-futbol text-info me-2" id="modal-icono"></i>
+                        <span id="modal-tipo-label">Resultado del Partido</span>
                     </h5>
                     <p class="text-white-50 small mb-0" id="modal-partido-nombres">—</p>
                 </div>
@@ -582,41 +458,67 @@
                 {% csrf_token %}
                 <div class="modal-body p-4">
 
-                    <!-- Marcador -->
-                    <div class="text-center mb-4">
-                        <div class="d-flex align-items-center justify-content-center gap-3">
+                    <!-- ── BLOQUE: GOLES o PUNTOS ─────────────── -->
+                    <div id="bloque-normal">
+                        <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
                             <div class="text-center">
                                 <div class="text-white-50 small mb-2" id="label-local">Local</div>
                                 <input type="number" name="goles_local" id="goles-local"
-                                       class="score-input form-control" min="0" max="99" placeholder="0">
+                                       class="score-input form-control" min="0" max="999" placeholder="0">
                             </div>
                             <div class="text-white-50 fw-bold fs-4">–</div>
                             <div class="text-center">
                                 <div class="text-white-50 small mb-2" id="label-visitante">Visitante</div>
                                 <input type="number" name="goles_visitante" id="goles-visitante"
-                                       class="score-input form-control" min="0" max="99" placeholder="0">
+                                       class="score-input form-control" min="0" max="999" placeholder="0">
                             </div>
                         </div>
-                        <small class="text-white-50 mt-2 d-block">
-                            Deja en blanco si solo quieres guardar la fecha
+                        <small class="text-white-50 d-block text-center mb-3">
+                            Deja en blanco para guardar solo la fecha
                         </small>
                     </div>
 
-                    <!-- Fecha y hora -->
-                    <div class="row g-3">
+                    <!-- ── BLOQUE: SETS (Voleibol / Pimpón) ──── -->
+                    <div id="bloque-sets" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-white-50 small fw-bold text-uppercase" style="letter-spacing:.5px;">
+                                <i class="fas fa-table-tennis me-1 text-info"></i>Sets jugados
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-info border-0"
+                                    onclick="agregarSet()">
+                                <i class="fas fa-plus me-1"></i>Set
+                            </button>
+                        </div>
+                        <!-- Cabecera de equipos -->
+                        <div class="d-flex gap-2 mb-1 px-1" style="font-size:0.75rem;color:#8b949e;">
+                            <span style="min-width:52px;"></span>
+                            <span style="width:70px;text-align:center;" id="sets-label-local">Local</span>
+                            <span style="width:16px;"></span>
+                            <span style="width:70px;text-align:center;" id="sets-label-visitante">Visitante</span>
+                        </div>
+                        <div id="sets-container"></div>
+                        <small class="text-white-50 d-block text-center mt-2">
+                            El ganador de sets se calcula automáticamente
+                        </small>
+                    </div>
+
+                    <!-- ── FECHA Y HORA ──────────────────────── -->
+                    <div class="row g-3 mt-1">
                         <div class="col-7">
                             <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">
                                 <i class="fas fa-calendar me-1"></i>Fecha
                             </label>
                             <input type="date" name="fecha_partido" id="fecha-partido"
-                                   class="form-control" style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
+                                   class="form-control"
+                                   style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
                         </div>
                         <div class="col-5">
                             <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">
                                 <i class="fas fa-clock me-1"></i>Hora
                             </label>
                             <input type="time" name="hora_partido" id="hora-partido"
-                                   class="form-control" style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
+                                   class="form-control"
+                                   style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
                         </div>
                     </div>
                 </div>
@@ -630,20 +532,75 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Tipo de marcador inyectado desde Django
+const TIPO_MARCADOR = "{{ tipo_marcador }}";
+let numSets = 0;
+
 function abrirModalResultado(partidoId, local, visitante, fecha, hora) {
-    document.getElementById('label-local').textContent = local;
-    document.getElementById('label-visitante').textContent = visitante;
+    // Nombres
+    document.getElementById('label-local').textContent          = local;
+    document.getElementById('label-visitante').textContent      = visitante;
+    document.getElementById('sets-label-local').textContent     = local;
+    document.getElementById('sets-label-visitante').textContent = visitante;
     document.getElementById('modal-partido-nombres').textContent = local + ' vs ' + visitante;
-    document.getElementById('formResultado').action = '/interfichas/partido/' + partidoId + '/resultado/';
-    document.getElementById('goles-local').value = '';
+
+    // URL del formulario
+    document.getElementById('formResultado').action =
+        '/interfichas/partido/' + partidoId + '/resultado/';
+
+    // Limpiar campos
+    document.getElementById('goles-local').value    = '';
     document.getElementById('goles-visitante').value = '';
-    document.getElementById('fecha-partido').value = fecha || '';
-    document.getElementById('hora-partido').value = hora || '';
+    document.getElementById('fecha-partido').value  = fecha || '';
+    document.getElementById('hora-partido').value   = hora  || '';
+
+    // Adaptar UI según disciplina
+    const esSet    = TIPO_MARCADOR === 'sets';
+    const esPuntos = TIPO_MARCADOR === 'puntos';
+
+    document.getElementById('bloque-normal').style.display = esSet ? 'none' : '';
+    document.getElementById('bloque-sets').style.display   = esSet ? ''     : 'none';
+
+    if (esPuntos) {
+        document.getElementById('modal-tipo-label').textContent = 'Resultado (Puntos)';
+        document.getElementById('modal-icono').className = 'fas fa-basketball-ball text-warning me-2';
+    } else if (esSet) {
+        document.getElementById('modal-tipo-label').textContent = 'Resultado por Sets';
+        document.getElementById('modal-icono').className = 'fas fa-table-tennis text-info me-2';
+        // Inicializar sets
+        numSets = 0;
+        document.getElementById('sets-container').innerHTML = '';
+        agregarSet(); agregarSet(); agregarSet(); // mínimo 3
+    } else {
+        document.getElementById('modal-tipo-label').textContent = 'Resultado del Partido';
+        document.getElementById('modal-icono').className = 'fas fa-futbol text-success me-2';
+    }
+
     new bootstrap.Modal(document.getElementById('modalResultado')).show();
+}
+
+function agregarSet() {
+    numSets++;
+    const c   = document.getElementById('sets-container');
+    const row = document.createElement('div');
+    row.className = 'd-flex align-items-center gap-2 mb-2';
+    row.innerHTML = `
+        <small class="text-white-50" style="min-width:52px;">Set ${numSets}</small>
+        <input type="number" name="sets_local[]"     min="0" max="50" placeholder="0"
+               class="set-input form-control form-control-sm">
+        <span class="text-white-50 fw-bold">–</span>
+        <input type="number" name="sets_visitante[]" min="0" max="50" placeholder="0"
+               class="set-input form-control form-control-sm">
+        <button type="button" class="btn btn-sm btn-outline-danger border-0 ms-1"
+                onclick="this.closest('div').remove(); numSets--;">
+            <i class="fas fa-times"></i>
+        </button>`;
+    c.appendChild(row);
 }
 </script>
 {% endblock %}

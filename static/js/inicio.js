@@ -23,17 +23,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const modalElemento = document.getElementById('modalElemento');
-    const formElemento = document.getElementById('formElemento'); 
+    const formElemento = document.getElementById('formElemento');
     const inputImagenElemento = document.getElementById('inputImagen');
     const previewImagenElemento = document.getElementById('previewImagen');
     const previewPlaceholder = document.getElementById('previewPlaceholder');
-    const tablaElementos = document.getElementById('tablaElementos');
 
     // ============================================================
     // 2. SISTEMA DE SEGURIDAD (LOGIN, REGISTRO & VALIDACIÓN)
     // ============================================================
 
-    // Detección automática de modal de login por URL (?login=1)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('login') === '1') {
         const modalAuth = document.getElementById('modalForm');
@@ -58,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
-    
+
     setupToggle('togglePassword', 'id_password');
-    setupToggle('togglePassword2', 'id_contrasena'); 
+    setupToggle('togglePassword2', 'id_contrasena');
     setupToggle('togglePassword3', 'confirmarContrasena');
 
     // Medidor de fortaleza de contraseña
@@ -99,14 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const loginAlert = document.getElementById('loginAlert');
             const formData = new FormData(this);
-            
+
             if (loginAlert) {
                 loginAlert.classList.remove('d-none');
                 loginAlert.className = 'alert alert-info';
                 loginAlert.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando credenciales...';
             }
 
-            fetch('/login/', { 
+            fetch('/login/', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -135,11 +133,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
             const form = e.target;
             const registerAlert = document.getElementById('registerAlert');
 
-            // --- NUEVA SEGURIDAD: VALIDACIÓN DE CAMPOS REQUERIDOS ---
             if (!form.checkValidity()) {
                 e.stopPropagation();
                 form.classList.add('was-validated');
@@ -160,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     registerAlert.className = 'alert alert-warning mt-3';
                     registerAlert.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Las contraseñas no coinciden.';
                 }
-                return; 
+                return;
             }
 
             const formData = new FormData(this);
@@ -170,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 registerAlert.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando registro...';
             }
 
-            fetch('/registro/', { 
+            fetch('/registro/', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -205,21 +202,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputFechaHidden = document.getElementById('inputFechaHidden') || document.getElementById('inputFechaDev');
 
     if (inputDias) {
-        inputDias.addEventListener('input', function() {
+        inputDias.addEventListener('input', function () {
             const dias = parseInt(this.value);
             if (dias > 0) {
                 let fechaActual = new Date();
                 fechaActual.setDate(fechaActual.getDate() + dias);
-                
+
                 const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
                 if (spanFecha) spanFecha.innerText = fechaActual.toLocaleDateString('es-ES', opciones);
-                
+
                 const yyyy = fechaActual.getFullYear();
                 let mm = fechaActual.getMonth() + 1;
                 let dd = fechaActual.getDate();
                 if (dd < 10) dd = '0' + dd;
                 if (mm < 10) mm = '0' + mm;
-                
+
                 if (inputFechaHidden) inputFechaHidden.value = yyyy + '-' + mm + '-' + dd;
                 if (infoFecha) infoFecha.style.display = 'block';
             } else {
@@ -243,19 +240,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function extraerDataDeFila(row) {
-        return {
-            id: row.dataset.id || '',
-            tipo: row.dataset.tipo || '',
-            cantidad: row.dataset.cantidad || '',
-            estado: row.dataset.estado || '',
-            docente: row.dataset.docente || '',
-            fecha: row.dataset.fecha || '',
-            descripcion: row.dataset.descripcion || '',
-            imagen: row.dataset.imagen || PLACEHOLDER_IMG,
-            deleteUrl: row.dataset.deleteUrl || '#'
-        };
-    }
+    // ============================================================
+    // INVENTARIO — Expand row con botones de ícono pequeño
+    // ============================================================
+    // NOTA: La lógica de expand ya está en inventario.html (.expansion-row).
+    // Este bloque NO crea filas dinámicas para no duplicar el panel.
+    // Solo mejora los botones de acción dentro del panel expandido.
 
     function abrirModalEditar(data) {
         if (!modalElemento) return;
@@ -264,24 +254,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const tituloModal = document.getElementById('modalTitle');
         if (tituloModal) tituloModal.innerText = 'Editar Elemento Deportivo';
 
-        const inputAccion = document.getElementById('inputAccion') || formElemento.querySelector('[name="accion"]');
-        const inputCodigo = document.getElementById('inputCodigo') || document.getElementById('elementoIdInput');
-        
+        const inputAccion = document.getElementById('inputAccion');
+        const inputCodigo = document.getElementById('inputCodigo');
+
         if (inputAccion) inputAccion.value = 'editar_elemento';
         if (inputCodigo) inputCodigo.value = data.id;
 
         const campos = {
-            'inputTipo': data.tipo,
-            'inputTipoMaquina': data.tipo,
-            'inputCantidad': data.cantidad,
-            'inputCantidadTotal': data.cantidad,
-            'inputEstado': data.estado,
-            'inputEstadoGeneral': data.estado,
-            'inputDocente': data.docente,
+            'inputTipoMaquina':        data.tipo,
+            'inputCantidadTotal':      data.cantidad,
+            'inputEstadoGeneral':      data.estado,
             'inputDocenteResponsable': data.docente,
-            'inputFecha': data.fecha,
-            'inputFechaAdquisicion': data.fecha,
-            'inputDescripcion': data.descripcion
+            'inputFechaAdquisicion':   data.fecha,
+            'inputDescripcion':        data.descripcion
         };
 
         for (let id in campos) {
@@ -303,54 +288,37 @@ document.addEventListener('DOMContentLoaded', function () {
         bootstrap.Modal.getOrCreateInstance(modalElemento).show();
     }
 
+    // Delegar clicks en el tbody de inventario
+    const tablaElementos = document.getElementById('tablaElementos');
     if (tablaElementos) {
         const tbody = tablaElementos.querySelector('tbody');
-        tbody.addEventListener('click', function (e) {
-            const target = e.target;
-            const row = target.closest('tr');
-            if (!row || row.classList.contains('fila-detalle')) return;
 
-            if (target.closest('.btn-editar-elemento') || target.closest('.btn-abrir-editar')) {
+        tbody.addEventListener('click', function (e) {
+            // ── Botón EDITAR dentro del panel expansion-row ──
+            const btnEditar = e.target.closest('.btn-editar-elemento');
+            if (btnEditar) {
                 e.preventDefault();
-                abrirModalEditar(extraerDataDeFila(row));
+                // Subir hasta la expansion-row y luego a la main-row anterior
+                const expansionRow = btnEditar.closest('tr.expansion-row');
+                if (!expansionRow) return;
+                const mainRow = expansionRow.previousElementSibling;
+                if (!mainRow) return;
+
+                abrirModalEditar({
+                    id:          mainRow.dataset.id || '',
+                    tipo:        mainRow.dataset.tipo || '',
+                    cantidad:    mainRow.dataset.cantidad || '',
+                    estado:      mainRow.dataset.estado || '',
+                    docente:     mainRow.dataset.docente || '',
+                    fecha:       mainRow.dataset.fecha || '',
+                    descripcion: mainRow.dataset.descripcion || '',
+                    imagen:      mainRow.dataset.imagen || PLACEHOLDER_IMG,
+                });
                 return;
             }
 
-            if (target.closest('.btn-expand')) {
-                e.preventDefault();
-                const next = row.nextElementSibling;
-                if (next && next.classList.contains('fila-detalle')) {
-                    next.remove();
-                } else {
-                    tbody.querySelectorAll('.fila-detalle').forEach(r => r.remove());
-                    
-                    const data = extraerDataDeFila(row);
-                    const numCols = tablaElementos.querySelectorAll('thead th').length || 8;
-                    const imgUrl = (data.imagen && data.imagen.trim() !== '') ? data.imagen : PLACEHOLDER_IMG;
-                    
-                    const detalleHtml = `
-                        <tr class="fila-detalle">
-                            <td colspan="${numCols}">
-                                <div class="d-flex gap-3 align-items-start p-3 m-2" style="background: rgba(0, 210, 255, 0.05); border-radius: 12px; border-left: 4px solid var(--accent-blue);">
-                                    <div style="width: 120px; height: 120px; flex-shrink: 0; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid var(--accent-blue); overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                        <img src="${escapeHtml(imgUrl)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <i class="fas fa-image fa-3x text-muted" style="display: none;"></i>
-                                    </div>
-                                    <div class="text-start flex-grow-1">
-                                        <h6 class="fw-bold text-uppercase" style="color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 8px;">${escapeHtml(data.tipo)}</h6>
-                                        <p class="small text-white-50 mb-3"><strong>Descripción:</strong> ${escapeHtml(data.descripcion || 'Sin descripción disponible')}</p>
-                                        <button class="btn btn-sm btn-warning mt-2 btn-editar-sub">
-                                            <i class="fas fa-edit me-1"></i> Editar Elemento
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>`;
-                        
-                    row.insertAdjacentHTML('afterend', detalleHtml);
-                    row.nextElementSibling.querySelector('.btn-editar-sub').onclick = () => abrirModalEditar(data);
-                }
-            }
+            // ── Botón EXPAND (toggle fila) — ya manejado en inventario.html,
+            //    aquí NO hacemos nada para evitar duplicados ──
         });
     }
 
@@ -358,10 +326,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // 4. OTROS (TABS, PANELES & EFECTOS)
     // ============================================================
 
-    window.prestamoRapido = function(id) {
+    window.prestamoRapido = function (id) {
         const select = document.getElementById('selectElemento');
         if (select) {
             select.value = id;
+            select.dispatchEvent(new Event('change'));
             const modalP = document.getElementById('modalPrestamo');
             if (modalP) {
                 const modal = bootstrap.Modal.getOrCreateInstance(modalP);
@@ -370,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    window.mostrarSeccion = function(tipo) {
+    window.mostrarSeccion = function (tipo) {
         const panel = document.getElementById('seccion-extra');
         const titulo = document.getElementById('titulo-seccion');
         const contenido = document.getElementById('contenido-seccion');
@@ -388,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    window.cerrarSeccion = function() {
+    window.cerrarSeccion = function () {
         const panel = document.getElementById('seccion-extra');
         if (panel) panel.classList.add('d-none');
     };
@@ -420,16 +389,16 @@ document.addEventListener('DOMContentLoaded', function () {
 // ============================================================
 // 5. PREVISUALIZAR FOTO DE PERFIL
 // ============================================================
-window.previewProfileImage = function(event) {
+window.previewProfileImage = function (event) {
     var reader = new FileReader();
-    reader.onload = function(){
+    reader.onload = function () {
         var output = document.getElementById('imgPreviewPerfil');
         if (output) {
             output.src = reader.result;
-            output.style.border = "2px solid var(--accent-hover)"; 
+            output.style.border = "2px solid var(--accent-hover)";
         }
     };
-    if(event.target.files[0]) {
+    if (event.target.files[0]) {
         reader.readAsDataURL(event.target.files[0]);
     }
 };

@@ -11,4 +11,21 @@ urlpatterns = [
     path('gimnasio/admin/fechas/eliminar/<int:pk>/',   views.admin_eliminar_fecha,   name='admin_eliminar_fecha'),
     path('gimnasio/admin/configuracion/',              views.admin_configuracion,    name='admin_configuracion'),
     path('gimnasio/admin/nuevo-registro/',             views.admin_nuevo_registro,   name='admin_nuevo_registro'),
+    path(
+    'gimnasio/admin/reservas/',
+    views.admin_reservas,
+    name='admin_reservas'
+),
+
+path(
+    'gimnasio/admin/cancelar/<int:id>/',
+    views.cancelar_reserva_admin,
+    name='cancelar_reserva_admin'
+),
+
+path(
+    'gimnasio/admin/cerrar/',
+    views.cerrar_gimnasio,
+    name='cerrar_gimnasio'
+),
 ]
