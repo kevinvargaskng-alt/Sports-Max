@@ -193,10 +193,11 @@
                         {% for e in elementos %}
                         <tr class="main-row"
                             data-id="{{ e.codigo_elemento }}"
-                            data-tipo="{{ e.tipo_maquina }}"
+                            data-tipo="{{ e.nombre_elemento }}"
                             data-cantidad="{{ e.cantidad_total }}"
                             data-estado="{{ e.estado_general }}"
-                            data-docente="{{ e.docente_responsable }}"
+                            data-responsable="{{ e.usuario_responsable.get_full_name|default:'Sin asignar' }}"
+                            data-responsable-id="{{ e.usuario_responsable.pk|default:'' }}"
                             data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
                             data-descripcion="{{ e.descripcion }}"
                             {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}>
@@ -211,7 +212,7 @@
                             <!-- Imagen -->
                             <td data-label="Imagen">
                                 {% if e.imagen %}
-                                    <img src="{{ e.imagen.url }}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    <img src="{{ e.imagen.url }}" class="table-img" alt="{{ e.nombre_elemento }}">
                                 {% else %}
                                     <div class="table-img d-flex align-items-center justify-content-center bg-dark border border-secondary">
                                         <i class="fas fa-image text-muted"></i>
@@ -219,7 +220,7 @@
                                 {% endif %}
                             </td>
 
-                            <td data-label="Elemento"><strong>{{ e.tipo_maquina }}</strong></td>
+                            <td data-label="Elemento"><strong>{{ e.nombre_elemento }}</strong></td>
 
                             <td data-label="Stock">
                                 <span class="badge bg-dark border border-secondary px-3">{{ e.cantidad_total }}</span>
@@ -234,7 +235,7 @@
                                 </span>
                             </td>
 
-                            <td data-label="Responsable">{{ e.docente_responsable }}</td>
+                            <td data-label="Responsable">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</td>
 
                             <!-- Acciones rápidas con íconos pequeños -->
                             <td data-label="Acciones" class="text-center">
@@ -277,7 +278,7 @@
                                 <div class="detail-panel">
 
                                     {% if e.imagen %}
-                                        <img src="{{ e.imagen.url }}" alt="{{ e.tipo_maquina }}">
+                                        <img src="{{ e.imagen.url }}" alt="{{ e.nombre_elemento }}">
                                     {% else %}
                                         <div class="no-img">
                                             <i class="fas fa-image fa-2x text-muted"></i>
@@ -285,14 +286,14 @@
                                     {% endif %}
 
                                     <div class="flex-grow-1">
-                                        <h6 class="text-info fw-bold text-uppercase mb-2">{{ e.tipo_maquina }}</h6>
+                                        <h6 class="text-info fw-bold text-uppercase mb-2">{{ e.nombre_elemento }}</h6>
                                         <p class="text-white-50 small mb-3" style="line-height:1.6;">
                                             {{ e.descripcion|default:"Sin descripción disponible." }}
                                         </p>
                                         <div class="d-flex flex-wrap gap-4 small text-white-50 mb-3">
                                             <span><i class="fas fa-cubes text-warning me-1"></i>Stock: <strong class="text-white">{{ e.cantidad_total }}</strong></span>
                                             <span><i class="fas fa-calendar me-1 text-info"></i>Adquirido: <strong class="text-white">{{ e.fecha_adquisicion|date:"d/m/Y" }}</strong></span>
-                                            <span><i class="fas fa-user me-1 text-success"></i>Responsable: <strong class="text-white">{{ e.docente_responsable }}</strong></span>
+                                            <span><i class="fas fa-user me-1 text-success"></i>Responsable: <strong class="text-white">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</strong></span>
                                             <span><i class="fas fa-circle me-1
                                                 {% if e.estado_general == 'Bueno' %}text-success
                                                 {% elif e.estado_general == 'Regular' %}text-warning
@@ -371,7 +372,7 @@
                         {% for p in prestamos %}
                         <tr>
                             <td data-label="Código" class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
-                            <td data-label="Elemento">{{ p.elemento.tipo_maquina }}</td>
+                            <td data-label="Elemento">{{ p.elemento.nombre_elemento }}</td>
                             <td data-label="Cant.">{{ p.cantidad_prestada }}</td>
                             <td data-label="Devolución" class="text-warning fw-bold">
                                 {{ p.fecha_devolucion|date:"d/m/Y" }}
@@ -433,7 +434,7 @@
                         <tr>
                             <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
                             <td>{{ p.usuario.get_full_name|default:p.usuario.username }}</td>
-                            <td>{{ p.elemento.tipo_maquina }}</td>
+                            <td>{{ p.elemento.nombre_elemento }}</td>
                             <td>{{ p.cantidad_prestada }}</td>
                             <td class="{% if p.vencido %}text-danger{% else %}text-warning{% endif %} fw-bold">
                                 {{ p.fecha_devolucion|date:"d/m/Y" }}
@@ -491,7 +492,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Nombre / Tipo</label>
-                        <input type="text" id="inputTipoMaquina" name="tipo_maquina"
+                        <input type="text" id="inputNombreElemento" name="nombre_elemento"
                                class="form-control custom-input" required>
                     </div>
                     <div class="mb-3">
@@ -515,9 +516,14 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Responsable</label>
-                        <input type="text" id="inputDocenteResponsable" name="docente_responsable"
-                               class="form-control custom-input" required>
+                        <label class="form-label fw-bold small">Usuario Responsable</label>
+                        <select id="inputUsuarioResponsable" name="usuario_responsable"
+                                class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Selecciona un responsable --</option>
+                            {% for u in usuarios_staff %}
+                            <option value="{{ u.id }}">{{ u.get_full_name }} ({{ u.numero_documento }})</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Fecha Adquisición</label>
@@ -596,11 +602,11 @@
                             {% if e.cantidad_total > 0 %}
                             <option value="{{ e.codigo_elemento }}"
                                     data-disponible="{{ e.cantidad_total }}">
-                                {{ e.tipo_maquina }} (Disp: {{ e.cantidad_total }})
+                                {{ e.nombre_elemento }} (Disp: {{ e.cantidad_total }})
                             </option>
                             {% else %}
                             <option value="{{ e.codigo_elemento }}" disabled class="text-muted">
-                                {{ e.tipo_maquina }} — Sin stock
+                                {{ e.nombre_elemento }} — Sin stock
                             </option>
                             {% endif %}
                             {% endfor %}
@@ -673,10 +679,11 @@ function initBotonesEditar() {
             document.getElementById('inputAccion').value              = 'editar_elemento';
             document.getElementById('modalTitle').innerText           = 'Editar Elemento';
             document.getElementById('inputCodigo').value              = row.dataset.id;
-            document.getElementById('inputTipoMaquina').value         = row.dataset.tipo;
+            document.getElementById('inputNombreElemento').value         = row.dataset.nombre;
             document.getElementById('inputCantidadTotal').value       = row.dataset.cantidad;
             document.getElementById('inputEstadoGeneral').value       = row.dataset.estado;
-            document.getElementById('inputDocenteResponsable').value  = row.dataset.docente;
+            // El select necesita el id del usuario, guardado en data-responsable-id
+            document.getElementById('inputUsuarioResponsable').value  = row.dataset.responsableId || '';
             document.getElementById('inputFechaAdquisicion').value    = row.dataset.fecha;
             document.getElementById('inputDescripcion').value         = row.dataset.descripcion || '';
 

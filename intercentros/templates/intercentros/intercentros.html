@@ -15,8 +15,6 @@
         border: 1px solid #374151; border-radius: 20px; padding: 30px;
         display: flex; align-items: center; justify-content: space-between;
     }
-
-    /* ── Badge de rol ── */
     .rol-badge {
         display: inline-flex; align-items: center; gap: 6px;
         font-size: 0.7rem; font-weight: 700; letter-spacing: 0.8px;
@@ -26,8 +24,7 @@
     .rol-aprendiz { background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.35); }
 
     .action-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 25px; width: 100%; max-width: 1100px; margin: 0 auto 60px;
     }
     .action-card {
@@ -38,7 +35,6 @@
     .action-card:hover { transform: translateY(-8px); }
     .action-card i { margin-bottom: 20px; transition: transform 0.3s; }
     .action-card:hover i { transform: scale(1.1); }
-
     .card-primary:hover { border-color: #58a6ff; box-shadow: 0 10px 25px rgba(88,166,255,0.15); }
     .card-primary i { color: #58a6ff; }
     .card-success:hover { border-color: #2ea043; box-shadow: 0 10px 25px rgba(46,160,67,0.15); }
@@ -73,20 +69,19 @@
     .seccion-header:hover { border-color: #f97316; }
     .seccion-header h6 { margin: 0; font-size: 0.85rem; letter-spacing: 0.5px; color: #8b949e; }
     .seccion-header .icono-toggle { transition: transform .3s; color: #f97316; }
-    .seccion-header.abierto .icono-toggle { transform: rotate(180deg); }
     .seccion-cuerpo { display: none; padding-top: 16px; }
     .seccion-cuerpo.visible { display: block; }
 
-    /* ── Filtros de sección ── */
+    /* ── Filtros ── */
     .filtros-seccion { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-    .filtros-seccion select {
+    .filtros-seccion select, .select-filtro {
         background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
         color: #e6edf3; font-size: 0.8rem; padding: 6px 12px; cursor: pointer;
         transition: border-color .2s;
     }
-    .filtros-seccion select:focus { outline: none; border-color: #f97316; }
+    .filtros-seccion select:focus, .select-filtro:focus { outline: none; border-color: #f97316; }
 
-    /* ── Cards de entrenamiento / aviso ── */
+    /* ── Card item ── */
     .card-item {
         background: #161b22; border: 1px solid #30363d; border-radius: 12px;
         padding: 16px 20px; margin-bottom: 10px;
@@ -104,7 +99,7 @@
     .card-item .meta { font-size: 0.75rem; color: #8b949e; margin-top: 4px; }
     .empty-state { text-align: center; padding: 30px; color: rgba(255,255,255,0.25); font-size: 0.85rem; }
 
-    /* ── Botón confirmar asistencia ── */
+    /* ── Botón asistencia ── */
     .btn-asistencia {
         font-size: 0.72rem; font-weight: 700; padding: 5px 14px;
         border-radius: 20px; border: 1px solid rgba(56,189,248,0.4);
@@ -117,7 +112,7 @@
         color: #4ade80; cursor: default;
     }
 
-    /* ── Lista asistentes (admin) ── */
+    /* ── Lista asistentes ── */
     .asistentes-list {
         margin-top: 10px; padding: 10px 14px;
         background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid #21262d;
@@ -129,9 +124,17 @@
     }
     .asistentes-list .asistente-item:last-child { border-bottom: none; }
 
-    /* ── Panel solo-admin (borde diferenciado) ── */
+    /* ── Admin card ── */
     .admin-only-card { border-color: rgba(249,115,22,0.3) !important; }
     .admin-only-card:hover { border-color: #f97316 !important; }
+
+    /* ── Separador de torneo en lista de postulados ── */
+    .torneo-sep {
+        font-size: 0.7rem; font-weight: 700; color: #f97316; letter-spacing: 0.5px;
+        text-transform: uppercase; padding: 12px 4px 4px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .torneo-sep::after { content: ''; flex: 1; height: 1px; background: rgba(249,115,22,0.2); }
 
     /* ── Alertas flotantes ── */
     .alert-floating {
@@ -169,7 +172,7 @@
         {% endfor %}
     {% endif %}
 
-    <!-- ════════════════════════════ HERO ════════════════════════════ -->
+    <!-- HERO -->
     <div class="hero-banner">
         <div>
             <h2 class="fw-bold mb-1">Intercentros Centro Minero</h2>
@@ -195,10 +198,9 @@
         </div>
     </div>
 
-    <!-- ════════════════════════════ GRID DE ACCIONES ════════════════════════════ -->
+    <!-- GRID DE ACCIONES -->
     <div class="action-grid">
 
-        <!-- ── Tarjeta Postulaciones (solo aprendiz) ── -->
         {% if not es_admin %}
         <div class="action-card card-primary">
             <i class="fas fa-user-edit fa-3x"></i>
@@ -220,7 +222,6 @@
         </div>
         {% endif %}
 
-        <!-- ── Tarjeta Mis Postulaciones (solo aprendiz) ── -->
         {% if not es_admin %}
         <div class="action-card card-success">
             <i class="fas fa-clipboard-list fa-3x"></i>
@@ -239,12 +240,17 @@
         </div>
         {% endif %}
 
-        <!-- ── Tarjeta Postulaciones ADMIN: Ver lista completa ── -->
         {% if es_admin %}
         <div class="action-card card-success admin-only-card">
             <i class="fas fa-users fa-3x"></i>
             <h5>Postulados</h5>
             <p class="small text-white-50">Lista completa de aprendices postulados a convocatorias.</p>
+            {% if todas_postulaciones %}
+            <span class="badge rounded-pill mb-2"
+                  style="background:rgba(46,160,67,0.15); color:#2ea043; border:1px solid rgba(46,160,67,0.35); font-size:0.75rem;">
+                {{ todas_postulaciones|length }} postulado{% if todas_postulaciones|length != 1 %}s{% endif %}
+            </span>
+            {% endif %}
             <button class="btn btn-outline-success w-100 fw-bold mt-1"
                     onclick="toggleSeccion('seccion-postulados-admin')">
                 <i class="fas fa-list-ul me-2"></i>VER POSTULADOS
@@ -252,7 +258,6 @@
         </div>
         {% endif %}
 
-        <!-- ── Tarjeta Entrenamientos ── -->
         <div class="action-card card-info {% if es_admin %}admin-only-card{% endif %}">
             <i class="fas fa-calendar-alt fa-3x"></i>
             <h5>Entrenamientos</h5>
@@ -261,8 +266,7 @@
                 {% else %}Consulta los horarios de preparación y confirma tu asistencia.{% endif %}
             </p>
             <div class="btn-group-custom">
-                <button class="btn btn-outline-info"
-                        onclick="toggleSeccion('seccion-entrenamientos')">
+                <button class="btn btn-outline-info" onclick="toggleSeccion('seccion-entrenamientos')">
                     VER AGENDA
                 </button>
                 {% if es_admin %}
@@ -274,7 +278,6 @@
             </div>
         </div>
 
-        <!-- ── Tarjeta Avisos ── -->
         <div class="action-card card-warning {% if es_admin %}admin-only-card{% endif %}">
             <i class="fas fa-bullhorn fa-3x"></i>
             <h5>Avisos y Novedades</h5>
@@ -283,8 +286,7 @@
                 {% else %}Consulta la información, alertas y resultados publicados.{% endif %}
             </p>
             <div class="btn-group-custom">
-                <button class="btn btn-outline-warning"
-                        onclick="toggleSeccion('seccion-avisos')">
+                <button class="btn btn-outline-warning" onclick="toggleSeccion('seccion-avisos')">
                     VER AVISOS
                 </button>
                 {% if es_admin %}
@@ -299,7 +301,7 @@
     </div><!-- /action-grid -->
 
 
-    <!-- ════════════════════════════ SECCIÓN: MIS POSTULACIONES (aprendiz) ════════════════════════════ -->
+    <!-- SECCIÓN: MIS POSTULACIONES (aprendiz) -->
     {% if not es_admin %}
     <div class="seccion-expandible" id="seccion-postulaciones" style="display:none;">
         <div class="seccion-header" onclick="toggleSeccion('seccion-postulaciones')">
@@ -326,9 +328,7 @@
                             {{ p.torneo.fecha_torneo|date:"d/m/Y" }}
                         </span>
                     </div>
-                    <div class="meta mt-1">
-                        Postulado el {{ p.fecha_postulacion|date:"d/m/Y" }}
-                    </div>
+                    <div class="meta mt-1">Postulado el {{ p.fecha_postulacion|date:"d/m/Y" }}</div>
                 </div>
                 <span class="badge align-self-start mt-1"
                       style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); font-size:0.7rem; padding:4px 10px; border-radius:20px;">
@@ -346,7 +346,7 @@
     {% endif %}
 
 
-    <!-- ════════════════════════════ SECCIÓN: POSTULADOS (solo admin) ════════════════════════════ -->
+    <!-- SECCIÓN: TODOS LOS POSTULADOS (solo admin) — lista plana con filtro JS -->
     {% if es_admin %}
     <div class="seccion-expandible" id="seccion-postulados-admin" style="display:none;">
         <div class="seccion-header" onclick="toggleSeccion('seccion-postulados-admin')">
@@ -357,46 +357,61 @@
             <i class="fas fa-chevron-up icono-toggle"></i>
         </div>
         <div class="seccion-cuerpo visible">
-            {% for t in torneos %}
-                <p class="small fw-bold text-warning mb-1 mt-3" style="font-size:0.78rem; letter-spacing:0.5px;">
-                    <i class="fas fa-trophy me-1"></i>{{ t.nombre_torneo }} — {{ t.disciplina }}
-                </p>
-                {% with postulados=t.postulacion_set.all %}
-                {% if postulados %}
-                    {% for p in postulados %}
-                    <div class="card-item py-2">
-                        <div style="flex:1;">
-                            <div class="fw-bold text-white" style="font-size:0.88rem;">
-                                {{ p.nombres }} {{ p.apellidos }}
-                            </div>
-                            <div class="meta">
-                                Doc: {{ p.numero_documento }}
-                                {% if p.ficha %}&nbsp;|&nbsp; Ficha: {{ p.ficha }}{% endif %}
-                                {% if p.programa_formacion %}&nbsp;|&nbsp; {{ p.programa_formacion }}{% endif %}
-                            </div>
-                            <div class="meta" style="font-size:0.7rem; opacity:.5;">
-                                Postulado el {{ p.fecha_postulacion|date:"d/m/Y" }}
-                            </div>
-                        </div>
-                        <span class="badge-disc align-self-start mt-1">{{ p.disciplina }}</span>
-                    </div>
+
+            <!-- Filtro por torneo (JS, sin recarga) -->
+            <div class="mb-3">
+                <select class="select-filtro" id="filtro-postulados" onchange="filtrarPostulados(this.value)">
+                    <option value="">Todas las convocatorias</option>
+                    {% for t in torneos %}
+                    <option value="{{ t.codigo_torneo_centro }}">{{ t.nombre_torneo }}</option>
                     {% endfor %}
-                {% else %}
-                    <div class="empty-state py-2" style="font-size:0.8rem;">Sin postulados aún.</div>
-                {% endif %}
-                {% endwith %}
-            {% empty %}
-            <div class="empty-state">
-                <i class="fas fa-inbox d-block mb-2" style="font-size:1.5rem; opacity:.3;"></i>
-                No hay convocatorias activas con postulados.
+                </select>
             </div>
-            {% endfor %}
+
+            <!-- Lista plana de postulados -->
+            <div id="lista-postulados">
+                {% regroup todas_postulaciones by torneo.nombre_torneo as postulados_por_torneo_grupos %}
+                {% for grupo in postulados_por_torneo_grupos %}
+                <div class="torneo-sep">
+                    <i class="fas fa-trophy" style="font-size:0.65rem;"></i>
+                    {{ grupo.grouper|default:"Sin convocatoria" }}
+                    <span style="font-size:0.62rem; font-weight:400; color:#8b949e; text-transform:none; letter-spacing:0;">
+                        ({{ grupo.list|length }} postulado{% if grupo.list|length != 1 %}s{% endif %})
+                    </span>
+                </div>
+                {% for p in grupo.list %}
+                <div class="card-item postulado-item"
+                     data-torneo="{{ p.torneo.codigo_torneo_centro|default:'' }}">
+                    <div style="flex:1;">
+                        <div class="fw-bold text-white" style="font-size:0.88rem;">
+                            {{ p.nombres }} {{ p.apellidos }}
+                        </div>
+                        <div class="meta">
+                            Doc: {{ p.numero_documento }}
+                            {% if p.ficha %}&nbsp;·&nbsp; Ficha: {{ p.ficha }}{% endif %}
+                            {% if p.programa_formacion %}&nbsp;·&nbsp; {{ p.programa_formacion }}{% endif %}
+                        </div>
+                        <div class="meta" style="font-size:0.7rem; opacity:.5;">
+                            Postulado el {{ p.fecha_postulacion|date:"d/m/Y" }}
+                        </div>
+                    </div>
+                    <span class="badge-disc align-self-start mt-1">{{ p.disciplina }}</span>
+                </div>
+                {% endfor %}
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox d-block mb-2" style="font-size:1.5rem; opacity:.3;"></i>
+                    No hay postulados aún.
+                </div>
+                {% endfor %}
+            </div>
+
         </div>
     </div>
     {% endif %}
 
 
-    <!-- ════════════════════════════ SECCIÓN: ENTRENAMIENTOS ════════════════════════════ -->
+    <!-- SECCIÓN: ENTRENAMIENTOS -->
     <div class="seccion-expandible" id="seccion-entrenamientos" style="display:none;">
         <div class="seccion-header" onclick="toggleSeccion('seccion-entrenamientos')">
             <div class="d-flex align-items-center gap-2">
@@ -451,9 +466,7 @@
                     <div class="meta mt-1">{{ e.observacion }}</div>
                     {% endif %}
 
-                    {# ── Lista de asistentes (solo visible para admin) ── #}
                     {% if es_admin %}
-                    {% with lista=asistencias_por_entrenamiento|dictsort:"pk" %}
                     {% for ent_pk, asistentes in asistencias_por_entrenamiento.items %}
                     {% if ent_pk == e.pk %}
                     <div class="asistentes-list mt-2">
@@ -472,11 +485,9 @@
                     </div>
                     {% endif %}
                     {% endfor %}
-                    {% endwith %}
                     {% endif %}
                 </div>
 
-                {# ── Botón confirmar asistencia (solo aprendiz) ── #}
                 {% if not es_admin %}
                 <div class="align-self-start mt-1">
                     {% if e.pk in ids_confirmados %}
@@ -506,7 +517,7 @@
     </div>
 
 
-    <!-- ════════════════════════════ SECCIÓN: AVISOS ════════════════════════════ -->
+    <!-- SECCIÓN: AVISOS -->
     <div class="seccion-expandible" id="seccion-avisos" style="display:none;">
         <div class="seccion-header" onclick="toggleSeccion('seccion-avisos')">
             <div class="d-flex align-items-center gap-2">
@@ -580,7 +591,7 @@
     </div>
 
 
-    <!-- ════════════════════════════ TABLA CONVOCATORIAS ════════════════════════════ -->
+    <!-- TABLA CONVOCATORIAS -->
     <div class="table-container mt-4">
         <h6 class="fw-bold text-white-50 mb-3 text-uppercase small">
             <i class="fas fa-trophy me-2 text-warning" style="font-size:0.8rem;"></i>
@@ -593,7 +604,7 @@
                     <th>DEPORTE</th>
                     <th>SEDE</th>
                     <th>FECHA</th>
-                    {% if es_admin %}<th>ACCIÓN</th>{% endif %}
+                    {% if es_admin %}<th>ACCIONES</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -604,12 +615,21 @@
                     <td data-label="Sede"    class="small text-white-50">{{ t.lugar }}</td>
                     <td data-label="Fecha">{{ t.fecha_torneo|date:"d/m/Y" }}</td>
                     {% if es_admin %}
-                    <td data-label="Acción">
-                        <a href="{% url 'eliminar_torneo' t.codigo_torneo_centro %}"
-                           class="text-danger small fw-bold"
-                           onclick="return confirm('¿Eliminar esta convocatoria?')">
-                            <i class="fas fa-trash-alt me-1"></i>Borrar
-                        </a>
+                    <td data-label="Acciones">
+                        <div class="d-flex gap-3 justify-content-center align-items-center flex-wrap">
+                            <!-- ★ NUEVO: botón Gestionar seleccionados -->
+                            <a href="{% url 'seleccionados' %}?torneo={{ t.pk }}"
+                               class="fw-bold small"
+                               style="color:#f97316; white-space:nowrap;">
+                                <i class="fas fa-star me-1"></i>Gestionar
+                            </a>
+                            <a href="{% url 'eliminar_torneo' t.codigo_torneo_centro %}"
+                               class="text-danger small fw-bold"
+                               style="white-space:nowrap;"
+                               onclick="return confirm('¿Eliminar esta convocatoria?')">
+                                <i class="fas fa-trash-alt me-1"></i>Borrar
+                            </a>
+                        </div>
                     </td>
                     {% endif %}
                 </tr>
@@ -627,7 +647,7 @@
 </div><!-- /main-wrapper -->
 
 
-<!-- ════════════ MODALES (solo admin) ════════════ -->
+<!-- MODALES (solo admin) -->
 {% if es_admin %}
 
 <!-- Modal: Nueva convocatoria -->
@@ -813,7 +833,7 @@
 {% endif %}<!-- /es_admin modales -->
 
 
-<!-- ════════════ MODAL: Inscripción (solo aprendiz, si hay torneos) ════════════ -->
+<!-- MODAL: Inscripción (solo aprendiz) -->
 {% if not es_admin and torneos %}
 <div class="modal fade" id="modalInscribir" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -881,6 +901,28 @@ function actualizarDiscInsc(select) {
     const disc = opt ? opt.dataset.disc : '';
     const inp  = document.getElementById('inputDiscInsc');
     if (inp) inp.value = disc || '';
+}
+
+/* ── Filtro JS de postulados por torneo (sin recarga) ── */
+function filtrarPostulados(torneoId) {
+    const items = document.querySelectorAll('.postulado-item');
+    items.forEach(function(item) {
+        if (!torneoId || item.dataset.torneo === torneoId) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    /* Ocultar/mostrar separadores de torneo si todos sus hijos están ocultos */
+    document.querySelectorAll('.torneo-sep').forEach(function(sep) {
+        let next = sep.nextElementSibling;
+        let tieneVisibles = false;
+        while (next && next.classList.contains('postulado-item')) {
+            if (next.style.display !== 'none') tieneVisibles = true;
+            next = next.nextElementSibling;
+        }
+        sep.style.display = tieneVisibles ? '' : 'none';
+    });
 }
 
 /* ── Abrir sección si viene con filtro activo ── */
