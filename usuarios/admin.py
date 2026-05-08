@@ -26,3 +26,4 @@ class SugerenciaAdmin(admin.ModelAdmin):
     def respondido(self, obj):
         return bool(obj.respuesta)
     respondido.boolean = True
+    
