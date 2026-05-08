@@ -73,15 +73,15 @@
                         {% for p in prestamos_activos %}
                         <option value="{{ p.codigo_prestamo }}"
                                 data-cantidad="{{ p.cantidad_prestada }}"
-                                data-elemento="{{ p.elemento.tipo_maquina }}"
-                                data-vence="{{ p.fecha_devolucion|date:'d/m/Y' }}"
+                                data-elemento="{{ p.elemento.nombre_elemento }}"
+                                data-vence="{{ p.dia_devolucion|date:'d/m/Y' }}"
                                 data-usuario="{{ p.usuario.get_full_name }}">
                             {% if user.is_staff %}
-                                #{{ p.codigo_prestamo }} — {{ p.usuario.get_full_name }} → {{ p.elemento.tipo_maquina }}
-                                ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.fecha_devolucion|date:"d/m/Y" }}
+                                #{{ p.codigo_prestamo }} — {{ p.usuario.get_full_name }} → {{ p.elemento.nombre_elemento }}
+                                ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.dia_devolucion|date:"d/m/Y" }}
                             {% else %}
-                                #{{ p.codigo_prestamo }} — {{ p.elemento.tipo_maquina }}
-                                ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.fecha_devolucion|date:"d/m/Y" }}
+                                #{{ p.codigo_prestamo }} — {{ p.elemento.nombre_elemento }}
+                                ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.dia_devolucion|date:"d/m/Y" }}
                             {% endif %}
                         </option>
                         {% endfor %}
@@ -193,7 +193,7 @@
                             {% if user.is_staff %}
                             <td data-label="Usuario">{{ d.prestamo.usuario.get_full_name|default:d.prestamo.usuario.username }}</td>
                             {% endif %}
-                            <td data-label="Elemento">{{ d.prestamo.elemento.tipo_maquina }}</td>
+                            <td data-label="Elemento">{{ d.prestamo.detalles.first.elemento.nombre_elemento|default:"—" }}</td>
                             <td data-label="Cant.">{{ d.cantidad_devuelta }}</td>
                             <td data-label="Fecha Dev." class="text-warning">{{ d.fecha_devolucion|date:"d/m/Y" }}</td>
                             <td data-label="Estado Elem.">

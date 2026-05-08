@@ -131,10 +131,11 @@ def perfil_view(request):
         usuarios_activos = todos_usuarios.filter(estado='activo').count()
         nuevos_mes       = todos_usuarios.filter(fecha_registro__gte=hace_30_dias).count()
 
-        # Préstamos — todos, con datos del usuario
+        # Préstamos — Corregido select_related (se quitó 'elemento')
         todos_prestamos = (
             Prestamo.objects
-            .select_related('usuario', 'elemento')
+            .select_related('usuario')
+            .prefetch_related('detalles__elemento')
             .order_by('-fecha_prestamo')
         )
         prestamos_recientes     = todos_prestamos.filter(fecha_prestamo__gte=hace_30_dias)
@@ -194,10 +195,11 @@ def perfil_view(request):
     else:
         nombre_completo = f"{usuario.first_name} {usuario.last_name}"
 
+        # Préstamos Aprendiz — Corregido select_related (se quitó 'elemento')
         prestamos = (
             Prestamo.objects
             .filter(usuario=usuario)
-            .select_related('elemento')
+            .prefetch_related('detalles__elemento')
             .order_by('-fecha_prestamo')
         )
 
@@ -221,11 +223,11 @@ def perfil_view(request):
         )
 
         contexto = {
-            'usuario':              usuario,
-            'prestamos':            prestamos,
-            'reservas_gimnasio':    reservas_gimnasio,
-            'equipos_interfichas':  equipos_interfichas,
-            'equipos_intercentros': equipos_intercentros,
+            'usuario':               usuario,
+            'prestamos':             prestamos,
+            'reservas_gimnasio':     reservas_gimnasio,
+            'equipos_interfichas':   equipos_interfichas,
+            'equipos_intercentros':  equipos_intercentros,
         }
 
     return render(request, 'usuarios/perfil.html', contexto)
