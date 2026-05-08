@@ -6,17 +6,32 @@
 {% block extra_css %}
 <style>
     /* ============================================================
-       ESTILOS VISTA APRENDIZ (original)
+       ESTILOS BASE Y WRAPPER
     ============================================================ */
-    html, body { height: 100%; margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    html, body {
+        height: 100%;
+        margin: 0;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
     body {
         display: flex;
         flex-direction: column;
         background: #0d1117 !important;
         color: #c9d1d9 !important;
     }
-    .main-wrapper { flex: 1; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; }
 
+    .main-wrapper {
+        flex: 1;
+        padding: 60px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* ============================================================
+       TARJETA PRINCIPAL (GYM CARD PRO)
+    ============================================================ */
     .gym-card-pro {
         display: flex;
         width: 100%;
@@ -29,6 +44,7 @@
         margin-bottom: 50px;
     }
 
+    /* PANEL IZQUIERDO: ESTADO Y RELOJ */
     .status-panel {
         flex: 0.9;
         background: #090c10;
@@ -41,91 +57,179 @@
 
     .digital-clock {
         font-family: 'Consolas', monospace;
-        font-size: 3rem;
+        font-size: 3.2rem;
         font-weight: bold;
         color: #58a6ff;
+        text-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
         margin-bottom: 5px;
     }
 
-    .date-display { color: #8b949e; font-size: 0.9rem; margin-bottom: 30px; }
+    .date-display {
+        color: #8b949e;
+        font-size: 0.95rem;
+        margin-bottom: 35px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
     .info-box {
         width: 100%;
         background: rgba(88, 166, 255, 0.05);
         border: 1px solid rgba(88, 166, 255, 0.1);
         border-radius: 12px;
-        padding: 20px;
+        padding: 22px;
         margin-top: 10px;
     }
 
     .info-item {
         display: flex;
         justify-content: space-between;
-        font-size: 0.75rem;
-        margin-bottom: 10px;
+        font-size: 0.8rem;
+        margin-bottom: 12px;
         letter-spacing: 0.5px;
     }
-    .info-item:last-child { margin-bottom: 0; }
-    .label-tech { color: #8b949e; text-transform: uppercase; font-weight: 600; }
-    .value-tech { color: #f0f6fc; font-weight: bold; }
-    .text-open  { color: #3fb950; }
-    .text-closed{ color: #f85149; }
 
-    .action-panel { flex: 1.1; padding: 50px; }
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .label-tech {
+        color: #8b949e;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .value-tech {
+        color: #f0f6fc;
+        font-weight: bold;
+    }
+
+    .text-open {
+        color: #3fb950;
+        text-shadow: 0 0 10px rgba(63, 185, 80, 0.2);
+    }
+
+    .text-closed {
+        color: #f85149;
+    }
+
+    /* PANEL DERECHO: ACCIÓN Y DATOS */
+    .action-panel {
+        flex: 1.1;
+        padding: 50px;
+        background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
+    }
 
     .data-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
-        margin-bottom: 40px;
+        margin-bottom: 45px;
     }
 
     .data-card {
-        background: rgba(255,255,255,0.02);
-        padding: 18px;
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 20px;
+        border-radius: 14px;
         border: 1px solid #30363d;
+        transition: border-color 0.3s;
     }
+
+    .data-card:hover {
+        border-color: #58a6ff;
+    }
+
     .data-card label {
         display: block;
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         color: #58a6ff;
         font-weight: 800;
         text-transform: uppercase;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
     }
-    .data-card span { font-size: 1rem; color: #f0f6fc; }
 
+    .data-card span {
+        font-size: 1.1rem;
+        color: #f0f6fc;
+        font-weight: 500;
+    }
+
+    /* BOTONES */
     .btn-submit {
         width: 100%;
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 1.1rem;
+        padding: 22px;
+        border-radius: 14px;
+        font-size: 1.2rem;
         font-weight: bold;
         text-transform: uppercase;
         border: none;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        letter-spacing: 2px;
+        transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .btn-active { background: #238636; color: white; cursor: pointer; box-shadow: 0 4px 14px rgba(35,134,54,0.4); }
-    .btn-active:hover { transform: translateY(-3px); background: #2ea043; }
 
-    .history-container { width: 100%; max-width: 1000px; }
-    .history-header { font-size: 0.9rem; font-weight: bold; color: #8b949e; margin-bottom: 20px; display: flex; align-items: center; }
+    .btn-active {
+        background: #238636;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(35, 134, 54, 0.2);
+    }
+
+    .btn-active:hover {
+        transform: translateY(-4px);
+        background: #2ea043;
+        box-shadow: 0 15px 30px rgba(46, 160, 67, 0.4);
+    }
+
+    /* ============================================================
+       TABLA DE HISTORIAL (APRENDIZ)
+    ============================================================ */
+    .history-container {
+        width: 100%;
+        max-width: 1000px;
+        margin-top: 20px;
+    }
+
+    .history-header {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #8b949e;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
 
     .table-custom {
         width: 100%;
         background: #161b22;
         border: 1px solid #30363d;
-        border-radius: 15px;
+        border-radius: 18px;
         border-collapse: separate;
         border-spacing: 0;
         overflow: hidden;
     }
-    .table-custom th { background: #090c10; padding: 15px; color: #58a6ff; font-size: 0.75rem; text-transform: uppercase; }
-    .table-custom td { padding: 15px; border-top: 1px solid #30363d; font-size: 0.9rem; }
+
+    .table-custom th {
+        background: #090c10;
+        padding: 20px;
+        color: #58a6ff;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid #30363d;
+    }
+
+    .table-custom td {
+        padding: 20px;
+        border-top: 1px solid #30363d;
+        font-size: 0.95rem;
+        color: #c9d1d9;
+    }
 
     /* ============================================================
-       ESTILOS PANEL ADMIN
+       ESTILOS PANEL ADMINISTRATIVO (SISTEMA OPERATIVO)
     ============================================================ */
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap');
 
@@ -133,186 +237,181 @@
         --bg-base:     #0d1117;
         --bg-panel:    #161b22;
         --bg-card:     #1c2230;
-        --bg-input:    #0d1117;
         --border:      #2a3548;
         --accent:      #1f8fd1;
-        --accent-glow: rgba(31,143,209,.25);
         --text:        #e6edf3;
         --muted:       #7d8fa6;
-        --label:       #4a9eca;
-        --btn-active:  #1a3a52;
         --success:     #2ea043;
         --danger:      #da3633;
     }
 
-    /* Shell del admin — ocupa toda la pantalla cuando está activo */
     .admin-shell {
         display: none;
         position: fixed;
-        inset: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
         z-index: 9999;
         background: var(--bg-base);
         flex-direction: column;
         font-family: 'Exo 2', sans-serif;
-        font-size: 14px;
-        color: var(--text);
     }
-    .admin-shell.visible { display: flex; }
 
-    /* Topbar admin */
+    .admin-shell.visible {
+        display: flex;
+    }
+
     .adm-topbar {
         background: var(--bg-panel);
         border-bottom: 1px solid var(--border);
+        height: 55px;
         display: flex;
         align-items: center;
-        padding: 0 20px;
-        gap: 12px;
-        height: 52px;
-        flex-shrink: 0;
+        padding: 0 25px;
+        gap: 15px;
     }
-    .adm-dots { display:grid; grid-template-columns:1fr 1fr; gap:3px; width:18px; }
-    .adm-dots span { width:7px; height:7px; background:var(--accent); border-radius:1px; display:block; }
-    .adm-title { font-weight:700; font-size:15px; flex:1; }
-    .adm-clock { font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--accent); letter-spacing:1px; margin-right:12px; }
-    .adm-badge { border:1.5px solid var(--accent); color:var(--accent); font-size:11px; font-weight:700; letter-spacing:1.5px; padding:3px 10px; border-radius:4px; }
+
+    .adm-title {
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        flex: 1;
+    }
+
+    .adm-clock {
+        font-family: 'Share Tech Mono', monospace;
+        color: var(--accent);
+        font-size: 15px;
+        margin-right: 20px;
+    }
+
     .adm-close {
-        background: none; border: 1px solid var(--border); color: var(--muted);
-        padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;
-        font-family: 'Exo 2', sans-serif; transition: all .15s; margin-left: 8px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 6px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
     }
-    .adm-close:hover { border-color: var(--danger); color: #ff7b72; }
 
-    /* Body grid admin */
-    .adm-body { display:grid; grid-template-columns:200px 1fr; overflow:hidden; flex:1; }
+    .adm-close:hover {
+        border-color: var(--danger);
+        color: white;
+        background: var(--danger);
+    }
 
-    /* Sidebar admin */
-    .adm-sidebar { background:var(--bg-panel); border-right:1px solid var(--border); padding:20px 0; overflow-y:auto; }
-    .sb-lbl { font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--muted); padding:0 16px 8px; text-transform:uppercase; display:block; }
-    .sb-nav { list-style:none; margin-bottom:20px; }
+    .adm-body {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .adm-sidebar {
+        background: var(--bg-panel);
+        border-right: 1px solid var(--border);
+        padding: 30px 0;
+    }
+
+    .sb-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
     .sb-nav a {
-        display:flex; align-items:center; gap:10px; padding:9px 16px;
-        color:var(--muted); text-decoration:none; font-size:13.5px;
-        transition:color .15s,background .15s; border-left:2px solid transparent;
+        display: flex;
+        align-items: center;
+        padding: 15px 30px;
+        color: var(--muted);
+        text-decoration: none;
+        transition: 0.3s;
+        border-left: 3px solid transparent;
     }
-    .sb-nav a:hover  { color:var(--text); background:rgba(31,143,209,.06); }
-    .sb-nav a.active { color:var(--accent); background:rgba(31,143,209,.1); border-left-color:var(--accent); }
-    .sb-nav svg { width:15px; height:15px; flex-shrink:0; }
 
-    /* Main admin */
-    .adm-main { padding:28px 32px; overflow-y:auto; background:var(--bg-base); }
-
-    /* Secciones */
-    .adm-sec { display:none; }
-    .adm-sec.activa { display:block; }
-
-    /* Títulos */
-    .sec-title { font-size:11px; font-weight:700; letter-spacing:2px; color:var(--accent); text-transform:uppercase; margin-bottom:18px; }
-
-    /* Botones estado */
-    .estado-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:28px; }
-    .btn-estado {
-        background:var(--bg-card); border:1.5px solid var(--border); color:var(--text);
-        font-family:'Exo 2',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px;
-        text-transform:uppercase; padding:18px 10px; border-radius:6px; cursor:pointer;
-        transition:all .15s; text-align:center; line-height:1.4;
+    .sb-nav a:hover {
+        background: rgba(31, 143, 209, 0.05);
+        color: var(--text);
     }
-    .btn-estado:hover { border-color:var(--accent); color:var(--accent); }
-    .btn-estado.sel  { border-color:var(--accent); background:var(--btn-active); color:var(--accent); }
 
-    /* Días */
-    .dias-grid { display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap; }
-    .btn-dia {
-        background:var(--bg-card); border:1.5px solid var(--border); color:var(--muted);
-        font-family:'Exo 2',sans-serif; font-size:12px; font-weight:600;
-        padding:8px 14px; border-radius:5px; cursor:pointer; transition:all .15s;
+    .sb-nav a.active {
+        background: rgba(31, 143, 209, 0.1);
+        color: var(--accent);
+        border-left-color: var(--accent);
     }
-    .btn-dia:hover  { border-color:var(--accent); color:var(--text); }
-    .btn-dia.active { border-color:var(--accent); background:var(--btn-active); color:var(--accent); }
 
-    /* Input cards */
-    .cards-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
-    .icard      { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 18px; }
-    .icard-full { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 18px; margin-bottom:20px; }
-    .ilbl       { font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--label); text-transform:uppercase; display:block; margin-bottom:10px; }
-    .itime,.inum,.itext {
-        width:100%; background:var(--bg-input); border:1px solid var(--border); border-radius:5px;
-        color:var(--text); font-family:'Share Tech Mono',monospace; font-size:16px;
-        padding:10px 14px; outline:none; transition:border-color .15s;
+    .adm-main {
+        padding: 40px;
+        overflow-y: auto;
     }
-    .itext { font-family:'Exo 2',sans-serif; font-size:14px; }
-    .itime:focus,.inum:focus,.itext:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
-    input[type=number].inum { appearance:textfield; }
 
-    /* Botón confirmar */
-    .btn-confirm {
-        width:100%; background:var(--bg-card); border:1.5px solid var(--border); color:var(--text);
-        font-family:'Exo 2',sans-serif; font-size:13px; font-weight:700; letter-spacing:2px;
-        text-transform:uppercase; padding:16px; border-radius:6px; cursor:pointer;
-        transition:all .15s; display:inline-block; text-align:center; text-decoration:none;
+    .adm-sec {
+        display: none;
     }
-    .btn-confirm:hover { border-color:var(--accent); background:var(--btn-active); color:var(--accent); }
 
-    /* Alertas admin */
-    .adm-alert { padding:10px 14px; border-radius:6px; font-size:13px; margin-bottom:16px; }
-    .adm-alert-ok  { background:rgba(46,160,67,.15);  border:1px solid var(--success); color:#56d364; }
-    .adm-alert-err { background:rgba(218,54,51,.15);  border:1px solid var(--danger);  color:#ff7b72; }
+    .adm-sec.activa {
+        display: block;
+    }
 
-    /* Tabla fechas */
-    .adm-tbl { width:100%; border-collapse:collapse; margin-top:10px; }
-    .adm-tbl th { color:var(--label); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:8px 12px; text-align:left; border-bottom:1px solid var(--border); }
-    .adm-tbl td { padding:11px 12px; border-bottom:1px solid var(--border); font-size:13px; }
-    .adm-tbl tr:last-child td { border-bottom:none; }
-    .badge-ok  { color:#56d364; font-size:12px; }
-    .badge-off { color:#ff7b72; font-size:12px; }
+    .adm-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--bg-card);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .adm-tbl th {
+        text-align: left;
+        padding: 15px 20px;
+        background: rgba(0,0,0,0.2);
+        color: var(--accent);
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
+    .adm-tbl td {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+    }
+
     .btn-del {
-        background:none; border:1px solid var(--danger); color:#ff7b72;
-        padding:4px 10px; border-radius:4px; cursor:pointer;
-        font-size:11px; font-family:'Exo 2',sans-serif; transition:background .15s;
+        background: rgba(218, 54, 51, 0.1);
+        border: 1px solid var(--danger);
+        color: #ff7b72;
+        padding: 5px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 11px;
     }
-    .btn-del:hover { background:rgba(218,54,51,.15); }
-    .dia-badge { border:1.5px solid var(--accent); color:var(--accent); padding:5px 12px; border-radius:5px; font-size:12px; font-weight:700; display:inline-block; }
 
-    /* ============================================================
-       RESPONSIVE
-    ============================================================ */
-    @media (max-width: 768px) {
-        .main-wrapper { padding: 30px 15px; }
-        .gym-card-pro { flex-direction: column; margin-bottom: 30px; }
-        .status-panel { flex:none; border-right:none; border-bottom:1px solid #30363d; padding:30px 20px; }
-        .action-panel { flex:none; padding:30px 20px; }
-        .digital-clock { font-size: 2.5rem; }
-        .data-grid { grid-template-columns: 1fr; gap: 12px; }
-        .data-card { padding: 12px; }
-        .table-custom thead { display: none; }
-        .table-custom, .table-custom tbody, .table-custom tr, .table-custom td { display:block; width:100%; }
-        .table-custom tr { border-bottom:1px solid #30363d; padding:15px 10px; }
-        .table-custom td { text-align:left; padding:8px 15px; border:none; position:relative; padding-left:45%; }
-        .table-custom td::before { content:attr(data-label); position:absolute; left:15px; font-weight:bold; color:#58a6ff; text-transform:uppercase; font-size:0.7rem; }
-
-        /* Admin responsive */
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+        .gym-card-pro { flex-direction: column; }
+        .status-panel { border-right: none; border-bottom: 1px solid #30363d; }
         .adm-body { grid-template-columns: 1fr; }
         .adm-sidebar { display: none; }
-        .adm-main { padding: 20px 16px; }
-        .cards-row { grid-template-columns: 1fr; }
-        .estado-grid { grid-template-columns: 1fr 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- ════════════════════════════════════════════════════════════
-     VISTA APRENDIZ (visible por defecto)
-════════════════════════════════════════════════════════════ -->
+<!-- VISTA PRINCIPAL APRENDIZ -->
 <div class="main-wrapper" id="vista-aprendiz">
-
+    
     <div class="gym-card-pro">
-
+        <!-- SECCIÓN IZQUIERDA: RELOJ Y ESTADO -->
         <div class="status-panel">
             <div class="digital-clock" id="clock">00:00:00</div>
-            <div class="date-display">{{ ahora|date:"d M Y" }}</div>
+            <div class="date-display" id="date">{{ ahora|date:"l, d F Y" }}</div>
 
             <div class="info-box">
+                <div class="info-item">
+                    <span class="label-tech">Sistema Biométrico:</span>
+                    <span class="value-tech text-open">ONLINE</span>
+                </div>
                 <div class="info-item">
                     <span class="label-tech">Disponibilidad:</span>
                     <span class="value-tech {% if esta_abierto %}text-open{% else %}text-closed{% endif %}">
@@ -320,127 +419,99 @@
                     </span>
                 </div>
                 <div class="info-item">
-                    <span class="label-tech">Días:</span>
-                    <span class="value-tech">
-                        {% if config %}
-                            {{ config.dias_habilitados|join:" - "|upper }}
-                        {% else %}
-                            Lun - Vie
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="info-item">
-                    <span class="label-tech">Horario:</span>
-                    <span class="value-tech">
-                        {% if config %}
-                            {{ config.horario_apertura|time:"H:i" }} - {{ config.horario_cierre|time:"H:i" }}
-                        {% else %}
-                            07:00 - 17:00
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="info-item" style="border-top:1px solid rgba(255,255,255,0.05); padding-top:10px; margin-top:5px;">
-                    <span class="label-tech">Modo:</span>
-                    <span class="value-tech">Aprendiz</span>
+                    <span class="label-tech">Capacidad Max:</span>
+                    <span class="value-tech">30 PERSONAS</span>
                 </div>
             </div>
 
-            <!-- Botón para abrir el panel admin (solo visible si es staff) -->
             {% if user.is_staff or user.is_superuser %}
-            <button onclick="abrirAdmin()" style="
-                margin-top:20px; background:none; border:1.5px solid #1f8fd1;
-                color:#1f8fd1; padding:8px 18px; border-radius:6px; cursor:pointer;
-                font-size:12px; font-weight:700; letter-spacing:1px; font-family:'Segoe UI',sans-serif;
-                transition:all .2s;">
-                ⚙ Panel Admin
-            </button>
-            {% endif %}
-
-            <div class="mt-auto pt-4 d-none d-md-block">
-                <i class="fas fa-microchip text-secondary opacity-25 fa-2x"></i>
+            <div style="margin-top: 30px; width: 100%;">
+                <button onclick="abrirAdmin()" style="width: 100%; background: transparent; border: 1px solid #1f8fd1; color: #1f8fd1; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fas fa-user-shield me-2"></i> Consola Administrador
+                </button>
             </div>
+            {% endif %}
         </div>
 
+        <!-- SECCIÓN DERECHA: REGISTRO -->
         <div class="action-panel">
-            <h4 class="text-white fw-bold mb-4 text-center text-md-start">Registro de Entrada</h4>
+            <div class="mb-4">
+                <h2 class="text-white fw-bold mb-1" style="letter-spacing: -1px;">Bienvenido</h2>
+                <p class="text-muted small">Por favor, confirma tu ingreso al gimnasio.</p>
+            </div>
 
-            <div class="data-grid text-start">
-                <div class="data-card" style="grid-column: span 1 / -1;">
-                    <label>Nombre del Aprendiz</label>
-                    <span class="fw-bold d-block">{{ user.first_name }} {{ user.last_name }}</span>
+            <div class="data-grid">
+                <div class="data-card" style="grid-column: span 2;">
+                    <label>Nombre Completo</label>
+                    <span class="fw-bold">{{ user.first_name }} {{ user.last_name }}</span>
                 </div>
                 <div class="data-card">
-                    <label>N° Documento</label>
-                    <span class="d-block">{{ user.numero_documento|default:"N/A" }}</span>
+                    <label>Documento</label>
+                    <span>{{ user.numero_documento|default:"--" }}</span>
                 </div>
                 <div class="data-card">
-                    <label>Ficha</label>
-                    <span class="d-block">{{ user.ficha|default:"N/A" }}</span>
+                    <label>N° Ficha</label>
+                    <span>{{ user.ficha|default:"--" }}</span>
                 </div>
-                <div class="data-card" style="grid-column: span 1 / -1;">
+                <div class="data-card" style="grid-column: span 2;">
                     <label>Programa de Formación</label>
-                    <span class="d-block">{{ user.programa_formacion|default:"No Asignado" }}</span>
+                    <span>{{ user.programa_formacion|default:"No registrado" }}</span>
                 </div>
             </div>
 
-            <form method="POST">
+            <form method="POST" id="registro-form">
                 {% csrf_token %}
                 <input type="hidden" name="accion" value="crear_reserva">
+                
                 {% if esta_abierto %}
-                    <button type="submit" class="btn-submit btn-active shadow">Confirmar Registro</button>
+                    <button type="submit" class="btn-submit btn-active">
+                        <i class="fas fa-fingerprint me-2"></i> Registrar Entrada
+                    </button>
                 {% else %}
-                    <button type="button" class="btn-submit" style="background:#21262d; color:#f85149; border:1px solid rgba(248,81,73,0.2); cursor:not-allowed;" disabled>
-                        SISTEMA BLOQUEADO
+                    <button type="button" class="btn-submit" style="background: #21262d; color: #f85149; border: 1px solid rgba(248,81,73,0.2); cursor: not-allowed;" disabled>
+                        SALA CERRADA TEMPORALMENTE
                     </button>
                 {% endif %}
             </form>
         </div>
     </div>
 
+    <!-- TABLA DE INGRESOS RECIENTES -->
     <div class="history-container">
         <div class="history-header">
-            <i class="fas fa-history me-2"></i> MIS ÚLTIMOS INGRESOS
+            <i class="fas fa-history me-3 text-primary"></i> Mis últimos ingresos
         </div>
-        <table class="table-custom text-center">
+        
+        <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Fecha de Acceso</th>
-                    <th>Hora de Entrada</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
+                    <th class="text-center">Fecha de Acceso</th>
+                    <th class="text-center">Hora de Registro</th>
+                    <th class="text-center">Estado de Ingreso</th>
+                    <th class="text-center">Gestión</th>
                 </tr>
             </thead>
             <tbody>
                 {% for r in reservas %}
                 <tr>
-                    <td data-label="Fecha">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
-                    <td data-label="Hora" class="text-info fw-bold">{{ r.hora_entrada|time:"H:i A" }}</td>
-                    <td data-label="Estado">
-
-                    {% if r.estado == 'Cancelada' %}
-
-                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3">
-                    Cancelada
-                    </span>
-
-                    {% else %}
-
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3">
-                    Activa
-                    </span>
-
-                        {% endif %} 
-
+                    <td class="text-center">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
+                    <td class="text-center fw-bold text-info">{{ r.hora_entrada|time:"H:i A" }}</td>
+                    <td class="text-center">
+                        <span style="padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: 1px solid {% if r.estado == 'Cancelada' %}#da3633; color: #ff7b72;{% else %}#2ea043; color: #7ee787;{% endif %}">
+                            {{ r.estado|upper }}
+                        </span>
                     </td>
-                    <td data-label="Borrar">
-                        <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger" onclick="return confirm('¿Borrar registro?')">
+                    <td class="text-center">
+                        <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger" onclick="return confirm('¿Desea eliminar este registro de su historial?')">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="py-5 text-white-50">Aún no registras ingresos al gimnasio.</td>
+                    <td colspan="4" class="text-center py-5 text-muted">
+                        No se han encontrado registros de ingresos previos.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -448,284 +519,150 @@
     </div>
 </div>
 
-
-<!-- ════════════════════════════════════════════════════════════
-     PANEL ADMIN (oculto por defecto, solo para is_staff)
-════════════════════════════════════════════════════════════ -->
+<!-- ============================================================
+     MODAL PANEL ADMINISTRATIVO (CONSOLA)
+============================================================ -->
 {% if user.is_staff or user.is_superuser %}
 <div class="admin-shell" id="admin-shell">
-
-    <!-- Topbar -->
     <header class="adm-topbar">
-        <div class="adm-dots"><span></span><span></span><span></span><span></span></div>
-        <span class="adm-title">Panel de administrador — Gimnasio</span>
-        <span class="adm-clock" id="adm-clock">--:--:--</span>
-        <span class="adm-badge">ADMIN</span>
-        <button class="adm-close" onclick="cerrarAdmin()">✕ Salir</button>
+        <div style="display: flex; gap: 5px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+        </div>
+        <span class="adm-title">Terminal de Control Administrativo v2.0</span>
+        <span class="adm-clock" id="adm-clock">00:00:00</span>
+        <button class="adm-close" onclick="cerrarAdmin()">CERRAR SESIÓN</button>
     </header>
 
     <div class="adm-body">
-
-        <!-- Sidebar -->
-        <nav class="adm-sidebar">
-            <span class="sb-lbl">Sistema</span>
+        <aside class="adm-sidebar">
             <ul class="sb-nav">
-                <li>
-                    <a href="#" onclick="mostrarSec('reservas', this); return false;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 7h18"/>
-                        <path d="M3 12h18"/>
-                        <path d="M3 17h18"/>
-                    </svg>
-                Reservaciones
-                </a>
-                </li>
+                <li><a href="#" onclick="mostrarSec('reservas', this); return false;" class="active"><i class="fas fa-list-ul me-3"></i> Registro de Ingresos</a></li>
+                <li><a href="#" onclick="mostrarSec('control', this); return false;"><i class="fas fa-power-off me-3"></i> Estado del Gimnasio</a></li>
+                <li><a href="#" onclick="mostrarSec('usuarios', this); return false;"><i class="fas fa-users me-3"></i> Usuarios Registrados</a></li>
             </ul>
-            <ul class="sb-nav">
-            <li>
-                <a href="#" onclick="mostrarSec('controlgym', this); return false;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                </svg>
-                Control gimnasio
-                </a>
-            </li>
-            </ul>
+        </aside>
 
-        </nav>
-
-        <!-- Main admin -->
         <main class="adm-main">
-
-            <!-- Alertas Django -->
-            {% if messages %}
-                {% for msg in messages %}
-                <div class="adm-alert {% if msg.tags == 'success' %}adm-alert-ok{% else %}adm-alert-err{% endif %}">
-                    {{ msg }}
+            <!-- SECCIÓN: RESERVAS -->
+            <div id="adm-reservas" class="adm-sec activa">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-white m-0">Historial Global de Ingresos</h3>
+                    <span class="text-muted small">Total registros: {{ admin_reservas.count }}</span>
                 </div>
-                {% endfor %}
-            {% endif %}
+                
+                <table class="adm-tbl">
+                    <thead>
+                        <tr>
+                            <th>Aprendiz</th>
+                            <th>Ficha</th>
+                            <th>Fecha de Entrada</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Operaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in admin_reservas %}
+                        <tr>
+                            <td>{{ r.usuario_solicitante.get_full_name }}</td>
+                            <td>{{ r.usuario_solicitante.ficha }}</td>
+                            <td>{{ r.fecha_entrada }}</td>
+                            <td class="text-info">{{ r.hora_entrada }}</td>
+                            <td>
+                                <span style="color: {% if r.estado == 'Activa' %}#3fb950{% else %}#f85149{% endif %}">
+                                    {{ r.estado }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if r.estado != 'Cancelada' %}
+                                <a href="{% url 'cancelar_reserva_admin' r.codigo_registro %}" class="btn-del" style="text-decoration: none;">Anular</a>
+                                {% endif %}
+                                <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger ms-3"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-            <!-- ── DISPONIBILIDAD ── -->
-            
-
-            <!-- ── HORARIOS ── -->
-            
-         
-
-            <!-- ── FECHAS DE INGRESO ── -->
-            
-
-            <!-- ── CONFIGURACIÓN ── -->
-          
-
-            <!-- ── RESERVACIONES ── -->
-<div id="adm-reservas" class="adm-sec">
-
-    <p class="sec-title">Reservaciones del gimnasio</p>
-
-    <div class="icard-full">
-
-        <table class="adm-tbl">
-            <thead>
-                <tr>
-                    <th>Aprendiz</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for r in admin_reservas %}
-                <tr>
-
-                    <td>{{ r.usuario_solicitante }}</td>
-
-                    <td>{{ r.fecha_entrada }}</td>
-
-                    <td>{{ r.hora_entrada }}</td>
-
-                    <td>
-
-                        {% if r.estado == 'Cancelada' %}
-                            <span class="badge-off">
-                                ● Cancelada
-                            </span>
-                        {% else %}
-                            <span class="badge-ok">
-                                ● Activa
-                            </span>
-                        {% endif %}
-
-                    </td>
-
-                    <td>
-
-                        {% if r.estado != 'Cancelada' %}
-                        <a
-                            href="{% url 'cancelar_reserva_admin' r.codigo_registro %}"
-                            class="btn-del"
-                            onclick="return confirm('¿Cancelar esta reserva?')"
-                        >
-                            Cancelar
-                        </a> 
-                        {% endif %}
- 
-                        <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger" onclick="return confirm('¿Borrar registro?')">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
-
-                </tr>
-                {% endfor %}
-
-            </tbody>
-        </table>
-
-    </div>
-</div>
-
-
-<!-- ── CONTROL GIMNASIO ── -->
-<div id="adm-controlgym" class="adm-sec">
-
-    <p class="sec-title">Control del gimnasio</p>
-
-    <div class="icard-full">
-
-        <p style="margin-bottom:20px; color:var(--muted);">
-            Estado actual:
-        </p>
-
-        {% if config.estado == 'abierta' %}
-
-            <p style="color:#56d364; font-weight:700; margin-bottom:20px;">
-                ● GIMNASIO ABIERTO
-            </p>
-
-            <form method="POST" action="{% url 'cerrar_gimnasio' %}">
-                {% csrf_token %}
-                <input type="hidden" name="accion" value="cerrar">
-
-                <button type="submit"
-                        class="btn-confirm"
-                        style="border-color:#da3633;color:#ff7b72;">
-
-                    Cerrar gimnasio
-
-                </button>
-            </form>
-
-        {% else %}
-
-            <p style="color:#ff7b72; font-weight:700; margin-bottom:20px;">
-                ● GIMNASIO CERRADO
-            </p>
-
-            <form method="POST" action="{% url 'cerrar_gimnasio' %}">
-                {% csrf_token %}
-                <input type="hidden" name="accion" value="abrir">
-
-                <button type="submit"
-                        class="btn-confirm"
-                        style="border-color:#2ea043;color:#56d364;">
-
-                    Abrir gimnasio
-
-                </button>
-            </form>
-
-        {% endif %}
-
-    </div>
-</div>
-
+            <!-- SECCIÓN: CONTROL GIMNASIO -->
+            <div id="adm-control" class="adm-sec">
+                <h3 class="text-white mb-4">Configuración de Acceso</h3>
+                <div style="background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border);">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5>Estado Actual: 
+                                <span class="{% if config.estado == 'abierta' %}text-success{% else %}text-danger{% endif %}">
+                                    {{ config.estado|upper }}
+                                </span>
+                            </h5>
+                            <p class="text-muted m-0">Al cerrar el gimnasio, ningún aprendiz podrá realizar el registro biométrico de entrada.</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <form method="POST" action="{% url 'cerrar_gimnasio' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="accion" value="{% if config.estado == 'abierta' %}cerrar{% else %}abrir{% endif %}">
+                                <button type="submit" class="btn-confirm" style="background: {% if config.estado == 'abierta' %}rgba(218,54,51,0.1){% else %}rgba(46,160,67,0.1){% endif %}; border-color: {% if config.estado == 'abierta' %}var(--danger){% else %}var(--success){% endif %};">
+                                    {% if config.estado == 'abierta' %}DESACTIVAR ACCESO{% else %}ACTIVAR ACCESO{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 </div>
 {% endif %}
 
+<!-- SCRIPTS -->
 <script>
-    /* ── Reloj aprendiz ── */
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').textContent = now.toLocaleTimeString('es-CO', { hour12: false });
+    /* SISTEMA DE RELOJ */
+    function startTime() {
+        const today = new Date();
+        let h = today.getHours();
+        let m = today.getMinutes();
+        let s = today.getSeconds();
+        m = checkTime(m);
+        s = checkTime(s);
+        
+        const timeStr = h + ":" + m + ":" + s;
+        if(document.getElementById('clock')) document.getElementById('clock').innerHTML = timeStr;
+        if(document.getElementById('adm-clock')) document.getElementById('adm-clock').innerHTML = timeStr;
+        
+        setTimeout(startTime, 1000);
     }
-    setInterval(updateClock, 1000);
-    updateClock();
 
-    /* ── Reloj admin ── */
-    function tickAdmin() {
-        const n = new Date();
-        const el = document.getElementById('adm-clock');
-        if (el) el.textContent =
-            String(n.getHours()).padStart(2,'0')+':'+
-            String(n.getMinutes()).padStart(2,'0')+':'+
-            String(n.getSeconds()).padStart(2,'0');
+    function checkTime(i) {
+        if (i < 10) {i = "0" + i}; 
+        return i;
     }
-    setInterval(tickAdmin, 1000);
-    tickAdmin();
 
-    /* ── Abrir / cerrar panel admin ── */
+    /* CONTROL DE PANEL ADMIN */
     function abrirAdmin() {
         document.getElementById('admin-shell').classList.add('visible');
         document.body.style.overflow = 'hidden';
     }
+
     function cerrarAdmin() {
         document.getElementById('admin-shell').classList.remove('visible');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto';
     }
 
-    /* ── Navegación secciones admin ── */
-    function mostrarSec(id, link) {
-        document.querySelectorAll('.adm-sec').forEach(s => s.classList.remove('activa'));
+    function mostrarSec(id, btn) {
+        // Ocultar todas
+        document.querySelectorAll('.adm-sec').forEach(sec => sec.classList.remove('activa'));
+        // Quitar activos de botones
         document.querySelectorAll('.sb-nav a').forEach(a => a.classList.remove('active'));
+        
+        // Mostrar seleccionada
         document.getElementById('adm-' + id).classList.add('activa');
-        link.classList.add('active');
+        btn.classList.add('active');
     }
 
-    /* ── Abrir admin en sección correcta tras un POST ── */
-    /* ── Abrir admin en sección correcta tras un POST ── */
-    const abrirAdminPanel = "{{ abrir_admin|yesno:'true,false' }}" === "true";
-    const seccionActiva = "{{ seccion_activa|default:'' }}";
-
-    if (abrirAdminPanel && seccionActiva) {
-    abrirAdmin();
-
-    const linkActivo = document.querySelector(
-        `[onclick*="'${seccionActiva}'"]`
-    );
-
-    if (linkActivo) {
-        mostrarSec(seccionActiva, linkActivo);
-    }
-}
-
-    /* ── Estado del gimnasio ── */
-    function selEstado(btn) {
-        document.querySelectorAll('.btn-estado').forEach(b => b.classList.remove('sel'));
-        btn.classList.add('sel');
-        document.getElementById('estado-input').value = btn.dataset.val;
-    }
-
-    /* ── Días ── */
-    const diasActivos = new Set({{ dias_activos|default:"[]"|safe }});
-    function toggleDia(btn) {
-        const d = btn.dataset.dia;
-        diasActivos.has(d) ? diasActivos.delete(d) : diasActivos.add(d);
-        btn.classList.toggle('active', diasActivos.has(d));
-    }
-
-    /* ── Sync días antes de enviar ── */
-    const cfgForm = document.getElementById('cfg-form');
-    if (cfgForm) {
-        cfgForm.addEventListener('submit', () => {
-            document.getElementById('dias-input').value = JSON.stringify([...diasActivos]);
-        });
-    }
+    window.onload = startTime;
 </script>
+
 {% endblock %}

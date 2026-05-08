@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # --- IMPORTACIÓN DE TUS MODELOS REALES ---
-from gimnasio.models import Entrenamiento, Reserva
+from gimnasio.models import Reserva
 from intercentros.models import TorneoIntercentros, EquipoIntercentros, Postulacion
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo
 from inventario.models import ElementoDeportivo, Prestamo, Sancion
