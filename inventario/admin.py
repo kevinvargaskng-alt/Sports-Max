@@ -1,40 +1,37 @@
 from django.contrib import admin
-from .models import ElementoDeportivo, Prestamo, DetallePrestamo, Devolucion, Sancion, Revision
+from .models import ElementoDeportivo, Prestamo, DetallePrestamo, Devolucion, Revision, Sancion
+
+# Configuración para ver los elementos dentro del formulario de préstamo
+class DetallePrestamoInline(admin.TabularInline):
+    model = DetallePrestamo
+    extra = 1
 
 @admin.register(ElementoDeportivo)
 class ElementoAdmin(admin.ModelAdmin):
-    # 'tipo_maquina' ahora es 'nombre_elemento'
-    # 'docente_responsable' ahora es 'usuario_responsable'
-    list_display  = ('nombre_elemento', 'cantidad_total', 'estado_general', 'usuario_responsable', 'fecha_adquisicion')
-    list_filter   = ('estado_general',)
-    search_fields = ('nombre_elemento', 'usuario_responsable__username') # usuario_responsable es FK, buscamos por su username
+    list_display = ('tipo_maquina', 'cantidad_total', 'estado_general', 'usuario_responsable')
+    search_fields = ('tipo_maquina',)
 
 @admin.register(Prestamo)
 class PrestamoAdmin(admin.ModelAdmin):
-    # Eliminamos 'elemento' porque ya no existe en Prestamo (está en DetallePrestamo)
-    # 'fecha_devolucion' ahora es 'dia_devolucion'
-    list_display  = ('usuario', 'cantidad_prestada', 'fecha_prestamo', 'dia_devolucion', 'estado_prestamo')
-    list_filter   = ('estado_prestamo',)
-    search_fields = ('usuario__username', 'usuario__first_name')
+    list_display = ('codigo_prestamo', 'usuario', 'fecha_prestamo', 'estado_prestamo')
+    list_filter = ('estado_prestamo', 'fecha_prestamo')
+    inlines = [DetallePrestamoInline]
 
 @admin.register(DetallePrestamo)
 class DetallePrestamoAdmin(admin.ModelAdmin):
-    list_display  = ('prestamo', 'elemento', 'fecha_devolucion', 'estado')
-    list_filter   = ('estado',)
+    list_display = ('id_detalle', 'prestamo', 'elemento', 'fecha_devolucion_prevista', 'estado')
 
 @admin.register(Devolucion)
 class DevolucionAdmin(admin.ModelAdmin):
-    list_display  = ('prestamo', 'cantidad_devuelta', 'fecha_devolucion', 'tiene_novedad', 'estado_elemento_devolucion')
-    list_filter   = ('tiene_novedad', 'estado_elemento_devolucion')
-
-@admin.register(Sancion)
-class SancionAdmin(admin.ModelAdmin):
-    list_display  = ('usuario', 'tipo_sancion', 'fecha_inicio_sancion', 'fecha_fin_sancion', 'estado_sancion')
-    list_filter   = ('estado_sancion',)
-    search_fields = ('usuario__username', 'usuario__first_name')
+    list_display = ('codigo_devolucion', 'prestamo', 'fecha_devolucion', 'hora_devolucion')
+    list_filter = ('fecha_devolucion',)
 
 @admin.register(Revision)
 class RevisionAdmin(admin.ModelAdmin):
-    # 'tipo_revision' ahora es 'tipo_novedad'
-    list_display  = ('tipo_novedad', 'estado_resolucion', 'fecha_registro')
-    list_filter   = ('estado_resolucion',)
+    list_display = ('codigo_revision', 'devolucion', 'tipo_novedad', 'estado_resolucion')
+    list_filter = ('estado_resolucion', 'tipo_novedad')
+
+@admin.register(Sancion)
+class SancionAdmin(admin.ModelAdmin):
+    list_display = ('codigo_sancion', 'usuario', 'tipo_sancion', 'estado_sancion')
+    list_filter = ('estado_sancion',)
