@@ -217,3 +217,28 @@ class ParticipacionIntercentros(models.Model):
 
     def __str__(self):
         return f"{self.equipo} - {self.torneo}"
+
+# Punto 5 del MER: Entidad Resultados
+class Resultado(models.Model):
+    torneo = models.ForeignKey(TorneoIntercentros, on_delete=models.CASCADE)
+    equipo = models.ForeignKey(EquipoIntercentros, on_delete=models.CASCADE)
+    partidos_jugados = models.PositiveIntegerField(default=0)
+    partidos_ganados = models.PositiveIntegerField(default=0)
+    partidos_empatados = models.PositiveIntegerField(default=0)
+    partidos_perdidos = models.PositiveIntegerField(default=0)
+    goles_favor = models.IntegerField(default=0)
+    goles_contra = models.IntegerField(default=0)
+    puntos = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Resultado / Tabla de Posiciones"
+
+# Punto 5 del MER: Entidad Clasificación
+class Clasificacion(models.Model):
+    torneo = models.ForeignKey(TorneoIntercentros, on_delete=models.CASCADE)
+    equipo = models.ForeignKey(EquipoIntercentros, on_delete=models.CASCADE)
+    posicion = models.PositiveIntegerField()
+    estado_clasificacion = models.CharField(max_length=50, default='En competencia')
+
+    class Meta:
+        verbose_name_plural = "Clasificaciones"

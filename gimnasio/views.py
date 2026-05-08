@@ -17,28 +17,18 @@ def gimnasio_list(request):
     """
     Controla el acceso al gimnasio y muestra el historial personal.
     """
-    
     # 1. DEFINIR IDENTIDAD PARA FILTRADO
-    # Usamos el nombre completo tal como se guarda en el CharField del modelo
-    
-    nombre_usuario_logueado = f"{request.user.first_name} {request.user.last_name}"
-    
-    # Traemos solo las reservas del usuario actual para su historial personal
+    # CAMBIO REAL: Filtramos por el OBJETO de usuario (request.user), no por su nombre.
     mis_reservas = Reserva.objects.filter(
-        usuario_solicitante=nombre_usuario_logueado
+        usuario_solicitante=request.user 
     ).order_by('-fecha_entrada', '-hora_entrada')
     
-    # 2. LÓGICA DE CONTROL DE ACCESO (HORARIO, FINES DE SEMANA Y FESTIVOS)
+    # 2. LÓGICA DE CONTROL DE ACCESO
     ahora = timezone.localtime(timezone.now())
-    
-    # Horario: 7:00 AM a 5:00 PM
     horario_ok = 7 <= ahora.hour < 17
-    
-    # Fines de Semana: Sábado (5) y Domingo (6)
     dia_semana = ahora.weekday() 
     es_fin_de_semana = dia_semana in [5, 6]
     
-    # Calendario de Festivos Colombia 2026 (Mes-Día)
     festivos_2026 = [
         "01-01", "01-06", "03-23", "04-02", "04-03", "05-01", 
         "05-18", "06-08", "06-15", "06-29", "07-20", "08-07",
@@ -47,65 +37,53 @@ def gimnasio_list(request):
     es_festivo = ahora.strftime("%m-%d") in festivos_2026
     
     config = GimnasioConfig.get_config()
-
-    # Verifica estado manual del admin
     estado_manual = config.estado == 'abierta'
 
-# El sistema solo permite ingreso si cumple todo
     esta_abierto = (
-    horario_ok
-    and not es_fin_de_semana
-    and not es_festivo
-    and estado_manual
-)
+        horario_ok
+        and not es_fin_de_semana
+        and not es_festivo
+        and estado_manual
+    )
+
     # 3. PROCESAR REGISTRO DE ENTRADA (POST)
     if request.method == 'POST':
         accion = request.POST.get('accion')
 
         if accion == 'crear_reserva':
-            # Validación de seguridad extra en el servidor
             if not esta_abierto:
-                messages.error(request, "Acceso denegado: El sistema de registro está bloqueado en este momento.")
+                messages.error(request, "Acceso denegado: El sistema está bloqueado.")
                 return redirect('gimnasio')
 
             try:
-                # Creamos el registro llenando los campos que tu modelo pide como obligatorios
+                # CAMBIO REAL: Pasamos el objeto request.user completo al crear
                 Reserva.objects.create(
-                    usuario_solicitante=nombre_usuario_logueado,
+                    usuario_solicitante=request.user, # <-- Esto ahora es una FK
                     fecha_entrada=ahora.date(),
                     hora_entrada=ahora.time(),
-                    # Campos de compatibilidad con tu modelo actual
                     hora_prestamo=ahora.time(),
-                    fecha_permanencia=ahora.date(),
+                    # Asegúrate de que el campo sea tiempo_permanencia si lo renombraste
+                    tiempo_permanencia=60, 
                     hora_salida=ahora.time(),
                     fecha_salida=ahora.date(),
                     estado='Activa'
                 )
-                messages.success(request, f"¡Entrada registrada! Bienvenido(a), {request.user.first_name}.")
+                messages.success(request, f"¡Entrada registrada! Bienvenido(a).")
             except Exception as e:
-                messages.error(request, f"Error técnico al registrar asistencia: {e}")
+                messages.error(request, f"Error técnico: {e}")
             
-            request.session['abrir_admin'] = True
-            request.session['seccion_admin'] = 'reservas'
             return redirect('gimnasio')
 
     # 4. RENDERIZADO
-    abrir_admin = request.session.pop('abrir_admin', False)
-    seccion_admin = request.session.pop('seccion_admin', '')
     return render(request, 'gimnasio/gimnasio.html', {
-    'abrir_admin': abrir_admin,
-    'seccion_activa': seccion_admin,
-    'reservas': mis_reservas,
-    'esta_abierto': esta_abierto,
-    'ahora': ahora,
-    'es_fin_de_semana': es_fin_de_semana,
-    'es_festivo': es_festivo,
-    'config': config,
-    'admin_reservas': Reserva.objects.all().order_by(
-        '-fecha_entrada',
-        '-hora_entrada'
-    )
-})
+        'reservas': mis_reservas,
+        'esta_abierto': esta_abierto,
+        'ahora': ahora,
+        'es_fin_de_semana': es_fin_de_semana,
+        'es_festivo': es_festivo,
+        'config': config,
+        'admin_reservas': Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
+    })
 
 # --- ELIMINAR REGISTRO ---
 @login_required

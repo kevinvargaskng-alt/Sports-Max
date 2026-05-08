@@ -1,22 +1,27 @@
 from django.db import models
 from usuarios.models import Usuario
+from django.conf import settings
 
 # Se eliminó la clase Entrenamiento
 
 class Reserva(models.Model):
     codigo_registro = models.AutoField(primary_key=True)
-    usuario_solicitante = models.CharField(max_length=100)
-    hora_prestamo = models.TimeField()
+    # CAMBIO: De CharField a ForeignKey (Punto 6 del MER)
+    usuario_solicitante = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='reservas_gimnasio'
+    )
     fecha_entrada = models.DateField()
     hora_entrada = models.TimeField()
-    fecha_permanencia = models.DateField()
+    # CAMBIO: Renombrar para coincidir con el MER
+    tiempo_permanencia = models.IntegerField(help_text="Tiempo en minutos", default=60)
     hora_salida = models.TimeField()
     fecha_salida = models.DateField()
-    # Se eliminó el campo ForeignKey a Entrenamiento
     estado = models.CharField(max_length=20, default='Pendiente')
 
     def __str__(self):
-        return f"{self.usuario_solicitante} - {self.fecha_entrada}"
+        return f"{self.usuario_solicitante.get_full_name()} - {self.fecha_entrada}"
     
 
 class GimnasioConfig(models.Model):
