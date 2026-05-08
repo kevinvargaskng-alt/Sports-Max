@@ -4,7 +4,14 @@ import urllib.error
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+# URL del servidor IA
 IA_SERVER_URL = "http://127.0.0.1:5001"
+
+# Importación de modelos reales
+from gimnasio.models import Reserva
+from intercentros.models import TorneoIntercentros, EquipoIntercentros, Postulacion
+from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo
+from inventario.models import ElementoDeportivo, Prestamo, Sancion
 
 @csrf_exempt
 def chat_tux_api(request):
