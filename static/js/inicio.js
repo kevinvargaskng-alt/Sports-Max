@@ -384,6 +384,80 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     handleTabs('.inter-ficha-btn', '.inter-ficha-content');
     handleTabs('.inter-centro-btn', '.inter-centro-content');
+
+    // ============================================================
+    // 6. GESTIÓN DE REPORTE DE ERRORES (Delegación de Eventos)
+    // ============================================================
+    
+    // Escuchador global para clics en botones de editar/borrar (Delegación)
+    document.addEventListener('click', function(e) {
+        // EDITAR
+        const btnEdit = e.target.closest('.btn-editar-reporte');
+        if (btnEdit) {
+            e.preventDefault();
+            const id = btnEdit.dataset.id;
+            const comentario = btnEdit.dataset.comentario;
+            
+            const inputId = document.getElementById('inputEditId');
+            const inputComentario = document.getElementById('inputEditComentario');
+            
+            if (inputId && inputComentario) {
+                inputId.value = id;
+                inputComentario.value = comentario;
+                const modalEdit = new bootstrap.Modal(document.getElementById('modalEditarReporte'));
+                modalEdit.show();
+            }
+            return;
+        }
+
+        // BORRAR
+        const btnDelete = e.target.closest('.btn-borrar-reporte');
+        if (btnDelete) {
+            e.preventDefault();
+            if (confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
+                const inputDelId = document.getElementById('inputDeleteId');
+                const formDel = document.getElementById('formBorrarReporte');
+                if (inputDelId && formDel) {
+                    inputDelId.value = btnDelete.dataset.id;
+                    formDel.submit();
+                }
+            }
+            return;
+        }
+    });
+
+    // Envío de nuevo reporte vía AJAX
+    const formReportar = document.getElementById('reportarErrorForm');
+    if (formReportar) {
+        formReportar.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const reportAlert = document.getElementById('reportAlert');
+
+            fetch(window.location.pathname, {
+                method: 'POST',
+                body: formData,
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => {
+                if (reportAlert) {
+                    reportAlert.classList.remove('d-none');
+                    reportAlert.style.display = 'block';
+                    reportAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>Su reporte ha sido enviado con éxito.';
+                    
+                    // Scroll hacia arriba del modal para ver el mensaje
+                    document.querySelector('#modalBuzonSugerencias .modal-body').scrollTop = 0;
+                }
+                this.reset();
+                const fileNameSpan = document.getElementById('fileName');
+                if (fileNameSpan) fileNameSpan.innerText = 'Seleccionar imagen desde su equipo...';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
 });
 
 // ============================================================

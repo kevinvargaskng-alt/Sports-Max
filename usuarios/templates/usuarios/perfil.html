@@ -6,16 +6,6 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
-    /* 1. RESET GENERAL DE MAYÚSCULAS */
-    .main-container, .modal-content, .nav-tabs, .btn, .badge, .table th, .table td {
-        text-transform: none !important;
-    }
-
-    /* 2. CLASE MAESTRA PARA CAPITALIZE */
-    .text-cap {
-        text-transform: capitalize !important;
-    }
-
     /* 3. ESTILOS DE LA FOTO Y CÁMARA */
     .btn-camera {
         position: absolute;
@@ -83,7 +73,7 @@
         }
     }
 
-    /* 8. BUZÓN MEJORADO - ESTILOS */
+    /* ESTILOS DEL BUZÓN */
     #modalBuzonSugerencias .form-select,
     #modalBuzonSugerencias .form-control {
         background: #1e2937 !important;
@@ -91,6 +81,53 @@
         color: #fff !important;
     }
 
+    /* ESTILO BOTÓN REPORTAR ERROR */
+    .btn-reportar-error {
+        color: #ff4d4d !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .btn-reportar-error:hover {
+        color: #ff0000 !important;
+        background-color: rgba(255, 0, 0, 0.2) !important;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+        transform: scale(1.05);
+    }
+
+    /* AJUSTE DE COLOR PARA LAS PESTAÑAS DENTRO DEL MODAL DE ERROR */
+    #modalBuzonSugerencias .nav-tabs .nav-link {
+        color: rgba(255,255,255,0.5) !important;
+        border: none !important;
+    }
+    #modalBuzonSugerencias .nav-tabs .nav-link.active {
+        color: #ff4d4d !important;
+        border-bottom: 3px solid #ff4d4d !important;
+        background: transparent !important;
+    }
+    
+    /* Forzar Alerta Roja (Eliminar Azul) */
+    #reportAlert.alert-success, #reportAlert {
+        background-color: #721c24 !important;
+        color: #f8d7da !important;
+        border: 1px solid #f5c6cb !important;
+        border-left: 5px solid #ff0000 !important;
+    }
+    
+    /* Eliminar cualquier rastro de azul en los botones del modal de error */
+    #modalBuzonSugerencias .btn-danger {
+        background-color: #dc3545 !important;
+        border: none;
+    }
+
+    /* Eliminar el resplandor azul de los campos de texto al hacer clic */
+    #modalBuzonSugerencias .form-control:focus {
+        border-color: #ff0000 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.25) !important;
+    }
+</style>
+<style>
     .sugerencia-card {
         background: rgba(255,255,255,0.05);
         transition: all 0.3s ease;
@@ -98,30 +135,6 @@
     .sugerencia-card:hover {
         transform: translateY(-4px);
         background: rgba(255,255,255,0.08);
-    }
-
-    /* 9. BOTÓN ROJITO EN TABS */
-    .btn-report-error {
-        color: #ff4d4d !important;
-        font-weight: 600;
-        border: 1px solid #ff4d4d;
-        border-radius: 8px;
-        padding: 8px 16px !important;
-        background: rgba(255, 77, 77, 0.12) !important;
-        transition: all 0.3s ease;
-    }
-    .btn-report-error:hover {
-        background: #ff4d4d !important;
-        color: white !important;
-        transform: translateY(-2px);
-        box-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
-    }
-    .btn-report-error i {
-        animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
     }
 </style>
 {% endblock %}
@@ -211,14 +224,13 @@
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">Inter-centros</button>
             </li>
             
-            <!-- BOTÓN ROJITO -->
+            <!-- BOTÓN BUZÓN -->
             <li class="nav-item">
-                <button class="nav-link btn-report-error" 
+                <button class="nav-link btn-reportar-error" 
                         data-bs-toggle="modal" 
-                        data-bs-target="#modalBuzonSugerencias"
-                        title="Reportar error o sugerencia">
-                    <i class="fas fa-exclamation-circle me-1"></i>
-                    Reportar
+                        data-bs-target="#modalBuzonSugerencias">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Reportar Error
                 </button>
             </li>
         </ul>
@@ -442,18 +454,12 @@
     </div>
 </div>
 
-<!-- ====================== BUZÓN - SOLO ICONO (SIN CÍRCULO) ====================== -->
-<button id="btnBuzon" data-bs-toggle="modal" data-bs-target="#modalBuzonSugerencias" 
-        style="position: fixed; bottom: 30px; right: 30px; z-index: 1055; background: transparent; border: none; color: #00d2ff; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 28px; filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.8));">
-    <i class="fas fa-bullhorn"></i>
-</button>
-
 <div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 16px;">
+        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(220, 53, 69, 0.5); border-radius: 16px;">
             <div class="modal-header border-0 pb-1">
                 <h4 class="modal-title fw-bold">
-                    <i class="fas fa-comment-dots text-info me-3"></i>Buzón de Sugerencias
+                    <i class="fas fa-exclamation-triangle text-danger me-3"></i>Reportar un Error
                 </h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -462,12 +468,12 @@
                 <ul class="nav nav-tabs mb-4 border-0" id="buzonTabs" role="tablist">
                     <li class="nav-item">
                         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#buzon-enviar">
-                            <i class="fas fa-paper-plane me-2"></i>Enviar Sugerencia
+                            <i class="fas fa-bug me-2"></i>Enviar Reporte
                         </button>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#buzon-respuestas">
-                            <i class="fas fa-inbox me-2"></i>Mis Sugerencias
+                            <i class="fas fa-history me-2"></i>Mis Reportes
                         </button>
                     </li>
                 </ul>
@@ -475,37 +481,24 @@
                 <div class="tab-content">
                     <!-- ENVIAR -->
                     <div class="tab-pane fade show active" id="buzon-enviar">
-                        
+                        <div id="reportAlert" class="alert d-none mb-3 shadow-lg fw-bold text-center" role="alert"></div>
+                        <form id="reportarErrorForm" method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold text-white-50">Tipo</label>
-                                    <select name="tipo" class="form-select" required>
-                                        <option value="error">❌ Reporte de Error</option>
-                                        <option value="mejora">🚀 Mejora del Sistema</option>
-                                        <option value="instalacion">🏟️ Instalación Deportiva</option>
-                                        <option value="implemento">⚽ Implemento Deportivo</option>
-                                        <option value="otro">📌 Otro</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold text-white-50">Prioridad</label>
-                                    <select name="prioridad" class="form-select" required>
-                                        <option value="alta">🔴 Alta (Urgente)</option>
-                                        <option value="media" selected>🟡 Media</option>
-                                        <option value="baja">🟢 Baja</option>
-                                    </select>
-                                </div>
+                            <input type="hidden" name="tipo" value="error">
+
+                            <div class="mt-3">
+                                <label class="form-label fw-bold text-white-50">Descripción del fallo</label>
+                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe detalladamente el error que encontraste..." required></textarea>
                             </div>
 
                             <div class="mt-3">
-                                <label class="form-label fw-bold text-white-50">Descripción</label>
-                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe tu sugerencia o error..." required></textarea>
-                            </div>
-
-                            <div class="mt-3">
-                                <label class="form-label fw-bold text-white-50">Captura de pantalla (opcional)</label>
-                                <input type="file" name="imagen" class="form-control" accept="image/*">
+                                <label class="form-label fw-bold text-white-50 small d-block">Captura de pantalla del error</label>
+                                <label for="imagen_error" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" style="background: #161b22; border: 1px solid #30363d;">
+                                    <span id="fileName" class="text-white-50 small">Seleccionar imagen desde su equipo...</span>
+                                    <i class="fas fa-upload"></i>
+                                </label>
+                                <input type="file" name="imagen_error" id="imagen_error" class="d-none" accept="image/*" 
+                                       onchange="document.getElementById('fileName').innerText = this.files[0].name">
                             </div>
 
                             <div class="form-check mt-3">
@@ -513,25 +506,47 @@
                                 <label class="form-check-label text-white-50" for="anonimo">Enviar anónimamente</label>
                             </div>
 
-                            <button type="submit" class="btn btn-info w-100 mt-4 py-3 fw-bold">
-                                <i class="fas fa-paper-plane me-2"></i>Enviar Sugerencia
+                            <button type="submit" class="btn btn-danger w-100 mt-4 py-3 fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Reporte de Error
                             </button>
                         </form>
                     </div>
 
                     <!-- MIS SUGERENCIAS -->
                     <div class="tab-pane fade" id="buzon-respuestas">
-                        {% if sugerencias_usuario %}
+                        
+                        {% if sugerencias_usuario %} {# Línea 462 #}
                             {% for s in sugerencias_usuario %}
                             <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-{{ s.id }}"
                                  style="border-left: 5px solid {% if s.respuesta %}#22c55e{% else %}#eab308{% endif %};">
                                 <div class="d-flex justify-content-between mb-3">
-                                    <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
-                                        {{ s.tipo|upper }}
-                                    </span>
+                                    <div>
+                                        <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
+                                            {{ s.tipo|upper }}
+                                        </span>
+                                        {% if not s.respuesta %}
+                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte" 
+                                                data-id="{{ s.id }}" data-comentario="{{ s.comentario }}" title="Editar reporte">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte" 
+                                                data-id="{{ s.id }}" title="Eliminar reporte">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
                                     <small class="text-white-50">{{ s.fecha|date:"d/m/Y H:i" }}</small>
                                 </div>
                                 <p class="mb-3">{{ s.comentario }}</p>
+
+                                {% if s.imagen %}
+                                    <div class="mb-3">
+                                        <a href="{{ s.imagen.url }}" target="_blank">
+                                            <img src="{{ s.imagen.url }}" alt="Evidencia" class="img-fluid rounded border border-secondary" style="max-height: 150px; cursor: pointer;">
+                                        </a>
+                                    </div>
+                                {% endif %}
+
                                 {% if s.respuesta %}
                                     <div class="p-3 rounded bg-success bg-opacity-10 border-start border-success border-3">
                                         <strong class="text-success">Respuesta:</strong><br>
@@ -540,15 +555,12 @@
                                 {% else %}
                                     <span class="badge bg-warning text-dark">Pendiente</span>
                                 {% endif %}
-                                <button onclick="eliminarSugerencia({{ s.id }})" class="btn btn-sm btn-outline-danger mt-3">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </button>
                             </div>
                             {% endfor %}
                         {% else %}
                             <div class="text-center py-5 text-white-50">
                                 <i class="fas fa-inbox fa-4x mb-3"></i>
-                                <p>Aún no tienes sugerencias enviadas</p>
+                                <p>No has enviado ningún reporte de error todavía.</p>
                             </div>
                         {% endif %}
                     </div>
@@ -557,6 +569,41 @@
         </div>
     </div>
 </div>
+
+
+<!-- MODAL EDITAR REPORTE -->
+<div class="modal fade" id="modalEditarReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #ff4d4d; border-radius: 12px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2 text-warning"></i>Editar Reporte</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditarReporte" method="POST" action="{% url 'perfil' %}">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="editar_reporte">
+                <input type="hidden" name="reporte_id" id="inputEditId">
+                <div class="modal-body">
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold text-white-50">Nuevo comentario</label>
+                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning btn-sm fw-bold">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- FORMULARIO OCULTO PARA BORRAR -->
+<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="tipo" value="borrar_reporte">
+    <input type="hidden" name="reporte_id" id="inputDeleteId">
+</form>
 
 {% endblock %}
 
@@ -570,14 +617,6 @@
             output.src = reader.result;
         };
         if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function eliminarSugerencia(id) {
-        if (!confirm('¿Eliminar esta sugerencia?')) return;
-        fetch(`/sugerencias/eliminar/${id}/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        }).then(() => location.reload());
     }
 </script>
 {% endblock %}

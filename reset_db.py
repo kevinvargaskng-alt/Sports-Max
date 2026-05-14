@@ -19,8 +19,8 @@ for root, dirs, files in os.walk('.'):
     # Buscar solo dentro de carpetas llamadas 'migrations'
     if 'migrations' in root:
         for file in files:
-            # Seleccionar archivos que empiecen con '000' y terminen en '.py'
-            if file.startswith('000') and file.endswith('.py'):
+            # Seleccionar archivos .py que no sean __init__.py
+            if file.endswith('.py') and file != '__init__.py':
                 archivos_a_borrar.append(os.path.join(root, file))
 
 # 2. Verificar si existe la base de datos

@@ -8,7 +8,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 # Importaciones de modelos de otras apps
-from .models import Usuario
+from .models import Usuario, Sugerencia
 from inventario.models import Prestamo
 from gimnasio.models import Reserva, GimnasioConfig  # Agregado GimnasioConfig
 from interfichas.models import EquipoInterfichas, TorneoInterfichas
@@ -168,6 +168,46 @@ def perfil_view(request):
     usuario = request.user
 
     if request.method == 'POST':
+        tipo_post = request.POST.get('tipo')
+
+        # --- CASO 1: BORRAR REPORTE ---
+        if tipo_post == 'borrar_reporte':
+            reporte_id = request.POST.get('reporte_id')
+            reporte = get_object_or_404(Sugerencia, id=reporte_id, usuario=usuario)
+            if not reporte.respuesta:
+                reporte.delete()
+                messages.success(request, 'Reporte eliminado con éxito.')
+            return redirect('perfil')
+
+        # --- CASO 2: EDITAR REPORTE ---
+        if tipo_post == 'editar_reporte':
+            reporte_id = request.POST.get('reporte_id')
+            nuevo_comentario = request.POST.get('comentario')
+            reporte = get_object_or_404(Sugerencia, id=reporte_id, usuario=usuario)
+            if not reporte.respuesta:
+                reporte.comentario = nuevo_comentario
+                reporte.save()
+                messages.success(request, 'Reporte actualizado con éxito.')
+            return redirect('perfil')
+
+        # Procesar Buzón de Sugerencias
+        if 'comentario' in request.POST:
+            tipo = request.POST.get('tipo', 'otro')
+            comentario = request.POST.get('comentario')
+            anonimo = request.POST.get('anonimo') == 'on'
+            
+            Sugerencia.objects.create(
+                usuario=usuario if not anonimo else None,
+                tipo=tipo,
+                comentario=comentario,
+                anonimo=anonimo,
+                imagen=request.FILES.get('imagen_error')
+            )
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success'})
+            messages.success(request, '¡Gracias! Tu reporte de error ha sido enviado exitosamente.')
+            return redirect('perfil')
+
         email   = request.POST.get('email')
         celular = request.POST.get('celular')
         if email:   usuario.email    = email
@@ -186,11 +226,14 @@ def perfil_view(request):
         todos_prestamos = Prestamo.objects.select_related('usuario').prefetch_related('detalles__elemento').order_by('-fecha_prestamo')
         # Gimnasio Admin
         todas_reservas = Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
+        # Sugerencias Admin
+        todas_sugerencias = Sugerencia.objects.all().order_by('-fecha')
 
         contexto = {
             'usuario': usuario,
             'prestamos': todos_prestamos,
             'reservas_gimnasio': todas_reservas,
+            'sugerencias_usuario': todas_sugerencias,
             'todos_usuarios': todos_usuarios,
             'total_usuarios': todos_usuarios.count(),
             'total_torneos_activos': TorneoInterfichas.objects.exclude(estado='cerrado').count() + TorneoIntercentros.objects.filter(estado='Activo').count(),
@@ -202,11 +245,13 @@ def perfil_view(request):
         
         # CORRECCIÓN CLAVE: Se filtra por el objeto 'usuario', NO por el string del nombre
         reservas_gimnasio = Reserva.objects.filter(usuario_solicitante=usuario).order_by('-fecha_entrada', '-hora_entrada')
+        mis_sugerencias = Sugerencia.objects.filter(usuario=usuario).order_by('-fecha')
 
         contexto = {
             'usuario': usuario,
             'prestamos': prestamos,
             'reservas_gimnasio': reservas_gimnasio,
+            'sugerencias_usuario': mis_sugerencias,
             'equipos_interfichas': EquipoInterfichas.objects.filter(usuario_registra=usuario),
             'equipos_intercentros': Postulacion.objects.filter(numero_documento=str(usuario.numero_documento)),
         }
