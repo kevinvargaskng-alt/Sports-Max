@@ -57,6 +57,7 @@ class Sugerencia(models.Model):
     comentario = models.TextField()
     anonimo = models.BooleanField(default=False) 
     respuesta = models.TextField(null=True, blank=True)
+    imagen = models.ImageField(upload_to='reportes_errores/', null=True, blank=True)
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
