@@ -194,13 +194,12 @@ def perfil_view(request):
         if 'comentario' in request.POST:
             tipo = request.POST.get('tipo', 'otro')
             comentario = request.POST.get('comentario')
-            anonimo = request.POST.get('anonimo') == 'on'
             
             Sugerencia.objects.create(
-                usuario=usuario if not anonimo else None,
+                usuario=usuario,
                 tipo=tipo,
                 comentario=comentario,
-                anonimo=anonimo,
+                anonimo=False,
                 imagen=request.FILES.get('imagen_error')
             )
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

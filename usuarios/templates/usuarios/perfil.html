@@ -501,11 +501,6 @@
                                        onchange="document.getElementById('fileName').innerText = this.files[0].name">
                             </div>
 
-                            <div class="form-check mt-3">
-                                <input class="form-check-input" type="checkbox" name="anonimo" id="anonimo">
-                                <label class="form-check-label text-white-50" for="anonimo">Enviar anónimamente</label>
-                            </div>
-
                             <button type="submit" class="btn btn-danger w-100 mt-4 py-3 fw-bold">
                                 <i class="fas fa-paper-plane me-2"></i>Enviar Reporte de Error
                             </button>
@@ -594,6 +589,33 @@
                     <button type="submit" class="btn btn-warning btn-sm fw-bold">Guardar Cambios</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ESTÉTICO DE CONFIRMACIÓN PARA ELIMINAR -->
+<div class="modal fade" id="modalConfirmarEliminarReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #dc3545; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-shield-alt me-2 text-danger"></i>Seguridad de Datos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-circle fa-5x text-danger mb-3 shadow-sm"></i>
+                </div>
+                <h4 class="fw-bold">¿Estás seguro?</h4>
+                <p class="text-white-50 px-4">Esta acción eliminará permanentemente tu reporte de error del sistema. No podrás recuperar esta información después.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-light px-4 rounded-pill" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-danger px-4 fw-bold rounded-pill shadow" id="confirmDeleteReporteBtn">
+                    <i class="fas fa-trash-alt me-2"></i>Sí, eliminar ahora
+                </button>
+            </div>
         </div>
     </div>
 </div>

@@ -413,16 +413,20 @@ document.addEventListener('DOMContentLoaded', function () {
         // BORRAR
         const btnDelete = e.target.closest('.btn-borrar-reporte');
         if (btnDelete) {
-            e.preventDefault();
-            if (confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
-                const inputDelId = document.getElementById('inputDeleteId');
-                const formDel = document.getElementById('formBorrarReporte');
-                if (inputDelId && formDel) {
-                    inputDelId.value = btnDelete.dataset.id;
-                    formDel.submit();
-                }
-            }
-            return;
+            e.preventDefault(); // Prevenir la acción por defecto del botón
+            const reporteId = btnDelete.dataset.id;
+            const modalConfirmarEliminar = new bootstrap.Modal(document.getElementById('modalConfirmarEliminarReporte'));
+            
+            // Asignar el ID al input oculto del formulario de borrado
+            document.getElementById('inputDeleteId').value = reporteId;
+
+            // Mostrar el modal de confirmación
+            modalConfirmarEliminar.show();
+
+            // Manejar el clic en el botón de confirmación dentro del modal
+            document.getElementById('confirmDeleteReporteBtn').onclick = function() {
+                document.getElementById('formBorrarReporte').submit();
+            };
         }
     });
 
