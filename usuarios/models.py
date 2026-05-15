@@ -40,8 +40,16 @@ class Usuario(AbstractUser):
     fecha_registro = models.DateTimeField(auto_now_add=True)
     foto_perfil = models.ImageField(upload_to='perfiles/', blank=True, null=True)
 
+    # --- CAMBIO 1: Configuración para createsuperuser ---
+    # Esto obliga a la terminal a pedirte estos datos adicionales.
+    # El 'username' y 'password' no se ponen aquí porque Django los pide siempre.
+    REQUIRED_FIELDS = ['email', 'numero_documento', 'tipo_documento']
+
     def __str__(self):
-        return f"{self.get_full_name()} ({self.numero_documento})"
+        # --- CAMBIO 2: Mejora de representación ---
+        # Si el usuario no tiene nombre/apellido aún, mostrar el username para evitar strings vacíos.
+        identificador = self.get_full_name() if self.get_full_name().strip() else self.username
+        return f"{identificador} ({self.numero_documento})"
     
 class Sugerencia(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)

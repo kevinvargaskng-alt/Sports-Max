@@ -2,15 +2,6 @@
 ia_server.py — Servidor Flask del Motor IA propio
 --------------------------------------------------
 Corre independiente de Django en el puerto 5001.
-Django lo llama internamente, sin exponer nada al frontend.
-
-Arrancar:
-    python ia_server.py
-
-Rutas:
-    POST /ia/chat        — responder pregunta
-    POST /ia/entrenar    — (re)entrenar con datos frescos de la BD
-    GET  /ia/estado      — ver estado del motor
 """
 
 import os
@@ -36,8 +27,8 @@ log = logging.getLogger("ia_server")
 # ── App Flask ─────────────────────────────────────────────
 app = Flask(__name__)
 
-# Solo aceptar llamadas desde localhost (Django)
-CORS(app, origins=["http://127.0.0.1:8000", "http://localhost:8000"])
+# Cambio clave: Permitir CORS de forma más flexible para desarrollo local
+CORS(app, resources={r"/ia/*": {"origins": "*"}})
 
 # ── Cargar o crear el motor ───────────────────────────────
 log.info("Cargando motor IA...")
@@ -48,18 +39,14 @@ if motor._entrenado:
 else:
     log.warning("Motor sin entrenar. Llama a POST /ia/entrenar para inicializarlo.")
 
-
 # ============================================================
 # RUTAS
 # ============================================================
 
 @app.route("/ia/chat", methods=["POST"])
 def chat():
-    """
-    Recibe: { "message": str, "history": [...] }
-    Devuelve: { "reply": str, "confianza": float, "modulo": str }
-    """
     try:
+        # force=True ayuda si el content-type llega ligeramente mal
         data = request.get_json(force=True)
         mensaje = data.get("message", "").strip()
         historial = data.get("history", [])
@@ -81,26 +68,8 @@ def chat():
         log.error(f"Error en /ia/chat: {e}", exc_info=True)
         return jsonify({"error": f"Error interno del motor IA: {str(e)}"}), 500
 
-
 @app.route("/ia/entrenar", methods=["POST"])
 def entrenar():
-    """
-    Recibe los datos de la base de datos Django y reentrena el modelo.
-    Llamado automáticamente desde ia_trainer.py o manualmente.
-
-    Body esperado:
-    {
-        "inventario": [{"nombre": str, "cantidad": int, "estado": str, "responsable": str}],
-        "prestamos_activos": int,
-        "config_gimnasio": {"estado": str, "apertura": str, "cierre": str, "capacidad": int},
-        "reservas_pendientes": int,
-        "torneos_interfichas": [{"nombre": str, "disciplina": str, "estado": str, "fecha": str, "lugar": str, "num_equipos": int}],
-        "equipos_interfichas": int,
-        "partidos_jugados": int,
-        "torneos_intercentros": [{"nombre": str, "disciplina": str, "estado": str, "fecha": str, "lugar": str}],
-        "postulaciones": int,
-    }
-    """
     try:
         datos_bd = request.get_json(force=True)
         n_docs = motor.entrenar(datos_bd)
@@ -114,10 +83,8 @@ def entrenar():
         log.error(f"Error en /ia/entrenar: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
-
 @app.route("/ia/estado", methods=["GET"])
 def estado():
-    """Devuelve el estado actual del motor."""
     return jsonify({
         "entrenado": motor._entrenado,
         "documentos": len(motor.conocimiento) if motor._entrenado else 0,
@@ -125,11 +92,8 @@ def estado():
         "modelo_existe": os.path.exists(MotorIA.RUTA_MODELO),
     })
 
-
-# ============================================================
-# ARRANQUE
-# ============================================================
 if __name__ == "__main__":
     PORT = int(os.environ.get("IA_PORT", 5001))
     log.info(f"Motor IA iniciando en http://127.0.0.1:{PORT}")
-    app.run(host="0.0.0.0", port=PORT, debug=False)
+    # threaded=True permite manejar varias peticiones de Django a la vez
+    app.run(host="0.0.0.0", port=PORT, debug=False, threaded=True)
