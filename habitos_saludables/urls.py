@@ -13,6 +13,7 @@ urlpatterns = [
     # ── Inicio y dashboard ──────────────────────────
     path('', views.inicio, name='inicio'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('bienestar/', views.dashboard, name='bienestar'),  # <- NUEVA RUTA INTEGRADA
 
     # ── Habeas Data ─────────────────────────────────
     path('habeas-data/', views.habeas_data, name='habeas_data'),
