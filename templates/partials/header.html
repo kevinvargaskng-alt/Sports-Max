@@ -18,6 +18,27 @@
         display: flex;
         gap: 15px;
     }
+
+    .nav-pill-center .nav-link {
+        color: #ffffff;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 8px 14px;
+    }
+
+    .nav-pill-center .nav-link:hover {
+        background: #198754;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-habitos {
+        background: linear-gradient(135deg, #198754, #20c997);
+        border-radius: 20px;
+        color: white !important;
+        font-weight: bold;
+    }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark p-0" style="position: sticky; top: 0; z-index: 1030;">
@@ -39,6 +60,12 @@
 
                 <a class="nav-link" href="{% url 'gimnasio' %}">Gimnasio</a>
                 <a class="nav-link" href="{% url 'inventario' %}">Inventario</a>
+
+                <!-- NUEVO MÓDULO -->
+                <a class="nav-link btn-habitos" href="#">
+                    <i class="fas fa-heartbeat me-1"></i>
+                    Hábitos Saludables
+                </a>
             </div>
 
             <ul class="navbar-nav d-lg-none mt-3">
@@ -46,7 +73,14 @@
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'interfichas' %}">Inter-Fichas</a></li>
 
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'gimnasio' %}">Gimnasio</a></li>
-                <li class="nav-item"><a class="nav-link py-3 px-2" href="{% url 'inventario' %}">Inventario</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'inventario' %}">Inventario</a></li>
+                <!-- NUEVO MÓDULO MOBILE -->
+                <li class="nav-item">
+                    <a class="nav-link py-3 px-2 btn-habitos mt-2 text-center" href="#">
+                        <i class="fas fa-heartbeat me-1"></i>
+                        Hábitos Saludables
+                    </a>
+                </li>
             </ul>
         </div>
 
