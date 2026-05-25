@@ -12,8 +12,6 @@ from usuarios.models import Usuario, Sugerencia
 from inventario.models import ElementoDeportivo, Prestamo
 from gimnasio.models import Reserva
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, Disciplina
-from intercentros.models import TorneoIntercentros, Postulacion
-
 def poblar_datos():
     print("🚀 Iniciando la población de la base de datos...")
 
@@ -99,25 +97,6 @@ def poblar_datos():
                 }
             )
     print("✅ Torneos Interfichas y Equipos creados.")
-
-    # 5. Torneos Intercentros y Postulaciones
-    for i in range(1, 11):
-        ti, _ = TorneoIntercentros.objects.get_or_create(
-            nombre_torneo=f"Regional SENA {random.choice(nombres_disciplinas)}",
-            defaults={
-                'fecha_torneo': date.today() + timedelta(days=i*10),
-                'estado': 'Activo'
-            }
-        )
-        # Crear Postulaciones
-        for _ in range(3):
-            user_random = random.choice([u for u in usuarios_creados if u.rol == 'aprendiz'])
-            Postulacion.objects.get_or_create(
-                torneo=ti,
-                numero_documento=user_random.numero_documento,
-                defaults={'fecha_postulacion': timezone.now()}
-            )
-    print("✅ Torneos Intercentros y Postulaciones creados.")
 
     # 6. Préstamos
     for i in range(1, 11):

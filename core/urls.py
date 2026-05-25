@@ -40,7 +40,6 @@ urlpatterns = [
 
     # Módulos deportivos
     path('interfichas/', include('interfichas.urls')),
-    path('intercentros/', include('intercentros.urls')),
     path('gimnasio/', include('gimnasio.urls')),
     path('inventario/', include('inventario.urls')),
     path('habitos/', include('habitos_saludables.urls')),
@@ -52,3 +51,4 @@ urlpatterns = [
 # Servir archivos multimedia en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
