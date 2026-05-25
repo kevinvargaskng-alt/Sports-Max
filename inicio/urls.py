@@ -2,5 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.inicio, name='home'),
+    # El nombre debe ser 'home' porque así lo busca tu header.html
+    path('', views.inicio, name='home'), 
 ]

@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tests Físicos — Gimnasio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+.adm-input {
+    background:#0d1117; border:1px solid #30363d; border-radius:8px;
+    color:#f0f6fc; font-family:'Consolas',monospace; font-size:.95rem;
+    padding:10px 14px; outline:none; transition:border-color .15s; width:100%;
+}
+.adm-input:focus { border-color:#58a6ff; box-shadow:0 0 0 3px rgba(88,166,255,.2); }
+
+/* ══ tipo-tab ══ */
+.tipo-tab {
+    background:#161b22; border:1.5px solid #30363d;
+    color:#8b949e; font-size:.82rem; font-weight:700;
+    letter-spacing:.8px; text-transform:uppercase;
+    padding:14px 20px; border-radius:10px; cursor:pointer;
+    transition:all .15s; text-align:center; flex:1;
+}
+.tipo-tab.sel { border-color:#58a6ff; background:rgba(88,166,255,.08); color:#58a6ff; }
+.tipo-tab:hover { border-color:#8b949e; color:#f0f6fc; }
+
+/* ══ campos condicionales ══ */
+.campo-cooper, .campo-ruffier { display:none; }
+.campo-cooper.activo, .campo-ruffier.activo { display:block; }
+
+/* ══ resultado badge ══ */
+.res-badge {
+    display:inline-block; padding:4px 14px; border-radius:20px;
+    font-size:.72rem; font-weight:800; letter-spacing:1px; text-transform:uppercase;
+}
+.res-excelente { background:rgba(46,160,67,.15); border:1px solid #2ea043; color:#56d364; }
+.res-muy-bueno, .res-bueno { background:rgba(88,166,255,.12); border:1px solid #58a6ff; color:#58a6ff; }
+.res-regular, .res-admisible { background:rgba(227,179,65,.12); border:1px solid #e3b341; color:#e3b341; }
+.res-deficiente, .res-insuficiente { background:rgba(248,81,73,.12); border:1px solid #f85149; color:#f85149; }
+
+/* ══ protocolo card ══ */
+.protocolo-box {
+    background:rgba(88,166,255,.04); border:1px solid rgba(88,166,255,.18);
+    border-radius:10px; padding:16px 20px; font-size:.82rem; color:#8b949e;
+    line-height:1.8;
+}
+.protocolo-box strong { color:#c9d1d9; }
+
+/* ══ tabla ══ */
+.btn-trash { background:none; border:none; color:#6b7a94; cursor:pointer;
+    padding:4px 8px; border-radius:6px; transition:all .15s; }
+.btn-trash:hover { color:#f85149; background:rgba(248,81,73,.12); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+<div class="container">
+
+    <header class="modulo-header text-center mb-5">
+        <i class="fas fa-running fa-3x mb-3 text-warning"></i>
+        <h2 class="fw-bold text-white">Tests Físicos</h2>
+        <p class="text-white-50">Evalúa tu condición física inicial con protocolos estandarizados</p>
+    </header>
+
+    <!-- Mensajes -->
+    {% if messages %}{% for msg in messages %}
+    <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} small py-2 mb-3">
+        {{ msg }}</div>
+    {% endfor %}{% endif %}
+
+    <!-- ══ FORMULARIO NUEVO TEST ════════════════════════════ -->
+    <section class="sport-card mb-4">
+        <h5 class="fw-bold mb-4">
+            <i class="fas fa-plus-circle me-2 text-success"></i>Registrar Nuevo Test
+        </h5>
+
+        <form method="POST" id="test-form">
+            {% csrf_token %}
+
+            <!-- Selector de tipo -->
+            <div class="mb-4">
+                <label class="form-label fw-bold small text-white-50 text-uppercase" style="letter-spacing:1.5px;">
+                    Tipo de test
+                </label>
+                <div class="d-flex gap-3 flex-wrap mt-2" id="tipo-tabs">
+                    <div class="tipo-tab {% if form.tipo.value == 'cooper' or not form.tipo.value %}sel{% endif %}"
+                         data-val="cooper" onclick="selTipo(this)">
+                        🏃 Cooper<br><span style="font-size:.68rem; font-weight:400;">Resistencia aeróbica</span>
+                    </div>
+                    <div class="tipo-tab {% if form.tipo.value == 'layer' %}sel{% endif %}"
+                         data-val="layer" onclick="selTipo(this)">
+                        🔄 Layer<br><span style="font-size:.68rem; font-weight:400;">Resistencia continua</span>
+                    </div>
+                    <div class="tipo-tab {% if form.tipo.value == 'ruffier_dickson' %}sel{% endif %}"
+                         data-val="ruffier_dickson" onclick="selTipo(this)">
+                        ❤️ Ruffier-Dickson<br><span style="font-size:.68rem; font-weight:400;">Recuperación cardíaca</span>
+                    </div>
+                </div>
+                <input type="hidden" name="tipo" id="tipo-input"
+                       value="{{ form.tipo.value|default:'cooper' }}">
+            </div>
+
+            <!-- Fecha -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small">Fecha del test</label>
+                    {{ form.fecha }}
+                    {% if form.fecha.errors %}<div class="text-danger small">{{ form.fecha.errors }}</div>{% endif %}
+                </div>
+            </div>
+
+            <!-- ── Cooper / Layer ── -->
+            <div id="campos-cooper" class="campo-cooper {% if form.tipo.value != 'ruffier_dickson' %}activo{% endif %}">
+                <div class="protocolo-box mb-3">
+                    <strong>📋 Protocolo Cooper:</strong> Correr o caminar la mayor distancia posible
+                    durante <strong>12 minutos</strong> en pista plana. Al terminar, medir la distancia total recorrida.
+                    VO₂max = (distancia − 504.9) / 44.73
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">{{ form.cooper_distancia_m.label }}</label>
+                        {{ form.cooper_distancia_m }}
+                        {% if form.cooper_distancia_m.errors %}
+                            <div class="text-danger small">{{ form.cooper_distancia_m.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <!-- Preview VO2max en tiempo real -->
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="w-100 text-center rounded py-2"
+                             style="background:rgba(88,166,255,.06); border:1px solid rgba(88,166,255,.2);">
+                            <div class="text-white-50" style="font-size:.65rem; letter-spacing:1px; text-transform:uppercase;">
+                                VO₂max estimado
+                            </div>
+                            <div id="vo2-preview" class="fw-bold"
+                                 style="font-family:Consolas,monospace; font-size:1.5rem; color:#58a6ff;">—</div>
+                            <div id="vo2-cat" style="font-size:.72rem; color:#6b7a94;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Ruffier-Dickson ── -->
+            <div id="campos-ruffier" class="campo-ruffier {% if form.tipo.value == 'ruffier_dickson' %}activo{% endif %}">
+                <div class="protocolo-box mb-3">
+                    <strong>📋 Protocolo Ruffier-Dickson:</strong>
+                    <ol style="padding-left:18px; margin:6px 0 0;">
+                        <li>Mide el pulso en reposo durante 15 seg y multiplica × 4 → <strong>P0</strong></li>
+                        <li>Realiza <strong>45 sentadillas en 45 segundos</strong></li>
+                        <li>Mide el pulso inmediatamente al terminar → <strong>P1</strong></li>
+                        <li>Espera 1 minuto y mide el pulso nuevamente → <strong>P2</strong></li>
+                    </ol>
+                    Índice = ((P1 − 70) + 2×(P2 − P0)) / 10
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">{{ form.ruffier_p0.label }}</label>
+                        {{ form.ruffier_p0 }}
+                        {% if form.ruffier_p0.errors %}<div class="text-danger small">{{ form.ruffier_p0.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">{{ form.ruffier_p1.label }}</label>
+                        {{ form.ruffier_p1 }}
+                        {% if form.ruffier_p1.errors %}<div class="text-danger small">{{ form.ruffier_p1.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">{{ form.ruffier_p2.label }}</label>
+                        {{ form.ruffier_p2 }}
+                        {% if form.ruffier_p2.errors %}<div class="text-danger small">{{ form.ruffier_p2.errors }}</div>{% endif %}
+                    </div>
+                    <!-- Preview índice Ruffier -->
+                    <div class="col-md-4">
+                        <div class="text-center rounded py-2"
+                             style="background:rgba(88,166,255,.06); border:1px solid rgba(88,166,255,.2);">
+                            <div class="text-white-50" style="font-size:.65rem; letter-spacing:1px; text-transform:uppercase;">
+                                Índice estimado
+                            </div>
+                            <div id="ruf-preview" class="fw-bold"
+                                 style="font-family:Consolas,monospace; font-size:1.5rem; color:#58a6ff;">—</div>
+                            <div id="ruf-cat" style="font-size:.72rem; color:#6b7a94;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="mt-3">
+                <label class="form-label fw-bold small">{{ form.observaciones.label }}</label>
+                {{ form.observaciones }}
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-warning fw-bold px-5 py-2">
+                    <i class="fas fa-save me-2"></i>GUARDAR TEST
+                </button>
+                <a href="{% url 'anamnesis_propia' %}" class="btn btn-outline-secondary fw-bold px-4 ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Ficha
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <!-- ══ HISTORIAL DE TESTS ════════════════════════════════ -->
+    <section class="sport-card">
+        <h5 class="fw-bold mb-4">
+            <i class="fas fa-history me-2 text-info"></i>Mis Tests Registrados
+        </h5>
+
+        {% if mis_tests %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Resultado</th>
+                        <th>Clasificación</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for t in mis_tests %}
+                <tr>
+                    <td style="font-family:Consolas,monospace;">{{ t.fecha|date:"d/m/Y" }}</td>
+                    <td><strong>{{ t.get_tipo_display }}</strong></td>
+                    <td style="font-family:Consolas,monospace; color:#58a6ff;">
+                        {% if t.tipo == 'cooper' or t.tipo == 'layer' %}
+                            {% if t.cooper_vo2max %}
+                                VO₂max: <strong>{{ t.cooper_vo2max }}</strong> ml/kg/min<br>
+                                <span class="text-white-50 small">{{ t.cooper_distancia_m }} m</span>
+                            {% else %}—{% endif %}
+                        {% elif t.tipo == 'ruffier_dickson' %}
+                            {% if t.ruffier_indice %}
+                                Índice: <strong>{{ t.ruffier_indice }}</strong><br>
+                                <span class="text-white-50 small">P0={{ t.ruffier_p0 }} P1={{ t.ruffier_p1 }} P2={{ t.ruffier_p2 }}</span>
+                            {% else %}—{% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% with cat=t.cooper_categoria|default:t.ruffier_clasificacion %}
+                        {% if cat %}
+                            <span class="res-badge res-{{ cat|lower|cut:' ' }}">{{ cat }}</span>
+                        {% else %}—{% endif %}
+                        {% endwith %}
+                    </td>
+                    <td class="text-center">
+                        <form method="post" action="{% url 'eliminar_test' t.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-trash"
+                                    onclick="return confirm('¿Eliminar este test?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-white-50 py-5">
+            <i class="fas fa-clipboard fa-2x d-block mb-3 opacity-25"></i>
+            No has registrado tests físicos aún.
+        </p>
+        {% endif %}
+    </section>
+
+</div>
+</div>
+
+<script>
+/* ── Selector de tipo ── */
+function selTipo(tab) {
+    document.querySelectorAll('.tipo-tab').forEach(t => t.classList.remove('sel'));
+    tab.classList.add('sel');
+    const val = tab.dataset.val;
+    document.getElementById('tipo-input').value = val;
+
+    document.querySelector('.campo-cooper').classList.remove('activo');
+    document.querySelector('.campo-ruffier').classList.remove('activo');
+
+    if (val === 'ruffier_dickson') {
+        document.getElementById('campos-ruffier').classList.add('activo');
+    } else {
+        document.getElementById('campos-cooper').classList.add('activo');
+    }
+}
+
+/* ── Preview VO2max ── */
+const distInp = document.querySelector('input[name="cooper_distancia_m"]');
+if (distInp) {
+    distInp.addEventListener('input', () => {
+        const dist = parseFloat(distInp.value);
+        const vo2el = document.getElementById('vo2-preview');
+        const catEl = document.getElementById('vo2-cat');
+        if (dist > 0) {
+            const vo2 = (dist - 504.9) / 44.73;
+            vo2el.textContent = Math.max(vo2, 0).toFixed(2);
+            let cat = '';
+            if (vo2 >= 51) cat = 'Excelente';
+            else if (vo2 >= 45) cat = 'Muy Bueno';
+            else if (vo2 >= 38) cat = 'Bueno';
+            else if (vo2 >= 35) cat = 'Regular';
+            else cat = 'Deficiente';
+            catEl.textContent = cat;
+        } else {
+            vo2el.textContent = '—';
+            catEl.textContent = '';
+        }
+    });
+}
+
+/* ── Preview Ruffier ── */
+const p0 = document.querySelector('input[name="ruffier_p0"]');
+const p1 = document.querySelector('input[name="ruffier_p1"]');
+const p2 = document.querySelector('input[name="ruffier_p2"]');
+function calcRuffier() {
+    const rv0 = parseFloat(p0?.value), rv1 = parseFloat(p1?.value), rv2 = parseFloat(p2?.value);
+    const rufEl = document.getElementById('ruf-preview');
+    const rufCat = document.getElementById('ruf-cat');
+    if (rv0 > 0 && rv1 > 0 && rv2 > 0) {
+        const idx = ((rv1 - 70) + 2 * (rv2 - rv0)) / 10;
+        rufEl.textContent = idx.toFixed(2);
+        let cat = idx <= 0 ? 'Excelente' : idx <= 5 ? 'Bueno' : idx <= 10 ? 'Admisible' : 'Insuficiente';
+        rufCat.textContent = cat;
+    } else {
+        rufEl.textContent = '—'; rufCat.textContent = '';
+    }
+}
+[p0, p1, p2].forEach(el => el?.addEventListener('input', calcRuffier));
+</script>
+{% endblock %}

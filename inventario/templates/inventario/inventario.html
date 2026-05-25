@@ -4,275 +4,796 @@
 {% block title %}Inventario - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .table-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #30363d; }
+    .badge-status { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+
+    /* Botones de acción con ícono pequeño */
+    .btn-icon {
+        width: 30px; height: 30px;
+        padding: 0;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+
+    /* Panel de detalle expandido */
+    .expansion-row td { background: #0d1117; }
+    .detail-panel {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+        padding: 16px;
+        border-radius: 12px;
+        background: rgba(88,166,255,0.04);
+        border: 1px solid rgba(88,166,255,0.15);
+    }
+    .detail-panel img {
+        width: 110px; height: 110px; object-fit: cover;
+        border-radius: 12px; border: 2px solid #30363d;
+        flex-shrink: 0; display: block; aspect-ratio: 1 / 1;
+    }
+    .detail-panel .no-img {
+        width: 110px; height: 110px; border-radius: 12px;
+        border: 2px dashed #30363d; display: flex; align-items: center;
+        justify-content: center; flex-shrink: 0; aspect-ratio: 1 / 1;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        #tablaElementos thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+
+        tr.main-row {
+            margin-bottom: 24px !important;
+            border: 1px solid #30363d !important;
+            border-radius: 16px;
+            background: #161b22;
+            padding: 12px 0;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+        }
+        tr.expansion-row, tr.fila-detalle { display: none !important; }
+
+        td {
+            text-align: left !important;
+            padding: 10px 20px !important;
+            border: none !important;
+            position: relative;
+            padding-top: 34px !important;
+        }
+        td::before {
+            content: attr(data-label);
+            position: absolute; top: 10px; left: 20px;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            color: #58a6ff; letter-spacing: 1.2px;
+        }
+        td[data-label="Imagen"] { padding-top: 12px !important; text-align: center !important; }
+        td[data-label="Imagen"]::before { display: none; }
+        .table-img { width: 80px !important; height: 80px !important; margin: 0 auto; border-radius: 12px; }
+
+        /* Ocultar columna Detalle en móvil */
+        td[data-label="Detalle"], .btn-expand { display: none !important; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
-    <div class="container">
+    <div class="container text-start">
 
-        <!-- Encabezado -->
-        <div class="modulo-header text-center mb-5">
-            <i class="fas fa-box fa-3x mb-3"></i>
+        <!-- HEADER -->
+        <header class="modulo-header text-center mb-5">
+            <i class="fas fa-boxes fa-3x mb-3 text-warning"></i>
             <h2 class="fw-bold text-white">Módulo Inventario</h2>
-            <p class="text-white-50">Gestiona elementos deportivos, préstamos y devoluciones</p>
-        </div>
+            <p class="text-white-50">Gestión de existencias para <strong>{{ user.get_full_name }}</strong></p>
+        </header>
 
-        <!-- Tarjetas de acciones -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="sport-card">
+        <!-- ══════════════════════════════════════════
+             NAVEGACIÓN — diferenciada por rol
+        ══════════════════════════════════════════ -->
+        <nav class="row g-4 mb-5 justify-content-center">
+
+            {% if user.is_staff %}
+            <!-- ADMIN: Nuevo Elemento -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
                     <i class="fas fa-plus-circle fa-2x mb-3 text-warning"></i>
-                    <h5>NUEVO ELEMENTO</h5>
-                    <p>Registra un nuevo elemento deportivo al inventario.</p>
-                    <button class="btn btn-dark btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalElemento">
-                        <i class="fas fa-plus me-1"></i>Agregar
+                    <h6 class="fw-bold text-white small">NUEVO ELEMENTO</h6>
+                    <button class="btn btn-warning btn-sm mt-2 w-100 fw-bold"
+                            data-bs-toggle="modal" data-bs-target="#modalElemento"
+                            onclick="abrirModalCrear()">
+                        <i class="fas fa-plus me-1"></i>AGREGAR
                     </button>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="sport-card">
-                    <i class="fas fa-hand-holding fa-2x mb-3 text-warning"></i>
-                    <h5>NUEVO PRÉSTAMO</h5>
-                    <p>Registra el préstamo de un elemento a un aprendiz.</p>
-                    <button class="btn btn-dark btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
-                        <i class="fas fa-plus me-1"></i>Prestar
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="sport-card">
-                    <i class="fas fa-undo fa-2x mb-3 text-warning"></i>
-                    <h5>DEVOLUCIONES</h5>
-                    <p>Registra la devolución de elementos prestados.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-inv" data-seccion="devoluciones">
-                        <i class="fas fa-eye me-1"></i>Ver
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="sport-card">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
-                    <h5>SANCIONES</h5>
-                    <p>Consulta las sanciones activas por daño o pérdida.</p>
-                    <button class="btn btn-dark btn-sm mt-2 btn-accion-inv" data-seccion="sanciones">
-                        <i class="fas fa-eye me-1"></i>Ver
-                    </button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Panel dinámico -->
-        <div id="panel-inventario" class="panel-interfichas d-none mb-4">
-            <div id="panel-contenido-inventario"></div>
-        </div>
+            <!-- ADMIN: Devoluciones -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <i class="fas fa-undo fa-2x mb-3 text-success"></i>
+                    <h6 class="fw-bold text-white small">DEVOLUCIONES</h6>
+                    <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold">
+                        <i class="fas fa-eye me-1"></i>VER TODAS
+                    </a>
+                </div>
+            </div>
 
-        <!-- Tabla Elementos -->
-        <div class="sport-card text-start mb-4">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-boxes text-warning me-2"></i>Elementos Deportivos
+            <!-- ADMIN: Sanciones -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-danger"></i>
+                    <h6 class="fw-bold text-white small">SANCIONES</h6>
+                    <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold">
+                        <i class="fas fa-eye me-1"></i>VER TODAS
+                    </a>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- USUARIO: Nuevo Préstamo -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center border-info p-3">
+                    <i class="fas fa-hand-holding fa-2x mb-3 text-info"></i>
+                    <h6 class="fw-bold text-info small">NUEVO PRÉSTAMO</h6>
+                    <button class="btn btn-info btn-sm mt-2 w-100 fw-bold text-dark"
+                            data-bs-toggle="modal" data-bs-target="#modalPrestamo">
+                        <i class="fas fa-plus me-1"></i>SOLICITAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- USUARIO: Mis Devoluciones -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <i class="fas fa-undo fa-2x mb-3 text-success"></i>
+                    <h6 class="fw-bold text-white small">MIS DEVOLUCIONES</h6>
+                    <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold">
+                        <i class="fas fa-eye me-1"></i>VER
+                    </a>
+                </div>
+            </div>
+
+            <!-- USUARIO: Mis Sanciones -->
+            <div class="col-6 col-md-3">
+                <div class="sport-card text-center p-3">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-danger"></i>
+                    <h6 class="fw-bold text-white small">MIS SANCIONES</h6>
+                    <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold">
+                        <i class="fas fa-eye me-1"></i>VER
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </nav>
+
+        <!-- ══════════════════════════════════════════
+             TABLA INVENTARIO
+        ══════════════════════════════════════════ -->
+        <section class="sport-card text-start mb-4">
+            <h5 class="fw-bold mb-4">
+                <i class="fas fa-list text-warning me-2"></i>Existencias en Inventario
             </h5>
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
+                <table class="table table-dark table-hover align-middle mb-0" id="tablaElementos">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Detalle</th>
+                            <th>Imagen</th>
                             <th>Elemento</th>
-                            <th>Cantidad</th>
+                            <th>Stock</th>
                             <th>Estado</th>
-                            <th>Docente</th>
-                            <th>Fecha Adquisición</th>
-                            <th>Acciones</th>
+                            <th>Responsable</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for e in elementos %}
-                        <tr>
-                            <td>{{ e.codigo_elemento }}</td>
-                            <td>{{ e.tipo_maquina }}</td>
-                            <td>{{ e.cantidad_total }}</td>
-                            <td>
-                                {% if e.estado_general == 'Bueno' %}
-                                    <span class="badge bg-success">{{ e.estado_general }}</span>
-                                {% elif e.estado_general == 'Regular' %}
-                                    <span class="badge bg-warning text-dark">{{ e.estado_general }}</span>
+                        <tr class="main-row"
+                            data-id="{{ e.codigo_elemento }}"
+                            data-tipo="{{ e.nombre_elemento }}"
+                            data-cantidad="{{ e.cantidad_total }}"
+                            data-estado="{{ e.estado_general }}"
+                            data-responsable="{{ e.usuario_responsable.get_full_name|default:'Sin asignar' }}"
+                            data-responsable-id="{{ e.usuario_responsable.pk|default:'' }}"
+                            data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
+                            data-descripcion="{{ e.descripcion }}"
+                            {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}>
+
+                            <!-- Botón expandir (solo desktop) -->
+                            <td data-label="Detalle">
+                                <button class="btn btn-expand btn-icon border border-info text-info" title="Ver detalle">
+                                    <i class="fas fa-plus" style="font-size:0.7rem;"></i>
+                                </button>
+                            </td>
+
+                            <!-- Imagen -->
+                            <td data-label="Imagen">
+                                {% if e.imagen %}
+                                    <img src="{{ e.imagen.url }}" class="table-img" alt="{{ e.nombre_elemento }}">
                                 {% else %}
-                                    <span class="badge bg-danger">{{ e.estado_general }}</span>
+                                    <div class="table-img d-flex align-items-center justify-content-center bg-dark border border-secondary">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
                                 {% endif %}
                             </td>
-                            <td>{{ e.docente_responsable }}</td>
-                            <td>{{ e.fecha_adquisicion }}</td>
-                            <td>
-                                <a href="{% url 'editar_elemento' e.codigo_elemento %}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'eliminar_elemento' e.codigo_elemento %}" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+
+                            <td data-label="Elemento"><strong>{{ e.nombre_elemento }}</strong></td>
+
+                            <td data-label="Stock">
+                                <span class="badge bg-dark border border-secondary px-3">{{ e.cantidad_total }}</span>
+                            </td>
+
+                            <td data-label="Estado">
+                                <span class="badge-status
+                                    {% if e.estado_general == 'Bueno' %}bg-success
+                                    {% elif e.estado_general == 'Regular' %}bg-warning text-dark
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ e.estado_general }}
+                                </span>
+                            </td>
+
+                            <td data-label="Responsable">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</td>
+
+                            <!-- Acciones rápidas con íconos pequeños -->
+                            <td data-label="Acciones" class="text-center">
+                                {% if user.is_staff %}
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <button type="button"
+                                            class="btn btn-warning btn-icon btn-editar-elemento"
+                                            title="Editar"
+                                            data-bs-toggle="tooltip" data-bs-placement="top">
+                                        <i class="fas fa-edit" style="font-size:0.7rem;"></i>
+                                    </button>
+                                    <a href="{% url 'eliminar_elemento' e.codigo_elemento %}"
+                                       class="btn btn-danger btn-icon"
+                                       title="Eliminar"
+                                       data-bs-toggle="tooltip" data-bs-placement="top"
+                                       onclick="return confirm('¿Eliminar este elemento del inventario?')">
+                                        <i class="fas fa-trash" style="font-size:0.7rem;"></i>
+                                    </a>
+                                </div>
+                                {% else %}
+                                    {% if e.cantidad_total > 0 %}
+                                    <button type="button"
+                                            class="btn btn-info btn-icon text-dark"
+                                            onclick="prestamoRapido('{{ e.codigo_elemento }}')"
+                                            title="Solicitar Préstamo"
+                                            data-bs-toggle="tooltip" data-bs-placement="top">
+                                        <i class="fas fa-hand-pointer" style="font-size:0.7rem;"></i>
+                                    </button>
+                                    {% else %}
+                                    <span class="badge bg-secondary" style="font-size:0.65rem;">Sin stock</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <!-- ══ Fila expandida (desktop) — UN SOLO PANEL ══
+                             El JS de inventario.html lo toggle; inicio.js NO toca esto. -->
+                        <tr class="expansion-row" style="display:none;">
+                            <td colspan="7">
+                                <div class="detail-panel">
+
+                                    {% if e.imagen %}
+                                        <img src="{{ e.imagen.url }}" alt="{{ e.nombre_elemento }}">
+                                    {% else %}
+                                        <div class="no-img">
+                                            <i class="fas fa-image fa-2x text-muted"></i>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-info fw-bold text-uppercase mb-2">{{ e.nombre_elemento }}</h6>
+                                        <p class="text-white-50 small mb-3" style="line-height:1.6;">
+                                            {{ e.descripcion|default:"Sin descripción disponible." }}
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-4 small text-white-50 mb-3">
+                                            <span><i class="fas fa-cubes text-warning me-1"></i>Stock: <strong class="text-white">{{ e.cantidad_total }}</strong></span>
+                                            <span><i class="fas fa-calendar me-1 text-info"></i>Adquirido: <strong class="text-white">{{ e.fecha_adquisicion|date:"d/m/Y" }}</strong></span>
+                                            <span><i class="fas fa-user me-1 text-success"></i>Responsable: <strong class="text-white">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</strong></span>
+                                            <span><i class="fas fa-circle me-1
+                                                {% if e.estado_general == 'Bueno' %}text-success
+                                                {% elif e.estado_general == 'Regular' %}text-warning
+                                                {% else %}text-danger{% endif %}"></i>Estado: <strong class="text-white">{{ e.estado_general }}</strong></span>
+                                        </div>
+
+                                        <!-- Botones con ícono pequeño al fondo del panel -->
+                                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                                            {% if user.is_staff %}
+                                            <button type="button"
+                                                    class="btn btn-warning btn-icon btn-editar-elemento"
+                                                    title="Editar Elemento"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top">
+                                                <i class="fas fa-edit" style="font-size:0.7rem;"></i>
+                                            </button>
+                                            <a href="{% url 'eliminar_elemento' e.codigo_elemento %}"
+                                               class="btn btn-danger btn-icon"
+                                               title="Eliminar"
+                                               data-bs-toggle="tooltip" data-bs-placement="top"
+                                               onclick="return confirm('¿Eliminar este elemento del inventario?')">
+                                                <i class="fas fa-trash" style="font-size:0.7rem;"></i>
+                                            </a>
+                                            {% else %}
+                                            {% if e.cantidad_total > 0 %}
+                                            <button type="button"
+                                                    class="btn btn-info btn-icon text-dark fw-bold"
+                                                    onclick="prestamoRapido('{{ e.codigo_elemento }}')"
+                                                    title="Solicitar Préstamo"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top">
+                                                <i class="fas fa-hand-pointer" style="font-size:0.7rem;"></i>
+                                            </button>
+                                            {% else %}
+                                            <span class="badge bg-secondary px-3 py-2" style="font-size:0.65rem;">Sin stock</span>
+                                            {% endif %}
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center">No hay elementos registrados.</td>
+                            <td colspan="7" class="text-center py-5 text-white-50">
+                                <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
+                                No hay elementos registrados en el inventario.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- Tabla Préstamos -->
-        <div class="sport-card text-start">
-            <h5 class="fw-bold mb-3">
-                <i class="fas fa-hand-holding text-warning me-2"></i>Préstamos Activos
+        <!-- ══════════════════════════════════════════
+             MIS PRÉSTAMOS EN CURSO (solo usuarios normales)
+        ══════════════════════════════════════════ -->
+        {% if not user.is_staff %}
+        <section class="sport-card text-start">
+            <h5 class="fw-bold mb-4 text-info">
+                <i class="fas fa-history me-2"></i>Mis Préstamos en Curso
             </h5>
             <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Código</th>
                             <th>Elemento</th>
-                            <th>Cantidad</th>
-                            <th>Fecha Préstamo</th>
-                            <th>Fecha Devolución</th>
+                            <th>Cant.</th>
+                            <th>Devolución</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th class="text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for p in prestamos %}
                         <tr>
-                            <td>{{ p.codigo_prestamo }}</td>
-                            <td>{{ p.elemento }}</td>
-                            <td>{{ p.cantidad_prestada }}</td>
-                            <td>{{ p.fecha_prestamo }}</td>
-                            <td>{{ p.fecha_devolucion }}</td>
-                            <td><span class="badge bg-info">{{ p.estado_prestamo }}</span></td>
-                            <td>
-                                <a href="{% url 'eliminar_prestamo' p.codigo_prestamo %}" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
+                            <td data-label="Código" class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                            <td data-label="Elemento">{{ p.elemento.nombre_elemento }}</td>
+                            <td data-label="Cant.">{{ p.cantidad_prestada }}</td>
+                            <td data-label="Devolución" class="text-warning fw-bold">
+                                {{ p.fecha_devolucion|date:"d/m/Y" }}
+                            </td>
+                            <td data-label="Estado">
+                                <span class="badge
+                                    {% if p.estado_prestamo == 'Activo' %}bg-primary
+                                    {% elif p.estado_prestamo == 'Devuelto' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ p.estado_prestamo }}
+                                </span>
+                            </td>
+                            <td data-label="Acción" class="text-center">
+                                {% if p.estado_prestamo == 'Activo' %}
+                                <a href="{% url 'devoluciones' %}?prestamo={{ p.codigo_prestamo }}"
+                                   class="btn btn-outline-success btn-sm fw-bold">
+                                    <i class="fas fa-undo me-1"></i>Devolver
                                 </a>
+                                {% else %}
+                                <span class="text-white-50 small">Devuelto</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center">No hay préstamos activos.</td>
+                            <td colspan="6" class="text-center py-4 text-white-50">
+                                No tienes préstamos registrados.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
+        {% endif %}
+
+        <!-- ══════════════════════════════════════════
+             RESUMEN ADMIN (solo staff)
+        ══════════════════════════════════════════ -->
+        {% if user.is_staff %}
+        <section class="sport-card text-start">
+            <h5 class="fw-bold mb-4 text-warning">
+                <i class="fas fa-chart-bar me-2"></i>Resumen General de Préstamos
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Usuario</th>
+                            <th>Elemento</th>
+                            <th>Cant.</th>
+                            <th>Devolución</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in prestamos %}
+                        <tr>
+                            <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                            <td>{{ p.usuario.get_full_name|default:p.usuario.username }}</td>
+                            <td>{{ p.elemento.nombre_elemento }}</td>
+                            <td>{{ p.cantidad_prestada }}</td>
+                            <td class="{% if p.vencido %}text-danger{% else %}text-warning{% endif %} fw-bold">
+                                {{ p.fecha_devolucion|date:"d/m/Y" }}
+                            </td>
+                            <td>
+                                <span class="badge
+                                    {% if p.estado_prestamo == 'Activo' %}bg-primary
+                                    {% elif p.estado_prestamo == 'Devuelto' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ p.estado_prestamo }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-white-50">
+                                No hay préstamos registrados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
 
     </div>
 </div>
 
-<!-- MODAL ELEMENTO -->
+<!-- ══════════════════════════════════════════
+     MODAL ELEMENTO — Crear / Editar (solo admin)
+══════════════════════════════════════════ -->
+{% if user.is_staff %}
 <div class="modal fade" id="modalElemento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
+        <div class="modal-content custom-modal text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-plus-circle me-2"></i>Nuevo Elemento Deportivo
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title fw-bold" id="modalTitle">Elemento Deportivo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form method="POST">
+            <div class="modal-body text-start">
+                <form id="formElemento" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="crear_elemento">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tipo / Nombre del Elemento</label>
-                        <input type="text" name="tipo_maquina" class="form-control custom-input" placeholder="Ej: Balón de Fútbol" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Cantidad Total</label>
-                        <input type="number" name="cantidad_total" class="form-control custom-input" placeholder="Ej: 10" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Estado General</label>
-                        <select name="estado_general" class="form-select custom-input">
-                            <option value="Bueno">Bueno</option>
-                            <option value="Regular">Regular</option>
-                            <option value="Malo">Malo</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha de Adquisición</label>
-                        <input type="date" name="fecha_adquisicion" class="form-control custom-input" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Docente Responsable</label>
-                        <input type="text" name="docente_responsable" class="form-control custom-input" placeholder="Nombre del docente" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Descripción</label>
-                        <textarea name="descripcion" class="form-control custom-input" rows="2" placeholder="Descripción opcional"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100 py-2">
-                        <i class="fas fa-check me-2"></i>Guardar Elemento
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                    <input type="hidden" name="accion"          id="inputAccion"  value="crear_elemento">
+                    <input type="hidden" name="codigo_elemento" id="inputCodigo">
 
-<!-- MODAL PRÉSTAMO -->
-<div class="modal fade" id="modalPrestamo" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-hand-holding me-2"></i>Registrar Préstamo
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="accion" value="crear_prestamo">
+                    <div class="mb-3 text-center">
+                        <img id="previewImagen" src=""
+                             style="display:none; width:100px; height:100px; object-fit:cover;
+                                    border-radius:10px; margin:0 auto 10px;
+                                    border:2px solid var(--accent-blue);">
+                        <label class="form-label fw-bold small d-block">Imagen (Opcional)</label>
+                        <input type="file" id="inputImagen" name="imagen"
+                               class="form-control custom-input" accept="image/*">
+                    </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Elemento</label>
-                        <select name="elemento" class="form-select custom-input" required>
-                            <option value="">Selecciona un elemento...</option>
-                            {% for e in elementos %}
-                            <option value="{{ e.codigo_elemento }}">{{ e.tipo_maquina }} (Disponibles: {{ e.cantidad_total }})</option>
+                        <label class="form-label fw-bold small">Nombre / Tipo</label>
+                        <input type="text" id="inputNombreElemento" name="nombre_elemento"
+                               class="form-control custom-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Descripción</label>
+                        <textarea id="inputDescripcion" name="descripcion"
+                                  class="form-control custom-input" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Cantidad</label>
+                            <input type="number" id="inputCantidadTotal" name="cantidad_total"
+                                   class="form-control custom-input" required min="0">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Estado</label>
+                            <select id="inputEstadoGeneral" name="estado_general" class="form-select custom-input">
+                                <option value="Bueno">Bueno</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Malo">Malo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Usuario Responsable</label>
+                        <select id="inputUsuarioResponsable" name="usuario_responsable"
+                                class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Selecciona un responsable --</option>
+                            {% for u in usuarios_staff %}
+                            <option value="{{ u.id }}">{{ u.get_full_name }} ({{ u.numero_documento }})</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Cantidad a Prestar</label>
-                        <input type="number" name="cantidad_prestada" class="form-control custom-input" min="1" required>
+                        <label class="form-label fw-bold small">Fecha Adquisición</label>
+                        <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion"
+                               class="form-control custom-input" required>
                     </div>
-                    <div class="row">
-                        <div class="col mb-3">
-                            <label class="form-label fw-bold">Hora Préstamo</label>
-                            <input type="time" name="hora_prestamo" class="form-control custom-input" required>
-                        </div>
-                        <div class="col mb-3">
-                            <label class="form-label fw-bold">Días Préstamo</label>
-                            <input type="number" name="dias_prestamo" class="form-control custom-input" min="1" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha Devolución</label>
-                        <input type="date" name="fecha_devolucion" class="form-control custom-input" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Observaciones</label>
-                        <textarea name="observacion" class="form-control custom-input" rows="2"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100 py-2">
-                        <i class="fas fa-check me-2"></i>Confirmar Préstamo
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 mt-3 shadow-lg">
+                        <i class="fas fa-save me-2"></i>GUARDAR ELEMENTO
                     </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
+
+<!-- ══════════════════════════════════════════
+     MODAL PRÉSTAMO (solo usuarios normales)
+══════════════════════════════════════════ -->
+{% if not user.is_staff %}
+<div class="modal fade" id="modalPrestamo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-info">
+                    <i class="fas fa-file-signature me-2"></i>Solicitud de Préstamo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-start">
+                <!-- Datos del solicitante -->
+                <div class="mb-4 p-3 rounded"
+                     style="background:rgba(88,166,255,0.05); border:1px solid rgba(88,166,255,0.2);">
+                    <h6 class="text-info fw-bold small text-uppercase mb-2">
+                        <i class="fas fa-user me-2"></i>Datos del Solicitante
+                    </h6>
+                    <div class="row g-2 small text-white">
+                        <div class="col-12 text-capitalize">
+                            <span class="text-white-50">Nombre:</span>
+                            <strong>{{ user.get_full_name|lower }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-white-50">Documento:</span>
+                            <strong>{{ user.numero_documento }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-white-50">Ficha:</span>
+                            <strong>{{ user.ficha|default:"N/A" }}</strong>
+                        </div>
+                        <div class="col-12 text-capitalize">
+                            <span class="text-white-50">Programa:</span>
+                            <strong>
+                                {{ user.get_programa_formacion_display|default:user.programa_formacion|lower|default:"No asignado" }}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                {% if sanciones %}
+                <div class="alert alert-danger small py-2 mb-3">
+                    <i class="fas fa-ban me-2"></i>
+                    <strong>Tienes {{ sanciones|length }} sanción(es) activa(s).</strong>
+                    Consulta el módulo de sanciones para más información.
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="crear_prestamo">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Seleccionar Implemento</label>
+                        <select name="elemento" id="selectElemento" class="form-select custom-input" required>
+                            <option value="" disabled selected>-- Elige un elemento --</option>
+                            {% for e in elementos %}
+                            {% if e.cantidad_total > 0 %}
+                            <option value="{{ e.codigo_elemento }}"
+                                    data-disponible="{{ e.cantidad_total }}">
+                                {{ e.nombre_elemento }} (Disp: {{ e.cantidad_total }})
+                            </option>
+                            {% else %}
+                            <option value="{{ e.codigo_elemento }}" disabled class="text-muted">
+                                {{ e.nombre_elemento }} — Sin stock
+                            </option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Cantidad</label>
+                            <input type="number" name="cantidad_prestada" id="inputCantPrestamo"
+                                   class="form-control custom-input" min="1" value="1" required>
+                            <small id="stockDisponible" class="text-info mt-1 d-block"></small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Días a prestar</label>
+                            <input type="number" name="dias_prestamo" id="inputDias"
+                                   class="form-control custom-input" min="1" max="15" required
+                                   placeholder="Máx. 15">
+                        </div>
+                    </div>
+
+                    <div id="infoFecha" class="alert small py-2 mb-4 text-center border-0"
+                         style="display:none; background:rgba(0,210,255,0.1); border-radius:10px;">
+                        <i class="fas fa-calendar-alt me-2 text-info"></i>
+                        Fecha de devolución: <strong id="spanFecha" class="text-warning"></strong>
+                    </div>
+
+                    <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-lg">
+                        <i class="fas fa-check me-2"></i>CONFIRMAR SOLICITUD
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   MODAL ELEMENTO — abrir en modo "Crear" (admin)
+══════════════════════════════════════════════════════════ */
+function abrirModalCrear() {
+    document.getElementById('formElemento').reset();
+    document.getElementById('inputAccion').value = 'crear_elemento';
+    document.getElementById('modalTitle').innerText = 'Nuevo Elemento';
+    document.getElementById('previewImagen').style.display = 'none';
+    document.getElementById('inputCodigo').value = '';
+}
+
+/* ══════════════════════════════════════════════════════════
+   BOTONES EDITAR — cargan datos en el modal (admin)
+   Se inicializan aquí para que funcionen desde la columna
+   Acciones Y desde el panel expandido.
+══════════════════════════════════════════════════════════ */
+function initBotonesEditar() {
+    document.querySelectorAll('.btn-editar-elemento').forEach(btn => {
+        btn.addEventListener('click', function () {
+            // Buscar la main-row: puede venir desde expansion-row o desde la propia fila
+            let row = this.closest('tr.main-row');
+            if (!row) {
+                const expansionRow = this.closest('tr.expansion-row');
+                if (expansionRow) row = expansionRow.previousElementSibling;
+            }
+            if (!row) return;
+
+            document.getElementById('inputAccion').value              = 'editar_elemento';
+            document.getElementById('modalTitle').innerText           = 'Editar Elemento';
+            document.getElementById('inputCodigo').value              = row.dataset.id;
+            document.getElementById('inputNombreElemento').value         = row.dataset.nombre;
+            document.getElementById('inputCantidadTotal').value       = row.dataset.cantidad;
+            document.getElementById('inputEstadoGeneral').value       = row.dataset.estado;
+            // El select necesita el id del usuario, guardado en data-responsable-id
+            document.getElementById('inputUsuarioResponsable').value  = row.dataset.responsableId || '';
+            document.getElementById('inputFechaAdquisicion').value    = row.dataset.fecha;
+            document.getElementById('inputDescripcion').value         = row.dataset.descripcion || '';
+
+            const preview = document.getElementById('previewImagen');
+            if (row.dataset.imagen) {
+                preview.src = row.dataset.imagen;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+
+            new bootstrap.Modal(document.getElementById('modalElemento')).show();
+        });
+    });
+}
+initBotonesEditar();
+
+/* Preview imagen al elegir archivo (admin) */
+const inputImagen = document.getElementById('inputImagen');
+if (inputImagen) {
+    inputImagen.addEventListener('change', function () {
+        const preview = document.getElementById('previewImagen');
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODAL PRÉSTAMO — stock disponible y fecha calculada
+══════════════════════════════════════════════════════════ */
+const selectElemento = document.getElementById('selectElemento');
+const inputDias      = document.getElementById('inputDias');
+
+if (selectElemento) {
+    selectElemento.addEventListener('change', function () {
+        const disponible = parseInt(this.options[this.selectedIndex].dataset.disponible, 10);
+        const inputCant  = document.getElementById('inputCantPrestamo');
+        inputCant.max    = disponible;
+        if (parseInt(inputCant.value, 10) > disponible) inputCant.value = disponible;
+        document.getElementById('stockDisponible').textContent =
+            `Disponible: ${disponible} unidad(es)`;
+    });
+}
+
+if (inputDias) {
+    inputDias.addEventListener('input', calcularFecha);
+}
+
+function calcularFecha() {
+    const dias = parseInt(document.getElementById('inputDias').value, 10);
+    const infoFecha = document.getElementById('infoFecha');
+    if (dias >= 1) {
+        const fecha = new Date();
+        fecha.setDate(fecha.getDate() + dias);
+        document.getElementById('spanFecha').textContent =
+            fecha.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric' });
+        infoFecha.style.display = 'block';
+    } else {
+        infoFecha.style.display = 'none';
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   PRÉSTAMO RÁPIDO — abre modal con elemento preseleccionado
+══════════════════════════════════════════════════════════ */
+function prestamoRapido(codigoElemento) {
+    const select = document.getElementById('selectElemento');
+    if (!select) return;
+    for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value == codigoElemento) {
+            select.selectedIndex = i;
+            select.dispatchEvent(new Event('change'));
+            break;
+        }
+    }
+    new bootstrap.Modal(document.getElementById('modalPrestamo')).show();
+}
+
+/* ══════════════════════════════════════════════════════════
+   EXPAND ROW — UN solo panel, sin duplicados
+   Solo el template maneja .expansion-row.
+   inicio.js NO crea .fila-detalle aquí.
+══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.btn-expand').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const mainRow      = this.closest('tr.main-row');
+        const expansionRow = mainRow.nextElementSibling;
+        const isOpen       = expansionRow.dataset.open === 'true';
+
+        // Cerrar TODAS y resetear íconos
+        document.querySelectorAll('tr.expansion-row').forEach(r => {
+            r.style.display = 'none';
+            r.dataset.open  = 'false';
+        });
+        document.querySelectorAll('.btn-expand i').forEach(icon => {
+            icon.className = 'fas fa-plus';
+            icon.style.fontSize = '0.7rem';
+        });
+
+        // Si estaba cerrada, abrirla
+        if (!isOpen) {
+            expansionRow.style.display = 'table-row';
+            expansionRow.dataset.open  = 'true';
+            this.querySelector('i').className = 'fas fa-minus';
+            this.querySelector('i').style.fontSize = '0.7rem';
+        }
+    });
+});
+</script>
 {% endblock %}

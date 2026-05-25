@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mi Perfil - Sistema Deportivo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    /* 3. ESTILOS DE LA FOTO Y CÁMARA */
+    .btn-camera {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--accent-blue);
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid #050814;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    .btn-camera:hover {
+        background: var(--accent-hover);
+        transform: scale(1.1);
+    }
+
+    /* 4. NAVEGACIÓN POR TABS */
+    .nav-tabs .nav-link {
+        color: rgba(255,255,255,0.6);
+        border: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+        text-transform: capitalize !important;
+        font-weight: 500;
+        padding: 10px 20px;
+    }
+    .nav-tabs .nav-link.active {
+        background: transparent !important;
+        color: var(--accent-blue) !important;
+        border-bottom: 2px solid var(--accent-blue);
+    }
+
+    /* 5. DISEÑO DE NOVEDADES */
+    .news-item {
+        border-left: 3px solid var(--accent-blue);
+        background: rgba(255, 255, 255, 0.03);
+        transition: transform 0.2s;
+    }
+    .news-item:hover {
+        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* 6. INPUTS DESHABILITADOS */
+    .custom-input:disabled {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        opacity: 0.8;
+        color: #aaa !important;
+    }
+
+    /* 7. RESPONSIVE */
+    @media (max-width: 768px) {
+        .border-md-end {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+        }
+    }
+
+    /* ESTILOS DEL BUZÓN */
+    #modalBuzonSugerencias .form-select,
+    #modalBuzonSugerencias .form-control {
+        background: #1e2937 !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+    }
+
+    /* ESTILO BOTÓN REPORTAR ERROR */
+    .btn-reportar-error {
+        color: #ff4d4d !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .btn-reportar-error:hover {
+        color: #ff0000 !important;
+        background-color: rgba(255, 0, 0, 0.2) !important;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+        transform: scale(1.05);
+    }
+
+    /* AJUSTE DE COLOR PARA LAS PESTAÑAS DENTRO DEL MODAL DE ERROR */
+    #modalBuzonSugerencias .nav-tabs .nav-link {
+        color: rgba(255,255,255,0.5) !important;
+        border: none !important;
+    }
+    #modalBuzonSugerencias .nav-tabs .nav-link.active {
+        color: #ff4d4d !important;
+        border-bottom: 3px solid #ff4d4d !important;
+        background: transparent !important;
+    }
+    
+    /* Forzar Alerta Roja (Eliminar Azul) */
+    #reportAlert.alert-success, #reportAlert {
+        background-color: #721c24 !important;
+        color: #f8d7da !important;
+        border: 1px solid #f5c6cb !important;
+        border-left: 5px solid #ff0000 !important;
+    }
+    
+    /* Eliminar cualquier rastro de azul en los botones del modal de error */
+    #modalBuzonSugerencias .btn-danger {
+        background-color: #dc3545 !important;
+        border: none;
+    }
+
+    /* Eliminar el resplandor azul de los campos de texto al hacer clic */
+    #modalBuzonSugerencias .form-control:focus {
+        border-color: #ff0000 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.25) !important;
+    }
+</style>
+<style>
+    .sugerencia-card {
+        background: rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+    }
+    .sugerencia-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255,255,255,0.08);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+    <div class="container">
+
+        <div class="sport-card mb-4 shadow-lg">
+            <div class="row align-items-center p-2">
+
+                <!-- COLUMNA IZQUIERDA: FOTO Y NOMBRE -->
+                <div class="col-md-4 text-center border-md-end" style="border-color: rgba(255,255,255,0.1) !important;">
+                    <div class="mb-3 position-relative d-inline-block">
+                        {% if usuario.foto_perfil %}
+                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue);">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-8x text-info mb-2" style="filter: drop-shadow(0 0 10px rgba(0,210,255,0.3));"></i>
+                        {% endif %}
+                    </div>
+                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
+                    <span class="badge bg-info text-dark px-3 py-1 mb-3 text-cap">
+                        <i class="fas fa-user-graduate me-1"></i>Aprendiz sena
+                    </span>
+                </div>
+
+                <!-- COLUMNA DERECHA: DATOS -->
+                <div class="col-md-8 ps-md-5">
+                    <div class="row g-4">
+                        <div class="col-sm-6 text-start">
+                            <h6 class="text-info fw-bold small mb-3 text-cap"><i class="fas fa-university me-2"></i>Información académica</h6>
+                            <p class="text-white mb-2 text-cap">
+                                <span class="text-white-50">Programa:</span> {{ usuario.get_programa_formacion_display|default:usuario.programa_formacion|lower }}
+                            </p>
+                            <p class="text-white mb-2">
+                                <span class="text-white-50">Número de ficha:</span> <span class="text-info fw-bold">{{ usuario.ficha|default:"No registrada" }}</span>
+                            </p>
+                            <p class="text-white text-cap mb-1">
+                                <span class="text-white-50">Tipo de identificación:</span> {{ usuario.tipo_documento|lower }}
+                            </p>
+                            <p class="text-white text-cap">
+                                <span class="text-white-50">Número de identificación:</span> {{ usuario.numero_documento }}
+                            </p>
+                        </div>
+
+                        <div class="col-sm-6 text-start">
+                            <h6 class="text-info fw-bold small mb-3 text-cap"><i class="fas fa-address-book me-2"></i>Contacto y cuenta</h6>
+                            <p class="text-white mb-2 text-truncate">
+                                <span class="text-white-50">Correo electrónico:</span> {{ usuario.email }}
+                            </p>
+                            <p class="text-white mb-2">
+                                <span class="text-white-50">Teléfono celular:</span> {{ usuario.telefono|default:"Sin registrar" }}
+                            </p>
+                            <p class="text-white text-cap">
+                                <span class="text-white-50">Miembro desde:</span> {{ usuario.fecha_registro|date:"j \d\e F, Y"|lower }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-start gap-3">
+                        <button class="btn btn-warning btn-sm px-4 text-cap shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
+                            <i class="fas fa-user-edit me-2"></i>Editar perfil
+                        </button>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">
+                            <i class="fas fa-power-off me-2"></i>Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS CON BOTÓN ROJITO -->
+        <ul class="nav nav-tabs mb-4 justify-content-center border-0" id="perfilTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">Novedades</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">Gimnasio</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prestamos">Préstamos</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">Inter-fichas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">Inter-centros</button>
+            </li>
+            
+            <!-- BOTÓN BUZÓN -->
+            <li class="nav-item">
+                <button class="nav-link btn-reportar-error" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalBuzonSugerencias">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Reportar Error
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content pb-5">
+
+            <!-- 1. TAB NOVEDADES -->
+            <div class="tab-pane fade show active" id="tab-novedades">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-rss me-2"></i>Notificaciones del sistema</h5>
+                    <div class="news-item p-3 mb-3 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary p-2 rounded-circle me-3"><i class="fas fa-info-circle text-white"></i></div>
+                                <div>
+                                    <h6 class="text-white mb-1 fw-bold text-cap">Bienvenido al sistema</h6>
+                                    <p class="text-white-50 small mb-0">Gestiona tus actividades deportivas, torneos e implementos desde un solo lugar.</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-dark text-info text-cap">Reciente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TAB GIMNASIO -->
+            <div class="tab-pane fade" id="tab-gimnasio">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-clock me-2"></i>Historial de ingresos al gimnasio</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Fecha</th>
+                                    <th>Hora entrada</th>
+                                    <th>Hora salida</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in reservas_gimnasio %}
+                                <tr>
+                                    <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                                    <td>{{ r.hora_entrada }}</td>
+                                    <td>{{ r.hora_salida }}</td>
+                                    <td><span class="badge bg-success text-cap">Finalizado</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No tienes registros de ingreso.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. TAB PRÉSTAMOS -->
+            <div class="tab-pane fade" id="tab-prestamos">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-volleyball-ball me-2"></i>Mis préstamos de implementos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Código</th>
+                                    <th>Implemento</th>
+                                    <th>Cant.</th>
+                                    <th>Fecha préstamo</th>
+                                    <th>Devolución</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in prestamos %}
+                                <tr>
+                                    <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                                    <td class="text-cap">{{ p.elemento.tipo_maquina|lower }}</td>
+                                    <td>{{ p.cantidad_prestada }}</td>
+                                    <td>{{ p.fecha_prestamo|date:"d/m/Y" }}</td>
+                                    <td class="text-warning fw-bold">{{ p.fecha_devolucion|date:"d/m/Y" }}</td>
+                                    <td><span class="badge bg-primary text-cap">{{ p.estado_prestamo|lower }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center py-4 text-white-50 text-cap">No hay préstamos registrados.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAB INTER-FICHAS -->
+            <div class="tab-pane fade" id="tab-interfichas">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-users me-2"></i>Participación en torneos inter-fichas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Equipo</th>
+                                    <th>Disciplina</th>
+                                    <th>Ficha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in equipos_interfichas %}
+                                <tr>
+                                    <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
+                                    <td class="text-cap">{{ e.disciplina|lower }}</td>
+                                    <td>{{ e.ficha }}</td>
+                                    <td><span class="badge bg-success text-cap">Inscrito</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No participas en torneos inter-fichas.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TAB INTER-CENTROS -->
+            <div class="tab-pane fade" id="tab-intercentros">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-medal me-2"></i>Selecciones representativas inter-centros</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Selección</th>
+                                    <th>Centro</th>
+                                    <th>Disciplina</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in equipos_intercentros %}
+                                <tr>
+                                    <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
+                                    <td class="text-cap">{{ e.centro_formacion|lower }}</td>
+                                    <td class="text-cap">{{ e.disciplina|lower }}</td>
+                                    <td><span class="badge bg-primary text-cap">Seleccionado</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">Sin registros en inter-centros.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PERFIL -->
+<div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-cap"><i class="fas fa-user-cog me-2"></i>Actualizar mis datos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <form method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="text-center mb-4 mt-2">
+                        <div class="position-relative d-inline-block">
+                            {% if usuario.foto_perfil %}
+                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
+                            {% else %}
+                                <img id="imgPreviewPerfil" src="https://via.placeholder.com/120x120/050814/00d2ff?text=SENA" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 2px dashed var(--accent-blue);">
+                            {% endif %}
+                            <label for="inputFotoPerfil" class="btn-camera" title="Cambiar foto">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" name="imagen" id="inputFotoPerfil" class="d-none" accept="image/*" onchange="previewProfileImage(event)">
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6 text-start">
+                            <label class="form-label small fw-bold text-white-50 text-cap">Nombre completo</label>
+                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|lower }}" disabled>
+                        </div>
+                        <div class="col-md-6 text-start">
+                            <label class="form-label small fw-bold text-white-50 text-cap">Tipo de identificación</label>
+                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.tipo_documento|lower }}" disabled>
+                        </div>
+                        <div class="col-md-6 text-start">
+                            <label class="form-label small fw-bold text-white-50 text-cap">Número de identificación</label>
+                            <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.numero_documento }}" disabled>
+                        </div>
+                        <div class="col-md-6 text-start">
+                            <label class="form-label small fw-bold text-white-50 text-cap">Número de ficha</label>
+                            <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.ficha|default:'N/A' }}" disabled>
+                        </div>
+                        <div class="col-md-6 text-start">
+                            <label class="form-label small fw-bold text-cap">Correo electrónico</label>
+                            <input type="email" name="email" class="custom-input form-control shadow-sm" value="{{ usuario.email }}" required>
+                        </div>
+                        <div class="col-md-6 text-start">
+                            <label class="form-label small fw-bold text-cap">Número de teléfono</label>
+                            <input type="text" name="celular" class="custom-input form-control shadow-sm" value="{{ usuario.telefono|default:'' }}" placeholder="Ej: 3001234567">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4 p-2 small border-0 bg-dark text-white-50 text-cap text-center">
+                        <i class="fas fa-info-circle me-2 text-info"></i>Los datos de identidad y académicos son institucionales y no pueden ser editados.
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 btn-cap py-3 mt-2 shadow-lg">
+                        <i class="fas fa-save me-2"></i>Guardar cambios realizados
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(220, 53, 69, 0.5); border-radius: 16px;">
+            <div class="modal-header border-0 pb-1">
+                <h4 class="modal-title fw-bold">
+                    <i class="fas fa-exclamation-triangle text-danger me-3"></i>Reportar un Error
+                </h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <ul class="nav nav-tabs mb-4 border-0" id="buzonTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#buzon-enviar">
+                            <i class="fas fa-bug me-2"></i>Enviar Reporte
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#buzon-respuestas">
+                            <i class="fas fa-history me-2"></i>Mis Reportes
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- ENVIAR -->
+                    <div class="tab-pane fade show active" id="buzon-enviar">
+                        <div id="reportAlert" class="alert d-none mb-3 shadow-lg fw-bold text-center" role="alert"></div>
+                        <form id="reportarErrorForm" method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="tipo" value="error">
+
+                            <div class="mt-3">
+                                <label class="form-label fw-bold text-white-50">Descripción del fallo</label>
+                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe detalladamente el error que encontraste..." required></textarea>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="form-label fw-bold text-white-50 small d-block">Captura de pantalla del error</label>
+                                <label for="imagen_error" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" style="background: #161b22; border: 1px solid #30363d;">
+                                    <span id="fileName" class="text-white-50 small">Seleccionar imagen desde su equipo...</span>
+                                    <i class="fas fa-upload"></i>
+                                </label>
+                                <input type="file" name="imagen_error" id="imagen_error" class="d-none" accept="image/*" 
+                                       onchange="document.getElementById('fileName').innerText = this.files[0].name">
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100 mt-4 py-3 fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Reporte de Error
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- MIS SUGERENCIAS -->
+                    <div class="tab-pane fade" id="buzon-respuestas">
+                        
+                        {% if sugerencias_usuario %} {# Línea 462 #}
+                            {% for s in sugerencias_usuario %}
+                            <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-{{ s.id }}"
+                                 style="border-left: 5px solid {% if s.respuesta %}#22c55e{% else %}#eab308{% endif %};">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
+                                            {{ s.tipo|upper }}
+                                        </span>
+                                        {% if not s.respuesta %}
+                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte" 
+                                                data-id="{{ s.id }}" data-comentario="{{ s.comentario }}" title="Editar reporte">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte" 
+                                                data-id="{{ s.id }}" title="Eliminar reporte">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-white-50">{{ s.fecha|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <p class="mb-3">{{ s.comentario }}</p>
+
+                                {% if s.imagen %}
+                                    <div class="mb-3">
+                                        <a href="{{ s.imagen.url }}" target="_blank">
+                                            <img src="{{ s.imagen.url }}" alt="Evidencia" class="img-fluid rounded border border-secondary" style="max-height: 150px; cursor: pointer;">
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                                {% if s.respuesta %}
+                                    <div class="p-3 rounded bg-success bg-opacity-10 border-start border-success border-3">
+                                        <strong class="text-success">Respuesta:</strong><br>
+                                        {{ s.respuesta }}
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-white-50">
+                                <i class="fas fa-inbox fa-4x mb-3"></i>
+                                <p>No has enviado ningún reporte de error todavía.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL EDITAR REPORTE -->
+<div class="modal fade" id="modalEditarReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #ff4d4d; border-radius: 12px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2 text-warning"></i>Editar Reporte</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditarReporte" method="POST" action="{% url 'perfil' %}">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="editar_reporte">
+                <input type="hidden" name="reporte_id" id="inputEditId">
+                <div class="modal-body">
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold text-white-50">Nuevo comentario</label>
+                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning btn-sm fw-bold">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ESTÉTICO DE CONFIRMACIÓN PARA ELIMINAR -->
+<div class="modal fade" id="modalConfirmarEliminarReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #dc3545; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-shield-alt me-2 text-danger"></i>Seguridad de Datos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-circle fa-5x text-danger mb-3 shadow-sm"></i>
+                </div>
+                <h4 class="fw-bold">¿Estás seguro?</h4>
+                <p class="text-white-50 px-4">Esta acción eliminará permanentemente tu reporte de error del sistema. No podrás recuperar esta información después.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-light px-4 rounded-pill" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-danger px-4 fw-bold rounded-pill shadow" id="confirmDeleteReporteBtn">
+                    <i class="fas fa-trash-alt me-2"></i>Sí, eliminar ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORMULARIO OCULTO PARA BORRAR -->
+<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="tipo" value="borrar_reporte">
+    <input type="hidden" name="reporte_id" id="inputDeleteId">
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/inicio.js' %}"></script>
+<script>
+    function previewProfileImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('imgPreviewPerfil');
+            output.src = reader.result;
+        };
+        if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+{% endblock %}
