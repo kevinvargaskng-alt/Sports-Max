@@ -1,0 +1,465 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if vista == 'historial' %}Mi Historial de Salud
+  {% elif vista == 'habeas_data' %}Autorización de Tratamiento de Datos
+  {% else %}Registrar Seguimiento de Salud
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: REGISTRAR SEGUIMIENTO
+   Contexto esperado: form (SeguimientoSaludForm), errores de Django
+════════════════════════════════════════════════════════════════════ #}
+{% if vista == 'registrar' %}
+
+<div class="page-header">
+  <div class="container">
+    <h1><i class="fas fa-journal-whills me-2"></i>Registrar Seguimiento de Salud</h1>
+    <p class="subtitle mb-0">El IMC se calcula automáticamente con el peso y la estatura</p>
+  </div>
+</div>
+
+<div class="container pb-5" style="max-width:900px">
+
+  <form method="post" class="needs-validation" novalidate>
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <div class="alert alert-danger rounded-3 mb-4">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <strong>Revisa los siguientes campos:</strong>
+      <ul class="mb-0 mt-2">
+        {% for field in form %}
+          {% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- Fecha -->
+    <div class="form-section">
+      <h6 class="form-section-title">
+        <i class="fas fa-calendar-alt me-2"></i>Fecha de evaluación
+      </h6>
+      <div class="col-md-4">
+        <label class="form-label fw-bold small">Fecha</label>
+        {{ form.fecha_evaluacion }}
+      </div>
+    </div>
+
+    <!-- Medidas físicas -->
+    <div class="form-section">
+      <h6 class="form-section-title">
+        <i class="fas fa-ruler me-2"></i>Medidas físicas
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">{{ form.peso_kg.label }}</label>
+          {{ form.peso_kg }}
+          {% if form.peso_kg.help_text %}
+          <div class="form-text">{{ form.peso_kg.help_text }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">{{ form.estatura_cm.label }}</label>
+          {{ form.estatura_cm }}
+          <div class="form-text">{{ form.estatura_cm.help_text }}</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">IMC (calculado)</label>
+          <div id="imc-preview"
+               class="form-control text-center fw-bold"
+               style="background:var(--sena-light);color:var(--sena-dark)">—</div>
+          <div class="form-text">Se calcula automáticamente</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signos vitales -->
+    <div class="form-section">
+      <h6 class="form-section-title">
+        <i class="fas fa-heartbeat me-2"></i>Signos vitales
+        <small class="fw-normal text-muted ms-2">(opcional)</small>
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">{{ form.presion_sistolica.label }}</label>
+          {{ form.presion_sistolica }}
+          <div class="form-text">{{ form.presion_sistolica.help_text }}</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">{{ form.presion_diastolica.label }}</label>
+          {{ form.presion_diastolica }}
+          <div class="form-text">{{ form.presion_diastolica.help_text }}</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">{{ form.frecuencia_cardiaca.label }}</label>
+          {{ form.frecuencia_cardiaca }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Estilo de vida -->
+    <div class="form-section">
+      <h6 class="form-section-title">
+        <i class="fas fa-walking me-2"></i>Estilo de vida
+        <small class="fw-normal text-muted ms-2">(opcional)</small>
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">{{ form.nivel_actividad.label }}</label>
+          {{ form.nivel_actividad }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small">{{ form.horas_sueno.label }}</label>
+          {{ form.horas_sueno }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small">{{ form.vasos_agua.label }}</label>
+          {{ form.vasos_agua }}
+          <div class="form-text">{{ form.vasos_agua.help_text }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="form-section">
+      <h6 class="form-section-title">
+        <i class="fas fa-comment-alt me-2"></i>Observaciones
+      </h6>
+      {{ form.observaciones }}
+    </div>
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-sena btn-lg px-5">
+        <i class="fas fa-check-circle me-2"></i>Guardar seguimiento
+      </button>
+      <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-secondary btn-lg">
+        Cancelar
+      </a>
+    </div>
+
+  </form>
+</div>
+
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: HISTORIAL DE SALUD
+   Contexto esperado:
+     seguimientos (queryset), cambio_peso (float|None), data_json
+════════════════════════════════════════════════════════════════════ #}
+{% elif vista == 'historial' %}
+
+<div class="page-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col">
+        <h1><i class="fas fa-history me-2"></i>Mi Historial de Salud</h1>
+        <p class="subtitle mb-0">Registro completo de tu evolución física</p>
+      </div>
+      <div class="col-auto">
+        <a href="{% url 'habitos:registrar_seguimiento' %}"
+           class="btn btn-light fw-bold"
+           style="border-radius:12px;color:var(--sena-dark)">
+          <i class="fas fa-plus-circle me-2"></i>Nuevo registro
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+
+  {% if seguimientos %}
+
+  <!-- Gráfica de evolución -->
+  <div class="chart-container mb-4">
+    <h5 class="fw-bold mb-4" style="color:var(--sena-dark)">
+      <i class="fas fa-chart-area me-2"></i>Evolución — Peso e IMC
+    </h5>
+    <canvas id="chartEvolucion" height="100"></canvas>
+  </div>
+
+  <!-- Resumen cambio de peso -->
+  {% if cambio_peso is not None %}
+  <div class="alert rounded-3 mb-4"
+       style="border-radius:14px !important;
+         background:{% if cambio_peso < 0 %}#e8f5e9{% elif cambio_peso > 0 %}#fff3e0{% else %}var(--sena-light){% endif %};
+         border:2px solid {% if cambio_peso < 0 %}#43a047{% elif cambio_peso > 0 %}#fb8c00{% else %}var(--sena-green){% endif %}">
+    <i class="fas fa-arrow-{% if cambio_peso < 0 %}down{% elif cambio_peso > 0 %}up{% else %}right{% endif %}-circle me-2"></i>
+    <strong>Cambio total de peso:</strong>
+    {% if cambio_peso > 0 %}+{% endif %}{{ cambio_peso }} kg
+    desde tu primer registro hasta el último.
+  </div>
+  {% endif %}
+
+  <!-- Tabla historial -->
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table tabla-historial mb-0">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Peso (kg)</th>
+              <th>Estatura (cm)</th>
+              <th>IMC</th>
+              <th>Presión</th>
+              <th>Frec. Card.</th>
+              <th>Actividad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for seg in seguimientos|dictsortreversed:"fecha_evaluacion" %}
+            {% with cat=seg.get_categoria_imc %}
+            <tr>
+              <td class="fw-bold">{{ seg.fecha_evaluacion|date:"d/m/Y" }}</td>
+              <td>{{ seg.peso_kg }}</td>
+              <td>{{ seg.estatura_cm }}</td>
+              <td>
+                <span class="badge bg-{{ cat.1 }}">{{ seg.imc|default:"—" }}</span>
+              </td>
+              <td>{{ seg.get_presion_arterial }}</td>
+              <td>{{ seg.frecuencia_cardiaca|default:"—" }} lpm</td>
+              <td>
+                <span class="badge"
+                      style="background:var(--sena-light);color:var(--sena-dark);font-weight:600;font-size:.75rem">
+                  {{ seg.get_nivel_actividad_display|truncatewords:2 }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex gap-1">
+                  <a href="{% url 'habitos:detalle_seguimiento' seg.pk %}"
+                     class="btn btn-sm btn-outline-sena"
+                     title="Ver detalle">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <form method="post"
+                        action="{% url 'habitos:eliminar_seguimiento' seg.pk %}"
+                        onsubmit="return confirm('¿Eliminar este registro?')">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger"
+                            title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <div style="font-size:5rem;opacity:0.25">📋</div>
+    <h3 class="fw-bold mb-2" style="color:var(--sena-dark)">Sin registros de salud</h3>
+    <p class="text-muted mb-4">Comienza a registrar tus datos para hacer seguimiento de tu progreso.</p>
+    <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena btn-lg">
+      <i class="fas fa-plus-circle me-2"></i>Registrar ahora
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: HABEAS DATA
+   Contexto esperado: form (HabeasDataForm)
+════════════════════════════════════════════════════════════════════ #}
+{% elif vista == 'habeas_data' %}
+
+<div class="container py-5" style="max-width:800px">
+
+  <div class="text-center mb-5">
+    <div class="mb-3" style="font-size:4rem">🛡️</div>
+    <h1 class="fw-bold" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+      Autorización de Tratamiento de Datos
+    </h1>
+    <p class="text-muted lead">
+      Habeas Data — Ley 1581 de 2012 · SENA Bienestar Institucional
+    </p>
+  </div>
+
+  <div class="habeas-box mb-4">
+    <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
+      <i class="fas fa-file-alt me-2"></i>Política de Tratamiento de Datos Personales
+    </h5>
+
+    <p><strong>Responsable del tratamiento:</strong> SENA — Servicio Nacional de Aprendizaje.</p>
+
+    <p><strong>Finalidad:</strong> Los datos personales y de salud recopilados en este módulo
+    serán utilizados exclusivamente para:</p>
+    <ul>
+      <li>Realizar seguimiento de bienestar físico institucional</li>
+      <li>Generar estadísticas anónimas de salud colectiva</li>
+      <li>Orientar programas de bienestar y prevención</li>
+      <li>Contacto institucional relacionado con programas de salud</li>
+    </ul>
+
+    <p><strong>Datos recopilados:</strong> Nombre completo, documento de identidad,
+    correo electrónico, edad, género, y datos de salud como peso, estatura, IMC,
+    presión arterial y nivel de actividad física.</p>
+
+    <p><strong>Derechos del titular:</strong> Como titular de sus datos personales usted tiene derecho a:
+    conocer, actualizar, rectificar y suprimir sus datos; revocar la autorización;
+    presentar quejas ante la Superintendencia de Industria y Comercio.</p>
+
+    <p><strong>Seguridad:</strong> El SENA garantiza la confidencialidad, libertad, seguridad,
+    veracidad, transparencia, acceso y circulación restringida de sus datos conforme a
+    la normativa colombiana vigente.</p>
+
+    <p><strong>Vigencia:</strong> La autorización tiene vigencia desde su aceptación hasta que
+    el titular la revoque expresamente.</p>
+
+    <p class="mb-0"><strong>Versión de la política:</strong> 1.0 — Aprobada para el módulo
+    Hábitos Saludables SENA.</p>
+  </div>
+
+  <form method="post" class="form-section">
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <div class="alert alert-danger rounded-3" style="border-radius:12px">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+      {% for field in form %}{% for error in field.errors %}{{ error }}{% endfor %}{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="form-check mb-4 p-4 rounded-3"
+         style="background:var(--sena-light);border:2px solid var(--sena-green)">
+      {{ form.acepta }}
+      <label class="form-check-label ms-2 fw-bold"
+             for="{{ form.acepta.id_for_label }}"
+             style="color:var(--sena-dark)">
+        {{ form.acepta.label }}
+      </label>
+    </div>
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-sena btn-lg px-5">
+        <i class="fas fa-shield-alt me-2"></i>Aceptar y continuar
+      </button>
+      <a href="{% url 'habitos:inicio' %}" class="btn btn-outline-secondary btn-lg px-4">
+        Cancelar
+      </a>
+    </div>
+  </form>
+
+  <div class="text-center mt-4">
+    <p class="text-muted small">
+      <i class="fas fa-lock me-1"></i>
+      Tu información es confidencial y está protegida por la legislación colombiana.
+      Para dudas escribe a <strong>bienestar@sena.edu.co</strong>
+    </p>
+  </div>
+
+</div>
+
+{% endif %}{# fin bloque de vistas #}
+
+{% endblock %}
+
+
+{% block extra_js %}
+{% if vista == 'registrar' %}
+<script>
+const pesoInput    = document.getElementById('id_peso_kg');
+const estaturaInput = document.getElementById('id_estatura_cm');
+const imcPreview   = document.getElementById('imc-preview');
+
+function calcularIMC() {
+  const peso    = parseFloat(pesoInput.value);
+  const estatura = parseFloat(estaturaInput.value) / 100;
+  if (peso > 0 && estatura > 0) {
+    const imc = (peso / (estatura ** 2)).toFixed(2);
+    imcPreview.textContent = imc;
+    if      (imc < 18.5)  imcPreview.style.color = '#fb8c00';
+    else if (imc <= 24.9) imcPreview.style.color = '#2e7d32';
+    else if (imc <= 29.9) imcPreview.style.color = '#e65100';
+    else                  imcPreview.style.color = '#c62828';
+  } else {
+    imcPreview.textContent = '—';
+    imcPreview.style.color = 'var(--sena-dark)';
+  }
+}
+
+pesoInput.addEventListener('input', calcularIMC);
+estaturaInput.addEventListener('input', calcularIMC);
+</script>
+{% endif %}
+
+{% if vista == 'historial' and seguimientos %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const data = {{ data_json|safe }};
+
+new Chart(document.getElementById('chartEvolucion'), {
+  type: 'line',
+  data: {
+    labels: data.fechas,
+    datasets: [
+      {
+        label: 'Peso (kg)',
+        data: data.pesos,
+        borderColor: '#39a900',
+        backgroundColor: 'rgba(57,169,0,0.06)',
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: '#39a900',
+        fill: true,
+        tension: 0.4,
+        yAxisID: 'yPeso',
+      },
+      {
+        label: 'IMC',
+        data: data.imcs,
+        borderColor: '#1565c0',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#1565c0',
+        fill: false,
+        tension: 0.4,
+        yAxisID: 'yIMC',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { display: true } },
+    scales: {
+      x: { grid: { display: false } },
+      yPeso: {
+        type: 'linear',
+        position: 'left',
+        title: { display: true, text: 'Peso (kg)', color: '#39a900' },
+        grid: { color: '#f0f0f0' },
+      },
+      yIMC: {
+        type: 'linear',
+        position: 'right',
+        title: { display: true, text: 'IMC', color: '#1565c0' },
+        grid: { drawOnChartArea: false },
+      }
+    }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}
