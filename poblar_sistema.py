@@ -1,12 +1,8 @@
 import os
-import sys
 import django
 import random
 from datetime import date, timedelta
 from django.utils import timezone
-
-# Add the project root to sys.path since this script will be in the 'scripts' folder
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Configurar el entorno de Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
@@ -16,6 +12,8 @@ from usuarios.models import Usuario, Sugerencia
 from inventario.models import ElementoDeportivo, Prestamo
 from gimnasio.models import Reserva
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, Disciplina
+from intercentros.models import TorneoIntercentros, Postulacion
+
 def poblar_datos():
     print("🚀 Iniciando la población de la base de datos...")
 
@@ -25,33 +23,10 @@ def poblar_datos():
         'VIAL', 'SANEAMIENTO', 'MAQUINARIA_PESADA', 'MANTENIMIENTO_EQUIPO'
     ]
     
-    # 1. Crear Admin principal
-    admin_user, admin_created = Usuario.objects.get_or_create(
-        username="0000000000",
-        defaults={
-            'email': "admin_principal@sena.edu.co",
-            'first_name': "Admin",
-            'last_name': "Principal",
-            'numero_documento': "0000000000",
-            'tipo_documento': 'CC',
-            'telefono': "3000000000",
-            'ficha': "N/A",
-            'programa_formacion': 'ADSO',
-            'rol': 'admin',
-            'estado': 'activo',
-            'is_staff': True,
-            'is_superuser': True,
-        }
-    )
-    if admin_created:
-        admin_user.set_password('@dmin123')
-        admin_user.save()
-    usuarios_creados = [admin_user]
-
-    # Crear Usuarios adicionales (Instructores, Aprendices)
+    usuarios_creados = []
     for i in range(1, 15):
         username = f"1000000{i}"
-        rol = 'instructor' if i <= 5 else 'aprendiz'
+        rol = 'admin' if i <= 2 else ('instructor' if i <= 5 else 'aprendiz')
         user, created = Usuario.objects.get_or_create(
             username=username,
             defaults={
@@ -65,7 +40,7 @@ def poblar_datos():
                 'programa_formacion': random.choice(programas),
                 'rol': rol,
                 'estado': 'activo',
-                'is_staff': False,
+                'is_staff': (rol == 'admin'),
             }
         )
         if created:
@@ -91,7 +66,9 @@ def poblar_datos():
             defaults={
                 'cantidad_total': random.randint(5, 20),
                 'estado_general': random.choice(['Bueno', 'Regular']),
-                'usuario_responsable': random.choice(usuarios_creados) if usuarios_creados else None
+                'docente_responsable': "Instructor Deporte",
+                'fecha_adquisicion': date.today() - timedelta(days=random.randint(100, 500)),
+                'descripcion': f"Equipo para práctica de {random.choice(nombres_disciplinas)}"
             }
         )
         elementos_objs.append(e)
@@ -123,30 +100,48 @@ def poblar_datos():
             )
     print("✅ Torneos Interfichas y Equipos creados.")
 
-    from inventario.models import DetallePrestamo
+    # 5. Torneos Intercentros y Postulaciones
+    for i in range(1, 11):
+        ti, _ = TorneoIntercentros.objects.get_or_create(
+            nombre_torneo=f"Regional SENA {random.choice(nombres_disciplinas)}",
+            defaults={
+                'fecha_torneo': date.today() + timedelta(days=i*10),
+                'estado': 'Activo'
+            }
+        )
+        # Crear Postulaciones
+        for _ in range(3):
+            user_random = random.choice([u for u in usuarios_creados if u.rol == 'aprendiz'])
+            Postulacion.objects.get_or_create(
+                torneo=ti,
+                numero_documento=user_random.numero_documento,
+                defaults={'fecha_postulacion': timezone.now()}
+            )
+    print("✅ Torneos Intercentros y Postulaciones creados.")
+
     # 6. Préstamos
     for i in range(1, 11):
-        p = Prestamo.objects.create(
+        Prestamo.objects.create(
             usuario=random.choice(usuarios_creados),
-            dias_prestamo=2,
-            estado_prestamo='Activo'
-        )
-        DetallePrestamo.objects.create(
-            prestamo=p,
             elemento=random.choice(elementos_objs),
-            fecha_devolucion_prevista=date.today() + timedelta(days=2),
-            estado='Pendiente'
+            cantidad_prestada=1,
+            fecha_devolucion=date.today() + timedelta(days=2),
+            estado_prestamo='Activo'
         )
     print("✅ Préstamos registrados.")
 
     # 7. Reservas Gimnasio
     for i in range(1, 11):
         u = random.choice(usuarios_creados)
-        Reserva.objects.get_or_create(
-            usuario=u,
-            fecha=date.today() + timedelta(days=i),
-            hora="08:00",
-            defaults={'estado': 'pendiente'}
+        Reserva.objects.create(
+            usuario_solicitante=f"{u.first_name} {u.last_name}",
+            fecha_entrada=date.today(),
+            hora_entrada="08:00",
+            hora_prestamo="08:00",
+            fecha_permanencia=date.today(),
+            hora_salida="09:00",
+            fecha_salida=date.today(),
+            estado='Pendiente'
         )
     print("✅ Reservas de gimnasio creadas.")
 
