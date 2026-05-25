@@ -9,7 +9,6 @@ IA_SERVER_URL = "http://127.0.0.1:5001"
 
 # Importación de modelos reales (SENA Proyecto ADSO)
 from gimnasio.models import Reserva
-from intercentros.models import TorneoIntercentros, EquipoIntercentros, Postulacion
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo
 from inventario.models import ElementoDeportivo, Prestamo, Sancion
 

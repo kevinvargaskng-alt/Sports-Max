@@ -49,15 +49,7 @@ CONOCIMIENTO_BASE = [
         ),
         "modulo": "interfichas",
     },
-    {
-        "pregunta": "qué son los intercentros módulo intercentros competencias entre centros para qué sirve intercentros",
-        "respuesta": (
-            "El módulo de Intercentros gestiona competencias deportivas entre diferentes centros del SENA "
-            "a nivel regional o nacional. Los aprendices pueden postularse, asistir a entrenamientos y "
-            "ser seleccionados para representar al SENA Centro Minero en estas competencias."
-        ),
-        "modulo": "intercentros",
-    },
+
     {
         "pregunta": "cómo hago una reserva gimnasio reservar reserva pendiente aprobación",
         "respuesta": (
@@ -85,15 +77,7 @@ CONOCIMIENTO_BASE = [
         ),
         "modulo": "interfichas",
     },
-    {
-        "pregunta": "cómo postularme intercentros postulación aprendiz participar competencia",
-        "respuesta": (
-            "Para postularte a un evento Intercentros: ve al módulo Intercentros, busca el torneo activo en tu disciplina "
-            "y completa el formulario con tu número de documento, nombres, apellidos, ficha y programa. "
-            "Podrás ver los entrenamientos programados y confirmar tu asistencia."
-        ),
-        "modulo": "intercentros",
-    },
+
     {
         "pregunta": "sanción sancionado qué pasa si no devuelvo implemento",
         "respuesta": (
@@ -116,7 +100,7 @@ CONOCIMIENTO_BASE = [
         "pregunta": "hola buenos días buenas tardes ayuda cómo estás",
         "respuesta": (
             "¡Hola! 🐱 Soy Tux, tu asistente del Sistema de Gestión Deportiva del SENA Centro Minero. "
-            "Puedo ayudarte con información sobre los módulos de Gimnasio, Inventario, Interfichas e Intercentros, "
+            "Puedo ayudarte con información sobre los módulos de Gimnasio, Inventario e Interfichas, "
             "y también consultarte datos actuales de la base de datos. ¿En qué te ayudo?"
         ),
         "modulo": "general",
@@ -179,7 +163,7 @@ class MotorIA:
         self._agregar_docs_inventario(datos_bd)
         self._agregar_docs_gimnasio(datos_bd)
         self._agregar_docs_interfichas(datos_bd)
-        self._agregar_docs_intercentros(datos_bd)
+
 
         # ── Ajustar vectorizador ──
         corpus = [doc["pregunta"] + " " + doc.get("respuesta", "") for doc in self.conocimiento]
@@ -261,29 +245,7 @@ class MotorIA:
             "modulo": "interfichas",
         })
 
-    def _agregar_docs_intercentros(self, datos_bd):
-        torneos = datos_bd.get("torneos_intercentros", [])
-        postulaciones = datos_bd.get("postulaciones", 0)
-        if torneos:
-            for t in torneos:
-                self.conocimiento.append({
-                    "pregunta": f"torneo {t['nombre'].lower()} intercentros disciplina postulaciones",
-                    "respuesta": (
-                        f"El torneo Intercentros '{t['nombre']}' de {t.get('disciplina', '?')} "
-                        f"está {t.get('estado', 'activo')}. "
-                        f"Fecha: {t.get('fecha', 'por definir')}. Lugar: {t.get('lugar', 'por definir')}."
-                    ),
-                    "modulo": "intercentros",
-                })
-        resumen = ", ".join(t["nombre"] for t in torneos) if torneos else "ninguno activo"
-        self.conocimiento.append({
-            "pregunta": "cuántos torneos intercentros activos postulaciones aprendices inscritos",
-            "respuesta": (
-                f"Torneos Intercentros activos: {resumen}. "
-                f"Total de postulaciones registradas: {postulaciones}."
-            ),
-            "modulo": "intercentros",
-        })
+
 
     # ── INFERENCIA ───────────────────────────────────────────
     def responder(self, pregunta: str, historial: list = None) -> dict:
@@ -322,7 +284,7 @@ class MotorIA:
                 "respuesta": (
                     "No encontré información exacta sobre eso en el sistema. "
                     "Puedo ayudarte con información sobre los módulos de "
-                    "Gimnasio, Inventario, Interfichas e Intercentros del SENA Centro Minero. "
+                    "Gimnasio, Inventario e Interfichas del SENA Centro Minero. "
                     "¿Puedes reformular tu pregunta?"
                 ),
                 "confianza": confianza,
