@@ -10,23 +10,25 @@
 {% block content %}
 <div class="main-container">
     <!-- Encabezado Visual (Hero Section) -->
-    <header class="hero-header text-center py-5">
-        <div class="container">
-            <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Logo Deporte" class="main-logo mb-3">
-            <h1 class="text-white fw-bold display-4">Sistema de Gestión Deportiva</h1>
-            <p class="text-white-50 fs-5 mb-4">Desarrolla tu potencial deportivo mientras te formas profesionalmente en el SENA</p>
+    <header class="hero-header text-center py-5 d-flex flex-column justify-content-center" style="min-height: 55vh;">
+        <div class="container px-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Logo Deporte" class="main-logo mb-4">
+            <h1 class="text-white fw-bolder display-4 mb-3" style="letter-spacing: -1px;">Sistema de Gestión Deportiva</h1>
+            <p class="text-white-50 fs-5 mb-5 mx-auto" style="max-width: 650px; line-height: 1.6;">
+                Desarrolla tu potencial deportivo mientras te formas profesionalmente en el SENA. Accede a recursos y gestiona tu actividad física de forma inteligente.
+            </p>
             
             <!-- BOTÓN DINÁMICO DE ACCESO -->
             <div class="mt-4">
                 {% if not aprendiz_logueado %}
-                    <button type="button" class="btn btn-ingresar shadow-lg" data-bs-toggle="modal" data-bs-target="#modalForm">
-                        <i class="fas fa-user-circle me-2"></i>ACCEDER AL SISTEMA
+                    <button type="button" class="btn btn-ingresar btn-lg shadow-lg px-5 py-3 rounded-pill text-uppercase fw-bold" style="letter-spacing: 1px;" data-bs-toggle="modal" data-bs-target="#modalForm">
+                        <i class="fas fa-user-circle me-2"></i> Acceder al sistema
                     </button>
                 {% else %}
                     <div class="d-flex flex-column align-items-center">
-                        <p class="text-white mb-2">Bienvenido de nuevo, <strong>{{ nombre_usuario }}</strong></p>
-                        <a href="{% url 'perfil' %}" class="btn btn-ingresar shadow-lg">
-                            <i class="fas fa-tachometer-alt me-2"></i>IR A MI PERFIL
+                        <p class="text-white fs-5 mb-3">Bienvenido de nuevo, <strong class="text-info">{{ nombre_usuario }}</strong></p>
+                        <a href="{% url 'perfil' %}" class="btn btn-ingresar btn-lg shadow-lg px-5 py-3 rounded-pill text-uppercase fw-bold" style="letter-spacing: 1px;">
+                            <i class="fas fa-tachometer-alt me-2"></i> Ir a mi perfil
                         </a>
                     </div>
                 {% endif %}
@@ -43,24 +45,24 @@
         
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="sport-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" class="card-icon" alt="Fútbol">
-                    <h5>FUTSAL / FÚTBOL</h5>
-                    <p>Participa en torneos inter-fichas e inter-centros. Desarrolla trabajo en equipo y liderazgo competitivo.</p>
+                <div class="sport-card h-100 d-flex flex-column align-items-center text-center p-4 p-xl-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" class="card-icon mb-4" alt="Fútbol">
+                    <h5 class="fw-bold mb-3">FUTSAL / FÚTBOL</h5>
+                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Participa en torneos inter-fichas e inter-centros. Desarrolla trabajo en equipo y liderazgo competitivo.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="sport-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/731/731943.png" class="card-icon" alt="Baloncesto">
-                    <h5>BALONCESTO</h5>
-                    <p>Competencias emocionantes en nuestras canchas profesionales. Mejora tu técnica, agilidad y estrategia.</p>
+                <div class="sport-card h-100 d-flex flex-column align-items-center text-center p-4 p-xl-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/731/731943.png" class="card-icon mb-4" alt="Baloncesto">
+                    <h5 class="fw-bold mb-3">BALONCESTO</h5>
+                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Competencias emocionantes en nuestras canchas profesionales. Mejora tu técnica, agilidad y estrategia.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="sport-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1165/1165187.png" class="card-icon" alt="Voleibol">
-                    <h5>VOLEIBOL</h5>
-                    <p>Torneos mixtos y especializados. Fortalece tu coordinación y reflejos en cada partido intenso.</p>
+                <div class="sport-card h-100 d-flex flex-column align-items-center text-center p-4 p-xl-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1165/1165187.png" class="card-icon mb-4" alt="Voleibol">
+                    <h5 class="fw-bold mb-3">VOLEIBOL</h5>
+                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Torneos mixtos y especializados. Fortalece tu coordinación y reflejos en cada partido intenso.</p>
                 </div>
             </div>
         </div>
@@ -72,20 +74,24 @@
             <h2 class="section-title text-white">¿Qué Encontrarás Aquí?</h2>
             <p class="text-white-50">Gestiona tu vida deportiva de forma integral</p>
         </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="service-card text-start d-flex flex-column align-items-start p-4">
-                    <i class="fas fa-trophy fa-3x mb-3 text-warning"></i>
-                    <h5 class="fw-bold">TORNEOS INTER-FICHAS</h5>
-                    <p>Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="service-card h-100 text-start d-flex flex-column align-items-start p-4 p-lg-5">
+                    <div class="icon-wrapper mb-4 p-3 rounded-circle d-inline-flex align-items-center justify-content-center" style="background: rgba(245, 158, 11, 0.1); width: 64px; height: 64px;">
+                        <i class="fas fa-trophy fa-2x text-warning"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">TORNEOS INTER-FICHAS</h5>
+                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="service-card text-start d-flex flex-column align-items-start p-4">
-                    <i class="fas fa-calendar-check fa-3x mb-3 text-warning"></i>
-                    <h5 class="fw-bold">RESERVA GIMNASIO</h5>
-                    <p>Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones de nuestro centro.</p>
+            <div class="col-md-5">
+                <div class="service-card h-100 text-start d-flex flex-column align-items-start p-4 p-lg-5">
+                    <div class="icon-wrapper mb-4 p-3 rounded-circle d-inline-flex align-items-center justify-content-center" style="background: rgba(14, 165, 233, 0.1); width: 64px; height: 64px;">
+                        <i class="fas fa-calendar-check fa-2x text-info"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">RESERVA GIMNASIO</h5>
+                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones de nuestro centro.</p>
                 </div>
             </div>
         </div>
@@ -122,43 +128,49 @@
                     
                     <!-- PANEL LOGIN -->
                     <div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
-                        <form id="loginForm" novalidate>
+                        <form id="loginForm" novalidate class="px-2 py-3">
                             {% csrf_token %}
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Número de Documento</label>
-                                <input type="text" 
-                                       name="username" 
-                                       class="form-control custom-input" 
-                                       placeholder="Ej: 1052345678" 
-                                       required 
-                                       pattern="\d{5,20}" 
-                                       title="Ingresa un documento válido"
-                                       autocomplete="username"
-                                       data-bs-toggle="tooltip">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Contraseña</label>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Número de Documento</label>
                                 <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-id-card text-white-50"></i></span>
+                                    <input type="text" 
+                                           name="username" 
+                                           class="form-control custom-input border-start-0 ps-0" 
+                                           placeholder="Ej: 1052345678" 
+                                           required 
+                                           pattern="\d{5,20}" 
+                                           title="Ingresa un documento válido"
+                                           autocomplete="username"
+                                           style="box-shadow: none;"
+                                           data-bs-toggle="tooltip">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-lock text-white-50"></i></span>
                                     <input type="password" 
                                            id="id_password" 
                                            name="password" 
-                                           class="form-control custom-input" 
+                                           class="form-control custom-input border-start-0 ps-0 border-end-0" 
                                            placeholder="Tu clave secreta" 
                                            required 
                                            minlength="8"
-                                           autocomplete="current-password">
-                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                        <i class="fas fa-eye"></i>
+                                           autocomplete="current-password"
+                                           style="box-shadow: none;">
+                                    <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left: none;" type="button" id="togglePassword">
+                                        <i class="fas fa-eye text-white-50"></i>
                                     </button>
                                 </div>
-                                <div class="text-end mt-2">
+                                <div class="text-end mt-3">
                                     <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none fw-bold" title="Te enviaremos un correo para restablecerla" data-bs-toggle="tooltip">
                                         ¿Olvidaste tu contraseña?
                                     </a>
                                 </div>
                             </div>
                             <div id="loginAlert" class="alert d-none" role="alert"></div>
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">INGRESAR AL SISTEMA</button>
+                            <button type="submit" class="btn btn-primary w-100 py-3 mt-2 fw-bold text-uppercase" style="letter-spacing: 1px; border-radius: 12px;">Ingresar al sistema</button>
                         </form>
                     </div>
 
