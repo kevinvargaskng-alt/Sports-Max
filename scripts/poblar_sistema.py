@@ -1,8 +1,12 @@
 import os
+import sys
 import django
 import random
 from datetime import date, timedelta
 from django.utils import timezone
+
+# Add the project root to sys.path since this script will be in the 'scripts' folder
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Configurar el entorno de Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
@@ -21,10 +25,33 @@ def poblar_datos():
         'VIAL', 'SANEAMIENTO', 'MAQUINARIA_PESADA', 'MANTENIMIENTO_EQUIPO'
     ]
     
-    usuarios_creados = []
+    # 1. Crear Admin principal
+    admin_user, admin_created = Usuario.objects.get_or_create(
+        username="0000000000",
+        defaults={
+            'email': "admin_principal@sena.edu.co",
+            'first_name': "Admin",
+            'last_name': "Principal",
+            'numero_documento': "0000000000",
+            'tipo_documento': 'CC',
+            'telefono': "3000000000",
+            'ficha': "N/A",
+            'programa_formacion': 'ADSO',
+            'rol': 'admin',
+            'estado': 'activo',
+            'is_staff': True,
+            'is_superuser': True,
+        }
+    )
+    if admin_created:
+        admin_user.set_password('@dmin123')
+        admin_user.save()
+    usuarios_creados = [admin_user]
+
+    # Crear Usuarios adicionales (Instructores, Aprendices)
     for i in range(1, 15):
         username = f"1000000{i}"
-        rol = 'admin' if i <= 2 else ('instructor' if i <= 5 else 'aprendiz')
+        rol = 'instructor' if i <= 5 else 'aprendiz'
         user, created = Usuario.objects.get_or_create(
             username=username,
             defaults={
@@ -38,7 +65,7 @@ def poblar_datos():
                 'programa_formacion': random.choice(programas),
                 'rol': rol,
                 'estado': 'activo',
-                'is_staff': (rol == 'admin'),
+                'is_staff': False,
             }
         )
         if created:
@@ -64,9 +91,7 @@ def poblar_datos():
             defaults={
                 'cantidad_total': random.randint(5, 20),
                 'estado_general': random.choice(['Bueno', 'Regular']),
-                'docente_responsable': "Instructor Deporte",
-                'fecha_adquisicion': date.today() - timedelta(days=random.randint(100, 500)),
-                'descripcion': f"Equipo para práctica de {random.choice(nombres_disciplinas)}"
+                'usuario_responsable': random.choice(usuarios_creados) if usuarios_creados else None
             }
         )
         elementos_objs.append(e)
@@ -98,29 +123,37 @@ def poblar_datos():
             )
     print("✅ Torneos Interfichas y Equipos creados.")
 
+    from inventario.models import DetallePrestamo
     # 6. Préstamos
     for i in range(1, 11):
-        Prestamo.objects.create(
+        p = Prestamo.objects.create(
             usuario=random.choice(usuarios_creados),
-            elemento=random.choice(elementos_objs),
-            cantidad_prestada=1,
-            fecha_devolucion=date.today() + timedelta(days=2),
+            dias_prestamo=2,
             estado_prestamo='Activo'
+        )
+        DetallePrestamo.objects.create(
+            prestamo=p,
+            elemento=random.choice(elementos_objs),
+            fecha_devolucion_prevista=date.today() + timedelta(days=2),
+            estado='Pendiente'
         )
     print("✅ Préstamos registrados.")
 
     # 7. Reservas Gimnasio
+    from datetime import time
     for i in range(1, 11):
         u = random.choice(usuarios_creados)
-        Reserva.objects.create(
-            usuario_solicitante=f"{u.first_name} {u.last_name}",
-            fecha_entrada=date.today(),
-            hora_entrada="08:00",
-            hora_prestamo="08:00",
-            fecha_permanencia=date.today(),
-            hora_salida="09:00",
-            fecha_salida=date.today(),
-            estado='Pendiente'
+        fecha_reserva = date.today() + timedelta(days=i)
+        Reserva.objects.get_or_create(
+            usuario_solicitante=u,
+            fecha_entrada=fecha_reserva,
+            hora_entrada=time(8, 0),
+            defaults={
+                'fecha_salida': fecha_reserva,
+                'hora_salida': time(9, 0),
+                'tiempo_permanencia': 60,
+                'estado': 'Pendiente'
+            }
         )
     print("✅ Reservas de gimnasio creadas.")
 

@@ -2,11 +2,7 @@
 *.log
 local_settings.py
 db.sqlite3
-db.sqlite3-journal
 media
-
-# Duplicated folders (old backups/branches)
-Django/
 
 # Django Migrations
 **/migrations/*.py
@@ -32,3 +28,4 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+core/__pycache__/__init__.cpython-313.pyc

@@ -22,10 +22,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inicio',
     'interfichas',
+    'intercentros',
     'gimnasio',
     'inventario',
     'usuarios',
-    'habitos_saludables',
 ]
 
 MIDDLEWARE = [
