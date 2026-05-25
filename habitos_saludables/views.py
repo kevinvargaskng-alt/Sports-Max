@@ -80,7 +80,7 @@ def inicio(request):
 
 @login_required
 def dashboard(request):
-    """Dashboard personal de salud."""
+    """Dashboard personal de salud y bienestar."""
     seguimientos = SeguimientoSalud.objects.filter(
         usuario=request.user
     ).order_by('fecha_evaluacion')

@@ -11,7 +11,6 @@ from .models import Usuario
 from inventario.models import Prestamo
 from gimnasio.models import RegistroIngreso  # ← cambiado de Reserva
 from interfichas.models import EquipoInterfichas, TorneoInterfichas
-from intercentros.models import TorneoIntercentros, Postulacion
 
 
 def login_view(request):
@@ -228,22 +227,8 @@ def perfil_view(request):
             .count()
         )
 
-        # Intercentros
-        todas_postulaciones = (
-            Postulacion.objects
-            .select_related('torneo')
-            .order_by('-fecha_postulacion')
-        )
-
-        torneos_intercentros_activos = (
-            TorneoIntercentros.objects
-            .filter(estado='Activo')
-            .count()
-        )
-
         total_torneos_activos = (
-            torneos_interfichas_activos +
-            torneos_intercentros_activos
+            torneos_interfichas_activos
         )
 
         contexto = {
@@ -254,8 +239,6 @@ def perfil_view(request):
             'reservas_gimnasio': todas_reservas,   # ← clave que usa el template
             'todas_reservas': todas_reservas,
             'equipos_interfichas': todos_equipos_interfichas,
-            'equipos_intercentros': todas_postulaciones,
-
             'todos_usuarios': todos_usuarios,
             'ultimos_usuarios': ultimos_usuarios,
             'total_usuarios': total_usuarios,
@@ -293,20 +276,12 @@ def perfil_view(request):
             .select_related('torneo', 'disciplina')
         )
 
-        equipos_intercentros = (
-            Postulacion.objects
-            .filter(numero_documento=str(usuario.numero_documento))
-            .select_related('torneo')
-            .order_by('-fecha_postulacion')
-        )
-
         contexto = {
 
             'usuario': usuario,
             'prestamos': prestamos,
             'reservas_gimnasio': reservas_gimnasio,
             'equipos_interfichas': equipos_interfichas,
-            'equipos_intercentros': equipos_intercentros,
         }
 
     return render(
