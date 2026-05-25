@@ -25,8 +25,6 @@ django.setup()
 from gimnasio.models import Reserva, GimnasioConfig
 from inventario.models import ElementoDeportivo, Prestamo
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, PartidoInterfichas
-from intercentros.models import TorneoIntercentros, Postulacion
-
 # ── Importar motor IA directamente ───────────────────────
 from ia_engine import MotorIA
 
@@ -87,20 +85,6 @@ def recopilar_datos() -> dict:
     datos["equipos_interfichas"] = EquipoInterfichas.objects.count()
     datos["partidos_jugados"] = PartidoInterfichas.objects.filter(jugado=True).count()
 
-    # Intercentros
-    torneos_centros = TorneoIntercentros.objects.all()[:20]
-    datos["torneos_intercentros"] = [
-        {
-            "nombre": str(t.nombre_torneo),
-            "disciplina": str(t.disciplina),
-            "estado": str(t.estado),
-            "fecha": str(t.fecha_torneo),
-            "lugar": str(t.lugar),
-        }
-        for t in torneos_centros
-    ]
-    datos["postulaciones"] = Postulacion.objects.count()
-
     return datos
 
 
@@ -110,8 +94,7 @@ def main():
 
     log.info(
         f"Datos recopilados: {len(datos.get('inventario', []))} elementos inventario, "
-        f"{len(datos.get('torneos_interfichas', []))} torneos interfichas, "
-        f"{len(datos.get('torneos_intercentros', []))} torneos intercentros."
+        f"{len(datos.get('torneos_interfichas', []))} torneos interfichas."
     )
 
     log.info("Entrenando motor IA directamente en memoria...")
