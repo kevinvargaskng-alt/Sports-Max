@@ -140,13 +140,20 @@ def poblar_datos():
     print("✅ Préstamos registrados.")
 
     # 7. Reservas Gimnasio
+    from datetime import time
     for i in range(1, 11):
         u = random.choice(usuarios_creados)
+        fecha_reserva = date.today() + timedelta(days=i)
         Reserva.objects.get_or_create(
-            usuario=u,
-            fecha=date.today() + timedelta(days=i),
-            hora="08:00",
-            defaults={'estado': 'pendiente'}
+            usuario_solicitante=u,
+            fecha_entrada=fecha_reserva,
+            hora_entrada=time(8, 0),
+            defaults={
+                'fecha_salida': fecha_reserva,
+                'hora_salida': time(9, 0),
+                'tiempo_permanencia': 60,
+                'estado': 'Pendiente'
+            }
         )
     print("✅ Reservas de gimnasio creadas.")
 
