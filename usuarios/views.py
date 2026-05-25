@@ -190,12 +190,22 @@ def perfil_view(request):
                 messages.success(request, 'Reporte actualizado con éxito.')
             return redirect('perfil')
 
+        # --- CASO 3: RESPONDER REPORTE (ADMIN) ---
+        if tipo_post == 'responder_reporte' and usuario.is_staff:
+            reporte_id = request.POST.get('reporte_id')
+            respuesta_texto = request.POST.get('respuesta')
+            reporte = get_object_or_404(Sugerencia, id=reporte_id)
+            reporte.respuesta = respuesta_texto
+            reporte.save()
+            messages.success(request, 'Respuesta enviada al aprendiz correctamente.')
+            return redirect('perfil')
+
         # Procesar Buzón de Sugerencias
         if 'comentario' in request.POST:
             tipo = request.POST.get('tipo', 'otro')
             comentario = request.POST.get('comentario')
             
-            Sugerencia.objects.create(
+            sugerencia = Sugerencia.objects.create(
                 usuario=usuario,
                 tipo=tipo,
                 comentario=comentario,
@@ -203,7 +213,16 @@ def perfil_view(request):
                 imagen=request.FILES.get('imagen_error')
             )
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'status': 'success'})
+                return JsonResponse({
+                    'status': 'success',
+                    'reporte': {
+                        'id': sugerencia.id,
+                        'tipo': sugerencia.tipo,
+                        'comentario': sugerencia.comentario,
+                        'fecha': timezone.localtime(sugerencia.fecha).strftime("%d/%m/%Y %H:%M"),
+                        'imagen_url': sugerencia.imagen.url if sugerencia.imagen else None,
+                    }
+                })
             messages.success(request, '¡Gracias! Tu reporte de error ha sido enviado exitosamente.')
             return redirect('perfil')
 
@@ -219,6 +238,9 @@ def perfil_view(request):
 
     hace_30_dias = timezone.now() - timedelta(days=30)
 
+    # Reportes propios para cualquier usuario (Mis Reportes)
+    mis_sugerencias = Sugerencia.objects.filter(usuario=usuario).order_by('-fecha')
+
     if usuario.is_staff:
         todos_usuarios   = Usuario.objects.all().order_by('-fecha_registro')
         # Préstamos Admin
@@ -232,7 +254,8 @@ def perfil_view(request):
             'usuario': usuario,
             'prestamos': todos_prestamos,
             'reservas_gimnasio': todas_reservas,
-            'sugerencias_usuario': todas_sugerencias,
+            'sugerencias_usuario': mis_sugerencias,
+            'reportes_todos': todas_sugerencias,
             'todos_usuarios': todos_usuarios,
             'total_usuarios': todos_usuarios.count(),
             'total_torneos_activos': TorneoInterfichas.objects.exclude(estado='cerrado').count() + TorneoIntercentros.objects.filter(estado='Activo').count(),
@@ -244,7 +267,6 @@ def perfil_view(request):
         
         # CORRECCIÓN CLAVE: Se filtra por el objeto 'usuario', NO por el string del nombre
         reservas_gimnasio = Reserva.objects.filter(usuario_solicitante=usuario).order_by('-fecha_entrada', '-hora_entrada')
-        mis_sugerencias = Sugerencia.objects.filter(usuario=usuario).order_by('-fecha')
 
         contexto = {
             'usuario': usuario,
@@ -262,6 +284,11 @@ def perfil_view(request):
 def toggle_usuario_estado(request, user_id):
     if not request.user.is_staff: return redirect('perfil')
     if request.method == 'POST':
+        # Seguridad: evitar que un admin se bloquee a sí mismo
+        if int(user_id) == request.user.id:
+            messages.error(request, "Acceso denegado: No puedes bloquear tu propia cuenta de administrador.")
+            return redirect('perfil')
+            
         u = get_object_or_404(Usuario, pk=user_id)
         u.is_active = not u.is_active
         u.estado = 'activo' if u.is_active else 'inactivo'

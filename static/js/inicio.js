@@ -435,6 +435,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (formReportar) {
         formReportar.addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log("DEBUG: Envío de formulario de reporte interceptado. Iniciando solicitud AJAX...");
+
             const formData = new FormData(this);
             const reportAlert = document.getElementById('reportAlert');
 
@@ -447,19 +449,89 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .then(response => {
+                if (!response.ok) throw new Error('Respuesta de red no válida');
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    if (reportAlert) {
+                        reportAlert.classList.remove('d-none');
+                        reportAlert.style.display = 'block';
+                        reportAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>Su reporte ha sido enviado con éxito.';
+                        document.querySelector('#modalBuzonSugerencias .modal-body').scrollTop = 0;
+                    }
+
+                    // Actualizar la lista de reportes sin recargar la página
+                    const container = document.getElementById('lista-reportes-container');
+                    if (container && data.reporte) {
+                        const r = data.reporte;
+                        // Quitar el mensaje de "No has enviado reportes" si existe
+                        const emptyMsg = container.querySelector('.text-center.py-5');
+                        if (emptyMsg) emptyMsg.remove();
+
+                        const newCard = `
+                            <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-${r.id}"
+                                 style="border-left: 5px solid #eab308;">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <span class="badge bg-danger">${r.tipo.toUpperCase()}</span>
+                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte" 
+                                                data-id="${r.id}" data-comentario="${escapeHtml(r.comentario)}" title="Editar reporte">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte" 
+                                                data-id="${r.id}" title="Eliminar reporte">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-white-50">${r.fecha}</small>
+                                </div>
+                                <p class="mb-3">${escapeHtml(r.comentario)}</p>
+                                ${r.imagen_url ? `
+                                    <div class="mb-3">
+                                        <a href="${r.imagen_url}" target="_blank">
+                                            <img src="${r.imagen_url}" alt="Evidencia" class="img-fluid rounded border border-secondary" style="max-height: 150px; cursor: pointer;">
+                                        </a>
+                                    </div>
+                                ` : ''}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>En revisión</span>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('afterbegin', newCard);
+                    }
+
+                    this.reset();
+                    const fileNameSpan = document.getElementById('fileName');
+                    if (fileNameSpan) fileNameSpan.innerText = 'Seleccionar imagen desde su equipo...';
+
+                    // Opcional: Cerrar el modal después de un breve retraso
+                    // const modalBuzon = bootstrap.Modal.getInstance(document.getElementById('modalBuzonSugerencias'));
+                    // if (modalBuzon) {
+                    //     setTimeout(() => modalBuzon.hide(), 2000);
+                    // }
+                } else {
+                    console.error("DEBUG: El servidor reportó un error:", data.message);
+                    // Mostrar mensaje de error si el servidor devuelve status 'error'
+                    if (reportAlert) {
+                        reportAlert.classList.remove('d-none');
+                        reportAlert.style.display = 'block';
+                        reportAlert.className = 'alert alert-danger'; // Estilo para errores
+                        reportAlert.innerHTML = `<i class="fas fa-times-circle me-2"></i>${data.message || 'Error desconocido al enviar el reporte.'}`;
+                        document.querySelector('#modalBuzonSugerencias .modal-body').scrollTop = 0;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('DEBUG: Error durante la solicitud fetch o el procesamiento de la respuesta:', error);
                 if (reportAlert) {
                     reportAlert.classList.remove('d-none');
                     reportAlert.style.display = 'block';
-                    reportAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>Su reporte ha sido enviado con éxito.';
-                    
-                    // Scroll hacia arriba del modal para ver el mensaje
+                    reportAlert.className = 'alert alert-danger';
+                    reportAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i>Error de conexión o procesamiento del reporte.';
                     document.querySelector('#modalBuzonSugerencias .modal-body').scrollTop = 0;
                 }
-                this.reset();
-                const fileNameSpan = document.getElementById('fileName');
-                if (fileNameSpan) fileNameSpan.innerText = 'Seleccionar imagen desde su equipo...';
-            })
-            .catch(error => console.error('Error:', error));
+            });
         });
     }
 });
@@ -471,9 +543,14 @@ window.previewProfileImage = function (event) {
     var reader = new FileReader();
     reader.onload = function () {
         var output = document.getElementById('imgPreviewPerfil');
+        var initial = document.getElementById('initialPreview');
         if (output) {
             output.src = reader.result;
+            output.classList.remove('d-none');
             output.style.border = "2px solid var(--accent-hover)";
+        }
+        if (initial) {
+            initial.classList.add('d-none');
         }
     };
     if (event.target.files[0]) {

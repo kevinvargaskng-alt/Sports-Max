@@ -80,52 +80,53 @@
         border: 1px solid rgba(255,255,255,0.1) !important;
         color: #fff !important;
     }
-
-    /* ESTILO BOTÓN REPORTAR ERROR */
-    .btn-reportar-error {
-        color: #ff4d4d !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-        border: none !important;
-        background: transparent !important;
-    }
-    .btn-reportar-error:hover {
-        color: #ff0000 !important;
-        background-color: rgba(255, 0, 0, 0.2) !important;
-        box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-        transform: scale(1.05);
-    }
-
     /* AJUSTE DE COLOR PARA LAS PESTAÑAS DENTRO DEL MODAL DE ERROR */
     #modalBuzonSugerencias .nav-tabs .nav-link {
         color: rgba(255,255,255,0.5) !important;
         border: none !important;
     }
     #modalBuzonSugerencias .nav-tabs .nav-link.active {
-        color: #ff4d4d !important;
-        border-bottom: 3px solid #ff4d4d !important;
+        color: var(--accent-blue) !important;
+        border-bottom: 3px solid var(--accent-blue) !important;
         background: transparent !important;
     }
     
-    /* Forzar Alerta Roja (Eliminar Azul) */
-    #reportAlert.alert-success, #reportAlert {
-        background-color: #721c24 !important;
-        color: #f8d7da !important;
-        border: 1px solid #f5c6cb !important;
-        border-left: 5px solid #ff0000 !important;
+    /* Estilo de alerta armonizado con el sistema */
+    #reportAlert {
+        background-color: rgba(0, 210, 255, 0.1) !important;
+        color: #fff !important;
+        border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        border-left: 5px solid var(--accent-blue) !important;
     }
     
     /* Eliminar cualquier rastro de azul en los botones del modal de error */
-    #modalBuzonSugerencias .btn-danger {
-        background-color: #dc3545 !important;
-        border: none;
+    #modalBuzonSugerencias .btn-enviar-reporte {
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover)) !important;
+        border: none !important;
+        color: #050814 !important;
+    }
+    
+    /* Estilo para la inicial si no hay foto */
+    .initial-avatar {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover));
+        color: #050814;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4.5rem;
+        font-weight: bold;
+        border: 3px solid var(--accent-blue);
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+    .initial-avatar-sm {
+        width: 120px;
+        height: 120px;
+        font-size: 3.5rem;
     }
 
     /* Eliminar el resplandor azul de los campos de texto al hacer clic */
-    #modalBuzonSugerencias .form-control:focus {
-        border-color: #ff0000 !important;
-        box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.25) !important;
-    }
 </style>
 <style>
     .sugerencia-card {
@@ -152,12 +153,15 @@
                         {% if usuario.foto_perfil %}
                             <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue);">
                         {% else %}
-                            <i class="fas fa-user-circle fa-8x text-info mb-2" style="filter: drop-shadow(0 0 10px rgba(0,210,255,0.3));"></i>
+                            <div class="rounded-circle shadow initial-avatar mx-auto">
+                                {{ usuario.first_name|first|upper }}
+                            </div>
                         {% endif %}
                     </div>
                     <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
-                    <span class="badge bg-info text-dark px-3 py-1 mb-3 text-cap">
-                        <i class="fas fa-user-graduate me-1"></i>Aprendiz sena
+                    <span class="badge {% if usuario.is_staff or usuario.rol == 'admin' %}bg-warning{% elif usuario.rol == 'instructor' %}bg-success{% else %}bg-info{% endif %} text-dark px-3 py-1 mb-3">
+                        <i class="fas {% if usuario.is_staff or usuario.rol == 'admin' %}fa-user-shield{% elif usuario.rol == 'instructor' %}fa-chalkboard-teacher{% else %}fa-user-graduate{% endif %} me-1"></i>
+                        {% if usuario.is_staff or usuario.rol == 'admin' %}Administrador{% elif usuario.rol == 'instructor' %}Instructor{% else %}Aprendiz sena{% endif %}
                     </span>
                 </div>
 
@@ -166,16 +170,16 @@
                     <div class="row g-4">
                         <div class="col-sm-6 text-start">
                             <h6 class="text-info fw-bold small mb-3 text-cap"><i class="fas fa-university me-2"></i>Información académica</h6>
-                            <p class="text-white mb-2 text-cap">
-                                <span class="text-white-50">Programa:</span> {{ usuario.get_programa_formacion_display|default:usuario.programa_formacion|lower }}
+                            <p class="text-white mb-2">
+                                <span class="text-white-50">Programa:</span> {{ usuario.get_programa_formacion_display|default:usuario.programa_formacion|capfirst }}
                             </p>
                             <p class="text-white mb-2">
                                 <span class="text-white-50">Número de ficha:</span> <span class="text-info fw-bold">{{ usuario.ficha|default:"No registrada" }}</span>
                             </p>
-                            <p class="text-white text-cap mb-1">
-                                <span class="text-white-50">Tipo de identificación:</span> {{ usuario.tipo_documento|lower }}
+                            <p class="text-white mb-1">
+                                <span class="text-white-50">Tipo de identificación:</span> {{ usuario.tipo_documento|upper }}
                             </p>
-                            <p class="text-white text-cap">
+                            <p class="text-white">
                                 <span class="text-white-50">Número de identificación:</span> {{ usuario.numero_documento }}
                             </p>
                         </div>
@@ -198,6 +202,9 @@
                         <button class="btn btn-warning btn-sm px-4 text-cap shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
                             <i class="fas fa-user-edit me-2"></i>Editar perfil
                         </button>
+                            <button class="btn btn-outline-info btn-sm px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTestRendimiento">
+                            <i class="fas fa-running me-2"></i>Mi Rendimiento
+                        </button>
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">
                             <i class="fas fa-power-off me-2"></i>Cerrar sesión
                         </a>
@@ -206,7 +213,7 @@
             </div>
         </div>
 
-        <!-- TABS CON BOTÓN ROJITO -->
+        <!-- NAVEGACIÓN DE SECCIONES -->
         <ul class="nav nav-tabs mb-4 justify-content-center border-0" id="perfilTabs" role="tablist">
             <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">Novedades</button>
@@ -224,15 +231,31 @@
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">Inter-centros</button>
             </li>
             
-            <!-- BOTÓN BUZÓN -->
+            {% if user.is_staff %}
             <li class="nav-item">
-                <button class="nav-link btn-reportar-error" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#modalBuzonSugerencias">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
-                    Reportar Error
+                <button class="nav-link text-info fw-bold" data-bs-toggle="tab" data-bs-target="#tab-admin-usuarios">
+                    <i class="fas fa-users-cog me-1"></i> Usuarios
                 </button>
             </li>
+
+            <li class="nav-item">
+                <button class="nav-link text-warning fw-bold" data-bs-toggle="tab" data-bs-target="#tab-admin-reportes">
+                    <i class="fas fa-tasks me-1"></i> Gestión Reportes
+                </button>
+            </li>
+
+            {% endif %}
+            
+            <!-- BOTÓN BUZÓN -->
+            {% if not user.is_staff %}
+            <li class="nav-item">
+                <button class="nav-link" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalBuzonSugerencias">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Reportar error
+                </button>
+            </li>
+            {% endif %}
         </ul>
 
         <div class="tab-content pb-5">
@@ -384,6 +407,128 @@
                 </div>
             </div>
 
+            {% if user.is_staff %}
+            <!-- 6. TAB GESTIÓN USUARIOS (SOLO ADMIN) -->
+            <div class="tab-pane fade" id="tab-admin-usuarios">
+                <div class="sport-card text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold text-info text-cap m-0"><i class="fas fa-users me-2"></i>Control de Usuarios Registrados</h5>
+                        <span class="badge bg-dark border border-info text-info">{{ total_usuarios }} Usuarios</span>
+                    </div>
+
+                    <div class="input-group mb-3 shadow-sm">
+                        <span class="input-group-text bg-dark border-info text-info">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchDocumento" class="form-control bg-dark text-white border-info" placeholder="Buscar por número de documento..." onkeyup="filtrarUsuarios()">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle" id="tablaUsuariosAdmin">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Documento</th>
+                                    <th>Nombre</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in todos_usuarios %}
+                                <tr>
+                                    <td class="fw-bold">{{ u.numero_documento }}</td>
+                                    <td class="text-cap">{{ u.get_full_name|lower }}</td>
+                                    <td><span class="badge bg-secondary text-cap">{{ u.rol }}</span></td>
+                                    <td>
+                                        {% if u.is_active %}
+                                            <span class="text-success small"><i class="fas fa-check-circle me-1"></i>Activo</span>
+                                        {% else %}
+                                            <span class="text-danger small"><i class="fas fa-ban me-1"></i>Bloqueado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            {% if u.id != usuario.id %}
+                                            <form action="{% url 'toggle_usuario' u.id %}" method="POST" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}" title="Cambiar estado">
+                                                    <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <button class="btn btn-sm btn-outline-secondary" disabled title="No puedes bloquear tu propia cuenta">
+                                                <i class="fas fa-user-shield"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. TAB GESTIÓN REPORTES (SOLO ADMIN) -->
+            <div class="tab-pane fade" id="tab-admin-reportes">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-warning text-cap"><i class="fas fa-clipboard-list me-2"></i>Administración Global de Reportes</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle" style="border-collapse: separate; border-spacing: 0 8px;">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Usuario</th>
+                                    <th>Reporte</th>
+                                    <th>Evidencia</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in reportes_todos %}
+                                <tr style="background: rgba(255,255,255,0.02);">
+                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|lower }}</td>
+                                    <td><div class="small text-white-50 text-truncate" style="max-width: 250px;">{{ s.comentario }}</div></td>
+                                    <td>
+                                        {% if s.imagen %}
+                                            <a href="{{ s.imagen.url }}" target="_blank">
+                                                <img src="{{ s.imagen.url }}" alt="Evidencia" class="rounded" style="width: 40px; height: 40px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                                            </a>
+                                        {% else %}
+                                            <span class="text-white-50 small">Sin imagen</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ s.fecha|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if s.respuesta %}
+                                            <span class="badge bg-success text-cap"><i class="fas fa-check-circle me-1"></i>Corregido</span>
+                                        {% else %}
+                                            <span class="badge bg-danger text-cap">Pendiente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm {% if s.respuesta %}btn-success text-white{% else %}btn-warning text-dark{% endif %} fw-bold px-3" 
+                                                    onclick="abrirModalRespuesta('{{ s.id }}', '{{ s.comentario|escapejs }}', '{{ s.respuesta|escapejs }}', '{% if s.imagen %}{{ s.imagen.url }}{% endif %}')">
+                                                <i class="fas {% if s.respuesta %}fa-edit{% else %}fa-reply{% endif %} me-1"></i>
+                                                {% if s.respuesta %}Ver/Editar{% else %}Atender{% endif %}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center py-4 text-white-50 text-cap">No hay reportes para gestionar.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 </div>
@@ -405,7 +550,10 @@
                             {% if usuario.foto_perfil %}
                                 <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
                             {% else %}
-                                <img id="imgPreviewPerfil" src="https://via.placeholder.com/120x120/050814/00d2ff?text=SENA" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 2px dashed var(--accent-blue);">
+                                <div id="initialPreview" class="rounded-circle shadow initial-avatar initial-avatar-sm mx-auto">
+                                    {{ usuario.first_name|first|upper }}
+                                </div>
+                                <img id="imgPreviewPerfil" src="" class="rounded-circle shadow d-none" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
                             {% endif %}
                             <label for="inputFotoPerfil" class="btn-camera" title="Cambiar foto">
                                 <i class="fas fa-camera"></i>
@@ -421,7 +569,7 @@
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Tipo de identificación</label>
-                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.tipo_documento|lower }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.tipo_documento|upper }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Número de identificación</label>
@@ -456,10 +604,10 @@
 
 <div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(220, 53, 69, 0.5); border-radius: 16px;">
+        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 16px;">
             <div class="modal-header border-0 pb-1">
                 <h4 class="modal-title fw-bold">
-                    <i class="fas fa-exclamation-triangle text-danger me-3"></i>Reportar un Error
+                    <i class="fas fa-bug text-info me-3"></i>Buzón de Reportes y Fallos
                 </h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -501,14 +649,15 @@
                                        onchange="document.getElementById('fileName').innerText = this.files[0].name">
                             </div>
 
-                            <button type="submit" class="btn btn-danger w-100 mt-4 py-3 fw-bold">
-                                <i class="fas fa-paper-plane me-2"></i>Enviar Reporte de Error
+                            <button type="submit" class="btn btn-info btn-enviar-reporte w-100 mt-4 py-3 fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Reporte al Sistema
                             </button>
                         </form>
                     </div>
 
                     <!-- MIS SUGERENCIAS -->
                     <div class="tab-pane fade" id="buzon-respuestas">
+                        <div id="lista-reportes-container">
                         
                         {% if sugerencias_usuario %} {# Línea 462 #}
                             {% for s in sugerencias_usuario %}
@@ -544,11 +693,12 @@
 
                                 {% if s.respuesta %}
                                     <div class="p-3 rounded bg-success bg-opacity-10 border-start border-success border-3">
-                                        <strong class="text-success">Respuesta:</strong><br>
-                                        {{ s.respuesta }}
+                                        <strong class="text-success"><i class="fas fa-check-circle me-1"></i>Reporte Corregido:</strong><br>
+                                        <p class="small text-white mt-1 mb-0">{{ s.respuesta }}</p>
                                     </div>
                                 {% else %}
                                     <span class="badge bg-warning text-dark">Pendiente</span>
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>En revisión</span>
                                 {% endif %}
                             </div>
                             {% endfor %}
@@ -558,6 +708,7 @@
                                 <p>No has enviado ningún reporte de error todavía.</p>
                             </div>
                         {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -589,6 +740,81 @@
                     <button type="submit" class="btn btn-warning btn-sm fw-bold">Guardar Cambios</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL TEST DE RENDIMIENTO INICIAL -->
+<div class="modal fade" id="modalTestRendimiento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid var(--accent-blue); border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="modal-title fw-bold"><i class="fas fa-chart-line text-info me-3"></i>Test de Rendimiento Inicial</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <form id="formTestRendimiento">
+                    <div class="row g-4">
+                        <!-- Bloque 1: Biometría -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <h6 class="text-info fw-bold mb-3 small text-uppercase"><i class="fas fa-weight me-2"></i>Biometría</h6>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50">Peso (kg)</label>
+                                    <input type="number" id="inputPeso" class="form-control bg-dark text-white border-secondary" placeholder="0.0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50">Estatura (cm)</label>
+                                    <input type="number" id="inputAltura" class="form-control bg-dark text-white border-secondary" placeholder="170">
+                                </div>
+                                <div class="mt-4 p-3 rounded text-center" style="background: rgba(0, 210, 255, 0.1);">
+                                    <span class="d-block small text-white-50">Tu IMC Estimado</span>
+                                    <h3 id="valorIMC" class="fw-bold text-info mb-1">--.-</h3>
+                                    <span id="estadoIMC" class="badge bg-secondary">Sin datos</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bloque 2: Pruebas Físicas -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-4 h-100" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <h6 class="text-warning fw-bold mb-3 small text-uppercase"><i class="fas fa-heartbeat me-2"></i>Capacidad Física</h6>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50">Pulsaciones (Reposo)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control bg-dark text-white border-secondary" placeholder="70">
+                                        <span class="input-group-text bg-dark border-secondary text-white-50">bpm</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50">Flexiones (1 min)</label>
+                                    <input type="number" class="form-control bg-dark text-white border-secondary" placeholder="Cant.">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50">Abdominales (1 min)</label>
+                                    <input type="number" class="form-control bg-dark text-white border-secondary" placeholder="Cant.">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50">Sentadillas (1 min)</label>
+                                    <input type="number" class="form-control bg-dark text-white border-secondary" placeholder="Cant.">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4 border-0 bg-dark text-white-50 small">
+                        <i class="fas fa-info-circle me-2 text-info"></i> 
+                        Este test sirve como línea base para medir tu evolución en el sistema deportivo. 
+                        ¡Completa los campos con sinceridad!
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-info px-5 py-2 fw-bold rounded-pill shadow">
+                            <i class="fas fa-save me-2"></i>Registrar Mi Rendimiento
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -627,6 +853,38 @@
     <input type="hidden" name="reporte_id" id="inputDeleteId">
 </form>
 
+<!-- MODAL PARA QUE EL ADMIN RESPONDA -->
+<div class="modal fade" id="modalResponderReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid var(--accent-blue); border-radius: 12px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-reply me-2 text-info"></i>Responder al Aprendiz</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'perfil' %}">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="responder_reporte">
+                <input type="hidden" name="reporte_id" id="inputResponderId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-white-50">Reporte original:</label>
+                        <div id="textoReporteOriginal" class="p-3 rounded bg-dark small text-white-50" style="border: 1px solid rgba(255,255,255,0.1);"></div>
+                        <div id="contenedorImagenReporte" class="mt-2 d-none"></div>
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold text-info">Tu Respuesta / Solución</label>
+                        <textarea name="respuesta" id="inputRespuestaAdmin" rows="5" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required placeholder="Escribe aquí la solución o respuesta para el aprendiz..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info btn-sm fw-bold">Enviar Respuesta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -636,9 +894,44 @@
         var reader = new FileReader();
         reader.onload = function() {
             var output = document.getElementById('imgPreviewPerfil');
+            var initial = document.getElementById('initialPreview');
             output.src = reader.result;
+            output.classList.remove('d-none');
+            if (initial) initial.classList.add('d-none');
         };
         if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // Función para llenar y mostrar el modal de respuesta del admin
+    function abrirModalRespuesta(id, comentario, respuestaExistente, urlImagen) {
+        document.getElementById('inputResponderId').value = id;
+        document.getElementById('textoReporteOriginal').innerText = comentario;
+        document.getElementById('inputRespuestaAdmin').value = respuestaExistente !== 'None' ? respuestaExistente : '';
+
+        const contenedorImagen = document.getElementById('contenedorImagenReporte');
+        if (urlImagen && urlImagen !== '') {
+            contenedorImagen.innerHTML = `<label class="form-label small fw-bold text-white-50 d-block mt-2">Evidencia adjunta:</label>
+                                          <img src="${urlImagen}" class="img-fluid rounded border border-secondary" style="max-height: 180px; cursor: pointer;" onclick="window.open('${urlImagen}', '_blank')">
+                                          <p class="small text-info mt-1" style="font-size: 0.7rem;"><i class="fas fa-search-plus me-1"></i>Haz clic en la imagen para ampliar</p>`;
+            contenedorImagen.classList.remove('d-none');
+        } else {
+            contenedorImagen.innerHTML = '';
+            contenedorImagen.classList.add('d-none');
+        }
+
+        new bootstrap.Modal(document.getElementById('modalResponderReporte')).show();
+    }
+
+    // Filtro de búsqueda para la tabla de usuarios
+    function filtrarUsuarios() {
+        const input = document.getElementById('searchDocumento');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('tablaUsuariosAdmin');
+        const tr = table.getElementsByTagName('tr');
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName('td')[0];
+            if (td) tr[i].style.display = td.textContent.toLowerCase().includes(filter) ? "" : "none";
+        }
     }
 </script>
 {% endblock %}
