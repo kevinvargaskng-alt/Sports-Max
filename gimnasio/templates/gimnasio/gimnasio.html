@@ -498,13 +498,6 @@
 
         <main class="adm-main">
 
-            {% if messages %}
-                {% for msg in messages %}
-                <div class="adm-alert {% if msg.tags == 'success' %}adm-alert-ok{% else %}adm-alert-err{% endif %}">
-                    {{ msg }}
-                </div>
-                {% endfor %}
-            {% endif %}
 
             <!-- ── DISPONIBILIDAD ── -->
             <div id="adm-disponibilidad" class="adm-sec activa">

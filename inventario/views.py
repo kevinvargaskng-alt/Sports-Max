@@ -13,6 +13,7 @@ from usuarios.models import Usuario
 @login_required
 def inventario_list(request):
     elementos = ElementoDeportivo.objects.all()
+    usuarios_staff = Usuario.objects.filter(is_staff=True, is_active=True).order_by('first_name')
 
     # Admin ve todos los préstamos; usuario solo los suyos
     if request.user.is_staff:
@@ -32,14 +33,18 @@ def inventario_list(request):
                 messages.error(request, "No tienes permisos para crear elementos.")
                 return redirect('inventario')
 
+            # Obtener el ID del responsable desde el POST
+            responsable_id = request.POST.get('usuario_responsable')
+            responsable = Usuario.objects.get(id=responsable_id) if responsable_id else None
+
             ElementoDeportivo.objects.create(
-                imagen               = request.FILES.get('imagen'),
-                tipo_maquina         = request.POST.get('tipo_maquina'),
+                tipo_maquina         = request.POST.get('nombre_elemento'), # el form manda nombre_elemento
                 cantidad_total       = request.POST.get('cantidad_total'),
                 estado_general       = request.POST.get('estado_general'),
-                fecha_adquisicion    = request.POST.get('fecha_adquisicion'),
-                descripcion          = request.POST.get('descripcion'),
-                docente_responsable  = request.POST.get('docente_responsable'),
+                fecha_adquisicion    = request.POST.get('fecha_adquisicion') or None,
+                descripcion          = request.POST.get('descripcion', ''),
+                imagen               = request.FILES.get('imagen'),
+                usuario_responsable  = responsable,
             )
             messages.success(request, "Elemento creado exitosamente.")
             return redirect('inventario')
@@ -52,15 +57,22 @@ def inventario_list(request):
 
             codigo = request.POST.get('codigo_elemento')
             if codigo:
-                elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=codigo)
-                if 'imagen' in request.FILES:
-                    elemento.imagen = request.FILES['imagen']
-                elemento.tipo_maquina         = request.POST.get('tipo_maquina')
+                elemento = get_object_or_404(ElementoDeportivo, id=codigo)
+
+                # Obtener el ID del responsable desde el POST
+                responsable_id = request.POST.get('usuario_responsable')
+                if responsable_id:
+                    elemento.usuario_responsable = Usuario.objects.get(id=responsable_id)
+                else:
+                    elemento.usuario_responsable = None
+
+                elemento.tipo_maquina         = request.POST.get('nombre_elemento')
                 elemento.cantidad_total       = request.POST.get('cantidad_total')
                 elemento.estado_general       = request.POST.get('estado_general')
-                elemento.fecha_adquisicion    = request.POST.get('fecha_adquisicion')
-                elemento.descripcion          = request.POST.get('descripcion')
-                elemento.docente_responsable  = request.POST.get('docente_responsable')
+                elemento.fecha_adquisicion    = request.POST.get('fecha_adquisicion') or None
+                elemento.descripcion          = request.POST.get('descripcion', '')
+                if 'imagen' in request.FILES:
+                    elemento.imagen = request.FILES['imagen']
                 elemento.save()
                 messages.success(request, "Elemento actualizado correctamente.")
             return redirect('inventario')
@@ -83,7 +95,7 @@ def inventario_list(request):
             cantidad    = int(request.POST.get('cantidad_prestada', 0))
             dias        = int(request.POST.get('dias_prestamo', 1))
 
-            elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id_elemento)
+            elemento = get_object_or_404(ElementoDeportivo, id=id_elemento)
 
             # Validar stock disponible
             if cantidad <= 0:
@@ -128,6 +140,7 @@ def inventario_list(request):
         'elementos': elementos,
         'prestamos': prestamos,
         'sanciones': sanciones,
+        'usuarios_staff': usuarios_staff,
     })
 
 
@@ -303,7 +316,7 @@ def eliminar_elemento(request, id):
     if not request.user.is_staff:
         messages.error(request, "No tienes permisos para eliminar elementos.")
         return redirect('inventario')
-    elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id)
+    elemento = get_object_or_404(ElementoDeportivo, id=id)
     elemento.delete()
     messages.warning(request, "Elemento eliminado del inventario.")
     return redirect('inventario')
@@ -315,7 +328,7 @@ def editar_elemento(request, id):
     if not request.user.is_staff:
         messages.error(request, "No tienes permisos para editar elementos.")
         return redirect('inventario')
-    elemento = get_object_or_404(ElementoDeportivo, codigo_elemento=id)
+    elemento = get_object_or_404(ElementoDeportivo, id=id)
     if request.method == 'POST':
         if 'imagen' in request.FILES:
             elemento.imagen = request.FILES['imagen']

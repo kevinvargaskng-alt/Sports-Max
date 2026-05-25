@@ -42,6 +42,7 @@ urlpatterns = [
     path('interfichas/', include('interfichas.urls')),
     path('gimnasio/', include('gimnasio.urls')),
     path('inventario/', include('inventario.urls')),
+    path('habitos/', include('habitos_saludables.urls')),
 
     # --- RUTA DEL AGENTE INTELIGENTE TUX (NUEVO) ---
     path('api/chat-tux/', chat_tux_api, name='chat_tux_api'),
