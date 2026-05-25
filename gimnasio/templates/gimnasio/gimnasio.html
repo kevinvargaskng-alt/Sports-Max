@@ -1,317 +1,911 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Acceso Biométrico - Gimnasio{% endblock %}
+{% block title %}Gimnasio SENA{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
-    /* Estructura Base */
-    html, body { height: 100%; margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    body { 
-        display: flex; 
-        flex-direction: column; 
-        background: #0d1117 !important; 
-        color: #c9d1d9 !important; 
-    }
-    .main-wrapper { flex: 1; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; }
-
-    /* Tarjeta Principal con más aire */
-    .gym-card-pro {
-        display: flex;
-        width: 100%;
-        max-width: 1000px;
-        background: #161b22;
-        border: 1px solid #30363d;
+    /* ══════════════════════════════════════════
+       UTILITARIOS
+    ══════════════════════════════════════════ */
+    .badge-status {
+        padding: 5px 12px;
         border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        margin-bottom: 50px;
+        font-size: 0.72rem;
+        font-weight: bold;
     }
 
-    /* Panel Izquierdo: Monitor e Información */
-    .status-panel {
-        flex: 0.9;
-        background: #090c10;
-        padding: 50px 40px;
-        display: flex;
-        flex-direction: column;
+    /* ══════════════════════════════════════════
+       RELOJ / FECHA
+    ══════════════════════════════════════════ */
+    .gym-clock-wrap {
+        background: rgba(88,166,255,.06);
+        border: 1px solid rgba(88,166,255,.18);
+        border-radius: 14px;
+        padding: 14px 24px;
+        display: inline-flex;
         align-items: center;
-        border-right: 1px solid #30363d;
+        gap: 18px;
     }
-
-    .digital-clock {
+    .gym-clock {
         font-family: 'Consolas', monospace;
-        font-size: 3rem;
+        font-size: 2rem;
         font-weight: bold;
         color: #58a6ff;
-        margin-bottom: 5px;
+        letter-spacing: 2px;
     }
+    .gym-date { font-size: 0.8rem; color: #8b949e; }
 
-    .date-display { color: #8b949e; font-size: 0.9rem; margin-bottom: 30px; }
-
-    .info-box {
-        width: 100%;
-        background: rgba(88, 166, 255, 0.05);
-        border: 1px solid rgba(88, 166, 255, 0.1);
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 10px;
+    /* ══════════════════════════════════════════
+       STATUS PILL
+    ══════════════════════════════════════════ */
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 16px; border-radius: 30px;
+        font-size: 0.72rem; font-weight: 800;
+        letter-spacing: 1.2px; text-transform: uppercase;
     }
-    
-    .info-item {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.75rem;
-        margin-bottom: 10px;
-        letter-spacing: 0.5px;
+    .status-pill::before {
+        content: ''; width: 7px; height: 7px;
+        border-radius: 50%; background: currentColor;
+        animation: blink 2s infinite;
     }
-    .info-item:last-child { margin-bottom: 0; }
-    .label-tech { color: #8b949e; text-transform: uppercase; font-weight: 600; }
-    .value-tech { color: #f0f6fc; font-weight: bold; }
-    .text-open { color: #3fb950; }
-    .text-closed { color: #f85149; }
+    .status-open   { background: rgba(46,160,67,.12); border: 1px solid #2ea043; color: #56d364; }
+    .status-closed { background: rgba(248,81,73,.12); border: 1px solid #f85149; color: #f85149; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-    /* Panel Derecho: Perfil */
-    .action-panel {
-        flex: 1.1;
-        padding: 50px;
-    }
-
-    .data-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-bottom: 40px;
-    }
-
-    .data-card {
-        background: rgba(255, 255, 255, 0.02);
-        padding: 18px;
-        border-radius: 12px;
+    /* ══════════════════════════════════════════
+       NAV CARDS APRENDIZ
+    ══════════════════════════════════════════ */
+    .gym-nav-card {
+        background: rgba(255,255,255,.03);
         border: 1px solid #30363d;
-    }
-
-    .data-card label {
+        border-radius: 14px;
+        padding: 22px 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .2s, background .2s, transform .15s;
+        text-decoration: none;
         display: block;
-        font-size: 0.65rem;
-        color: #58a6ff;
+        height: 100%;
+    }
+    .gym-nav-card:hover {
+        border-color: #58a6ff;
+        background: rgba(88,166,255,.05);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+    .gym-nav-card .nav-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+    .gym-nav-card .nav-label {
+        font-size: 0.72rem;
         font-weight: 800;
+        letter-spacing: 1.5px;
         text-transform: uppercase;
-        margin-bottom: 8px;
+        color: #c9d1d9;
+        margin-bottom: 4px;
+        display: block;
     }
-
-    .data-card span { font-size: 1rem; color: #f0f6fc; }
-
-    .btn-submit {
-        width: 100%;
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        border: none;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .gym-nav-card .nav-sub {
+        font-size: 0.68rem;
+        color: #6b7a94;
     }
-    .btn-active { background: #238636; color: white; cursor: pointer; box-shadow: 0 4px 14px rgba(35, 134, 54, 0.4); }
-    .btn-active:hover { transform: translateY(-3px); background: #2ea043; }
+    .gym-nav-card.accent-blue  { border-color: rgba(88,166,255,.3); }
+    .gym-nav-card.accent-red   { border-color: rgba(248,81,73,.3); }
+    .gym-nav-card.accent-warn  { border-color: rgba(227,179,65,.3); }
+    .gym-nav-card.accent-green { border-color: rgba(46,160,67,.3); }
+    .gym-nav-card.accent-cyan  { border-color: rgba(34,211,238,.3); }
 
-    /* SECCIÓN DE HISTORIAL */
-    .history-container { width: 100%; max-width: 1000px; }
-    .history-header { font-size: 0.9rem; font-weight: bold; color: #8b949e; margin-bottom: 20px; display: flex; align-items: center; }
-    
-    .table-custom {
-        width: 100%;
-        background: #161b22;
+    .gym-nav-card.accent-blue:hover  { border-color: #58a6ff; background: rgba(88,166,255,.07); }
+    .gym-nav-card.accent-red:hover   { border-color: #f85149; background: rgba(248,81,73,.07); }
+    .gym-nav-card.accent-warn:hover  { border-color: #e3b341; background: rgba(227,179,65,.07); }
+    .gym-nav-card.accent-green:hover { border-color: #56d364; background: rgba(46,160,67,.07); }
+    .gym-nav-card.accent-cyan:hover  { border-color: #22d3ee; background: rgba(34,211,238,.07); }
+
+    /* ══════════════════════════════════════════
+       PICKER RESERVA
+    ══════════════════════════════════════════ */
+    .res-picker {
+        background: rgba(88,166,255,.04);
+        border: 1px solid rgba(88,166,255,.18);
+        border-radius: 14px;
+        padding: 22px 24px;
+    }
+    .res-picker .picker-label {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 1.8px; text-transform: uppercase;
+        color: #58a6ff; display: block; margin-bottom: 6px;
+    }
+    .res-picker input[type=date],
+    .res-picker input[type=time] {
+        background: #0d1117;
         border: 1px solid #30363d;
-        border-radius: 15px;
-        border-collapse: separate;
-        border-spacing: 0;
-        overflow: hidden;
+        border-radius: 8px;
+        color: #f0f6fc;
+        font-family: 'Consolas', monospace;
+        font-size: 1rem;
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color .15s, box-shadow .15s;
+        width: 100%;
     }
-    .table-custom th { background: #090c10; padding: 15px; color: #58a6ff; font-size: 0.75rem; text-transform: uppercase; }
-    .table-custom td { padding: 15px; border-top: 1px solid #30363d; font-size: 0.9rem; }
+    .res-picker input:focus {
+        border-color: #58a6ff;
+        box-shadow: 0 0 0 3px rgba(88,166,255,.2);
+    }
 
-    /* =========================================================
-       ESTILOS RESPONSIVE (CELULAR)
-       ========================================================= */
+    /* ══════════════════════════════════════════
+       TABLA HISTORIAL
+    ══════════════════════════════════════════ */
+    .btn-trash {
+        background: none; border: none;
+        color: #6b7a94; cursor: pointer;
+        padding: 4px 8px; border-radius: 6px;
+        transition: all .15s; font-size: 0.8rem;
+    }
+    .btn-trash:hover { color: #f85149; background: rgba(248,81,73,.12); }
+
+    /* ══════════════════════════════════════════
+       ADMIN — NAV + STATS
+    ══════════════════════════════════════════ */
+    .stat-mini {
+        background: rgba(255,255,255,.03);
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 18px 20px;
+        text-align: center;
+    }
+    .stat-mini .stat-num {
+        font-family: 'Consolas', monospace;
+        font-size: 2rem;
+        color: #58a6ff;
+        display: block;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .stat-mini .stat-lbl {
+        font-size: 0.65rem; font-weight: 800;
+        letter-spacing: 1.5px; text-transform: uppercase; color: #6b7a94;
+    }
+
+    .adm-sec { display: none; }
+    .adm-sec.activa { display: block; }
+
+    .estado-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .btn-estado {
+        background: #161b22; border: 1.5px solid #30363d;
+        color: #8b949e; font-size: 0.8rem; font-weight: 700;
+        letter-spacing: .8px; text-transform: uppercase;
+        padding: 14px 8px; border-radius: 8px; cursor: pointer;
+        transition: all .15s; text-align: center;
+    }
+    .btn-estado:hover { border-color: #58a6ff; color: #f0f6fc; }
+    .btn-estado.sel   { border-color: #58a6ff; background: rgba(88,166,255,.1); color: #58a6ff; }
+
+    .dias-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-dia {
+        background: #161b22; border: 1.5px solid #30363d;
+        color: #8b949e; font-size: 0.78rem; font-weight: 600;
+        padding: 7px 13px; border-radius: 6px; cursor: pointer; transition: all .15s;
+    }
+    .btn-dia:hover  { border-color: #58a6ff; color: #f0f6fc; }
+    .btn-dia.active { border-color: #58a6ff; background: rgba(88,166,255,.1); color: #58a6ff; }
+
+    .adm-input {
+        background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+        color: #f0f6fc; font-family: 'Consolas', monospace; font-size: 1rem;
+        padding: 10px 14px; outline: none; transition: border-color .15s; width: 100%;
+    }
+    .adm-input:focus { border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,.2); }
+
+    .dia-badge {
+        border: 1.5px solid #58a6ff; color: #58a6ff;
+        padding: 4px 11px; border-radius: 5px;
+        font-size: 0.72rem; font-weight: 700; display: inline-block; margin: 2px;
+    }
+
+    .search-wrap { position: relative; }
+    .search-wrap input {
+        background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+        color: #f0f6fc; font-size: 0.88rem; padding: 9px 14px 9px 38px;
+        outline: none; width: 100%; transition: border-color .15s;
+    }
+    .search-wrap input:focus { border-color: #58a6ff; }
+    .search-wrap .search-ico {
+        position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+        color: #6b7a94; font-size: 0.8rem;
+    }
+
+    /* ══════════════════════════════════════════
+       DATOS APRENDIZ
+    ══════════════════════════════════════════ */
+    .aprendiz-box {
+        background: rgba(88,166,255,.04);
+        border: 1px solid rgba(88,166,255,.15);
+        border-radius: 12px;
+        padding: 18px 22px;
+    }
+    .aprendiz-label {
+        font-size: 0.62rem; font-weight: 800; letter-spacing: 1.8px;
+        text-transform: uppercase; color: #58a6ff; display: block; margin-bottom: 2px;
+    }
+    .aprendiz-val {
+        font-size: 0.92rem; font-weight: 600; color: #f0f6fc;
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
     @media (max-width: 768px) {
-        .main-wrapper { padding: 30px 15px; }
-
-        /* Tarjeta principal pasa a vertical */
-        .gym-card-pro {
-            flex-direction: column;
-            margin-bottom: 30px;
+        .gym-clock { font-size: 1.5rem; }
+        .estado-grid { grid-template-columns: 1fr 1fr; }
+        #tablaRegistros thead, #tablaHistorial thead { display: none; }
+        #tablaRegistros, #tablaRegistros tbody, #tablaRegistros tr, #tablaRegistros td,
+        #tablaHistorial, #tablaHistorial tbody, #tablaHistorial tr, #tablaHistorial td { display: block; width: 100%; }
+        #tablaRegistros tr, #tablaHistorial tr {
+            border: 1px solid #30363d; border-radius: 12px;
+            background: #161b22; margin-bottom: 16px; padding: 10px 0;
         }
-
-        .status-panel {
-            flex: none;
-            border-right: none;
-            border-bottom: 1px solid #30363d;
-            padding: 30px 20px;
+        #tablaRegistros td, #tablaHistorial td {
+            text-align: left !important; padding: 8px 18px !important;
+            border: none !important; position: relative; padding-left: 46% !important;
         }
-
-        .action-panel {
-            flex: none;
-            padding: 30px 20px;
-        }
-
-        .digital-clock { font-size: 2.5rem; }
-
-        /* Grid de datos a 1 columna */
-        .data-grid {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .data-card { padding: 12px; }
-
-        /* Transformación de tabla de historial */
-        .table-custom thead { display: none; } /* Ocultar cabeceras en móvil */
-        
-        .table-custom, .table-custom tbody, .table-custom tr, .table-custom td {
-            display: block;
-            width: 100%;
-        }
-
-        .table-custom tr {
-            border-bottom: 1px solid #30363d;
-            padding: 15px 10px;
-        }
-
-        .table-custom td {
-            text-align: left;
-            padding: 8px 15px;
-            border: none;
-            position: relative;
-            padding-left: 45%;
-        }
-
-        /* Etiquetas para datos móviles */
-        .table-custom td::before {
+        #tablaRegistros td::before, #tablaHistorial td::before {
             content: attr(data-label);
-            position: absolute;
-            left: 15px;
-            font-weight: bold;
-            color: #58a6ff;
-            text-transform: uppercase;
-            font-size: 0.7rem;
+            position: absolute; left: 14px;
+            font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+            color: #58a6ff; letter-spacing: 1px;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="main-wrapper">
-    
-    <div class="gym-card-pro">
-        
-        <div class="status-panel">
-            <div class="digital-clock" id="clock">00:00:00</div>
-            <div class="date-display">{{ ahora|date:"d M Y" }}</div>
-            
-            <div class="info-box">
-                <div class="info-item">
-                    <span class="label-tech">Disponibilidad:</span>
-                    <span class="value-tech {% if esta_abierto %}text-open{% else %}text-closed{% endif %}">
-                        {% if esta_abierto %}SALA ABIERTA{% else %}SALA CERRADA{% endif %}
-                    </span>
-                </div>
-                <div class="info-item">
-                    <span class="label-tech">Días:</span>
-                    <span class="value-tech">Lun - Vie</span>
-                </div>
-                <div class="info-item">
-                    <span class="label-tech">Horario:</span>
-                    <span class="value-tech">07:00 - 17:00</span>
-                </div>
-                <div class="info-item" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 5px;">
-                    <span class="label-tech">Modo:</span>
-                    <span class="value-tech">Aprendiz</span>
-                </div>
-            </div>
+<div class="main-container py-4">
+<div class="container text-start">
 
-            <div class="mt-auto pt-4 d-none d-md-block">
-                <i class="fas fa-microchip text-secondary opacity-25 fa-2x"></i>
+<!-- ════════════════════════════════════════════
+     RAMA ADMIN
+════════════════════════════════════════════ -->
+{% if user.is_staff or user.is_superuser %}
+
+    <header class="modulo-header text-center mb-5">
+        <i class="fas fa-dumbbell fa-3x mb-3 text-warning"></i>
+        <h2 class="fw-bold text-white">Panel de Administración — Gimnasio</h2>
+        <p class="text-white-50">
+            Bienvenido, <strong>{{ user.get_full_name }}</strong> — Gestión y control de accesos
+        </p>
+        <div class="mt-3">
+            <span class="status-pill {% if esta_abierto %}status-open{% else %}status-closed{% endif %}">
+                {% if esta_abierto %}Sala Abierta{% else %}Sala Cerrada{% endif %}
+            </span>
+        </div>
+    </header>
+
+    <!-- NAV ADMIN -->
+    <nav class="row g-3 mb-5 justify-content-center">
+        <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('disponibilidad', this)">
+                <i class="fas fa-toggle-on fa-2x mb-2 text-warning"></i>
+                <h6 class="fw-bold text-white small mb-0">DISPONIBILIDAD</h6>
             </div>
         </div>
+        <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('horarios', this)">
+                <i class="fas fa-clock fa-2x mb-2 text-info"></i>
+                <h6 class="fw-bold text-white small mb-0">HORARIOS</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('fechas', this)">
+                <i class="fas fa-calendar-alt fa-2x mb-2 text-success"></i>
+                <h6 class="fw-bold text-white small mb-0">FECHAS ESPECIALES</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('registros', this)">
+                <i class="fas fa-clipboard-list fa-2x mb-2 text-danger"></i>
+                <h6 class="fw-bold text-white small mb-0">VER REGISTROS</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button"
+                 onclick="window.location='{% url 'admin_lista_anamnesis' %}'">
+                <i class="fas fa-heartbeat fa-2x mb-2" style="color:#f85149;"></i>
+                <h6 class="fw-bold text-white small mb-0">FICHAS SALUD</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('configuracion', this)">
+                <i class="fas fa-cog fa-2x mb-2 text-secondary"></i>
+                <h6 class="fw-bold text-white small mb-0">CONFIGURACIÓN</h6>
+            </div>
+        </div>
+    </nav>
 
-        <div class="action-panel">
-            <h4 class="text-white fw-bold mb-4 text-center text-md-start">Registro de Entrada</h4>
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} small py-2 mb-4">
+            {{ msg }}
+        </div>
+        {% endfor %}
+    {% endif %}
 
-            <div class="data-grid text-start">
-                <div class="data-card" style="grid-column: span 1 / -1;">
-                    <label>Nombre del Aprendiz</label>
-                    <span class="fw-bold d-block">{{ user.first_name }} {{ user.last_name }}</span>
+    <!-- DISPONIBILIDAD -->
+    <div id="adm-disponibilidad" class="adm-sec activa">
+        <section class="sport-card mb-4">
+            <h5 class="fw-bold mb-4">
+                <i class="fas fa-toggle-on text-warning me-2"></i>Estado del Gimnasio
+            </h5>
+            <form method="post" action="{% url 'admin_disponibilidad' %}" id="cfg-form">
+                {% csrf_token %}
+                <input type="hidden" name="estado"    id="estado-input" value="{{ config.estado|default:'abierta' }}">
+                <input type="hidden" name="dias_json" id="dias-input"   value="">
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-white-50 text-uppercase" style="letter-spacing:1.5px;">Estado actual</label>
+                    <div class="estado-grid">
+                        <button type="button" class="btn-estado {% if config.estado == 'abierta' %}sel{% endif %}"
+                                data-val="abierta" onclick="selEstado(this)">🟢<br>Sala Abierta</button>
+                        <button type="button" class="btn-estado {% if config.estado == 'cerrada' %}sel{% endif %}"
+                                data-val="cerrada" onclick="selEstado(this)">🔴<br>Sala Cerrada</button>
+                        <button type="button" class="btn-estado {% if config.estado == 'mantenimiento' %}sel{% endif %}"
+                                data-val="mantenimiento" onclick="selEstado(this)">🟡<br>Mantenimiento</button>
+                    </div>
                 </div>
-                <div class="data-card">
-                    <label>N° Documento</label>
-                    <span class="d-block">{{ user.numero_documento|default:"N/A" }}</span>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-white-50 text-uppercase" style="letter-spacing:1.5px;">Días habilitados</label>
+                    <div class="dias-wrap">
+                        {% for dia in dias_semana %}
+                        <button type="button"
+                                class="btn-dia {% if dia.codigo in dias_activos %}active{% endif %}"
+                                data-dia="{{ dia.codigo }}"
+                                onclick="toggleDia(this)">{{ dia.label }}</button>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="data-card">
-                    <label>Ficha</label>
-                    <span class="d-block">{{ user.ficha|default:"N/A" }}</span>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Apertura</label>
+                        <input type="time" class="adm-input" name="horario_apertura"
+                               value="{{ config.horario_apertura|time:'H:i' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Cierre</label>
+                        <input type="time" class="adm-input" name="horario_cierre"
+                               value="{{ config.horario_cierre|time:'H:i' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Capacidad máxima</label>
+                        <input type="number" class="adm-input" name="capacidad_maxima"
+                               value="{{ config.capacidad_maxima|default:40 }}" min="1" max="9999">
+                    </div>
                 </div>
-                <div class="data-card" style="grid-column: span 1 / -1;">
-                    <label>Programa de Formación</label>
-                    <span class="d-block">{{ user.programa_formacion|default:"No Asignado" }}</span>
+
+                <button type="submit" class="btn btn-warning fw-bold px-4 py-2">
+                    <i class="fas fa-save me-2"></i>CONFIRMAR CAMBIOS
+                </button>
+            </form>
+        </section>
+    </div>
+
+    <!-- HORARIOS -->
+    <div id="adm-horarios" class="adm-sec">
+        <section class="sport-card mb-4">
+            <h5 class="fw-bold mb-4"><i class="fas fa-clock text-info me-2"></i>Resumen de Horarios</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="color:#56d364;">{{ config.horario_apertura|time:"H:i" }}</span>
+                        <span class="stat-lbl">Apertura</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="color:#f85149;">{{ config.horario_cierre|time:"H:i" }}</span>
+                        <span class="stat-lbl">Cierre</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-mini">
+                        <span class="stat-num">{{ config.capacidad_maxima|default:40 }}</span>
+                        <span class="stat-lbl">Capacidad</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="font-size:1.1rem;padding-top:8px;
+                            color:{% if config.estado == 'abierta' %}#56d364{% elif config.estado == 'cerrada' %}#f85149{% else %}#e3b341{% endif %};">
+                            ●&nbsp;{{ config.get_estado_display }}
+                        </span>
+                        <span class="stat-lbl">Estado</span>
+                    </div>
                 </div>
             </div>
+            <div class="mt-4">
+                <label class="form-label fw-bold small text-white-50 text-uppercase" style="letter-spacing:1.5px;">Días habilitados</label>
+                <div class="mt-2">
+                    {% for dia in config.dias_habilitados %}
+                        <span class="dia-badge">{{ dia|upper }}</span>
+                    {% empty %}
+                        <span class="text-white-50 small">Ningún día habilitado.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
 
-            <form method="POST">
+    <!-- FECHAS ESPECIALES -->
+    <div id="adm-fechas" class="adm-sec">
+        <section class="sport-card mb-4">
+            <h5 class="fw-bold mb-4"><i class="fas fa-calendar-alt text-success me-2"></i>Fechas Especiales</h5>
+            <form method="post" action="{% url 'admin_fechas_ingreso' %}" class="row g-3 align-items-end mb-5">
                 {% csrf_token %}
-                <input type="hidden" name="accion" value="crear_reserva">
-                {% if esta_abierto %}
-                    <button type="submit" class="btn-submit btn-active shadow">Confirmar Registro</button>
-                {% else %}
-                    <button type="button" class="btn-submit" style="background: #21262d; color: #f85149; border: 1px solid rgba(248,81,73,0.2); cursor: not-allowed;" disabled>
-                        SISTEMA BLOQUEADO
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small">Fecha</label>
+                    <input type="date" name="fecha" class="adm-input" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-bold small">Descripción (opcional)</label>
+                    <input type="text" name="descripcion" class="adm-input" placeholder="Ej: Festivo, evento especial...">
+                </div>
+                <div class="col-md-2 d-flex align-items-center gap-2 pb-1">
+                    <input type="checkbox" name="habilitada" id="chk-hab" checked style="accent-color:#58a6ff; width:16px; height:16px;">
+                    <label for="chk-hab" class="fw-bold small mb-0 text-white" style="cursor:pointer;">Habilitada</label>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success fw-bold w-100">
+                        <i class="fas fa-plus me-1"></i>Agregar
                     </button>
-                {% endif %}
+                </div>
             </form>
+            {% if fechas %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead><tr><th>Fecha</th><th>Descripción</th><th>Estado</th><th class="text-center">Acción</th></tr></thead>
+                    <tbody>
+                    {% for f in fechas %}
+                    <tr>
+                        <td class="fw-bold" style="font-family:Consolas,monospace;">{{ f.fecha }}</td>
+                        <td class="text-white-50">{{ f.descripcion|default:"—" }}</td>
+                        <td>
+                            {% if f.habilitada %}
+                                <span class="badge-status bg-success">● Habilitada</span>
+                            {% else %}
+                                <span class="badge-status bg-danger">● Deshabilitada</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <form method="post" action="{% url 'admin_eliminar_fecha' f.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('¿Eliminar esta fecha?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center text-white-50 py-4">
+                <i class="fas fa-calendar-times fa-2x d-block mb-3 opacity-25"></i>
+                No hay fechas especiales registradas.
+            </p>
+            {% endif %}
+        </section>
+    </div>
+
+    <!-- REGISTROS -->
+    <div id="adm-registros" class="adm-sec">
+        <section class="sport-card mb-4">
+            <h5 class="fw-bold mb-4"><i class="fas fa-clipboard-list text-danger me-2"></i>Registros de Ingreso</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-4">
+                    <div class="stat-mini">
+                        <span class="stat-num">{{ total_reservas|default:0 }}</span>
+                        <span class="stat-lbl">Total ingresos</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="color:#56d364;">{{ reservas_hoy|default:0 }}</span>
+                        <span class="stat-lbl">Hoy</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="color:#e3b341;">{{ total_aprendices|default:0 }}</span>
+                        <span class="stat-lbl">Aprendices</span>
+                    </div>
+                </div>
+            </div>
+            <div class="search-wrap mb-3" style="max-width:380px;">
+                <i class="fas fa-search search-ico"></i>
+                <input type="text" placeholder="Buscar por nombre, documento, fecha..."
+                       oninput="filtrarTabla(this.value)">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0" id="tablaRegistros">
+                    <thead>
+                        <tr><th>Aprendiz</th><th>Documento</th><th>Ficha</th><th>Fecha</th><th>Hora</th><th>Estado</th><th class="text-center">Acción</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for r in todas_reservas %}
+                    <tr>
+                        <td data-label="Aprendiz"><strong>{{ r.usuario.get_full_name|default:r.usuario.username }}</strong></td>
+                        <td data-label="Documento" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.usuario.numero_documento|default:"—" }}</td>
+                        <td data-label="Ficha" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.usuario.ficha|default:"—" }}</td>
+                        <td data-label="Fecha" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
+                        <td data-label="Hora" class="text-info fw-bold" style="font-family:Consolas,monospace;">{{ r.hora_entrada|time:"H:i" }}</td>
+                        <td data-label="Estado"><span class="badge-status bg-success">Éxito</span></td>
+                        <td data-label="Acción" class="text-center">
+                            <form method="post" action="{% url 'eliminar_reserva' r.codigo_registro %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-trash"
+                                        onclick="return confirm('¿Eliminar registro de {{ r.usuario.get_full_name }}?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-white-50">
+                            <i class="fas fa-inbox fa-2x d-block mb-3 opacity-25"></i>
+                            No hay registros de ingreso.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert mt-4 small py-2 mb-0"
+                 style="background:rgba(227,179,65,.08); border:1px solid rgba(227,179,65,.3); color:#e3b341;">
+                <i class="fas fa-info-circle me-2"></i>
+                Panel de <strong>solo gestión</strong>. Los registros son creados por los aprendices.
+            </div>
+        </section>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div id="adm-configuracion" class="adm-sec">
+        <section class="sport-card mb-4">
+            <h5 class="fw-bold mb-4"><i class="fas fa-cog text-secondary me-2"></i>Configuración General</h5>
+            <div class="p-3 rounded mb-4" style="background:rgba(88,166,255,.04); border:1px solid rgba(88,166,255,.15);">
+                <label class="form-label fw-bold small text-white-50 text-uppercase mb-2" style="letter-spacing:1.5px; display:block;">
+                    Última actualización
+                </label>
+                <p class="mb-0 fw-bold" style="font-family:Consolas,monospace; font-size:0.95rem;">
+                    {{ config.actualizado_en|date:"d/m/Y H:i" }}
+                    {% if config.actualizado_por %}
+                        <span class="text-white-50 fw-normal"> — por
+                            <strong class="text-white">{{ config.actualizado_por.get_full_name|default:config.actualizado_por.username }}</strong>
+                        </span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="font-size:1.2rem; padding-top:6px;
+                            color:{% if config.estado == 'abierta' %}#56d364{% elif config.estado == 'cerrada' %}#f85149{% else %}#e3b341{% endif %};">
+                            ●&nbsp;{{ config.get_estado_display }}
+                        </span>
+                        <span class="stat-lbl">Estado actual</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-mini">
+                        <span class="stat-num">{{ config.capacidad_maxima|default:40 }}</span>
+                        <span class="stat-lbl">Capacidad máxima</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="font-size:1.1rem; padding-top:8px; color:#58a6ff;">
+                            {{ config.horario_apertura|time:"H:i" }} – {{ config.horario_cierre|time:"H:i" }}
+                        </span>
+                        <span class="stat-lbl">Horario</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+{% else %}
+<!-- ════════════════════════════════════════════
+     RAMA APRENDIZ
+════════════════════════════════════════════ -->
+
+    <!-- HEADER -->
+    <header class="modulo-header text-center mb-5">
+        <i class="fas fa-dumbbell fa-3x mb-3" style="color:#58a6ff;"></i>
+        <h2 class="fw-bold text-white">Gimnasio SENA</h2>
+        <p class="text-white-50">Hola, <strong>{{ user.first_name }}</strong> — ¿Listo para entrenar?</p>
+        <div class="mt-3 d-flex justify-content-center align-items-center gap-3 flex-wrap">
+            <div class="gym-clock-wrap">
+                <div>
+                    <div class="gym-clock" id="clock">00:00:00</div>
+                    <div class="gym-date">{{ ahora|date:"d M Y"|upper }}</div>
+                </div>
+            </div>
+            <span class="status-pill {% if esta_abierto %}status-open{% else %}status-closed{% endif %}">
+                {% if esta_abierto %}Sala Abierta{% else %}Sala Cerrada{% endif %}
+            </span>
+        </div>
+    </header>
+
+    <!-- DATOS DEL APRENDIZ -->
+    <div class="aprendiz-box mb-4">
+        <div class="row g-3">
+            <div class="col-12 col-md-5">
+                <span class="aprendiz-label">Aprendiz</span>
+                <span class="aprendiz-val">{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+            <div class="col-6 col-md-2">
+                <span class="aprendiz-label">Documento</span>
+                <span class="aprendiz-val">{{ user.numero_documento|default:"N/A" }}</span>
+            </div>
+            <div class="col-6 col-md-2">
+                <span class="aprendiz-label">Ficha</span>
+                <span class="aprendiz-val">{{ user.ficha|default:"N/A" }}</span>
+            </div>
+            <div class="col-12 col-md-3">
+                <span class="aprendiz-label">Programa</span>
+                <span class="aprendiz-val" style="font-size:0.82rem;">{{ user.programa_formacion|default:"No asignado" }}</span>
+            </div>
         </div>
     </div>
 
-    <div class="history-container">
-        <div class="history-header">
-            <i class="fas fa-history me-2"></i> MIS ÚLTIMOS INGRESOS
+    <!-- NAV APRENDIZ — 5 módulos -->
+    <nav class="row g-3 mb-5">
+        <!-- Ingreso (activo aquí) -->
+        <div class="col-6 col-md-4">
+            <div class="gym-nav-card accent-blue" style="border-color:#58a6ff; background:rgba(88,166,255,.08);">
+                <i class="fas fa-sign-in-alt nav-icon" style="color:#58a6ff;"></i>
+                <span class="nav-label" style="color:#58a6ff;">Registro de Ingreso</span>
+                <span class="nav-sub">Estás aquí</span>
+            </div>
         </div>
-        <table class="table-custom text-center">
-            <thead>
-                <tr>
-                    <th>Fecha de Acceso</th>
-                    <th>Hora de Entrada</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
+        <!-- Ficha de salud -->
+        <div class="col-6 col-md-4">
+            <a href="{% url 'anamnesis_propia' %}" class="gym-nav-card accent-red">
+                <i class="fas fa-heartbeat nav-icon" style="color:#f85149;"></i>
+                <span class="nav-label">Mi Ficha de Salud</span>
+                <span class="nav-sub">IMC · Anamnesis</span>
+            </a>
+        </div>
+        <!-- Tests físicos -->
+        <div class="col-6 col-md-4">
+            <a href="{% url 'tests_fisicos' %}" class="gym-nav-card accent-warn">
+                <i class="fas fa-running nav-icon" style="color:#e3b341;"></i>
+                <span class="nav-label">Tests Físicos</span>
+                <span class="nav-sub">Cooper · Ruffier-Dickson</span>
+            </a>
+        </div>
+        <!-- Rutinas cardio -->
+        <div class="col-6 col-md-6">
+            <a href="{% url 'mis_rutinas' %}?tipo=cardio" class="gym-nav-card accent-green">
+                <i class="fas fa-bicycle nav-icon" style="color:#56d364;"></i>
+                <span class="nav-label">Rutinas Cardio</span>
+                <span class="nav-sub">Banda · Elíptica · Spinning</span>
+            </a>
+        </div>
+        <!-- Rutinas fuerza -->
+        <div class="col-6 col-md-6">
+            <a href="{% url 'mis_rutinas' %}?tipo=fuerza" class="gym-nav-card accent-cyan">
+                <i class="fas fa-dumbbell nav-icon" style="color:#22d3ee;"></i>
+                <span class="nav-label">Rutinas Fuerza</span>
+                <span class="nav-sub">Máquinas · Peso libre</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- REGISTRO DE ENTRADA -->
+    <section class="sport-card mb-4">
+        <h5 class="fw-bold mb-4">
+            <i class="fas fa-sign-in-alt me-2" style="color:#58a6ff;"></i>Registrar Entrada
+        </h5>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="crear_reserva">
+
+            {% if esta_abierto %}
+            <div class="res-picker mb-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <span class="picker-label">Fecha de Ingreso</span>
+                        <input type="date" name="fecha_entrada"
+                               value="{{ ahora|date:'Y-m-d' }}"
+                               min="{{ ahora|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="col-6">
+                        <span class="picker-label">Hora de Ingreso</span>
+                        <input type="time" name="hora_entrada"
+                               value="{{ ahora|time:'H:i' }}"
+                               min="{{ config.horario_apertura|time:'H:i'|default:'07:00' }}"
+                               max="{{ config.horario_cierre|time:'H:i'|default:'17:00' }}" required>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary fw-bold py-2 px-5 shadow">
+                <i class="fas fa-check-circle me-2"></i>CONFIRMAR INGRESO
+            </button>
+            {% else %}
+            <div class="alert alert-danger small py-3 mb-3">
+                <i class="fas fa-lock me-2"></i>
+                <strong>Sistema bloqueado.</strong> El gimnasio está cerrado ahora.
+                Horario: {{ config.horario_apertura|time:"H:i" }} – {{ config.horario_cierre|time:"H:i" }}.
+            </div>
+            <button type="button" class="btn btn-secondary fw-bold py-2 px-5" disabled>
+                <i class="fas fa-ban me-2"></i>SALA CERRADA
+            </button>
+            {% endif %}
+        </form>
+
+        {% if messages %}
+            {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} small py-2 mt-3 mb-0">
+                {{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    </section>
+
+    <!-- HISTORIAL DE INGRESOS -->
+    <section class="sport-card text-start">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h5 class="fw-bold mb-0" style="color:#58a6ff;">
+                <i class="fas fa-history me-2"></i>Mis Últimos Ingresos
+            </h5>
+            <span class="text-white-50 small">
+                {{ reservas|length }} registro{{ reservas|length|pluralize }}
+            </span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" id="tablaHistorial">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {% for r in reservas %}
                 <tr>
-                    <td data-label="Fecha">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
-                    <td data-label="Hora" class="text-info fw-bold">{{ r.hora_entrada|time:"H:i A" }}</td>
-                    <td data-label="Estado"><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3">Éxito</span></td>
-                    <td data-label="Borrar">
-                        <a href="{% url 'eliminar_reserva' r.codigo_registro %}" class="text-danger" onclick="return confirm('¿Borrar registro?')">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
+                    <td data-label="Fecha" style="font-family:Consolas,monospace;">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
+                    <td data-label="Hora" class="text-info fw-bold" style="font-family:Consolas,monospace;">{{ r.hora_entrada|time:"H:i" }}</td>
+                    <td data-label="Estado">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3">
+                            Éxito
+                        </span>
+                    </td>
+                    <td data-label="Acción" class="text-center">
+                        <form method="post" action="{% url 'eliminar_reserva' r.codigo_registro %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-trash"
+                                    onclick="return confirm('¿Borrar este registro?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="py-5 text-white-50">Aún no registras ingresos al gimnasio.</td>
+                    <td colspan="4" class="text-center py-5 text-white-50">
+                        <i class="fas fa-dumbbell fa-2x d-block mb-3 opacity-25"></i>
+                        Aún no registras ingresos al gimnasio.
+                    </td>
                 </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+{% endif %}
+
+</div>
 </div>
 
+<!-- ════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════ -->
 <script>
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').textContent = now.toLocaleTimeString('es-CO', { hour12: false });
+/* Reloj aprendiz */
+const clockEl = document.getElementById('clock');
+if (clockEl) {
+    function tickClock() {
+        clockEl.textContent = new Date().toLocaleTimeString('es-CO', { hour12: false });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(tickClock, 1000);
+    tickClock();
+}
+
+/* Nav secciones admin */
+function mostrarSec(id, card) {
+    document.querySelectorAll('.adm-sec').forEach(s => s.classList.remove('activa'));
+    document.querySelectorAll('nav .sport-card[role=button]').forEach(c => {
+        c.style.borderColor = '';
+        c.style.opacity = '.7';
+    });
+    document.getElementById('adm-' + id).classList.add('activa');
+    card.style.borderColor = '#58a6ff';
+    card.style.opacity = '1';
+    document.getElementById('adm-' + id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const navCards = document.querySelectorAll('nav .sport-card[role=button]');
+    navCards.forEach(c => c.style.opacity = '.7');
+    if (navCards.length) {
+        navCards[0].style.opacity = '1';
+        navCards[0].style.borderColor = '#58a6ff';
+    }
+});
+
+const seccionActiva = "{{ seccion_activa|default:'' }}";
+if (seccionActiva) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const targetLink = document.querySelector(`[onclick*="'${seccionActiva}'"]`);
+        if (targetLink) mostrarSec(seccionActiva, targetLink.closest('.sport-card'));
+    });
+}
+
+/* Estado gimnasio (admin) */
+function selEstado(btn) {
+    document.querySelectorAll('.btn-estado').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    document.getElementById('estado-input').value = btn.dataset.val;
+}
+
+/* Días (admin) */
+const diasActivos = new Set({{ dias_activos|default:"[]"|safe }});
+function toggleDia(btn) {
+    const d = btn.dataset.dia;
+    diasActivos.has(d) ? diasActivos.delete(d) : diasActivos.add(d);
+    btn.classList.toggle('active', diasActivos.has(d));
+}
+const cfgForm = document.getElementById('cfg-form');
+if (cfgForm) {
+    cfgForm.addEventListener('submit', () => {
+        document.getElementById('dias-input').value = JSON.stringify([...diasActivos]);
+    });
+}
+
+/* Buscar en tabla admin */
+function filtrarTabla(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('#tablaRegistros tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+/* Hora mínima dinámica (aprendiz) */
+const fechaInput = document.querySelector('input[name="fecha_entrada"]');
+const horaInput  = document.querySelector('input[name="hora_entrada"]');
+if (fechaInput && horaInput) {
+    fechaInput.addEventListener('change', function () {
+        const hoy = new Date().toISOString().split('T')[0];
+        if (this.value === hoy) {
+            const n = new Date();
+            horaInput.min =
+                String(n.getHours()).padStart(2,'0') + ':' +
+                String(n.getMinutes()).padStart(2,'0');
+        } else {
+            horaInput.min = "{{ config.horario_apertura|time:'H:i'|default:'07:00' }}";
+        }
+    });
+}
 </script>
 {% endblock %}

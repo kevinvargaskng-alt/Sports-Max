@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mis Rutinas — Gimnasio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+.badge-tipo {
+    padding: 4px 12px; border-radius: 20px; font-size: .7rem; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase;
+}
+.tipo-cardio { background:rgba(88,166,255,.12); border:1px solid #58a6ff; color:#58a6ff; }
+.tipo-fuerza { background:rgba(56,189,248,.12); border:1px solid #22d3ee; color:#22d3ee; }
+.tipo-mixta  { background:rgba(227,179,65,.12); border:1px solid #e3b341; color:#e3b341; }
+
+.nivel-badge {
+    font-size:.68rem; font-weight:700; color:#6b7a94; letter-spacing:.8px; text-transform:uppercase;
+}
+
+.ejercicio-row {
+    display:flex; align-items:center; gap:12px; padding:9px 14px;
+    border-bottom:1px solid rgba(48,54,61,.6);
+}
+.ejercicio-row:last-child { border-bottom:none; }
+.ej-num-small {
+    width:22px; height:22px; border-radius:50%;
+    background:rgba(88,166,255,.15); border:1px solid rgba(88,166,255,.3);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.68rem; font-weight:800; color:#58a6ff; flex-shrink:0;
+}
+.maquina-tag {
+    font-size:.68rem; padding:2px 8px; border-radius:4px;
+    background:rgba(255,255,255,.05); border:1px solid #30363d; color:#8b949e;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+<div class="container">
+
+    <header class="modulo-header text-center mb-5">
+        <i class="fas fa-dumbbell fa-3x mb-3 text-info"></i>
+        <h2 class="fw-bold text-white">Mis Rutinas</h2>
+        <p class="text-white-50">Planes de entrenamiento activos</p>
+    </header>
+
+    {% if messages %}{% for msg in messages %}
+    <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} small py-2 mb-3">{{ msg }}</div>
+    {% endfor %}{% endif %}
+
+    <div class="d-flex justify-content-end mb-4 gap-2">
+        <a href="{% url 'crear_rutina' %}" class="btn btn-success fw-bold px-4">
+            <i class="fas fa-plus me-2"></i>Nueva Rutina
+        </a>
+        <a href="{% url 'anamnesis_propia' %}" class="btn btn-outline-info fw-bold px-4">
+            <i class="fas fa-heartbeat me-2"></i>Mi Ficha
+        </a>
+        <a href="{% url 'tests_fisicos' %}" class="btn btn-outline-warning fw-bold px-4">
+            <i class="fas fa-running me-2"></i>Tests
+        </a>
+    </div>
+
+    {% if rutinas %}
+        {% for rutina in rutinas %}
+        <section class="sport-card mb-4">
+            <div class="d-flex align-items-start justify-content-between mb-3 flex-wrap gap-2">
+                <div>
+                    <h5 class="fw-bold text-white mb-1">{{ rutina.nombre }}</h5>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge-tipo tipo-{{ rutina.tipo }}">
+                            {% if rutina.tipo == 'cardio' %}🏃{% elif rutina.tipo == 'fuerza' %}💪{% else %}⚡{% endif %}
+                            {{ rutina.get_tipo_display }}
+                        </span>
+                        <span class="nivel-badge">{{ rutina.get_nivel_display }}</span>
+                        <span class="text-white-50 small">
+                            <i class="fas fa-clock me-1"></i>{{ rutina.duracion_min }} min
+                        </span>
+                        {% if rutina.asignada_por != rutina.usuario %}
+                        <span class="text-white-50 small">
+                            <i class="fas fa-user-check me-1 text-warning"></i>
+                            Asignada por {{ rutina.asignada_por.get_full_name|default:"Admin" }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if rutina.descripcion %}
+                    <p class="text-white-50 small mb-0 mt-1">{{ rutina.descripcion }}</p>
+                    {% endif %}
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'editar_rutina' rutina.pk %}"
+                       class="btn btn-outline-primary btn-sm fw-bold">
+                        <i class="fas fa-edit me-1"></i>Editar
+                    </a>
+                    <form method="post" action="{% url 'eliminar_rutina' rutina.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm fw-bold"
+                                onclick="return confirm('¿Archivar esta rutina?')">
+                            <i class="fas fa-archive me-1"></i>Archivar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista ejercicios -->
+            {% if rutina.ejercicios.all %}
+            <div style="background:rgba(0,0,0,.2); border-radius:10px; overflow:hidden;">
+                {% for ej in rutina.ejercicios.all %}
+                <div class="ejercicio-row">
+                    <div class="ej-num-small">{{ ej.orden }}</div>
+                    <div class="flex-grow-1">
+                        <strong class="text-white small">{{ ej.nombre }}</strong>
+                        <div class="d-flex gap-2 flex-wrap mt-1">
+                            <span class="maquina-tag">
+                                <i class="fas fa-cog me-1"></i>{{ ej.get_maquina_display }}
+                            </span>
+                            {% if ej.series and ej.repeticiones %}
+                            <span class="maquina-tag text-info">
+                                {{ ej.series }} × {{ ej.repeticiones }} reps
+                            </span>
+                            {% endif %}
+                            {% if ej.duracion_min %}
+                            <span class="maquina-tag" style="color:#56d364; border-color:rgba(86,211,100,.3);">
+                                <i class="fas fa-stopwatch me-1"></i>{{ ej.duracion_min }} min
+                            </span>
+                            {% endif %}
+                            {% if ej.peso_kg %}
+                            <span class="maquina-tag" style="color:#e3b341;">
+                                {{ ej.peso_kg }} kg
+                            </span>
+                            {% endif %}
+                            {% if ej.descanso_seg %}
+                            <span class="maquina-tag">⏸ {{ ej.descanso_seg }}s</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if ej.notas %}
+                    <div class="text-white-50" style="font-size:.75rem; max-width:200px; text-align:right;">
+                        {{ ej.notas }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-white-50 small mt-2 mb-0">
+                <i class="fas fa-plus-circle me-1"></i>Esta rutina no tiene ejercicios.
+                <a href="{% url 'editar_rutina' rutina.pk %}">Agregar ahora</a>
+            </p>
+            {% endif %}
+        </section>
+        {% endfor %}
+
+    {% else %}
+    <div class="sport-card text-center py-5">
+        <i class="fas fa-dumbbell fa-3x d-block mb-3 text-white-50 opacity-25"></i>
+        <p class="text-white-50 mb-3">Aún no tienes rutinas activas.</p>
+        <a href="{% url 'crear_rutina' %}" class="btn btn-success fw-bold px-5">
+            <i class="fas fa-plus me-2"></i>Crear mi Primera Rutina
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}

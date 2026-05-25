@@ -4,9 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import Usuario
+from django.utils import timezone
+from datetime import timedelta
 
+from .models import Usuario
 from inventario.models import Prestamo
+from gimnasio.models import RegistroIngreso  # ← cambiado de Reserva
+from interfichas.models import EquipoInterfichas, TorneoInterfichas
+from intercentros.models import TorneoIntercentros, Postulacion
 
 
 def login_view(request):
@@ -16,8 +21,10 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=doc, password=password)
+
         if user:
             login(request, user)
+
             return JsonResponse({
                 'status': 'success',
                 'success': True,
@@ -30,12 +37,15 @@ def login_view(request):
             'success': False,
             'message': 'Documento o contraseña incorrectos'
         }, status=401)
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
 def registro_view(request):
-    """Procesa el registro con validaciones de seguridad"""
+    """Registro de usuarios"""
+
     if request.method == 'POST':
+
         numero_documento = request.POST.get('numero_documento', '').strip()
         nombres          = request.POST.get('nombres', '').strip()
         apellidos        = request.POST.get('apellidos', '').strip()
@@ -47,21 +57,35 @@ def registro_view(request):
         programa         = request.POST.get('programa_formacion', '').strip()
 
         required_fields = {
-            'numero_documento': numero_documento, 'nombres': nombres,
-            'apellidos': apellidos, 'contrasena': contrasena,
-            'email': correo, 'tipo_documento': tipo_doc,
-            'telefono': telefono, 'ficha': ficha, 'programa_formacion': programa
+            'numero_documento': numero_documento,
+            'nombres': nombres,
+            'apellidos': apellidos,
+            'contrasena': contrasena,
+            'email': correo,
+            'tipo_documento': tipo_doc,
+            'telefono': telefono,
+            'ficha': ficha,
+            'programa_formacion': programa
         }
 
         for field, value in required_fields.items():
             if not value:
-                return JsonResponse({'status': 'error', 'message': f'El campo {field} es obligatorio.'}, status=400)
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'El campo {field} es obligatorio.'
+                }, status=400)
 
         if Usuario.objects.filter(numero_documento=numero_documento).exists():
-            return JsonResponse({'status': 'error', 'message': 'El documento ya existe'}, status=400)
+            return JsonResponse({
+                'status': 'error',
+                'message': 'El documento ya existe'
+            }, status=400)
 
         if Usuario.objects.filter(email=correo).exists():
-            return JsonResponse({'status': 'error', 'message': 'Este correo ya está en uso'}, status=400)
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Este correo ya está en uso'
+            }, status=400)
 
         try:
             user = Usuario(
@@ -76,19 +100,35 @@ def registro_view(request):
                 programa_formacion=programa,
                 rol='aprendiz'
             )
+
             user.set_password(contrasena)
             user.save()
 
             login(request, user)
-            return JsonResponse({'status': 'success', 'redirect': '/perfil/', 'message': 'Registro exitoso'})
+
+            return JsonResponse({
+                'status': 'success',
+                'redirect': '/perfil/',
+                'message': 'Registro exitoso'
+            })
 
         except IntegrityError as e:
-            print(f"\n[❌ ERROR DE INTEGRIDAD EN LA BASE DE DATOS] -> {e}\n")
-            return JsonResponse({'status': 'error', 'message': 'Error de base de datos. Revisa la consola.'}, status=400)
+
+            print(f"\n[❌ ERROR DE INTEGRIDAD] -> {e}\n")
+
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de base de datos.'
+            }, status=400)
 
         except Exception as e:
-            print(f"\n[⚠️ ERROR INESPERADO AL REGISTRAR] -> {e}\n")
-            return JsonResponse({'status': 'error', 'message': 'Ocurrió un error inesperado.'}, status=500)
+
+            print(f"\n[⚠️ ERROR INESPERADO] -> {e}\n")
+
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Ocurrió un error inesperado.'
+            }, status=500)
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
@@ -100,123 +140,318 @@ def logout_view(request):
 
 @login_required(login_url='home')
 def perfil_view(request):
-    """Muestra el perfil. Si el usuario es staff, también muestra
-    los últimos registros y la lista completa de usuarios."""
+
     usuario = request.user
 
-    # ── EDICIÓN DE PERFIL (POST) ──────────────────────────────────────────
+    # ─────────────────────────────────────────────
+    # EDITAR PERFIL
+    # ─────────────────────────────────────────────
     if request.method == 'POST':
+
         email   = request.POST.get('email')
         celular = request.POST.get('celular')
-        if email:  usuario.email    = email
-        if celular: usuario.telefono = celular
+
+        if email:
+            usuario.email = email
+
+        if celular:
+            usuario.telefono = celular
+
         if 'imagen' in request.FILES:
             usuario.foto_perfil = request.FILES.get('imagen')
+
         usuario.save()
+
         messages.success(request, '¡Perfil actualizado!')
+
         return redirect('perfil')
 
-    # ── DATOS DEL PERFIL NORMAL ───────────────────────────────────────────
-    prestamos = Prestamo.objects.filter(usuario=usuario).order_by('-fecha_prestamo')
+    hace_30_dias = timezone.now() - timedelta(days=30)
 
-    contexto = {
-        'usuario':  usuario,
-        'prestamos': prestamos,
-    }
-
-    # ── DATOS EXTRA SOLO PARA ADMINS (is_staff) ───────────────────────────
+    # ─────────────────────────────────────────────
+    # ADMIN
+    # ─────────────────────────────────────────────
     if usuario.is_staff:
-        todos_usuarios    = Usuario.objects.all().order_by('-fecha_registro')
-        ultimos_usuarios  = todos_usuarios[:6]          # los 6 más recientes
-        total_usuarios    = todos_usuarios.count()
-        usuarios_activos  = todos_usuarios.filter(estado='activo').count()
 
-        contexto.update({
-            'todos_usuarios':   todos_usuarios,
+        # Usuarios
+        todos_usuarios = Usuario.objects.all().order_by('-fecha_registro')
+
+        ultimos_usuarios = todos_usuarios[:6]
+
+        total_usuarios = todos_usuarios.count()
+
+        usuarios_activos = todos_usuarios.filter(
+            estado='activo'
+        ).count()
+
+        nuevos_mes = todos_usuarios.filter(
+            fecha_registro__gte=hace_30_dias
+        ).count()
+
+        # Prestamos
+        todos_prestamos = (
+            Prestamo.objects
+            .select_related('usuario')
+            .prefetch_related('detalles__elemento')
+            .order_by('-fecha_prestamo')
+        )
+
+        prestamos_recientes = todos_prestamos.filter(
+            fecha_prestamo__gte=hace_30_dias
+        )
+
+        total_prestamos_recientes = prestamos_recientes.count()
+
+        prestamo_mas_reciente = todos_prestamos.first()
+
+        # Gimnasio ← campos actualizados a RegistroIngreso
+        todas_reservas = (
+            RegistroIngreso.objects
+            .select_related('usuario')
+            .order_by('-fecha_entrada', '-hora_entrada')
+        )
+
+        total_ingresos_gimnasio = todas_reservas.filter(
+            fecha_entrada__gte=hace_30_dias.date()
+        ).count()
+
+        # Interfichas
+        todos_equipos_interfichas = (
+            EquipoInterfichas.objects
+            .select_related('torneo', 'disciplina')
+            .order_by('-torneo__fecha_torneo_fichas')
+        )
+
+        torneos_interfichas_activos = (
+            TorneoInterfichas.objects
+            .exclude(estado='cerrado')
+            .count()
+        )
+
+        # Intercentros
+        todas_postulaciones = (
+            Postulacion.objects
+            .select_related('torneo')
+            .order_by('-fecha_postulacion')
+        )
+
+        torneos_intercentros_activos = (
+            TorneoIntercentros.objects
+            .filter(estado='Activo')
+            .count()
+        )
+
+        total_torneos_activos = (
+            torneos_interfichas_activos +
+            torneos_intercentros_activos
+        )
+
+        contexto = {
+
+            'usuario': usuario,
+
+            'prestamos': todos_prestamos,
+            'reservas_gimnasio': todas_reservas,   # ← clave que usa el template
+            'todas_reservas': todas_reservas,
+            'equipos_interfichas': todos_equipos_interfichas,
+            'equipos_intercentros': todas_postulaciones,
+
+            'todos_usuarios': todos_usuarios,
             'ultimos_usuarios': ultimos_usuarios,
-            'total_usuarios':   total_usuarios,
+            'total_usuarios': total_usuarios,
             'usuarios_activos': usuarios_activos,
-        })
 
-    return render(request, 'usuarios/perfil.html', contexto)
+            'total_prestamos_recientes': total_prestamos_recientes,
+            'prestamo_mas_reciente': prestamo_mas_reciente,
+            'total_ingresos_gimnasio': total_ingresos_gimnasio,
+            'total_torneos_activos': total_torneos_activos,
+            'nuevos_usuarios_mes': nuevos_mes,
+        }
+
+    # ─────────────────────────────────────────────
+    # APRENDIZ
+    # ─────────────────────────────────────────────
+    else:
+
+        prestamos = (
+            Prestamo.objects
+            .filter(usuario=usuario)
+            .prefetch_related('detalles__elemento')
+            .order_by('-fecha_prestamo')
+        )
+
+        # ← cambiado de Reserva a RegistroIngreso con campos correctos
+        reservas_gimnasio = (
+            RegistroIngreso.objects
+            .filter(usuario=usuario)
+            .order_by('-fecha_entrada', '-hora_entrada')
+        )
+
+        equipos_interfichas = (
+            EquipoInterfichas.objects
+            .filter(usuario_registra=usuario)
+            .select_related('torneo', 'disciplina')
+        )
+
+        equipos_intercentros = (
+            Postulacion.objects
+            .filter(numero_documento=str(usuario.numero_documento))
+            .select_related('torneo')
+            .order_by('-fecha_postulacion')
+        )
+
+        contexto = {
+
+            'usuario': usuario,
+            'prestamos': prestamos,
+            'reservas_gimnasio': reservas_gimnasio,
+            'equipos_interfichas': equipos_interfichas,
+            'equipos_intercentros': equipos_intercentros,
+        }
+
+    return render(
+        request,
+        'usuarios/perfil.html',
+        contexto
+    )
 
 
 @login_required(login_url='home')
 def toggle_usuario_estado(request, user_id):
-    """Activa o desactiva un usuario. Solo staff."""
+
     if not request.user.is_staff:
         messages.error(request, 'No tienes permisos.')
         return redirect('perfil')
+
     if request.method == 'POST':
+
         u = get_object_or_404(Usuario, pk=user_id)
+
         if u.estado == 'activo':
-            u.estado    = 'inactivo'
+
+            u.estado = 'inactivo'
             u.is_active = False
-            messages.warning(request, f'{u.get_full_name()} desactivado.')
+
+            messages.warning(
+                request,
+                f'{u.get_full_name()} desactivado.'
+            )
+
         else:
-            u.estado    = 'activo'
+
+            u.estado = 'activo'
             u.is_active = True
-            messages.success(request, f'{u.get_full_name()} activado.')
+
+            messages.success(
+                request,
+                f'{u.get_full_name()} activado.'
+            )
+
         u.save()
+
     return redirect('perfil')
 
 
 @login_required(login_url='home')
 def cambiar_rol_usuario(request, user_id):
-    """Cambia el rol de un usuario. Solo staff."""
+
     if not request.user.is_staff:
         messages.error(request, 'No tienes permisos.')
         return redirect('perfil')
+
     if request.method == 'POST':
-        u        = get_object_or_404(Usuario, pk=user_id)
+
+        u = get_object_or_404(Usuario, pk=user_id)
+
         nuevo_rol = request.POST.get('rol')
+
         if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-            u.rol      = nuevo_rol
+
+            u.rol = nuevo_rol
             u.is_staff = (nuevo_rol == 'admin')
+
             u.save()
-            messages.success(request, f'Rol de {u.get_full_name()} cambiado a {nuevo_rol}.')
+
+            messages.success(
+                request,
+                f'Rol cambiado correctamente.'
+            )
+
     return redirect('perfil')
 
 
-# ── NUEVA VISTA PARA EDICIÓN COMPLETA DEL ADMINISTRADOR ────────────────────
 @login_required(login_url='home')
 def admin_editar_usuario(request, user_id):
-    """Permite al administrador editar todos los datos de un usuario a través del modal."""
+
     if not request.user.is_staff:
-        messages.error(request, 'Acceso denegado. No tienes permisos de administrador.')
+        messages.error(request, 'Acceso denegado.')
         return redirect('perfil')
 
     if request.method == 'POST':
-        usuario_editado = get_object_or_404(Usuario, pk=user_id)
 
-        # Extraemos los datos del modal; si no viene alguno, conservamos el actual
-        usuario_editado.first_name = request.POST.get('first_name', usuario_editado.first_name).strip()
-        usuario_editado.last_name = request.POST.get('last_name', usuario_editado.last_name).strip()
-        usuario_editado.numero_documento = request.POST.get('numero_documento', usuario_editado.numero_documento).strip()
-        usuario_editado.ficha = request.POST.get('ficha', usuario_editado.ficha).strip()
-        usuario_editado.email = request.POST.get('email', usuario_editado.email).strip()
-        usuario_editado.telefono = request.POST.get('telefono', usuario_editado.telefono).strip()
+        u = get_object_or_404(Usuario, pk=user_id)
 
-        # Actualizamos el username para que coincida con el nuevo documento si este se cambió
-        usuario_editado.username = usuario_editado.numero_documento
+        u.first_name = request.POST.get(
+            'first_name',
+            u.first_name
+        ).strip()
 
-        # Rol y staff status
-        nuevo_rol = request.POST.get('rol', usuario_editado.rol)
+        u.last_name = request.POST.get(
+            'last_name',
+            u.last_name
+        ).strip()
+
+        u.numero_documento = request.POST.get(
+            'numero_documento',
+            u.numero_documento
+        ).strip()
+
+        u.ficha = request.POST.get(
+            'ficha',
+            u.ficha or ''
+        ).strip()
+
+        u.email = request.POST.get(
+            'email',
+            u.email
+        ).strip()
+
+        u.telefono = request.POST.get(
+            'telefono',
+            u.telefono or ''
+        ).strip()
+
+        u.username = u.numero_documento
+
+        nuevo_rol = request.POST.get('rol', u.rol)
+
         if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-            usuario_editado.rol = nuevo_rol
-            usuario_editado.is_staff = (nuevo_rol == 'admin')
+            u.rol = nuevo_rol
+            u.is_staff = (nuevo_rol == 'admin')
 
-        # Estado y active status
-        nuevo_estado = request.POST.get('estado', usuario_editado.estado)
+        nuevo_estado = request.POST.get(
+            'estado',
+            u.estado
+        )
+
         if nuevo_estado in ['activo', 'inactivo']:
-            usuario_editado.estado = nuevo_estado
-            usuario_editado.is_active = (nuevo_estado == 'activo')
+            u.estado = nuevo_estado
+            u.is_active = (nuevo_estado == 'activo')
 
-        # Guardamos en base de datos
         try:
-            usuario_editado.save()
-            messages.success(request, f'Los datos de {usuario_editado.get_full_name()} han sido actualizados correctamente.')
+
+            u.save()
+
+            messages.success(
+                request,
+                f'Datos actualizados correctamente.'
+            )
+
         except IntegrityError:
-            messages.error(request, 'Error: Ya existe un usuario con ese número de documento o correo electrónico.')
+
+            messages.error(
+                request,
+                'Ya existe un usuario con ese documento o correo.'
+            )
 
     return redirect('perfil')

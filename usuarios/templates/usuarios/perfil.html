@@ -6,593 +6,389 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <style>
-    .main-container, .modal-content, .nav-tabs, .btn, .badge, .table th, .table td {
-        text-transform: none !important;
-    }
-    .text-cap { text-transform: capitalize !important; }
-
-    /* ── FOTO Y CÁMARA ── */
+    /* 3. ESTILOS DE LA FOTO Y CÁMARA */
     .btn-camera {
-        position: absolute; bottom: 5px; right: 5px;
-        background: var(--accent-blue); color: white;
-        width: 35px; height: 35px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; border: 2px solid #050814;
-        transition: all 0.3s ease; z-index: 10;
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--accent-blue);
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid #050814;
+        transition: all 0.3s ease;
+        z-index: 10;
     }
-    .btn-camera:hover { background: var(--accent-hover); transform: scale(1.1); }
+    .btn-camera:hover {
+        background: var(--accent-hover);
+        transform: scale(1.1);
+    }
 
-    /* ── TABS ── */
+    /* 4. NAVEGACIÓN POR TABS */
     .nav-tabs .nav-link {
         color: rgba(255,255,255,0.6);
-        border: none; border-bottom: 2px solid transparent;
-        transition: all 0.3s; font-weight: 500; padding: 10px 18px;
+        border: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+        text-transform: capitalize !important;
+        font-weight: 500;
+        padding: 10px 20px;
     }
     .nav-tabs .nav-link.active {
         background: transparent !important;
         color: var(--accent-blue) !important;
         border-bottom: 2px solid var(--accent-blue);
     }
-    .nav-tabs .nav-link.tab-admin { color: #f9c52c; }
-    .nav-tabs .nav-link.tab-admin.active { color: #f9c52c !important; border-bottom-color: #f9c52c; }
 
-    /* ── NOVEDADES ── */
+    /* 5. DISEÑO DE NOVEDADES */
     .news-item {
         border-left: 3px solid var(--accent-blue);
-        background: rgba(255,255,255,0.03);
+        background: rgba(255, 255, 255, 0.03);
         transition: transform 0.2s;
     }
-    .news-item:hover { transform: translateX(5px); background: rgba(255,255,255,0.06); }
-
-    /* ── INPUTS DISABLED ── */
-    .custom-input:disabled {
-        background-color: rgba(255,255,255,0.05) !important;
-        opacity: 0.8; color: #aaa !important;
+    .news-item:hover {
+        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.06);
     }
 
-    /* ── RESPONSIVE ── */
+    /* 6. INPUTS DESHABILITADOS */
+    .custom-input:disabled {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        opacity: 0.8;
+        color: #aaa !important;
+    }
+
+    /* 7. RESPONSIVE */
     @media (max-width: 768px) {
         .border-md-end {
             border-right: none !important;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 25px; margin-bottom: 25px;
+            padding-bottom: 25px;
+            margin-bottom: 25px;
         }
     }
 
-    /* ── TARJETAS MINI STATS (admin) ── */
-    .mini-stat {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px; padding: 16px 20px;
-        text-align: center;
+    /* ESTILOS DEL BUZÓN */
+    #modalBuzonSugerencias .form-select,
+    #modalBuzonSugerencias .form-control {
+        background: #1e2937 !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
     }
-    .mini-stat .num { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; }
-    .mini-stat .lbl { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 4px; }
 
-    /* ── TABLA USUARIOS (admin) CORREGIDA (FONDO OSCURO) ── */
-    .tbl-admin { border-collapse: separate; border-spacing: 0 8px; width: 100%; }
-    .tbl-admin thead th {
-        background: rgba(26, 35, 126, 0.5) !important; 
-        color: #58a6ff !important;
-        font-size: 0.8rem; font-weight: 800;
-        text-transform: uppercase; letter-spacing: 0.08em;
-        border: none; padding: 12px;
-        border-radius: 8px 8px 0 0;
+    /* ESTILO BOTÓN REPORTAR ERROR */
+    .btn-reportar-error {
+        color: #ff4d4d !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+        background: transparent !important;
+    }
+    .btn-reportar-error:hover {
+        color: #ff0000 !important;
+        background-color: rgba(255, 0, 0, 0.2) !important;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+        transform: scale(1.05);
+    }
+
+    /* AJUSTE DE COLOR PARA LAS PESTAÑAS DENTRO DEL MODAL DE ERROR */
+    #modalBuzonSugerencias .nav-tabs .nav-link {
+        color: rgba(255,255,255,0.5) !important;
+        border: none !important;
+    }
+    #modalBuzonSugerencias .nav-tabs .nav-link.active {
+        color: #ff4d4d !important;
+        border-bottom: 3px solid #ff4d4d !important;
+        background: transparent !important;
     }
     
-    /* Aquí forzamos el color oscuro tanto en la fila como en la celda */
-    .tbl-admin tbody tr {
-        background-color: #111827 !important; /* Azul muy oscuro/grisáceo */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    /* Forzar Alerta Roja (Eliminar Azul) */
+    #reportAlert.alert-success, #reportAlert {
+        background-color: #721c24 !important;
+        color: #f8d7da !important;
+        border: 1px solid #f5c6cb !important;
+        border-left: 5px solid #ff0000 !important;
+    }
+    
+    /* Eliminar cualquier rastro de azul en los botones del modal de error */
+    #modalBuzonSugerencias .btn-danger {
+        background-color: #dc3545 !important;
+        border: none;
+    }
+
+    /* Eliminar el resplandor azul de los campos de texto al hacer clic */
+    #modalBuzonSugerencias .form-control:focus {
+        border-color: #ff0000 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.25) !important;
+    }
+</style>
+<style>
+    .sugerencia-card {
+        background: rgba(255,255,255,0.05);
         transition: all 0.3s ease;
     }
-    .tbl-admin tbody tr:hover { 
-        background-color: #1a2440 !important; 
-        transform: translateY(-2px); 
-    }
-    .tbl-admin tbody td {
-        background-color: transparent !important; /* Evita que bootstrap ponga blanco */
-        border: none !important; 
-        padding: 12px; 
-        vertical-align: middle;
-        color: #ECEFF1 !important; 
-    }
-    
-    .tbl-admin tbody td:first-child { border-radius: 8px 0 0 8px; border-left: 2px solid transparent; }
-    .tbl-admin tbody tr:hover td:first-child { border-left: 2px solid var(--accent-blue); }
-    .tbl-admin tbody td:last-child { border-radius: 0 8px 8px 0; }
-
-    /* ── BADGES ROL / ESTADO ── */
-    .badge-aprendiz   { background: rgba(88,166,255,0.15);  color: #58a6ff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(88,166,255,0.3); }
-    .badge-instructor { background: rgba(249,197,44,0.15);  color: #f9c52c; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(249,197,44,0.3); }
-    .badge-admin      { background: rgba(248,81,73,0.15);   color: #f85149; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(248,81,73,0.3); }
-    .badge-activo     { background: rgba(63,185,80,0.18);   color: #3fb950; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(63,185,80,0.3); }
-    .badge-inactivo   { background: rgba(139,148,158,0.18); color: #8b949e; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(139,148,158,0.3); }
-
-    /* ── BOTONES ACCIÓN ── */
-    .btn-acc {
-        padding: 5px 12px; border-radius: 8px; font-size: 0.8rem;
-        font-weight: 600; border: 1px solid transparent; cursor: pointer; transition: all 0.2s;
-        display: inline-flex; align-items: center; justify-content: center;
-    }
-    .btn-acc-edit { background: rgba(255,184,0,0.15); color: #ffb800; border-color: rgba(255,184,0,0.3); }
-    .btn-acc-on   { background: rgba(63,185,80,0.12);  color: #3fb950; border-color: rgba(63,185,80,0.3); }
-    .btn-acc-off  { background: rgba(248,81,73,0.12);  color: #f85149; border-color: rgba(248,81,73,0.3); }
-    
-    .btn-acc-edit:hover { background: rgba(255,184,0,0.3); transform: scale(1.05); }
-    .btn-acc-on:hover   { background: rgba(63,185,80,0.28); transform: scale(1.05); }
-    .btn-acc-off:hover  { background: rgba(248,81,73,0.28); transform: scale(1.05); }
-
-    /* ── BUSCADOR ── */
-    #buscadorUsuarios {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        color: #fff; border-radius: 10px; padding: 10px 16px;
-        font-size: 0.9rem; width: 100%; max-width: 350px;
-        transition: all 0.3s;
-    }
-    #buscadorUsuarios::placeholder { color: rgba(255,255,255,0.4); }
-    #buscadorUsuarios:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0,212,255,0.2); }
-
-    /* ── AVATAR MINI ── */
-    .avatar-mini {
-        width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-        border: 2px solid rgba(2,119,189,0.4);
-    }
-    .avatar-placeholder {
-        width: 40px; height: 40px; border-radius: 50%;
-        background: rgba(88,166,255,0.12);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1rem; color: #58a6ff; flex-shrink: 0;
+    .sugerencia-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255,255,255,0.08);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
-<div class="container">
+    <div class="container">
 
-    {% if messages %}
-    {% for msg in messages %}
-    <div class="alert alert-{{ msg.tags }} alert-dismissible fade show mb-3" style="border-radius:12px;" role="alert">
-        {{ msg }} <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
+        <div class="sport-card mb-4 shadow-lg">
+            <div class="row align-items-center p-2">
 
-    <div class="sport-card mb-4 shadow-lg">
-        <div class="row align-items-center p-2">
-            <div class="col-md-4 text-center border-md-end" style="border-color:rgba(255,255,255,0.1)!important;">
-                <div class="mb-3 position-relative d-inline-block">
-                    {% if usuario.foto_perfil %}
-                        <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow"
-                             style="width:150px;height:150px;object-fit:cover;border:3px solid var(--accent-blue);">
-                    {% else %}
-                        <i class="fas fa-user-circle fa-8x text-info mb-2"
-                           style="filter:drop-shadow(0 0 10px rgba(0,210,255,0.3));"></i>
-                    {% endif %}
-                </div>
-                <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
-
-                {% if usuario.is_staff %}
-                    <span class="badge px-3 py-1 mb-3" style="background:rgba(248,81,73,0.15);color:#f85149;">
-                        <i class="fas fa-shield-alt me-1"></i>Administrador
-                    </span>
-                {% else %}
+                <!-- COLUMNA IZQUIERDA: FOTO Y NOMBRE -->
+                <div class="col-md-4 text-center border-md-end" style="border-color: rgba(255,255,255,0.1) !important;">
+                    <div class="mb-3 position-relative d-inline-block">
+                        {% if usuario.foto_perfil %}
+                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue);">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-8x text-info mb-2" style="filter: drop-shadow(0 0 10px rgba(0,210,255,0.3));"></i>
+                        {% endif %}
+                    </div>
+                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
                     <span class="badge bg-info text-dark px-3 py-1 mb-3 text-cap">
-                        <i class="fas fa-user-graduate me-1"></i>Aprendiz SENA
+                        <i class="fas fa-user-graduate me-1"></i>Aprendiz sena
                     </span>
-                {% endif %}
+                </div>
+
+                <!-- COLUMNA DERECHA: DATOS -->
+                <div class="col-md-8 ps-md-5">
+                    <div class="row g-4">
+                        <div class="col-sm-6 text-start">
+                            <h6 class="text-info fw-bold small mb-3 text-cap"><i class="fas fa-university me-2"></i>Información académica</h6>
+                            <p class="text-white mb-2 text-cap">
+                                <span class="text-white-50">Programa:</span> {{ usuario.get_programa_formacion_display|default:usuario.programa_formacion|lower }}
+                            </p>
+                            <p class="text-white mb-2">
+                                <span class="text-white-50">Número de ficha:</span> <span class="text-info fw-bold">{{ usuario.ficha|default:"No registrada" }}</span>
+                            </p>
+                            <p class="text-white text-cap mb-1">
+                                <span class="text-white-50">Tipo de identificación:</span> {{ usuario.tipo_documento|lower }}
+                            </p>
+                            <p class="text-white text-cap">
+                                <span class="text-white-50">Número de identificación:</span> {{ usuario.numero_documento }}
+                            </p>
+                        </div>
+
+                        <div class="col-sm-6 text-start">
+                            <h6 class="text-info fw-bold small mb-3 text-cap"><i class="fas fa-address-book me-2"></i>Contacto y cuenta</h6>
+                            <p class="text-white mb-2 text-truncate">
+                                <span class="text-white-50">Correo electrónico:</span> {{ usuario.email }}
+                            </p>
+                            <p class="text-white mb-2">
+                                <span class="text-white-50">Teléfono celular:</span> {{ usuario.telefono|default:"Sin registrar" }}
+                            </p>
+                            <p class="text-white text-cap">
+                                <span class="text-white-50">Miembro desde:</span> {{ usuario.fecha_registro|date:"j \d\e F, Y"|lower }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-start gap-3">
+                        <button class="btn btn-warning btn-sm px-4 text-cap shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
+                            <i class="fas fa-user-edit me-2"></i>Editar perfil
+                        </button>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">
+                            <i class="fas fa-power-off me-2"></i>Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS CON BOTÓN ROJITO -->
+        <ul class="nav nav-tabs mb-4 justify-content-center border-0" id="perfilTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">Novedades</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">Gimnasio</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prestamos">Préstamos</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">Inter-fichas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">Inter-centros</button>
+            </li>
+            
+            <!-- BOTÓN BUZÓN -->
+            <li class="nav-item">
+                <button class="nav-link btn-reportar-error" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalBuzonSugerencias">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Reportar Error
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content pb-5">
+
+            <!-- 1. TAB NOVEDADES -->
+            <div class="tab-pane fade show active" id="tab-novedades">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-rss me-2"></i>Notificaciones del sistema</h5>
+                    <div class="news-item p-3 mb-3 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary p-2 rounded-circle me-3"><i class="fas fa-info-circle text-white"></i></div>
+                                <div>
+                                    <h6 class="text-white mb-1 fw-bold text-cap">Bienvenido al sistema</h6>
+                                    <p class="text-white-50 small mb-0">Gestiona tus actividades deportivas, torneos e implementos desde un solo lugar.</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-dark text-info text-cap">Reciente</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-8 ps-md-5">
-                <div class="row g-4">
-                    <div class="col-sm-6 text-start">
-                        <h6 class="text-info fw-bold small mb-3 text-cap">
-                            <i class="fas fa-university me-2"></i>Información académica
-                        </h6>
-                        <p class="text-white mb-2 text-cap">
-                            <span class="text-white-50">Programa:</span>
-                            {{ usuario.get_programa_formacion_display|default:usuario.programa_formacion|lower }}
-                        </p>
-                        <p class="text-white mb-2">
-                            <span class="text-white-50">Ficha:</span>
-                            <span class="text-info fw-bold">{{ usuario.ficha|default:"No registrada" }}</span>
-                        </p>
-                        <p class="text-white mb-1">
-                            <span class="text-white-50">Tipo ID:</span> {{ usuario.tipo_documento }}
-                        </p>
-                        <p class="text-white">
-                            <span class="text-white-50">Número ID:</span> {{ usuario.numero_documento }}
-                        </p>
+            <!-- 2. TAB GIMNASIO -->
+            <div class="tab-pane fade" id="tab-gimnasio">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-clock me-2"></i>Historial de ingresos al gimnasio</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Fecha</th>
+                                    <th>Hora entrada</th>
+                                    <th>Hora salida</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in reservas_gimnasio %}
+                                <tr>
+                                    <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                                    <td>{{ r.hora_entrada }}</td>
+                                    <td>{{ r.hora_salida }}</td>
+                                    <td><span class="badge bg-success text-cap">Finalizado</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No tienes registros de ingreso.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-sm-6 text-start">
-                        <h6 class="text-info fw-bold small mb-3 text-cap">
-                            <i class="fas fa-address-book me-2"></i>Contacto y cuenta
-                        </h6>
-                        <p class="text-white mb-2 text-truncate">
-                            <span class="text-white-50">Correo:</span> {{ usuario.email }}
-                        </p>
-                        <p class="text-white mb-2">
-                            <span class="text-white-50">Teléfono:</span> {{ usuario.telefono|default:"Sin registrar" }}
-                        </p>
-                        <p class="text-white">
-                            <span class="text-white-50">Miembro desde:</span>
-                            {{ usuario.fecha_registro|date:"j \\d\\e F, Y"|lower }}
-                        </p>
-                    </div>
-                </div>
-                <div class="mt-4 d-flex justify-content-start gap-3">
-                    <button class="btn btn-warning btn-sm px-4 text-cap shadow-sm"
-                            data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
-                        <i class="fas fa-user-edit me-2"></i>Editar perfil
-                    </button>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">
-                        <i class="fas fa-power-off me-2"></i>Cerrar sesión
-                    </a>
                 </div>
             </div>
+
+            <!-- 3. TAB PRÉSTAMOS -->
+            <div class="tab-pane fade" id="tab-prestamos">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-volleyball-ball me-2"></i>Mis préstamos de implementos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Código</th>
+                                    <th>Implemento</th>
+                                    <th>Cant.</th>
+                                    <th>Fecha préstamo</th>
+                                    <th>Devolución</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in prestamos %}
+                                <tr>
+                                    <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
+                                    <td class="text-cap">{{ p.elemento.tipo_maquina|lower }}</td>
+                                    <td>{{ p.cantidad_prestada }}</td>
+                                    <td>{{ p.fecha_prestamo|date:"d/m/Y" }}</td>
+                                    <td class="text-warning fw-bold">{{ p.fecha_devolucion|date:"d/m/Y" }}</td>
+                                    <td><span class="badge bg-primary text-cap">{{ p.estado_prestamo|lower }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center py-4 text-white-50 text-cap">No hay préstamos registrados.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAB INTER-FICHAS -->
+            <div class="tab-pane fade" id="tab-interfichas">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-users me-2"></i>Participación en torneos inter-fichas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Equipo</th>
+                                    <th>Disciplina</th>
+                                    <th>Ficha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in equipos_interfichas %}
+                                <tr>
+                                    <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
+                                    <td class="text-cap">{{ e.disciplina|lower }}</td>
+                                    <td>{{ e.ficha }}</td>
+                                    <td><span class="badge bg-success text-cap">Inscrito</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No participas en torneos inter-fichas.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TAB INTER-CENTROS -->
+            <div class="tab-pane fade" id="tab-intercentros">
+                <div class="sport-card text-start">
+                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-medal me-2"></i>Selecciones representativas inter-centros</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr class="text-cap">
+                                    <th>Selección</th>
+                                    <th>Centro</th>
+                                    <th>Disciplina</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in equipos_intercentros %}
+                                <tr>
+                                    <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
+                                    <td class="text-cap">{{ e.centro_formacion|lower }}</td>
+                                    <td class="text-cap">{{ e.disciplina|lower }}</td>
+                                    <td><span class="badge bg-primary text-cap">Seleccionado</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">Sin registros en inter-centros.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-
-    <ul class="nav nav-tabs mb-4 justify-content-center border-0" id="perfilTabs">
-        <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">Novedades</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">Gimnasio</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prestamos">Préstamos</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">Inter-fichas</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-intercentros">Inter-centros</button>
-        </li>
-
-        {% if user.is_staff %}
-        <li class="nav-item">
-            <button class="nav-link tab-admin" data-bs-toggle="tab" data-bs-target="#tab-admin">
-                <i class="fas fa-shield-alt me-1"></i>Usuarios del sistema
-            </button>
-        </li>
-        {% endif %}
-    </ul>
-
-    <div class="tab-content pb-5">
-
-        <div class="tab-pane fade show active" id="tab-novedades">
-            <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-rss me-2"></i>Notificaciones del sistema</h5>
-                <div class="news-item p-3 mb-3 rounded">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary p-2 rounded-circle me-3"><i class="fas fa-info-circle text-white"></i></div>
-                            <div>
-                                <h6 class="text-white mb-1 fw-bold text-cap">Bienvenido al sistema</h6>
-                                <p class="text-white-50 small mb-0">Gestiona tus actividades deportivas, torneos e implementos desde un solo lugar.</p>
-                            </div>
-                        </div>
-                        <span class="badge bg-dark text-info text-cap">Reciente</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="tab-gimnasio">
-            <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-clock me-2"></i>Historial de ingresos al gimnasio</h5>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle">
-                        <thead><tr class="text-cap"><th>Fecha</th><th>Hora entrada</th><th>Hora salida</th><th>Estado</th></tr></thead>
-                        <tbody>
-                            {% for r in reservas_gimnasio %}
-                            <tr>
-                                <td>{{ r.fecha|date:"d/m/Y" }}</td>
-                                <td>{{ r.hora_entrada }}</td>
-                                <td>{{ r.hora_salida }}</td>
-                                <td><span class="badge bg-success text-cap">Finalizado</span></td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No tienes registros de ingreso.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="tab-prestamos">
-            <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-volleyball-ball me-2"></i>Mis préstamos de implementos</h5>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle">
-                        <thead>
-                            <tr class="text-cap">
-                                <th>Código</th><th>Implemento</th><th>Cant.</th>
-                                <th>Fecha préstamo</th><th>Devolución</th><th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in prestamos %}
-                            <tr>
-                                <td class="text-info fw-bold">#{{ p.codigo_prestamo }}</td>
-                                <td class="text-cap">{{ p.elemento.tipo_maquina|lower }}</td>
-                                <td>{{ p.cantidad_prestada }}</td>
-                                <td>{{ p.fecha_prestamo|date:"d/m/Y" }}</td>
-                                <td class="text-warning fw-bold">{{ p.fecha_devolucion|date:"d/m/Y" }}</td>
-                                <td><span class="badge bg-primary text-cap">{{ p.estado_prestamo|lower }}</span></td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="6" class="text-center py-4 text-white-50 text-cap">No hay préstamos registrados.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="tab-interfichas">
-            <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-users me-2"></i>Participación en torneos inter-fichas</h5>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle">
-                        <thead><tr class="text-cap"><th>Equipo</th><th>Disciplina</th><th>Ficha</th><th>Estado</th></tr></thead>
-                        <tbody>
-                            {% for e in equipos_interfichas %}
-                            <tr>
-                                <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
-                                <td class="text-cap">{{ e.disciplina|lower }}</td>
-                                <td>{{ e.ficha }}</td>
-                                <td><span class="badge bg-success text-cap">Inscrito</span></td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No participas en torneos inter-fichas.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="tab-intercentros">
-            <div class="sport-card text-start">
-                <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-medal me-2"></i>Selecciones representativas inter-centros</h5>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle">
-                        <thead><tr class="text-cap"><th>Selección</th><th>Centro</th><th>Disciplina</th><th>Estado</th></tr></thead>
-                        <tbody>
-                            {% for e in equipos_intercentros %}
-                            <tr>
-                                <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
-                                <td class="text-cap">{{ e.centro_formacion|lower }}</td>
-                                <td class="text-cap">{{ e.disciplina|lower }}</td>
-                                <td><span class="badge bg-primary text-cap">Seleccionado</span></td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">Sin registros en inter-centros.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {% if user.is_staff %}
-        <div class="tab-pane fade" id="tab-admin">
-            <div class="sport-card text-start">
-
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-3">
-                        <div class="mini-stat">
-                            <div class="num">{{ total_usuarios }}</div>
-                            <div class="lbl">Total registrados</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="mini-stat">
-                            <div class="num" style="color:#3fb950;">{{ usuarios_activos }}</div>
-                            <div class="lbl">Activos</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="mini-stat">
-                            <div class="num" style="color:#f85149;">{{ total_usuarios|add:"-"|add:usuarios_activos }}</div>
-                            <div class="lbl">Inactivos</div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="mini-stat">
-                            <div class="num" style="color:#58a6ff;">{{ ultimos_usuarios|length }}</div>
-                            <div class="lbl">Últimos registros</div>
-                        </div>
-                    </div>
-                </div>
-
-                <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,0.5);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">
-                    <i class="fas fa-user-clock me-2" style="color:#f9c52c;"></i>Últimos usuarios registrados
-                </h6>
-                <div class="row g-2 mb-4">
-                    {% for u in ultimos_usuarios %}
-                    <div class="col-md-6 col-lg-4">
-                        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
-                            {% if u.foto_perfil %}
-                                <img src="{{ u.foto_perfil.url }}" class="avatar-mini">
-                            {% else %}
-                                <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
-                            {% endif %}
-                            <div style="min-width:0;">
-                                <div class="text-white text-cap fw-bold" style="font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                    {{ u.get_full_name|lower }}
-                                </div>
-                                <div style="color:rgba(255,255,255,0.4);font-size:0.72rem;">
-                                    {{ u.numero_documento }} · {{ u.fecha_registro|date:"d/m/Y" }}
-                                </div>
-                            </div>
-                            <span class="badge-{{ u.rol|default:'aprendiz' }} ms-auto" style="flex-shrink:0;">{{ u.rol|default:"aprendiz" }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                    <h5 class="fw-bold mb-0 text-info text-cap">
-                        <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
-                    </h5>
-                    <div class="input-group" style="max-width: 350px;">
-                        <span class="input-group-text bg-transparent border-0" style="position: absolute; z-index: 10; left: 10px; top: 10px; color: var(--accent-blue);">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" id="buscadorUsuarios" class="ps-5" placeholder="Buscar por nombre o documento...">
-                    </div>
-                </div>
-
-                <div class="table-responsive" style="overflow: visible;">
-                    <table class="tbl-admin table mb-0" id="tablaUsuarios">
-                        <thead>
-                            <tr>
-                                <th>Usuario</th>
-                                <th>Documento</th>
-                                <th>Ficha</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for u in todos_usuarios %}
-                        <tr class="fila-usuario">
-                            <td>
-                                <div class="d-flex align-items-center gap-3">
-                                    {% if u.foto_perfil %}
-                                        <img src="{{ u.foto_perfil.url }}" class="avatar-mini shadow-sm">
-                                    {% else %}
-                                        <div class="avatar-placeholder shadow-sm"><i class="fas fa-user"></i></div>
-                                    {% endif %}
-                                    <div>
-                                        <div class="text-white text-cap fw-bold dato-nombre" style="font-size:0.95rem;">
-                                            {{ u.get_full_name|lower }}
-                                        </div>
-                                        <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">
-                                            {{ u.email }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="dato-doc fw-bold" style="color:var(--accent-blue) !important;font-size:0.9rem;">
-                                {{ u.numero_documento }}
-                            </td>
-                            <td style="color:rgba(255,255,255,0.7) !important;font-size:0.9rem;">
-                                {{ u.ficha|default:"—" }}
-                            </td>
-                            <td>
-                                <span class="badge-{{ u.rol|default:'aprendiz' }}">{{ u.rol|default:"aprendiz" }}</span>
-                            </td>
-                            <td>
-                                <span class="badge-{{ u.estado }}">{{ u.estado }}</span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2 flex-wrap align-items-center">
-                                    <button type="button" class="btn-acc btn-acc-edit" data-bs-toggle="modal" data-bs-target="#modalEditAdmin{{ u.id }}" title="Editar Usuario">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </button>
-
-                                    <form method="post" action="{% url 'toggle_usuario' u.id %}">
-                                        {% csrf_token %}
-                                        {% if u.estado == 'activo' %}
-                                            <button type="submit" class="btn-acc btn-acc-off" title="Desactivar">
-                                                <i class="fas fa-user-slash"></i>
-                                            </button>
-                                        {% else %}
-                                            <button type="submit" class="btn-acc btn-acc-on" title="Activar">
-                                                <i class="fas fa-user-check"></i>
-                                            </button>
-                                        {% endif %}
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr><td colspan="6" class="text-center py-5 text-white-50"><i class="fas fa-inbox fa-2x mb-3 d-block"></i>No hay usuarios registrados.</td></tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-        </div>
-        
-        {% for u in todos_usuarios %}
-        <div class="modal fade" id="modalEditAdmin{{ u.id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content custom-modal text-white" style="z-index: 1055;">
-                    <div class="modal-header border-0 pb-0">
-                        <h5 class="modal-title fw-bold text-cap">
-                            <i class="fas fa-user-edit me-2 text-warning"></i>Editar: {{ u.get_full_name|lower }}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" action="{% url 'admin_editar_usuario' u.id %}">
-                            {% csrf_token %}
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Nombre</label>
-                                    <input type="text" name="first_name" class="custom-input form-control" value="{{ u.first_name }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Apellidos</label>
-                                    <input type="text" name="last_name" class="custom-input form-control" value="{{ u.last_name }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Documento</label>
-                                    <input type="text" name="numero_documento" class="custom-input form-control" value="{{ u.numero_documento }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Ficha</label>
-                                    <input type="text" name="ficha" class="custom-input form-control" value="{{ u.ficha|default:'' }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Correo</label>
-                                    <input type="email" name="email" class="custom-input form-control" value="{{ u.email }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Teléfono</label>
-                                    <input type="text" name="telefono" class="custom-input form-control" value="{{ u.telefono|default:'' }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Rol en el sistema</label>
-                                    <select name="rol" class="form-select custom-input">
-                                        <option value="aprendiz" {% if u.rol == 'aprendiz' %}selected{% endif %}>Aprendiz</option>
-                                        <option value="instructor" {% if u.rol == 'instructor' %}selected{% endif %}>Instructor</option>
-                                        <option value="admin" {% if u.rol == 'admin' %}selected{% endif %}>Administrador</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-white-50">Estado</label>
-                                    <select name="estado" class="form-select custom-input">
-                                        <option value="activo" {% if u.estado == 'activo' %}selected{% endif %}>Activo</option>
-                                        <option value="inactivo" {% if u.estado == 'inactivo' %}selected{% endif %}>Inactivo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-end">
-                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-warning shadow-lg"><i class="fas fa-save me-2"></i>Guardar Cambios</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-    </div></div>
 </div>
 
+<!-- MODAL EDITAR PERFIL -->
 <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal text-white">
@@ -603,58 +399,53 @@
             <div class="modal-body pt-0">
                 <form method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
                     {% csrf_token %}
+
                     <div class="text-center mb-4 mt-2">
                         <div class="position-relative d-inline-block">
                             {% if usuario.foto_perfil %}
-                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow"
-                                     style="width:120px;height:120px;object-fit:cover;border:2px solid var(--accent-blue);">
+                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
                             {% else %}
-                                <img id="imgPreviewPerfil" src="https://via.placeholder.com/120x120/050814/00d2ff?text=SENA"
-                                     class="rounded-circle" style="width:120px;height:120px;object-fit:cover;border:2px dashed var(--accent-blue);">
+                                <img id="imgPreviewPerfil" src="https://via.placeholder.com/120x120/050814/00d2ff?text=SENA" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 2px dashed var(--accent-blue);">
                             {% endif %}
                             <label for="inputFotoPerfil" class="btn-camera" title="Cambiar foto">
                                 <i class="fas fa-camera"></i>
                             </label>
-                            <input type="file" name="imagen" id="inputFotoPerfil" class="d-none" accept="image/*"
-                                   onchange="previewProfileImage(event)">
+                            <input type="file" name="imagen" id="inputFotoPerfil" class="d-none" accept="image/*" onchange="previewProfileImage(event)">
                         </div>
                     </div>
+
                     <div class="row g-3">
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Nombre completo</label>
-                            <input type="text" class="custom-input form-control border-0 text-white text-cap"
-                                   value="{{ usuario.get_full_name|lower }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|lower }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Tipo de identificación</label>
-                            <input type="text" class="custom-input form-control border-0 text-white text-cap"
-                                   value="{{ usuario.tipo_documento|lower }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.tipo_documento|lower }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Número de identificación</label>
-                            <input type="text" class="custom-input form-control border-0 text-white"
-                                   value="{{ usuario.numero_documento }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.numero_documento }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Número de ficha</label>
-                            <input type="text" class="custom-input form-control border-0 text-white"
-                                   value="{{ usuario.ficha|default:'N/A' }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.ficha|default:'N/A' }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-cap">Correo electrónico</label>
-                            <input type="email" name="email" class="custom-input form-control shadow-sm"
-                                   value="{{ usuario.email }}" required>
+                            <input type="email" name="email" class="custom-input form-control shadow-sm" value="{{ usuario.email }}" required>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-cap">Número de teléfono</label>
-                            <input type="text" name="celular" class="custom-input form-control shadow-sm"
-                                   value="{{ usuario.telefono|default:'' }}" placeholder="Ej: 3001234567">
+                            <input type="text" name="celular" class="custom-input form-control shadow-sm" value="{{ usuario.telefono|default:'' }}" placeholder="Ej: 3001234567">
                         </div>
                     </div>
+
                     <div class="alert alert-info mt-4 p-2 small border-0 bg-dark text-white-50 text-cap text-center">
-                        <i class="fas fa-info-circle me-2 text-info"></i>Los datos de identidad son institucionales y no pueden editarse.
+                        <i class="fas fa-info-circle me-2 text-info"></i>Los datos de identidad y académicos son institucionales y no pueden ser editados.
                     </div>
-                    <button type="submit" class="btn btn-warning w-100 py-3 mt-2 shadow-lg">
+
+                    <button type="submit" class="btn btn-warning w-100 btn-cap py-3 mt-2 shadow-lg">
                         <i class="fas fa-save me-2"></i>Guardar cambios realizados
                     </button>
                 </form>
@@ -662,43 +453,192 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(220, 53, 69, 0.5); border-radius: 16px;">
+            <div class="modal-header border-0 pb-1">
+                <h4 class="modal-title fw-bold">
+                    <i class="fas fa-exclamation-triangle text-danger me-3"></i>Reportar un Error
+                </h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <ul class="nav nav-tabs mb-4 border-0" id="buzonTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#buzon-enviar">
+                            <i class="fas fa-bug me-2"></i>Enviar Reporte
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#buzon-respuestas">
+                            <i class="fas fa-history me-2"></i>Mis Reportes
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- ENVIAR -->
+                    <div class="tab-pane fade show active" id="buzon-enviar">
+                        <div id="reportAlert" class="alert d-none mb-3 shadow-lg fw-bold text-center" role="alert"></div>
+                        <form id="reportarErrorForm" method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="tipo" value="error">
+
+                            <div class="mt-3">
+                                <label class="form-label fw-bold text-white-50">Descripción del fallo</label>
+                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe detalladamente el error que encontraste..." required></textarea>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="form-label fw-bold text-white-50 small d-block">Captura de pantalla del error</label>
+                                <label for="imagen_error" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" style="background: #161b22; border: 1px solid #30363d;">
+                                    <span id="fileName" class="text-white-50 small">Seleccionar imagen desde su equipo...</span>
+                                    <i class="fas fa-upload"></i>
+                                </label>
+                                <input type="file" name="imagen_error" id="imagen_error" class="d-none" accept="image/*" 
+                                       onchange="document.getElementById('fileName').innerText = this.files[0].name">
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100 mt-4 py-3 fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Reporte de Error
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- MIS SUGERENCIAS -->
+                    <div class="tab-pane fade" id="buzon-respuestas">
+                        
+                        {% if sugerencias_usuario %} {# Línea 462 #}
+                            {% for s in sugerencias_usuario %}
+                            <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-{{ s.id }}"
+                                 style="border-left: 5px solid {% if s.respuesta %}#22c55e{% else %}#eab308{% endif %};">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
+                                            {{ s.tipo|upper }}
+                                        </span>
+                                        {% if not s.respuesta %}
+                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte" 
+                                                data-id="{{ s.id }}" data-comentario="{{ s.comentario }}" title="Editar reporte">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte" 
+                                                data-id="{{ s.id }}" title="Eliminar reporte">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-white-50">{{ s.fecha|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <p class="mb-3">{{ s.comentario }}</p>
+
+                                {% if s.imagen %}
+                                    <div class="mb-3">
+                                        <a href="{{ s.imagen.url }}" target="_blank">
+                                            <img src="{{ s.imagen.url }}" alt="Evidencia" class="img-fluid rounded border border-secondary" style="max-height: 150px; cursor: pointer;">
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                                {% if s.respuesta %}
+                                    <div class="p-3 rounded bg-success bg-opacity-10 border-start border-success border-3">
+                                        <strong class="text-success">Respuesta:</strong><br>
+                                        {{ s.respuesta }}
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-white-50">
+                                <i class="fas fa-inbox fa-4x mb-3"></i>
+                                <p>No has enviado ningún reporte de error todavía.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL EDITAR REPORTE -->
+<div class="modal fade" id="modalEditarReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #ff4d4d; border-radius: 12px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2 text-warning"></i>Editar Reporte</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditarReporte" method="POST" action="{% url 'perfil' %}">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="editar_reporte">
+                <input type="hidden" name="reporte_id" id="inputEditId">
+                <div class="modal-body">
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold text-white-50">Nuevo comentario</label>
+                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning btn-sm fw-bold">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ESTÉTICO DE CONFIRMACIÓN PARA ELIMINAR -->
+<div class="modal fade" id="modalConfirmarEliminarReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #dc3545; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-shield-alt me-2 text-danger"></i>Seguridad de Datos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-circle fa-5x text-danger mb-3 shadow-sm"></i>
+                </div>
+                <h4 class="fw-bold">¿Estás seguro?</h4>
+                <p class="text-white-50 px-4">Esta acción eliminará permanentemente tu reporte de error del sistema. No podrás recuperar esta información después.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-light px-4 rounded-pill" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-danger px-4 fw-bold rounded-pill shadow" id="confirmDeleteReporteBtn">
+                    <i class="fas fa-trash-alt me-2"></i>Sí, eliminar ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORMULARIO OCULTO PARA BORRAR -->
+<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="tipo" value="borrar_reporte">
+    <input type="hidden" name="reporte_id" id="inputDeleteId">
+</form>
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
-    // Preview de foto
     function previewProfileImage(event) {
         var reader = new FileReader();
         reader.onload = function() {
             var output = document.getElementById('imgPreviewPerfil');
             output.src = reader.result;
-            output.style.border = "2px solid var(--accent-hover)";
         };
-        if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+        if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
     }
-
-    // Buscador en tiempo real por Nombre o Documento
-    document.addEventListener('DOMContentLoaded', function () {
-        const input = document.getElementById('buscadorUsuarios');
-        if (!input) return;
-        
-        input.addEventListener('input', function () {
-            const query = this.value.toLowerCase().trim();
-            const filas = document.querySelectorAll('#tablaUsuarios .fila-usuario');
-            
-            filas.forEach(function (fila) {
-                const nombre = fila.querySelector('.dato-nombre')?.textContent.toLowerCase() || '';
-                const documento = fila.querySelector('.dato-doc')?.textContent.toLowerCase() || '';
-                
-                // Búsqueda simple: si encuentra coincidencia, muestra la fila; si no, la oculta
-                if (nombre.includes(query) || documento.includes(query)) {
-                    fila.style.display = '';
-                } else {
-                    fila.style.display = 'none';
-                }
-            });
-        });
-    });
 </script>
 {% endblock %}
