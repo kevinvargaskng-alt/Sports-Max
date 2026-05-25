@@ -40,7 +40,6 @@ urlpatterns = [
 
     # Módulos deportivos
     path('interfichas/', include('interfichas.urls')),
-    path('intercentros/', include('intercentros.urls')),
     path('gimnasio/', include('gimnasio.urls')),
     path('inventario/', include('inventario.urls')),
 

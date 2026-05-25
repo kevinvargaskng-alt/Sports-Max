@@ -12,8 +12,6 @@ from .models import Usuario, Sugerencia
 from inventario.models import Prestamo
 from gimnasio.models import Reserva, GimnasioConfig  # Agregado GimnasioConfig
 from interfichas.models import EquipoInterfichas, TorneoInterfichas
-from intercentros.models import TorneoIntercentros, Postulacion
-
 def login_view(request):
     """Procesa el inicio de sesión vía AJAX"""
     if request.method == 'POST':
@@ -258,7 +256,7 @@ def perfil_view(request):
             'reportes_todos': todas_sugerencias,
             'todos_usuarios': todos_usuarios,
             'total_usuarios': todos_usuarios.count(),
-            'total_torneos_activos': TorneoInterfichas.objects.exclude(estado='cerrado').count() + TorneoIntercentros.objects.filter(estado='Activo').count(),
+            'total_torneos_activos': TorneoInterfichas.objects.exclude(estado='cerrado').count(),
         }
 
     else:
@@ -274,7 +272,6 @@ def perfil_view(request):
             'reservas_gimnasio': reservas_gimnasio,
             'sugerencias_usuario': mis_sugerencias,
             'equipos_interfichas': EquipoInterfichas.objects.filter(usuario_registra=usuario),
-            'equipos_intercentros': Postulacion.objects.filter(numero_documento=str(usuario.numero_documento)),
         }
 
     return render(request, 'usuarios/perfil.html', contexto)
