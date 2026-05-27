@@ -1,0 +1,506 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if vista == 'dashboard' %}Mi Dashboard de Salud{% else %}Inicio — Hábitos Saludables{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% if vista == 'dashboard' %}
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: DASHBOARD
+   Contexto esperado del view:
+     request.user, tiene_consent, ultimo (SeguimientoSalud|None),
+     color_imc, categoria_imc, cambio_peso,
+     fechas_json, pesos_json, imcs_json
+════════════════════════════════════════════════════════════════════ #}
+
+<div class="page-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col">
+        <h1><i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard de Salud</h1>
+        <p class="subtitle mb-0">
+          Bienvenido, {{ request.user.get_full_name|default:request.user.username }} —
+          Seguimiento personal de bienestar
+        </p>
+      </div>
+      <div class="col-auto">
+        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-light fw-bold" style="border-radius:12px;color:var(--sena-dark)">
+          <i class="fas fa-plus-circle me-2"></i>Nuevo registro
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+
+  {% if not tiene_consent %}
+  <div class="alert d-flex align-items-center gap-3 mb-4"
+       style="background:#fff3e0;border:2px solid #fb8c00;border-radius:16px">
+    <i class="fas fa-shield-alt fs-3" style="color:#fb8c00"></i>
+    <div>
+      <strong>Aceptación de Habeas Data requerida</strong><br>
+      <span class="small">Para registrar y ver tu información de salud debes aceptar el tratamiento de datos personales.</span>
+    </div>
+    <a href="{% url 'habitos:habeas_data' %}"
+       class="btn btn-sm ms-auto fw-bold"
+       style="background:#fb8c00;color:#fff;border-radius:10px;white-space:nowrap">
+      Aceptar ahora
+    </a>
+  </div>
+  {% endif %}
+
+  {% if ultimo %}
+  <!-- ── STATS CARDS ─────────────────────────────────────────────── -->
+  <div class="row g-4 mb-5">
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="imc-display text-{{ color_imc }}">{{ ultimo.imc|default:"—" }}</div>
+        <div class="stat-label">IMC</div>
+        <span class="badge bg-{{ color_imc }} mt-2">{{ categoria_imc.0 }}</span>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value">{{ ultimo.peso_kg }}</div>
+        <div class="stat-label">Peso actual (kg)</div>
+        {% if cambio_peso is not None %}
+        <small class="{% if cambio_peso < 0 %}text-success{% elif cambio_peso > 0 %}text-warning{% else %}text-muted{% endif %} fw-bold">
+          {% if cambio_peso > 0 %}+{% endif %}{{ cambio_peso }} kg desde inicio
+        </small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value" style="font-size:1.6rem">{{ ultimo.get_presion_arterial }}</div>
+        <div class="stat-label">Presión Arterial</div>
+        <small class="text-muted">Último registro</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value">{{ ultimo.frecuencia_cardiaca|default:"—" }}</div>
+        <div class="stat-label">Frec. Cardíaca (lpm)</div>
+        <small class="text-muted">Último registro</small>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── GRÁFICAS ────────────────────────────────────────────────── -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="chart-container">
+        <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
+          <i class="fas fa-chart-line me-2"></i>Evolución del Peso
+        </h5>
+        <canvas id="chartPeso" height="200"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="chart-container">
+        <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
+          <i class="fas fa-heartbeat me-2"></i>Evolución del IMC
+        </h5>
+        <canvas id="chartIMC" height="200"></canvas>
+        <div class="d-flex gap-2 flex-wrap mt-3" style="font-size:.75rem">
+          <span class="badge bg-warning text-dark">↓18.5 Bajo peso</span>
+          <span class="badge bg-success">18.5–24.9 Normal</span>
+          <span class="badge bg-warning text-dark">25–29.9 Sobrepeso</span>
+          <span class="badge bg-danger">≥30 Obesidad</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ÚLTIMO DETALLE + ACCIONES RÁPIDAS ──────────────────────── -->
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="chart-container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0" style="color:var(--sena-dark)">
+            <i class="fas fa-notes-medical me-2"></i>Último Registro
+          </h5>
+          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-sm btn-outline-sena">
+            Ver historial completo
+          </a>
+        </div>
+        <div class="row g-3">
+          {% with items=ultimo %}
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">📅 Fecha</div>
+              <div class="fw-bold">{{ ultimo.fecha_evaluacion }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">📏 Estatura</div>
+              <div class="fw-bold">{{ ultimo.estatura_cm }} cm</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">🏃 Actividad</div>
+              <div class="fw-bold">{{ ultimo.get_nivel_actividad_display }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">💧 Agua/día</div>
+              <div class="fw-bold">{{ ultimo.vasos_agua|default:"—" }} vasos</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">😴 Sueño</div>
+              <div class="fw-bold">{{ ultimo.horas_sueno|default:"—" }} hrs</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">📝 Observaciones</div>
+              <div class="fw-bold small">{{ ultimo.observaciones|default:"Sin notas"|truncatewords:8 }}</div>
+            </div>
+          </div>
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="chart-container h-100">
+        <h5 class="fw-bold mb-4" style="color:var(--sena-dark)">
+          <i class="fas fa-bolt me-2"></i>Acciones rápidas
+        </h5>
+        <div class="d-grid gap-3">
+          <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena">
+            <i class="fas fa-plus-circle me-2"></i>Nuevo seguimiento
+          </a>
+          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-sena">
+            <i class="fas fa-history me-2"></i>Ver historial
+          </a>
+          <a href="{% url 'habitos:lista_rutinas' %}" class="btn btn-outline-sena">
+            <i class="fas fa-running me-2"></i>Ver rutinas
+          </a>
+          <a href="{% url 'habitos:nutricion' %}" class="btn btn-outline-sena">
+            <i class="fas fa-utensils me-2"></i>Guía nutricional
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Sin registros -->
+  <div class="text-center py-5">
+    <div style="font-size:5rem;opacity:0.3">📊</div>
+    <h3 class="fw-bold mb-2" style="color:var(--sena-dark)">Sin registros aún</h3>
+    <p class="text-muted mb-4">
+      Empieza a registrar tu información de salud para ver estadísticas y gráficas.
+    </p>
+    {% if tiene_consent %}
+    <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena btn-lg">
+      <i class="fas fa-plus-circle me-2"></i>Crear primer registro
+    </a>
+    {% else %}
+    <a href="{% url 'habitos:habeas_data' %}" class="btn btn-sena btn-lg">
+      <i class="fas fa-shield-alt me-2"></i>Aceptar Habeas Data y comenzar
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+{% else %}
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: INICIO (por defecto)
+   Contexto esperado del view:
+     request.user, tiene_consent,
+     habitos (últimos N), materiales (últimos N)
+════════════════════════════════════════════════════════════════════ #}
+
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
+<section class="hero-habitos">
+  <div class="container position-relative" style="z-index:1">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <p class="mb-2 fw-bold" style="color:rgba(255,255,255,0.7);letter-spacing:.08em;font-size:.85rem">
+          ▸ SENA · MÓDULO INSTITUCIONAL
+        </p>
+        <h1 class="display-5 fw-black mb-3" style="font-family:'Poppins',sans-serif;font-weight:900">
+          Tu bienestar es<br>
+          <span style="color:#a8ff78">nuestra prioridad</span>
+        </h1>
+        <p class="lead mb-4" style="color:rgba(255,255,255,0.88)">
+          Hola, <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>.
+          Aquí encontrarás herramientas para mejorar tu calidad de vida:
+          hábitos, nutrición, rutinas físicas y seguimiento personal de salud.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="{% url 'habitos:registrar_seguimiento' %}"
+             class="btn btn-light fw-bold px-4 py-2"
+             style="border-radius:12px;color:var(--sena-dark)">
+            <i class="fas fa-plus-circle me-2"></i>Registrar mi salud
+          </a>
+          <a href="{% url 'habitos:dashboard' %}"
+             class="btn btn-outline-light fw-bold px-4 py-2"
+             style="border-radius:12px">
+            <i class="fas fa-tachometer-alt me-2"></i>Ver mi dashboard
+          </a>
+        </div>
+        {% if not tiene_consent %}
+        <div class="alert mt-4 mb-0"
+             style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.5);border-radius:12px;color:#fff">
+          <i class="fas fa-shield-alt me-2"></i>
+          <strong>Pendiente:</strong> Acepta el tratamiento de datos para registrar tu salud.
+          <a href="{% url 'habitos:habeas_data' %}"
+             class="btn btn-sm ms-2"
+             style="background:var(--sena-accent);color:#fff;border-radius:8px">
+            Aceptar ahora
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-5 text-center d-none d-lg-block">
+        <div style="font-size:9rem;opacity:0.15;line-height:1">🌿</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACCESOS RÁPIDOS ───────────────────────────────────────────── -->
+<section class="container py-5">
+  <h2 class="fw-bold mb-1" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+    ¿Qué deseas hacer hoy?
+  </h2>
+  <p class="text-muted mb-4">Accede a cada sección del módulo</p>
+
+  <div class="row g-4">
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{% url 'habitos:lista_habitos' %}" class="text-decoration-none">
+        <div class="card-habito card p-0">
+          <div class="card-body d-flex align-items-start gap-3">
+            <div class="card-icon icon-alimentacion">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Hábitos Saludables</h6>
+              <p class="small text-muted mb-2">Consejos, rutinas y estilo de vida</p>
+              <span class="badge-categoria cat-alimentacion">Ver contenido →</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{% url 'habitos:lista_rutinas' %}" class="text-decoration-none">
+        <div class="card-habito card p-0">
+          <div class="card-body d-flex align-items-start gap-3">
+            <div class="card-icon icon-ejercicio">
+              <i class="fas fa-running"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Rutinas Físicas</h6>
+              <p class="small text-muted mb-2">Por nivel y objetivo personal</p>
+              <span class="badge-categoria cat-ejercicio">Ver rutinas →</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{% url 'habitos:nutricion' %}" class="text-decoration-none">
+        <div class="card-habito card p-0">
+          <div class="card-body d-flex align-items-start gap-3">
+            <div class="card-icon icon-hidratacion">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Pirámide Nutricional</h6>
+              <p class="small text-muted mb-2">Guía de alimentación saludable</p>
+              <span class="badge-categoria cat-hidratacion">Explorar →</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{% url 'habitos:biblioteca' %}" class="text-decoration-none">
+        <div class="card-habito card p-0">
+          <div class="card-body d-flex align-items-start gap-3">
+            <div class="card-icon icon-mental">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Biblioteca SENA</h6>
+              <p class="small text-muted mb-2">Cartillas, videos y documentos</p>
+              <span class="badge-categoria cat-mental">Acceder →</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ÚLTIMOS HÁBITOS ───────────────────────────────────────────── -->
+{% if habitos %}
+<section class="container pb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+      Contenido educativo
+    </h2>
+    <a href="{% url 'habitos:lista_habitos' %}" class="btn btn-outline-sena">Ver todos</a>
+  </div>
+  <div class="row g-4">
+    {% for habito in habitos %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card-habito card">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="card-icon icon-{{ habito.categoria }}">
+              <i class="fas {{ habito.icono_css }}"></i>
+            </div>
+            <span class="badge-categoria cat-{{ habito.categoria }}">
+              {{ habito.get_categoria_display }}
+            </span>
+          </div>
+          <h5 class="fw-bold mb-2" style="color:var(--sena-dark)">{{ habito.titulo }}</h5>
+          <p class="text-muted small mb-3">{{ habito.descripcion|truncatewords:20 }}</p>
+          <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="btn btn-sena btn-sm">
+            Leer más <i class="fas fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ── MATERIAL RECIENTE ─────────────────────────────────────────── -->
+{% if materiales %}
+<section class="py-5" style="background:#fff">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+        Material reciente
+      </h2>
+      <a href="{% url 'habitos:biblioteca' %}" class="btn btn-outline-sena">Ver biblioteca</a>
+    </div>
+    <div class="row g-3">
+      {% for mat in materiales %}
+      <div class="col-sm-6 col-lg-3">
+        <div class="material-card card">
+          <div class="card-body text-center py-4">
+            <div class="tipo-icon tipo-{{ mat.tipo_contenido }} mb-3">
+              <i class="fas {{ mat.get_icono }}"></i>
+            </div>
+            <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">{{ mat.titulo|truncatewords:6 }}</h6>
+            <p class="small text-muted mb-3">{{ mat.get_tipo_contenido_display }}</p>
+            <a href="{% url 'habitos:descargar_material' mat.pk %}" class="btn btn-sm btn-sena">
+              <i class="fas fa-download me-1"></i>Acceder
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endif %}{# fin if vista == 'dashboard' #}
+
+{% endblock %}
+
+
+{% block extra_js %}
+{% if vista == 'dashboard' and ultimo %}
+{# Chart.js debe estar cargado en base.html o aquí como CDN #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const fechas = {{ fechas_json|safe }};
+const pesos  = {{ pesos_json|safe }};
+const imcs   = {{ imcs_json|safe }};
+
+const configBase = {
+  responsive: true,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { display: false } },
+    y: { grid: { color: '#f0f0f0' } }
+  }
+};
+
+new Chart(document.getElementById('chartPeso'), {
+  type: 'line',
+  data: {
+    labels: fechas,
+    datasets: [{
+      data: pesos,
+      borderColor: '#39a900',
+      backgroundColor: 'rgba(57,169,0,0.08)',
+      borderWidth: 3,
+      pointRadius: 5,
+      pointBackgroundColor: '#39a900',
+      fill: true,
+      tension: 0.4,
+    }]
+  },
+  options: {
+    ...configBase,
+    scales: { ...configBase.scales, y: { ...configBase.scales.y, title: { display: true, text: 'kg' } } }
+  }
+});
+
+new Chart(document.getElementById('chartIMC'), {
+  type: 'line',
+  data: {
+    labels: fechas,
+    datasets: [
+      {
+        data: imcs,
+        borderColor: '#1565c0',
+        backgroundColor: 'rgba(21,101,192,0.08)',
+        borderWidth: 3,
+        pointRadius: 5,
+        pointBackgroundColor: '#1565c0',
+        fill: true,
+        tension: 0.4,
+        label: 'IMC',
+      },
+      {
+        data: Array(fechas.length).fill(24.9),
+        borderColor: '#43a047',
+        borderWidth: 1,
+        borderDash: [6, 3],
+        pointRadius: 0,
+        fill: false,
+        label: 'Límite normal (24.9)',
+      }
+    ]
+  },
+  options: {
+    ...configBase,
+    plugins: { legend: { display: true, labels: { boxWidth: 12 } } }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}
