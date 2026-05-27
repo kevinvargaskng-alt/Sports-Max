@@ -14,7 +14,7 @@ import sys
 import logging
 
 # ── Configurar Django ─────────────────────────────────────
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
@@ -84,6 +84,8 @@ def recopilar_datos() -> dict:
         })
     datos["equipos_interfichas"] = EquipoInterfichas.objects.count()
     datos["partidos_jugados"] = PartidoInterfichas.objects.filter(jugado=True).count()
+
+
 
     return datos
 

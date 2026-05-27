@@ -6,7 +6,7 @@ import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.db.models import Q, Avg
 from django.utils import timezone
 
@@ -32,7 +32,9 @@ def tiene_habeas_data(user):
 
 
 def requiere_habeas_data(view_func):
-    """Decorador: redirige al formulario de Habeas Data si no ha sido aceptado."""
+    """
+    Decorador: redirige al formulario de Habeas Data si no ha sido aceptado.
+    """
     def wrapper(request, *args, **kwargs):
         if not tiene_habeas_data(request.user):
             messages.warning(
@@ -59,35 +61,55 @@ def get_client_ip(request):
 # ─────────────────────────────────────────────
 @login_required
 def inicio(request):
-    """Página principal del módulo."""
+    """
+    Página principal del módulo con resumen de secciones.
+    """
     habitos_destacados = HabitoSaludable.objects.filter(activo=True)[:6]
     rutinas_recientes = RutinaFisica.objects.filter(activo=True)[:3]
     materiales_recientes = MaterialApoyo.objects.filter(activo=True)[:4]
 
-    ultimo_seguimiento = SeguimientoSalud.objects.filter(usuario=request.user).first()
+    # Último seguimiento del usuario
+    ultimo_seguimiento = SeguimientoSalud.objects.filter(
+        usuario=request.user
+    ).first()
+
+    tiene_consent = tiene_habeas_data(request.user)
 
     ctx = {
         'habitos': habitos_destacados,
         'rutinas': rutinas_recientes,
         'materiales': materiales_recientes,
         'ultimo_seguimiento': ultimo_seguimiento,
-        'tiene_consent': tiene_habeas_data(request.user),
+        'tiene_consent': tiene_consent,
         'titulo_pagina': 'Inicio — Hábitos Saludables',
-        'vista': 'inicio',
     }
-    return render(request, 'habitos/inicio_dashboard.html', ctx)
+    return render(request, 'habitos/inicio.html', ctx)
 
 
 @login_required
 def dashboard(request):
-    """Dashboard personal de salud y bienestar."""
+    """
+    Dashboard personal con estadísticas de salud del usuario.
+    """
     seguimientos = SeguimientoSalud.objects.filter(
         usuario=request.user
     ).order_by('fecha_evaluacion')
 
+    # Datos para gráficas (JSON)
     fechas = [str(s.fecha_evaluacion) for s in seguimientos]
     pesos = [float(s.peso_kg) for s in seguimientos]
     imcs = [float(s.imc) if s.imc else None for s in seguimientos]
+    frecuencias = [
+        s.frecuencia_cardiaca for s in seguimientos
+        if s.frecuencia_cardiaca
+    ]
+
+    # Promedios
+    promedios = seguimientos.aggregate(
+        avg_peso=Avg('peso_kg'),
+        avg_imc=Avg('imc'),
+        avg_fc=Avg('frecuencia_cardiaca'),
+    )
 
     ultimo = seguimientos.last()
     categoria_imc = ultimo.get_categoria_imc() if ultimo else ('Sin datos', 'secondary')
@@ -96,14 +118,14 @@ def dashboard(request):
         'seguimientos': seguimientos,
         'ultimo': ultimo,
         'categoria_imc': categoria_imc,
+        'promedios': promedios,
         'fechas_json': json.dumps(fechas),
         'pesos_json': json.dumps(pesos),
         'imcs_json': json.dumps(imcs),
         'tiene_consent': tiene_habeas_data(request.user),
         'titulo_pagina': 'Mi Dashboard de Salud',
-        'vista': 'dashboard',
     }
-    return render(request, 'habitos/inicio_dashboard.html', ctx)
+    return render(request, 'habitos/dashboard.html', ctx)
 
 
 # ─────────────────────────────────────────────
@@ -111,7 +133,10 @@ def dashboard(request):
 # ─────────────────────────────────────────────
 @login_required
 def habeas_data(request):
-    """Formulario de Habeas Data."""
+    """
+    Formulario de aceptación del tratamiento de datos personales.
+    """
+    # Si ya aceptó, mostrar confirmación
     try:
         consent = request.user.habeas_data
         if consent.acepta:
@@ -129,41 +154,47 @@ def habeas_data(request):
             obj.acepta = True
             obj.direccion_ip = get_client_ip(request)
             obj.save()
-            messages.success(request, '✓ Has aceptado el tratamiento de datos.')
+            messages.success(
+                request,
+                '✓ Has aceptado el tratamiento de datos. '
+                'Ahora puedes registrar tu información de salud.'
+            )
             return redirect('habitos:dashboard')
     else:
         form = HabeasDataForm()
 
-    return render(request, 'habitos/salud.html', {
+    return render(request, 'habitos/habeas_data.html', {
         'form': form,
-        'titulo_pagina': 'Autorización Habeas Data',
-        'vista': 'habeas_data'
+        'titulo_pagina': 'Autorización Habeas Data'
     })
 
 
 # ─────────────────────────────────────────────
-# CONTENIDO EDUCATIVO
+# HÁBITOS SALUDABLES (contenido educativo)
 # ─────────────────────────────────────────────
 @login_required
 def lista_habitos(request):
+    """Vista principal del contenido educativo sobre hábitos."""
     categoria = request.GET.get('categoria', '')
     habitos = HabitoSaludable.objects.filter(activo=True)
 
     if categoria:
         habitos = habitos.filter(categoria=categoria)
 
+    categorias = HabitoSaludable.CATEGORIA_CHOICES
+
     ctx = {
         'habitos': habitos,
-        'categorias': HabitoSaludable.CATEGORIA_CHOICES,
+        'categorias': categorias,
         'categoria_activa': categoria,
         'titulo_pagina': 'Hábitos Saludables',
-        'vista': 'habitos'
     }
-    return render(request, 'habitos/contenido_educativo.html', ctx)
+    return render(request, 'habitos/habitos.html', ctx)
 
 
 @login_required
 def detalle_habito(request, pk):
+    """Detalle de un hábito saludable específico."""
     habito = get_object_or_404(HabitoSaludable, pk=pk, activo=True)
     relacionados = HabitoSaludable.objects.filter(
         categoria=habito.categoria, activo=True
@@ -176,8 +207,12 @@ def detalle_habito(request, pk):
     })
 
 
+# ─────────────────────────────────────────────
+# RUTINAS FÍSICAS
+# ─────────────────────────────────────────────
 @login_required
 def lista_rutinas(request):
+    """Catálogo de rutinas físicas filtradas por nivel."""
     nivel = request.GET.get('nivel', '')
     objetivo = request.GET.get('objetivo', '')
 
@@ -194,29 +229,33 @@ def lista_rutinas(request):
         'nivel_activo': nivel,
         'objetivo_activo': objetivo,
         'titulo_pagina': 'Rutinas Físicas',
-        'vista': 'rutinas'   # Si usas contenido_educativo.html
     }
-    return render(request, 'habitos/contenido_educativo.html', ctx)
+    return render(request, 'habitos/rutinas.html', ctx)
 
 
 @login_required
 def detalle_rutina(request, pk):
+    """Detalle de una rutina física."""
     rutina = get_object_or_404(RutinaFisica, pk=pk, activo=True)
-    return render(request, 'habitos/contenido_educativo.html', {
+    return render(request, 'habitos/detalle_rutina.html', {
         'rutina': rutina,
         'titulo_pagina': rutina.nombre,
-        'vista': 'detalle_rutina'
     })
 
 
+# ─────────────────────────────────────────────
+# PIRÁMIDE NUTRICIONAL
+# ─────────────────────────────────────────────
 @login_required
 def piramide_nutricional(request):
+    """Vista de la pirámide nutricional con tarjetas por nivel."""
     categoria = request.GET.get('categoria', '')
     alimentos = PiramideNutricional.objects.filter(activo=True)
 
     if categoria:
         alimentos = alimentos.filter(categoria=categoria)
 
+    # Agrupar por nivel para mostrar la pirámide
     por_nivel = {}
     for alimento in PiramideNutricional.objects.filter(activo=True).order_by('nivel_piramide'):
         nivel = alimento.nivel_piramide
@@ -230,21 +269,27 @@ def piramide_nutricional(request):
         'categorias': PiramideNutricional.CATEGORIA_CHOICES,
         'categoria_activa': categoria,
         'titulo_pagina': 'Pirámide Nutricional',
-        'vista': 'nutricion'
     }
-    return render(request, 'habitos/contenido_educativo.html', ctx)
+    return render(request, 'habitos/nutricion.html', ctx)
 
 
+# ─────────────────────────────────────────────
+# MATERIAL DE APOYO
+# ─────────────────────────────────────────────
 @login_required
 def biblioteca(request):
+    """Biblioteca de materiales de apoyo con búsqueda y filtros."""
     form = BuscarMaterialForm(request.GET)
     materiales = MaterialApoyo.objects.filter(activo=True)
 
     if form.is_valid():
         q = form.cleaned_data.get('q')
         tipo = form.cleaned_data.get('tipo')
+
         if q:
-            materiales = materiales.filter(Q(titulo__icontains=q) | Q(descripcion__icontains=q))
+            materiales = materiales.filter(
+                Q(titulo__icontains=q) | Q(descripcion__icontains=q)
+            )
         if tipo:
             materiales = materiales.filter(tipo_contenido=tipo)
 
@@ -253,19 +298,17 @@ def biblioteca(request):
         'form': form,
         'total': materiales.count(),
         'titulo_pagina': 'Biblioteca de Materiales',
-        'vista': 'biblioteca'
     }
-    return render(request, 'habitos/contenido_educativo.html', ctx)
+    return render(request, 'habitos/biblioteca.html', ctx)
 
 
-# ─────────────────────────────────────────────
-# MATERIAL DE APOYO
-# ─────────────────────────────────────────────
 @login_required
 def descargar_material(request, pk):
+    """Descarga/acceso a material y registra el contador."""
     material = get_object_or_404(MaterialApoyo, pk=pk, activo=True)
 
     if material.tipo_contenido == 'video':
+        # Redirigir a URL externa
         material.incrementar_descargas()
         return redirect(material.url_video)
 
@@ -290,31 +333,53 @@ def descargar_material(request, pk):
 @login_required
 @requiere_habeas_data
 def registrar_seguimiento(request):
+    """
+    Registro de un nuevo seguimiento de salud.
+    Requiere Habeas Data aceptado.
+    """
     if request.method == 'POST':
         form = SeguimientoSaludForm(request.POST)
         if form.is_valid():
             seguimiento = form.save(commit=False)
             seguimiento.usuario = request.user
-            seguimiento.save()
-            messages.success(request, f'✓ Seguimiento registrado. IMC: {seguimiento.imc}')
+            seguimiento.save()  # IMC se calcula en el save() del modelo
+
+            categoria, color = seguimiento.get_categoria_imc()
+            messages.success(
+                request,
+                f'✓ Seguimiento registrado. '
+                f'Tu IMC es {seguimiento.imc} — {categoria}'
+            )
             return redirect('habitos:historial_salud')
     else:
         form = SeguimientoSaludForm(initial={'fecha_evaluacion': timezone.now().date()})
 
-    return render(request, 'habitos/salud.html', {
+    return render(request, 'habitos/registrar_seguimiento.html', {
         'form': form,
         'titulo_pagina': 'Registrar Seguimiento de Salud',
-        'vista': 'registrar'
     })
 
 
 @login_required
 @requiere_habeas_data
 def historial_salud(request):
-    seguimientos = SeguimientoSalud.objects.filter(usuario=request.user).order_by('fecha_evaluacion')
+    """Historial completo de seguimientos del usuario con gráficas."""
+    seguimientos = SeguimientoSalud.objects.filter(
+        usuario=request.user
+    ).order_by('fecha_evaluacion')
+
+    # Preparar datos JSON para Chart.js
+    data_grafica = {
+        'fechas': [str(s.fecha_evaluacion) for s in seguimientos],
+        'pesos': [float(s.peso_kg) for s in seguimientos],
+        'imcs': [float(s.imc) if s.imc else 0 for s in seguimientos],
+        'fc': [s.frecuencia_cardiaca or 0 for s in seguimientos],
+    }
 
     ultimo = seguimientos.last()
     primero = seguimientos.first()
+
+    # Cambio de peso entre primer y último registro
     cambio_peso = None
     if ultimo and primero and ultimo != primero:
         cambio_peso = round(float(ultimo.peso_kg) - float(primero.peso_kg), 2)
@@ -323,25 +388,36 @@ def historial_salud(request):
         'seguimientos': seguimientos,
         'ultimo': ultimo,
         'cambio_peso': cambio_peso,
+        'data_json': json.dumps(data_grafica),
         'titulo_pagina': 'Mi Historial de Salud',
-        'vista': 'historial'
     }
-    return render(request, 'habitos/salud.html', ctx)
+    return render(request, 'habitos/historial_salud.html', ctx)
 
 
 @login_required
 def detalle_seguimiento(request, pk):
-    seguimiento = get_object_or_404(SeguimientoSalud, pk=pk, usuario=request.user)
-    return render(request, 'habitos/salud.html', {   # o crea detalle_seguimiento.html
+    """Detalle de un registro de seguimiento específico."""
+    seguimiento = get_object_or_404(
+        SeguimientoSalud,
+        pk=pk,
+        usuario=request.user  # Solo puede ver los propios
+    )
+    categoria, color = seguimiento.get_categoria_imc()
+
+    return render(request, 'habitos/detalle_seguimiento.html', {
         'seg': seguimiento,
+        'categoria_imc': categoria,
+        'color_imc': color,
         'titulo_pagina': f'Seguimiento — {seguimiento.fecha_evaluacion}',
-        'vista': 'detalle'
     })
 
 
 @login_required
 def eliminar_seguimiento(request, pk):
-    seguimiento = get_object_or_404(SeguimientoSalud, pk=pk, usuario=request.user)
+    """Elimina un registro de seguimiento (solo el propio usuario)."""
+    seguimiento = get_object_or_404(
+        SeguimientoSalud, pk=pk, usuario=request.user
+    )
     if request.method == 'POST':
         seguimiento.delete()
         messages.success(request, 'Registro eliminado correctamente.')

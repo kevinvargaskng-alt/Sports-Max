@@ -2,33 +2,33 @@
 {% load static %}
 
 {% block title %}
-  {% if vista == 'bienestar' %}Mi Bienestar — Panel Personal{% else %}Inicio — Hábitos Saludables SENA{% endif %}
+  {% if vista == 'dashboard' %}Mi Dashboard de Salud{% else %}Inicio — Hábitos Saludables{% endif %}
 {% endblock %}
 
 {% block content %}
 
-{% if vista == 'bienestar' %}
-
-<!-- ══════════════════════════════════════════════════════
-     PANEL "MI BIENESTAR"  (antes: dashboard)
-══════════════════════════════════════════════════════ -->
+{% if vista == 'dashboard' %}
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: DASHBOARD
+   Contexto esperado del view:
+     request.user, tiene_consent, ultimo (SeguimientoSalud|None),
+     color_imc, categoria_imc, cambio_peso,
+     fechas_json, pesos_json, imcs_json
+════════════════════════════════════════════════════════════════════ #}
 
 <div class="page-header">
   <div class="container">
     <div class="row align-items-center">
       <div class="col">
-        <h1><i class="fas fa-leaf me-2" style="color:#4ADE80"></i>Mi Bienestar</h1>
+        <h1><i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard de Salud</h1>
         <p class="subtitle mb-0">
-          Bienvenido/a, <strong style="color:#86EFAC">{{ request.user.get_full_name|default:request.user.username }}</strong> —
-          Seguimiento personal de salud e indicadores de bienestar
+          Bienvenido, {{ request.user.get_full_name|default:request.user.username }} —
+          Seguimiento personal de bienestar
         </p>
       </div>
-      <div class="col-auto d-flex gap-2 flex-wrap">
-        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-primary fw-bold">
+      <div class="col-auto">
+        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-light fw-bold" style="border-radius:12px;color:var(--sena-dark)">
           <i class="fas fa-plus-circle me-2"></i>Nuevo registro
-        </a>
-        <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-primary fw-bold">
-          <i class="fas fa-history me-2"></i>Historial
         </a>
       </div>
     </div>
@@ -37,290 +37,163 @@
 
 <div class="container pb-5">
 
-  <!-- Alerta Habeas Data -->
   {% if not tiene_consent %}
   <div class="alert d-flex align-items-center gap-3 mb-4"
-       style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.45);border-radius:16px;color:#FDE68A">
-    <i class="fas fa-shield-alt fs-3" style="color:#F59E0B"></i>
+       style="background:#fff3e0;border:2px solid #fb8c00;border-radius:16px">
+    <i class="fas fa-shield-alt fs-3" style="color:#fb8c00"></i>
     <div>
-      <strong>Autorización de Habeas Data requerida</strong><br>
-      <span class="small" style="opacity:.85">
-        Para registrar y visualizar tu información de salud debes aceptar el tratamiento de datos personales
-        conforme a la <strong>Ley 1581 de 2012</strong>.
-      </span>
+      <strong>Aceptación de Habeas Data requerida</strong><br>
+      <span class="small">Para registrar y ver tu información de salud debes aceptar el tratamiento de datos personales.</span>
     </div>
     <a href="{% url 'habitos:habeas_data' %}"
        class="btn btn-sm ms-auto fw-bold"
-       style="background:#F59E0B;color:#000;border-radius:10px;white-space:nowrap;font-size:.82rem">
+       style="background:#fb8c00;color:#fff;border-radius:10px;white-space:nowrap">
       Aceptar ahora
     </a>
   </div>
   {% endif %}
 
   {% if ultimo %}
-
-  <!-- ── TARJETAS DE INDICADORES ── -->
-  <div class="row g-4 mb-2">
-    <div class="col-12">
-      <p class="fw-bold mb-1" style="color:#4ADE80;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em">
-        <i class="fas fa-calendar-check me-1"></i>Último registro: {{ ultimo.fecha_evaluacion|date:"d \d\e F \d\e Y" }}
-      </p>
-    </div>
-  </div>
-
+  <!-- ── STATS CARDS ─────────────────────────────────────────────── -->
   <div class="row g-4 mb-5">
 
-    <!-- IMC -->
     <div class="col-6 col-lg-3">
-      <div class="stat-card text-center">
+      <div class="stat-card">
         <div class="imc-display text-{{ color_imc }}">{{ ultimo.imc|default:"—" }}</div>
-        <div class="stat-label">Índice de Masa Corporal (IMC)</div>
-        <span class="badge bg-{{ color_imc }} mt-2 px-3 py-1" style="border-radius:20px">
-          {{ categoria_imc.0 }}
-        </span>
-        <div class="small mt-2" style="color:#4A5568;font-size:.72rem">
-          Rango saludable: 18.5 – 24.9
-        </div>
+        <div class="stat-label">IMC</div>
+        <span class="badge bg-{{ color_imc }} mt-2">{{ categoria_imc.0 }}</span>
       </div>
     </div>
 
-    <!-- Peso -->
     <div class="col-6 col-lg-3">
-      <div class="stat-card text-center">
+      <div class="stat-card">
         <div class="stat-value">{{ ultimo.peso_kg }}</div>
         <div class="stat-label">Peso actual (kg)</div>
         {% if cambio_peso is not None %}
-        <small class="fw-bold mt-2 d-block"
-               style="color:{% if cambio_peso < 0 %}#4ADE80{% elif cambio_peso > 0 %}#FCD34D{% else %}#8B9BB4{% endif %}">
-          {% if cambio_peso > 0 %}▲{% elif cambio_peso < 0 %}▼{% else %}─{% endif %}
+        <small class="{% if cambio_peso < 0 %}text-success{% elif cambio_peso > 0 %}text-warning{% else %}text-muted{% endif %} fw-bold">
           {% if cambio_peso > 0 %}+{% endif %}{{ cambio_peso }} kg desde inicio
         </small>
         {% endif %}
-        <div class="small mt-1" style="color:#4A5568;font-size:.72rem">Estatura: {{ ultimo.estatura_cm }} cm</div>
       </div>
     </div>
 
-    <!-- Presión arterial -->
     <div class="col-6 col-lg-3">
-      <div class="stat-card text-center">
-        <div class="stat-value" style="font-size:1.8rem;color:#67E8F9;text-shadow:0 0 20px rgba(6,182,212,0.4)">
-          {{ ultimo.get_presion_arterial }}
-        </div>
-        <div class="stat-label">Presión Arterial (mmHg)</div>
-        <div class="small mt-2" style="color:#4A5568;font-size:.72rem">Normal: &lt;120/80 mmHg</div>
+      <div class="stat-card">
+        <div class="stat-value" style="font-size:1.6rem">{{ ultimo.get_presion_arterial }}</div>
+        <div class="stat-label">Presión Arterial</div>
+        <small class="text-muted">Último registro</small>
       </div>
     </div>
 
-    <!-- Frecuencia cardíaca -->
     <div class="col-6 col-lg-3">
-      <div class="stat-card text-center">
-        <div class="stat-value" style="color:#FDA4AF;text-shadow:0 0 20px rgba(244,63,94,0.3)">
-          {{ ultimo.frecuencia_cardiaca|default:"—" }}
-        </div>
-        <div class="stat-label">Frecuencia Cardíaca (lpm)</div>
-        <div class="small mt-2" style="color:#4A5568;font-size:.72rem">Normal en reposo: 60–100 lpm</div>
+      <div class="stat-card">
+        <div class="stat-value">{{ ultimo.frecuencia_cardiaca|default:"—" }}</div>
+        <div class="stat-label">Frec. Cardíaca (lpm)</div>
+        <small class="text-muted">Último registro</small>
       </div>
     </div>
+
   </div>
 
-  <!-- ── GRÁFICAS EVOLUCIÓN ── -->
+  <!-- ── GRÁFICAS ────────────────────────────────────────────────── -->
   <div class="row g-4 mb-4">
     <div class="col-lg-6">
       <div class="chart-container">
-        <h5 class="fw-bold mb-1" style="color:#F0F6FC">
-          <i class="fas fa-chart-line me-2" style="color:#38BDF8"></i>Evolución del Peso
+        <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
+          <i class="fas fa-chart-line me-2"></i>Evolución del Peso
         </h5>
-        <p class="small mb-3" style="color:#4A5568">Tendencia de tu peso en el tiempo (kg)</p>
         <canvas id="chartPeso" height="200"></canvas>
       </div>
     </div>
     <div class="col-lg-6">
       <div class="chart-container">
-        <h5 class="fw-bold mb-1" style="color:#F0F6FC">
-          <i class="fas fa-heartbeat me-2" style="color:#FDA4AF"></i>Evolución del IMC
+        <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
+          <i class="fas fa-heartbeat me-2"></i>Evolución del IMC
         </h5>
-        <p class="small mb-3" style="color:#4A5568">Seguimiento de tu índice de masa corporal</p>
         <canvas id="chartIMC" height="200"></canvas>
-        <div class="d-flex gap-2 flex-wrap mt-3" style="font-size:.73rem">
-          <span class="badge px-3 py-1" style="background:rgba(245,158,11,0.2);color:#FCD34D;border:1px solid rgba(245,158,11,0.4);border-radius:20px">↓18.5 Bajo peso</span>
-          <span class="badge px-3 py-1" style="background:rgba(34,197,94,0.2);color:#86EFAC;border:1px solid rgba(34,197,94,0.4);border-radius:20px">18.5–24.9 Normal</span>
-          <span class="badge px-3 py-1" style="background:rgba(251,146,60,0.2);color:#FDBA74;border:1px solid rgba(251,146,60,0.4);border-radius:20px">25–29.9 Sobrepeso</span>
-          <span class="badge px-3 py-1" style="background:rgba(244,63,94,0.2);color:#FDA4AF;border:1px solid rgba(244,63,94,0.4);border-radius:20px">≥30 Obesidad</span>
+        <div class="d-flex gap-2 flex-wrap mt-3" style="font-size:.75rem">
+          <span class="badge bg-warning text-dark">↓18.5 Bajo peso</span>
+          <span class="badge bg-success">18.5–24.9 Normal</span>
+          <span class="badge bg-warning text-dark">25–29.9 Sobrepeso</span>
+          <span class="badge bg-danger">≥30 Obesidad</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── ÚLTIMO REGISTRO + ACCIONES ── -->
-  <div class="row g-4 mb-4">
+  <!-- ── ÚLTIMO DETALLE + ACCIONES RÁPIDAS ──────────────────────── -->
+  <div class="row g-4">
     <div class="col-lg-8">
       <div class="chart-container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="fw-bold mb-0" style="color:#F0F6FC">
-            <i class="fas fa-notes-medical me-2" style="color:#86EFAC"></i>Detalle del Último Registro
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0" style="color:var(--sena-dark)">
+            <i class="fas fa-notes-medical me-2"></i>Último Registro
           </h5>
-          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-primary btn-sm">
+          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-sm btn-outline-sena">
             Ver historial completo
           </a>
         </div>
         <div class="row g-3">
-          {% for item in ultimo_items %}
+          {% with items=ultimo %}
           <div class="col-6">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">{{ item.icon }} {{ item.label }}</div>
-              <div class="fw-bold" style="color:#F0F6FC">{{ item.value }}</div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">📅 Fecha</div>
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">📅 Fecha</div>
               <div class="fw-bold">{{ ultimo.fecha_evaluacion }}</div>
             </div>
           </div>
           <div class="col-6">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">📏 Estatura</div>
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">📏 Estatura</div>
               <div class="fw-bold">{{ ultimo.estatura_cm }} cm</div>
             </div>
           </div>
           <div class="col-6">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">🏃 Nivel de Actividad</div>
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">🏃 Actividad</div>
               <div class="fw-bold">{{ ultimo.get_nivel_actividad_display }}</div>
             </div>
           </div>
           <div class="col-6">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">💧 Agua / día</div>
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">💧 Agua/día</div>
               <div class="fw-bold">{{ ultimo.vasos_agua|default:"—" }} vasos</div>
             </div>
           </div>
           <div class="col-6">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">😴 Horas de Sueño</div>
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">😴 Sueño</div>
               <div class="fw-bold">{{ ultimo.horas_sueno|default:"—" }} hrs</div>
             </div>
           </div>
-          <div class="col-12">
-            <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.1)">
-              <div class="small fw-bold mb-1" style="color:#8B9BB4">📝 Observaciones</div>
-              <div class="fw-bold small">{{ ultimo.observaciones|default:"Sin notas registradas"|truncatewords:20 }}</div>
+          <div class="col-6">
+            <div class="p-3 rounded-3" style="background:var(--sena-light)">
+              <div class="small text-muted fw-bold">📝 Observaciones</div>
+              <div class="fw-bold small">{{ ultimo.observaciones|default:"Sin notas"|truncatewords:8 }}</div>
             </div>
           </div>
-          {% endfor %}
+          {% endwith %}
         </div>
       </div>
     </div>
 
     <div class="col-lg-4">
       <div class="chart-container h-100">
-        <h5 class="fw-bold mb-4" style="color:#F0F6FC">
-          <i class="fas fa-bolt me-2" style="color:#FCD34D"></i>Acciones Rápidas
+        <h5 class="fw-bold mb-4" style="color:var(--sena-dark)">
+          <i class="fas fa-bolt me-2"></i>Acciones rápidas
         </h5>
         <div class="d-grid gap-3">
-          <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-primary">
+          <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena">
             <i class="fas fa-plus-circle me-2"></i>Nuevo seguimiento
           </a>
-          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-primary">
-            <i class="fas fa-history me-2"></i>Ver historial completo
+          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-sena">
+            <i class="fas fa-history me-2"></i>Ver historial
           </a>
           <a href="{% url 'habitos:lista_rutinas' %}" class="btn btn-outline-sena">
-            <i class="fas fa-running me-2"></i>Mis rutinas físicas
+            <i class="fas fa-running me-2"></i>Ver rutinas
           </a>
           <a href="{% url 'habitos:nutricion' %}" class="btn btn-outline-sena">
             <i class="fas fa-utensils me-2"></i>Guía nutricional
           </a>
-          <a href="{% url 'habitos:lista_habitos' %}" class="btn btn-outline-sena">
-            <i class="fas fa-lightbulb me-2"></i>Hábitos saludables
-          </a>
-          <a href="{% url 'habitos:biblioteca' %}" class="btn btn-outline-sena">
-            <i class="fas fa-book-open me-2"></i>Biblioteca SENA
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── BLOQUE INFORMATIVO: ¿QUÉ SIGNIFICA MI IMC? ── -->
-  <div class="chart-container mb-4">
-    <h5 class="fw-bold mb-3" style="color:#F0F6FC">
-      <i class="fas fa-info-circle me-2" style="color:#38BDF8"></i>¿Qué significa tu IMC?
-    </h5>
-    <p class="small mb-3" style="color:#8B9BB4;line-height:1.7">
-      El <strong style="color:#F0F6FC">Índice de Masa Corporal (IMC)</strong> es una medida internacional que relaciona
-      el peso y la estatura para clasificar el estado nutricional de una persona. Se calcula dividiendo el peso en
-      kilogramos entre el cuadrado de la estatura en metros: <strong style="color:#38BDF8">IMC = kg / m²</strong>.
-      Aunque es un indicador útil, no diferencia entre masa muscular y grasa, por lo que debe interpretarse
-      junto con otros indicadores de salud.
-    </p>
-    <div class="row g-3">
-      <div class="col-6 col-lg-3">
-        <div class="p-3 rounded-3 text-center" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3)">
-          <div class="fw-bold" style="color:#FCD34D;font-size:1.1rem">↓ 18.5</div>
-          <div class="small mt-1" style="color:#8B9BB4">Bajo peso</div>
-          <div class="small mt-1" style="color:#4A5568;font-size:.72rem">Puede indicar desnutrición o déficit energético</div>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="p-3 rounded-3 text-center" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3)">
-          <div class="fw-bold" style="color:#4ADE80;font-size:1.1rem">18.5 – 24.9</div>
-          <div class="small mt-1" style="color:#8B9BB4">Peso normal</div>
-          <div class="small mt-1" style="color:#4A5568;font-size:.72rem">Rango saludable recomendado por la OMS</div>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="p-3 rounded-3 text-center" style="background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.3)">
-          <div class="fw-bold" style="color:#FDBA74;font-size:1.1rem">25 – 29.9</div>
-          <div class="small mt-1" style="color:#8B9BB4">Sobrepeso</div>
-          <div class="small mt-1" style="color:#4A5568;font-size:.72rem">Riesgo moderado de enfermedades crónicas</div>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="p-3 rounded-3 text-center" style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.3)">
-          <div class="fw-bold" style="color:#FDA4AF;font-size:1.1rem">≥ 30</div>
-          <div class="small mt-1" style="color:#8B9BB4">Obesidad</div>
-          <div class="small mt-1" style="color:#4A5568;font-size:.72rem">Alto riesgo cardiovascular y metabólico</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── TIPS DE BIENESTAR ── -->
-  <div class="chart-container">
-    <h5 class="fw-bold mb-3" style="color:#F0F6FC">
-      <i class="fas fa-star me-2" style="color:#FCD34D"></i>Consejos de Bienestar para Hoy
-    </h5>
-    <div class="row g-3">
-      <div class="col-md-4">
-        <div class="p-3 rounded-3" style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.12)">
-          <div class="mb-2" style="font-size:1.5rem">💧</div>
-          <div class="fw-bold mb-1" style="color:#F0F6FC;font-size:.9rem">Hidratación</div>
-          <p class="small mb-0" style="color:#8B9BB4">
-            Bebe al menos <strong style="color:#38BDF8">8 vasos de agua</strong> al día (2 litros).
-            El agua regula la temperatura, transporta nutrientes y elimina toxinas.
-            Empieza el día con un vaso en ayunas.
-          </p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="p-3 rounded-3" style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.12)">
-          <div class="mb-2" style="font-size:1.5rem">🏃</div>
-          <div class="fw-bold mb-1" style="color:#F0F6FC;font-size:.9rem">Actividad física</div>
-          <p class="small mb-0" style="color:#8B9BB4">
-            La OMS recomienda <strong style="color:#4ADE80">150 minutos de actividad moderada</strong> por semana.
-            Caminar 30 minutos diarios mejora el estado cardiovascular, reduce el estrés y fortalece huesos.
-          </p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="p-3 rounded-3" style="background:rgba(251,146,60,0.05);border:1px solid rgba(251,146,60,0.12)">
-          <div class="mb-2" style="font-size:1.5rem">😴</div>
-          <div class="fw-bold mb-1" style="color:#F0F6FC;font-size:.9rem">Sueño reparador</div>
-          <p class="small mb-0" style="color:#8B9BB4">
-            Dormir entre <strong style="color:#FDBA74">7 y 9 horas</strong> mejora la memoria, el sistema inmune
-            y el control del peso. Evita pantallas 30 minutos antes de dormir y mantén horarios regulares.
-          </p>
         </div>
       </div>
     </div>
@@ -329,18 +202,17 @@
   {% else %}
   <!-- Sin registros -->
   <div class="text-center py-5">
-    <div style="font-size:5rem;opacity:0.2">🌱</div>
-    <h3 class="fw-bold mb-2" style="color:#F0F6FC">Aún no tienes registros</h3>
-    <p class="mb-4" style="color:#8B9BB4;max-width:500px;margin:auto">
-      Comienza a llevar el seguimiento de tu salud. Con cada registro podrás ver gráficas,
-      estadísticas y consejos personalizados para mejorar tu bienestar.
+    <div style="font-size:5rem;opacity:0.3">📊</div>
+    <h3 class="fw-bold mb-2" style="color:var(--sena-dark)">Sin registros aún</h3>
+    <p class="text-muted mb-4">
+      Empieza a registrar tu información de salud para ver estadísticas y gráficas.
     </p>
     {% if tiene_consent %}
-    <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-primary btn-lg">
-      <i class="fas fa-plus-circle me-2"></i>Crear mi primer registro
+    <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena btn-lg">
+      <i class="fas fa-plus-circle me-2"></i>Crear primer registro
     </a>
     {% else %}
-    <a href="{% url 'habitos:habeas_data' %}" class="btn btn-primary btn-lg">
+    <a href="{% url 'habitos:habeas_data' %}" class="btn btn-sena btn-lg">
       <i class="fas fa-shield-alt me-2"></i>Aceptar Habeas Data y comenzar
     </a>
     {% endif %}
@@ -350,94 +222,70 @@
 </div>
 
 {% else %}
+{# ═══════════════════════════════════════════════════════════════════
+   VISTA: INICIO (por defecto)
+   Contexto esperado del view:
+     request.user, tiene_consent,
+     habitos (últimos N), materiales (últimos N)
+════════════════════════════════════════════════════════════════════ #}
 
-<!-- ══════════════════════════════════════════════════════
-     LANDING PÁGINA DE INICIO (visitante autenticado)
-══════════════════════════════════════════════════════ -->
-
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
 <section class="hero-habitos">
   <div class="container position-relative" style="z-index:1">
     <div class="row align-items-center">
       <div class="col-lg-7">
-        <p class="mb-2 fw-bold"
-           style="color:rgba(255,255,255,0.55);letter-spacing:.1em;font-size:.78rem;text-transform:uppercase">
-          ▸ SENA · Módulo de Bienestar Institucional
+        <p class="mb-2 fw-bold" style="color:rgba(255,255,255,0.7);letter-spacing:.08em;font-size:.85rem">
+          ▸ SENA · MÓDULO INSTITUCIONAL
         </p>
-        <h1 class="display-5 mb-3" style="font-family:'Poppins',sans-serif;font-weight:900;line-height:1.15">
+        <h1 class="display-5 fw-black mb-3" style="font-family:'Poppins',sans-serif;font-weight:900">
           Tu bienestar es<br>
-          <span style="color:#4ADE80;text-shadow:0 0 30px rgba(34,197,94,0.5)">nuestra prioridad</span>
+          <span style="color:#a8ff78">nuestra prioridad</span>
         </h1>
-        <p class="lead mb-4" style="color:rgba(255,255,255,0.82);font-weight:400">
-          Hola, <strong style="color:#86EFAC">{{ request.user.get_full_name|default:request.user.username }}</strong>.
-          Este módulo te ofrece herramientas para mejorar tu calidad de vida:
-          seguimiento de salud, hábitos saludables, nutrición equilibrada, rutinas físicas y
-          material educativo institucional.
+        <p class="lead mb-4" style="color:rgba(255,255,255,0.88)">
+          Hola, <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>.
+          Aquí encontrarás herramientas para mejorar tu calidad de vida:
+          hábitos, nutrición, rutinas físicas y seguimiento personal de salud.
         </p>
         <div class="d-flex gap-3 flex-wrap">
           <a href="{% url 'habitos:registrar_seguimiento' %}"
-             class="btn btn-primary fw-bold px-4 py-2">
-            <i class="fas fa-heartbeat me-2"></i>Registrar mi salud
+             class="btn btn-light fw-bold px-4 py-2"
+             style="border-radius:12px;color:var(--sena-dark)">
+            <i class="fas fa-plus-circle me-2"></i>Registrar mi salud
           </a>
-          <a href="{% url 'habitos:bienestar' %}"
-             class="btn btn-outline-sena fw-bold px-4 py-2">
-            <i class="fas fa-chart-line me-2"></i>Ver mi bienestar
+          <a href="{% url 'habitos:dashboard' %}"
+             class="btn btn-outline-light fw-bold px-4 py-2"
+             style="border-radius:12px">
+            <i class="fas fa-tachometer-alt me-2"></i>Ver mi dashboard
           </a>
         </div>
+        {% if not tiene_consent %}
+        <div class="alert mt-4 mb-0"
+             style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.5);border-radius:12px;color:#fff">
+          <i class="fas fa-shield-alt me-2"></i>
+          <strong>Pendiente:</strong> Acepta el tratamiento de datos para registrar tu salud.
+          <a href="{% url 'habitos:habeas_data' %}"
+             class="btn btn-sm ms-2"
+             style="background:var(--sena-accent);color:#fff;border-radius:8px">
+            Aceptar ahora
+          </a>
+        </div>
+        {% endif %}
       </div>
       <div class="col-lg-5 text-center d-none d-lg-block">
-        <div style="font-size:9rem;opacity:0.12;line-height:1;filter:drop-shadow(0 0 40px rgba(34,197,94,0.3))">🌿</div>
+        <div style="font-size:9rem;opacity:0.15;line-height:1">🌿</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── ESTADÍSTICAS MOTIVACIONALES ── -->
-<section class="py-4" style="background:rgba(14,165,233,0.03);border-top:1px solid rgba(14,165,233,0.08);border-bottom:1px solid rgba(14,165,233,0.08)">
-  <div class="container">
-    <div class="row g-3 text-center">
-      <div class="col-6 col-lg-3">
-        <div class="fw-bold" style="font-size:1.8rem;color:#4ADE80">150 min</div>
-        <div class="small" style="color:#8B9BB4">Actividad física semanal recomendada (OMS)</div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="fw-bold" style="font-size:1.8rem;color:#38BDF8">8 vasos</div>
-        <div class="small" style="color:#8B9BB4">De agua al día para una hidratación óptima</div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="fw-bold" style="font-size:1.8rem;color:#FDA4AF">7–9 hrs</div>
-        <div class="small" style="color:#8B9BB4">De sueño para adultos saludables</div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="fw-bold" style="font-size:1.8rem;color:#FCD34D">5 porciones</div>
-        <div class="small" style="color:#8B9BB4">De frutas y verduras diarias recomendadas</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── ACCESO RÁPIDO A MÓDULOS ── -->
+<!-- ── ACCESOS RÁPIDOS ───────────────────────────────────────────── -->
 <section class="container py-5">
-  <h2 class="fw-bold mb-1" style="font-family:'Poppins',sans-serif;color:#F0F6FC">¿Qué deseas hacer hoy?</h2>
-  <p class="mb-4" style="color:#8B9BB4">Accede a cada sección del módulo de bienestar</p>
+  <h2 class="fw-bold mb-1" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+    ¿Qué deseas hacer hoy?
+  </h2>
+  <p class="text-muted mb-4">Accede a cada sección del módulo</p>
 
   <div class="row g-4">
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:registrar_seguimiento' %}" class="text-decoration-none">
-        <div class="card-habito card p-0">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon icon-salud">
-              <i class="fas fa-heartbeat"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1">Seguimiento de Salud</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Registra tu peso, IMC, presión arterial y hábitos diarios</p>
-              <span class="badge-categoria cat-salud">Registrar ahora →</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
 
     <div class="col-sm-6 col-lg-3">
       <a href="{% url 'habitos:lista_habitos' %}" class="text-decoration-none">
@@ -447,8 +295,8 @@
               <i class="fas fa-lightbulb"></i>
             </div>
             <div>
-              <h6 class="fw-bold mb-1">Hábitos Saludables</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Consejos, tips y estrategias para mejorar tu estilo de vida</p>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Hábitos Saludables</h6>
+              <p class="small text-muted mb-2">Consejos, rutinas y estilo de vida</p>
               <span class="badge-categoria cat-alimentacion">Ver contenido →</span>
             </div>
           </div>
@@ -464,8 +312,8 @@
               <i class="fas fa-running"></i>
             </div>
             <div>
-              <h6 class="fw-bold mb-1">Rutinas Físicas</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Planes de ejercicio por nivel: principiante, intermedio y avanzado</p>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Rutinas Físicas</h6>
+              <p class="small text-muted mb-2">Por nivel y objetivo personal</p>
               <span class="badge-categoria cat-ejercicio">Ver rutinas →</span>
             </div>
           </div>
@@ -481,8 +329,8 @@
               <i class="fas fa-utensils"></i>
             </div>
             <div>
-              <h6 class="fw-bold mb-1">Pirámide Nutricional</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Grupos alimentarios, porciones y guía de alimentación saludable</p>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Pirámide Nutricional</h6>
+              <p class="small text-muted mb-2">Guía de alimentación saludable</p>
               <span class="badge-categoria cat-hidratacion">Explorar →</span>
             </div>
           </div>
@@ -498,43 +346,9 @@
               <i class="fas fa-book-open"></i>
             </div>
             <div>
-              <h6 class="fw-bold mb-1">Biblioteca SENA</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Cartillas, videos, infografías y documentos institucionales</p>
+              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Biblioteca SENA</h6>
+              <p class="small text-muted mb-2">Cartillas, videos y documentos</p>
               <span class="badge-categoria cat-mental">Acceder →</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:historial_salud' %}" class="text-decoration-none">
-        <div class="card-habito card p-0">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon" style="background:rgba(99,102,241,0.15);color:#818CF8">
-              <i class="fas fa-chart-area"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1">Mi Historial</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Visualiza tu evolución con gráficas y tabla de registros</p>
-              <span class="badge-categoria" style="background:rgba(99,102,241,0.12);color:#818CF8">Ver gráficas →</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:bienestar' %}" class="text-decoration-none">
-        <div class="card-habito card p-0" style="border-color:rgba(34,197,94,0.3)">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon" style="background:rgba(34,197,94,0.15);color:#4ADE80">
-              <i class="fas fa-leaf"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1">Mi Bienestar</h6>
-              <p class="small mb-2" style="color:#8B9BB4">Panel completo con todos tus indicadores y análisis personal</p>
-              <span class="badge-categoria" style="background:rgba(34,197,94,0.12);color:#4ADE80">Ir a mi panel →</span>
             </div>
           </div>
         </div>
@@ -544,15 +358,14 @@
   </div>
 </section>
 
-<!-- ── CONTENIDO EDUCATIVO DESTACADO ── -->
+<!-- ── ÚLTIMOS HÁBITOS ───────────────────────────────────────────── -->
 {% if habitos %}
 <section class="container pb-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-1" style="font-family:'Poppins',sans-serif;color:#F0F6FC">Contenido educativo destacado</h2>
-      <p class="mb-0" style="color:#8B9BB4">Aprende sobre hábitos saludables con nuestro material</p>
-    </div>
-    <a href="{% url 'habitos:lista_habitos' %}" class="btn btn-outline-primary btn-sm">Ver todos</a>
+    <h2 class="fw-bold mb-0" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+      Contenido educativo
+    </h2>
+    <a href="{% url 'habitos:lista_habitos' %}" class="btn btn-outline-sena">Ver todos</a>
   </div>
   <div class="row g-4">
     {% for habito in habitos %}
@@ -567,9 +380,9 @@
               {{ habito.get_categoria_display }}
             </span>
           </div>
-          <h5 class="fw-bold mb-2">{{ habito.titulo }}</h5>
-          <p class="small mb-3" style="color:#8B9BB4">{{ habito.descripcion|truncatewords:20 }}</p>
-          <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="btn btn-primary btn-sm">
+          <h5 class="fw-bold mb-2" style="color:var(--sena-dark)">{{ habito.titulo }}</h5>
+          <p class="text-muted small mb-3">{{ habito.descripcion|truncatewords:20 }}</p>
+          <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="btn btn-sena btn-sm">
             Leer más <i class="fas fa-arrow-right ms-1"></i>
           </a>
         </div>
@@ -580,16 +393,15 @@
 </section>
 {% endif %}
 
-<!-- ── MATERIAL RECIENTE ── -->
+<!-- ── MATERIAL RECIENTE ─────────────────────────────────────────── -->
 {% if materiales %}
-<section class="py-5" style="background:rgba(14,165,233,0.02);border-top:1px solid rgba(14,165,233,0.1)">
+<section class="py-5" style="background:#fff">
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h2 class="fw-bold mb-1" style="font-family:'Poppins',sans-serif;color:#F0F6FC">Material reciente</h2>
-        <p class="mb-0" style="color:#8B9BB4">Últimos recursos añadidos a la biblioteca institucional</p>
-      </div>
-      <a href="{% url 'habitos:biblioteca' %}" class="btn btn-outline-primary btn-sm">Ver biblioteca completa</a>
+      <h2 class="fw-bold mb-0" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
+        Material reciente
+      </h2>
+      <a href="{% url 'habitos:biblioteca' %}" class="btn btn-outline-sena">Ver biblioteca</a>
     </div>
     <div class="row g-3">
       {% for mat in materiales %}
@@ -599,9 +411,9 @@
             <div class="tipo-icon tipo-{{ mat.tipo_contenido }} mb-3">
               <i class="fas {{ mat.get_icono }}"></i>
             </div>
-            <h6 class="fw-bold mb-1">{{ mat.titulo|truncatewords:6 }}</h6>
-            <p class="small mb-3" style="color:#8B9BB4">{{ mat.get_tipo_contenido_display }}</p>
-            <a href="{% url 'habitos:descargar_material' mat.pk %}" class="btn btn-sm btn-primary">
+            <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">{{ mat.titulo|truncatewords:6 }}</h6>
+            <p class="small text-muted mb-3">{{ mat.get_tipo_contenido_display }}</p>
+            <a href="{% url 'habitos:descargar_material' mat.pk %}" class="btn btn-sm btn-sena">
               <i class="fas fa-download me-1"></i>Acceder
             </a>
           </div>
@@ -613,87 +425,26 @@
 </section>
 {% endif %}
 
-<!-- ── BLOQUE INFORMATIVO BIENESTAR ── -->
-<section class="py-5" style="border-top:1px solid rgba(14,165,233,0.08)">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-6">
-        <h2 class="fw-bold mb-3" style="font-family:'Poppins',sans-serif;color:#F0F6FC">
-          ¿Por qué cuidar tu salud desde ya?
-        </h2>
-        <p style="color:#8B9BB4;line-height:1.8">
-          La <strong style="color:#F0F6FC">salud integral</strong> no es solo la ausencia de enfermedad, sino un estado
-          de bienestar físico, mental y social. Adoptar hábitos saludables durante la etapa formativa
-          reduce el riesgo de enfermedades crónicas como diabetes, hipertensión y obesidad en el futuro.
-        </p>
-        <ul style="color:#8B9BB4;line-height:2">
-          <li>El <strong style="color:#4ADE80">ejercicio regular</strong> mejora la memoria y la concentración</li>
-          <li>Una <strong style="color:#38BDF8">buena hidratación</strong> previene la fatiga y mejora el rendimiento académico</li>
-          <li>Dormir bien <strong style="color:#FDA4AF">reduce el estrés</strong> y fortalece el sistema inmune</li>
-          <li>La <strong style="color:#FCD34D">alimentación balanceada</strong> aporta energía sostenida durante el día</li>
-        </ul>
-        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-primary mt-2">
-          <i class="fas fa-heartbeat me-2"></i>Comenzar mi seguimiento
-        </a>
-      </div>
-      <div class="col-lg-6">
-        <div class="row g-3">
-          <div class="col-6">
-            <div class="p-4 rounded-3 text-center" style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2)">
-              <div style="font-size:2.5rem">🧠</div>
-              <div class="fw-bold mt-2" style="color:#4ADE80">Salud Mental</div>
-              <div class="small mt-1" style="color:#8B9BB4">Maneja el estrés y cuida tu bienestar emocional</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-4 rounded-3 text-center" style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2)">
-              <div style="font-size:2.5rem">💪</div>
-              <div class="fw-bold mt-2" style="color:#38BDF8">Salud Física</div>
-              <div class="small mt-1" style="color:#8B9BB4">Fortalece tu cuerpo con ejercicio y buena postura</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-4 rounded-3 text-center" style="background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.2)">
-              <div style="font-size:2.5rem">🥦</div>
-              <div class="fw-bold mt-2" style="color:#FDBA74">Nutrición</div>
-              <div class="small mt-1" style="color:#8B9BB4">Elige alimentos que nutran y energicen tu cuerpo</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-4 rounded-3 text-center" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2)">
-              <div style="font-size:2.5rem">😌</div>
-              <div class="fw-bold mt-2" style="color:#818CF8">Descanso</div>
-              <div class="small mt-1" style="color:#8B9BB4">El sueño es tan importante como el ejercicio</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{% endif %}
+{% endif %}{# fin if vista == 'dashboard' #}
 
 {% endblock %}
 
+
 {% block extra_js %}
-{% if vista == 'bienestar' and ultimo %}
+{% if vista == 'dashboard' and ultimo %}
+{# Chart.js debe estar cargado en base.html o aquí como CDN #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const fechas = {{ fechas_json|safe }};
 const pesos  = {{ pesos_json|safe }};
 const imcs   = {{ imcs_json|safe }};
 
-Chart.defaults.color = '#8B9BB4';
-Chart.defaults.font.family = "'Poppins', sans-serif";
-const gridColor = 'rgba(14,165,233,0.08)';
-
 const configBase = {
   responsive: true,
   plugins: { legend: { display: false } },
   scales: {
-    x: { grid: { display: false }, ticks: { color: '#8B9BB4', font: { size: 11 } } },
-    y: { grid: { color: gridColor }, ticks: { color: '#8B9BB4', font: { size: 11 } } }
+    x: { grid: { display: false } },
+    y: { grid: { color: '#f0f0f0' } }
   }
 };
 
@@ -703,23 +454,18 @@ new Chart(document.getElementById('chartPeso'), {
     labels: fechas,
     datasets: [{
       data: pesos,
-      borderColor: '#0EA5E9',
-      backgroundColor: 'rgba(14,165,233,0.07)',
-      borderWidth: 2.5,
+      borderColor: '#39a900',
+      backgroundColor: 'rgba(57,169,0,0.08)',
+      borderWidth: 3,
       pointRadius: 5,
-      pointBackgroundColor: '#0EA5E9',
-      pointBorderColor: '#080B14',
-      pointBorderWidth: 2,
+      pointBackgroundColor: '#39a900',
       fill: true,
       tension: 0.4,
     }]
   },
   options: {
     ...configBase,
-    scales: {
-      ...configBase.scales,
-      y: { ...configBase.scales.y, title: { display: true, text: 'kg', color: '#38BDF8' } }
-    }
+    scales: { ...configBase.scales, y: { ...configBase.scales.y, title: { display: true, text: 'kg' } } }
   }
 });
 
@@ -730,36 +476,29 @@ new Chart(document.getElementById('chartIMC'), {
     datasets: [
       {
         data: imcs,
-        borderColor: '#22C55E',
-        backgroundColor: 'rgba(34,197,94,0.07)',
-        borderWidth: 2.5,
+        borderColor: '#1565c0',
+        backgroundColor: 'rgba(21,101,192,0.08)',
+        borderWidth: 3,
         pointRadius: 5,
-        pointBackgroundColor: '#22C55E',
-        pointBorderColor: '#080B14',
-        pointBorderWidth: 2,
+        pointBackgroundColor: '#1565c0',
         fill: true,
         tension: 0.4,
         label: 'IMC',
       },
       {
         data: Array(fechas.length).fill(24.9),
-        borderColor: 'rgba(74,222,128,0.4)',
-        borderWidth: 1.5,
-        borderDash: [6, 4],
+        borderColor: '#43a047',
+        borderWidth: 1,
+        borderDash: [6, 3],
         pointRadius: 0,
         fill: false,
-        label: 'Límite saludable (24.9)',
+        label: 'Límite normal (24.9)',
       }
     ]
   },
   options: {
     ...configBase,
-    plugins: {
-      legend: {
-        display: true,
-        labels: { boxWidth: 12, color: '#8B9BB4', font: { size: 11 } }
-      }
-    }
+    plugins: { legend: { display: true, labels: { boxWidth: 12 } } }
   }
 });
 </script>

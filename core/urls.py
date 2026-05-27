@@ -42,7 +42,7 @@ urlpatterns = [
     path('interfichas/', include('interfichas.urls')),
     path('gimnasio/', include('gimnasio.urls')),
     path('inventario/', include('inventario.urls')),
-    path('habitos/', include('habitos_saludables.urls')),
+
     # --- RUTA DEL AGENTE INTELIGENTE TUX (NUEVO) ---
     path('api/chat-tux/', chat_tux_api, name='chat_tux_api'),
 
@@ -51,4 +51,3 @@ urlpatterns = [
 # Servir archivos multimedia en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
