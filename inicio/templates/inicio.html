@@ -1,416 +1,914 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Inicio - Gestión Deportiva{% endblock %}
+{% block title %}Inicio - Gestión Deportiva SENA{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sena-green: #1a5fb4;
+    --sena-dark: var(--primary-dark);
+    --sena-card: var(--card-bg);
+    --sena-border: var(--neon-border);
+    --accent: #1a5fb4;
+    --accent2: var(--warning);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--sena-dark);
+    font-family: 'Barlow', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* ── TICKER ── */
+  .ticker-bar {
+    background: var(--sena-green);
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 28s linear infinite;
+  }
+  .ticker-inner span { margin: 0 40px; }
+  .ticker-sep { color: rgba(255,255,255,0.5); }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    background: #050a05;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(26,95,180,0.25) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 80% at 0% 100%, rgba(26,95,180,0.15) 0%, transparent 60%),
+      url('https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=1600&q=80') center/cover no-repeat;
+    filter: brightness(0.4);
+    z-index: 0;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #050a05 0%, rgba(5,10,5,0.5) 50%, transparent 100%);
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 5vw 80px;
+    max-width: 900px;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--sena-green);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 22px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 900;
+    line-height: 0.92;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.8s ease-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-title .accent { color: var(--sena-green); }
+  .hero-title .outline {
+    -webkit-text-stroke: 2px rgba(255,255,255,0.3);
+    color: transparent;
+    transition: -webkit-text-stroke 0.3s;
+  }
+  .hero-title:hover .outline {
+    -webkit-text-stroke: 2px var(--sena-green);
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+    max-width: 520px;
+    margin-bottom: 40px;
+    font-weight: 400;
+    animation: fadeInUp 1s ease-out;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn-primary-sport {
+    background: var(--sena-green);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 15px 36px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+  }
+  .btn-primary-sport:hover { background: #154d96; transform: translateY(-2px); color: #fff; }
+  .btn-outline-sport {
+    background: transparent;
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+  }
+  .btn-outline-sport:hover { border-color: #fff; color: #fff; }
+
+  /* ── COUNTDOWN STRIP ── */
+  .countdown-strip {
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid var(--sena-border);
+    border-bottom: 1px solid var(--sena-border);
+    padding: 28px 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .countdown-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sena-green);
+    font-weight: 700;
+  }
+  .countdown-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .countdown-units {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .countdown-box {
+    text-align: center;
+    min-width: 64px;
+  }
+  .countdown-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    color: #fff;
+    display: block;
+  }
+  .countdown-unit {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+  .countdown-sep {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--sena-green);
+    line-height: 1;
+    margin-top: -8px;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--sena-green);
+    padding: 18px 5vw;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .stat-item {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 0 16px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    font-weight: 600;
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 80px 5vw; }
+  .section-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sena-green);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 0.95;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 16px;
+    max-width: 480px;
+    line-height: 1.6;
+    margin-bottom: 52px;
+  }
+
+  /* ── SPORTS CARDS ── */
+  .sports-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  @media (max-width: 768px) { .sports-grid { grid-template-columns: 1fr; } }
+
+  .sport-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .sport-card-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s ease;
+    filter: brightness(0.5);
+  }
+  .sport-card:hover .sport-card-bg { transform: scale(1.08); filter: brightness(0.4); }
+  .sport-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+  }
+  .sport-card-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 28px 24px;
+  }
+  .sport-card-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 80px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+    position: absolute;
+    top: 16px; right: 16px;
+  }
+  .sport-badge {
+    display: inline-block;
+    background: var(--sena-green);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+  .sport-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .sport-card-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+    max-width: 260px;
+  }
+  .sport-card-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    margin-top: 14px;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .sport-card:hover .sport-card-arrow { background: var(--sena-green); border-color: var(--sena-green); }
+
+  /* ── SERVICES ── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 768px) { .services-grid { grid-template-columns: 1fr; } }
+
+  .service-card {
+    background: var(--sena-card);
+    border: 1px solid var(--sena-border);
+    border-radius: 4px;
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--sena-green);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .service-card:hover { border-color: rgba(26,95,180,0.4); }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-icon {
+    width: 52px; height: 52px;
+    background: rgba(26,95,180,0.12);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: var(--sena-green);
+  }
+  .service-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .service-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.65;
+  }
+  .service-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sena-green);
+    text-decoration: none;
+  }
+  .service-link:hover { color: #fff; }
+
+  /* ── MATCH FEATURED ── */
+  .match-feature {
+    background: rgba(26,95,180,0.06);
+    border: 1px solid rgba(26,95,180,0.2);
+    border-radius: 4px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 80px;
+  }
+  .match-team {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    flex: 1;
+    min-width: 120px;
+  }
+  .match-team.right { text-align: right; }
+  .match-center {
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .match-vs {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--sena-green);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .match-date {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── MODAL ── */
+  .custom-modal {
+    background: var(--primary-dark);
+    border: 1px solid var(--neon-border);
+    border-radius: 8px;
+    color: #fff;
+  }
+  .custom-input {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+  }
+  .custom-input:focus {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(26,95,180,0.5) !important;
+    box-shadow: 0 0 0 3px rgba(26,95,180,0.15) !important;
+  }
+  .nav-pills .nav-link {
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.6);
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .nav-pills .nav-link.active {
+    background: var(--sena-green) !important;
+    color: #fff !important;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="main-container">
-    <!-- Encabezado Visual (Hero Section) -->
-    <header class="hero-header text-center py-5 d-flex flex-column justify-content-center" style="min-height: 55vh;">
-        <div class="container px-4">
-            <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Logo Deporte" class="main-logo mb-4">
-            <h1 class="text-white fw-bolder display-4 mb-3" style="letter-spacing: -1px;">Sistema de Gestión Deportiva</h1>
-            <p class="text-white-50 fs-5 mb-5 mx-auto" style="max-width: 650px; line-height: 1.6;">
-                Desarrolla tu potencial deportivo mientras te formas profesionalmente en el SENA. Accede a recursos y gestiona tu actividad física de forma inteligente.
-            </p>
-            
-            <!-- BOTÓN DINÁMICO DE ACCESO -->
-            <div class="mt-4">
-                {% if not aprendiz_logueado %}
-                    <button type="button" class="btn btn-ingresar btn-lg shadow-lg px-5 py-3 rounded-pill text-uppercase fw-bold" style="letter-spacing: 1px;" data-bs-toggle="modal" data-bs-target="#modalForm">
-                        <i class="fas fa-user-circle me-2"></i> Acceder al sistema
-                    </button>
-                {% else %}
-                    <div class="d-flex flex-column align-items-center">
-                        <p class="text-white fs-5 mb-3">Bienvenido de nuevo, <strong class="text-info">{{ nombre_usuario }}</strong></p>
-                        <a href="{% url 'perfil' %}" class="btn btn-ingresar btn-lg shadow-lg px-5 py-3 rounded-pill text-uppercase fw-bold" style="letter-spacing: 1px;">
-                            <i class="fas fa-tachometer-alt me-2"></i> Ir a mi perfil
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </header>
 
-    <!-- Sección Disciplinas -->
-    <section class="container mb-5">
-        <div class="text-start mb-5">
-            <h2 class="section-title text-white">Nuestras Disciplinas Deportivas</h2>
-            <p class="text-white-50">Actividades disponibles para todos los aprendices</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="sport-card h-100 d-flex flex-column align-items-center text-center p-4 p-xl-5">
-                    <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" class="card-icon mb-4" alt="Fútbol">
-                    <h5 class="fw-bold mb-3">FUTSAL / FÚTBOL</h5>
-                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Participa en torneos inter-fichas e inter-centros. Desarrolla trabajo en equipo y liderazgo competitivo.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="sport-card h-100 d-flex flex-column align-items-center text-center p-4 p-xl-5">
-                    <img src="https://cdn-icons-png.flaticon.com/512/731/731943.png" class="card-icon mb-4" alt="Baloncesto">
-                    <h5 class="fw-bold mb-3">BALONCESTO</h5>
-                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Competencias emocionantes en nuestras canchas profesionales. Mejora tu técnica, agilidad y estrategia.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="sport-card h-100 d-flex flex-column align-items-center text-center p-4 p-xl-5">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1165/1165187.png" class="card-icon mb-4" alt="Voleibol">
-                    <h5 class="fw-bold mb-3">VOLEIBOL</h5>
-                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Torneos mixtos y especializados. Fortalece tu coordinación y reflejos en cada partido intenso.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sección Servicios -->
-    <section class="container pb-5">
-        <div class="text-start mb-5">
-            <h2 class="section-title text-white">¿Qué Encontrarás Aquí?</h2>
-            <p class="text-white-50">Gestiona tu vida deportiva de forma integral</p>
-        </div>
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-5">
-                <div class="service-card h-100 text-start d-flex flex-column align-items-start p-4 p-lg-5">
-                    <div class="icon-wrapper mb-4 p-3 rounded-circle d-inline-flex align-items-center justify-content-center" style="background: rgba(245, 158, 11, 0.1); width: 64px; height: 64px;">
-                        <i class="fas fa-trophy fa-2x text-warning"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">TORNEOS INTER-FICHAS</h5>
-                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
-                </div>
-            </div>
-
-            <div class="col-md-5">
-                <div class="service-card h-100 text-start d-flex flex-column align-items-start p-4 p-lg-5">
-                    <div class="icon-wrapper mb-4 p-3 rounded-circle d-inline-flex align-items-center justify-content-center" style="background: rgba(14, 165, 233, 0.1); width: 64px; height: 64px;">
-                        <i class="fas fa-calendar-check fa-2x text-info"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">RESERVA GIMNASIO</h5>
-                    <p class="text-white-50 mb-0" style="line-height: 1.6;">Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones de nuestro centro.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- TICKER -->
+<div class="ticker-bar" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>⚽ Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> 🏀 Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> 🏐 Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> 🏋️ Reserva el gimnasio ahora <span class="ticker-sep">•</span> ⚽ Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> 🏀 Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> 🏐 Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> 🏋️ Reserva el gimnasio ahora</span>
+  </div>
 </div>
 
-<!-- MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO) -->
-<div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content custom-modal">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bolder text-white fs-4" style="letter-spacing: -0.5px;">
-                    <i class="fas fa-shield-alt me-2 text-primary"></i>Gestión de Acceso
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body pt-2">
-                <!-- TABS DE NAVEGACIÓN -->
-                <ul class="nav nav-pills nav-fill mb-4 gap-2" id="authTabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active fw-bold" id="login-tab" data-bs-toggle="pill" data-bs-target="#loginPanel" type="button" role="tab">
-                            <i class="fas fa-sign-in-alt me-1"></i> INICIAR SESIÓN
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link fw-bold" id="register-tab" data-bs-toggle="pill" data-bs-target="#registerPanel" type="button" role="tab">
-                            <i class="fas fa-user-plus me-1"></i> REGISTRARSE
-                        </button>
-                    </li>
-                </ul>
-
-                <div class="tab-content" id="authTabsContent">
-                    
-                    <!-- PANEL LOGIN -->
-                    <div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
-                        <form id="loginForm" novalidate class="px-2 py-3">
-                            {% csrf_token %}
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Número de Documento</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-id-card text-white-50"></i></span>
-                                    <input type="text" 
-                                           name="username" 
-                                           class="form-control custom-input border-start-0 ps-0" 
-                                           placeholder="Ej: 1052345678" 
-                                           required 
-                                           pattern="\d{5,20}" 
-                                           title="Ingresa un documento válido"
-                                           autocomplete="username"
-                                           style="box-shadow: none;"
-                                           data-bs-toggle="tooltip">
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Contraseña</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-lock text-white-50"></i></span>
-                                    <input type="password" 
-                                           id="id_password" 
-                                           name="password" 
-                                           class="form-control custom-input border-start-0 ps-0 border-end-0" 
-                                           placeholder="Tu clave secreta" 
-                                           required 
-                                           minlength="8"
-                                           autocomplete="current-password"
-                                           style="box-shadow: none;">
-                                    <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left: none;" type="button" id="togglePassword">
-                                        <i class="fas fa-eye text-white-50"></i>
-                                    </button>
-                                </div>
-                                <div class="text-end mt-3">
-                                    <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none fw-bold" title="Te enviaremos un correo para restablecerla" data-bs-toggle="tooltip">
-                                        ¿Olvidaste tu contraseña?
-                                    </a>
-                                </div>
-                            </div>
-                            <div id="loginAlert" class="alert d-none" role="alert"></div>
-                            <button type="submit" class="btn btn-primary w-100 py-3 mt-2 fw-bold text-uppercase" style="letter-spacing: 1px; border-radius: 12px;">Ingresar al sistema</button>
-                        </form>
-                    </div>
-
-                    <!-- PANEL REGISTRO -->
-                    <div class="tab-pane fade" id="registerPanel" role="tabpanel">
-                        <form id="registerForm" novalidate class="px-2 py-3">
-                            {% csrf_token %}
-                            <div class="row g-4">
-                                <!-- Tipo Documento -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Tipo Documento <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-id-card-alt text-white-50"></i></span>
-                                        <select class="form-select custom-input border-start-0 ps-0" name="tipo_documento" required autocomplete="off" style="box-shadow: none;">
-                                            <option value="" selected disabled>-- Selecciona --</option>
-                                            <option value="CC">Cédula de Ciudadanía</option>
-                                            <option value="TI">Tarjeta de Identidad</option>
-                                            <option value="CE">Cédula de Extranjería</option>
-                                            <option value="PA">Pasaporte</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <!-- Número Documento -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Número Documento <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-hashtag text-white-50"></i></span>
-                                        <input type="text" 
-                                               class="form-control custom-input border-start-0 ps-0" 
-                                               name="numero_documento" 
-                                               required 
-                                               pattern="\d{5,20}" 
-                                               maxlength="20" 
-                                               title="Debe contener entre 5 y 20 números sin espacios"
-                                               autocomplete="username"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="bottom"
-                                               style="box-shadow: none;">
-                                    </div>
-                                </div>
-                                
-                                <!-- Nombres -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Nombres <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-user text-white-50"></i></span>
-                                        <input type="text" 
-                                               class="form-control custom-input border-start-0 ps-0 text-capitalize" 
-                                               name="nombres" 
-                                               required 
-                                               minlength="2" 
-                                               maxlength="100" 
-                                               pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" 
-                                               title="Solo se permiten letras y espacios"
-                                               autocomplete="given-name"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="bottom"
-                                               style="box-shadow: none;">
-                                    </div>
-                                </div>
-                                
-                                <!-- Apellidos -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Apellidos <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-user text-white-50"></i></span>
-                                        <input type="text" 
-                                               class="form-control custom-input border-start-0 ps-0 text-capitalize" 
-                                               name="apellidos" 
-                                               required 
-                                               minlength="2" 
-                                               maxlength="100" 
-                                               pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" 
-                                               title="Solo se permiten letras y espacios"
-                                               autocomplete="family-name"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="bottom"
-                                               style="box-shadow: none;">
-                                    </div>
-                                </div>
-
-                                <!-- Género -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Género <span class="text-muted fw-normal text-lowercase">(Opcional)</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-venus-mars text-white-50"></i></span>
-                                        <select class="form-select custom-input border-start-0 ps-0" name="genero" autocomplete="sex" title="Selecciona tu género" data-bs-toggle="tooltip" data-bs-placement="bottom" style="box-shadow: none;">
-                                            <option value="" selected>-- Seleccionar (Opcional) --</option>
-                                            <option value="M">Masculino</option>
-                                            <option value="F">Femenino</option>
-                                            <option value="O">Otro</option>
-                                            <option value="NR">Prefiero no decirlo</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Teléfono -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Teléfono <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-phone text-white-50"></i></span>
-                                        <input type="text" 
-                                               class="form-control custom-input border-start-0 ps-0" 
-                                               name="telefono" 
-                                               required 
-                                               pattern="\d{7,15}" 
-                                               maxlength="15" 
-                                               title="Ingresa un número de teléfono válido (mínimo 7 dígitos)"
-                                               autocomplete="tel"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="bottom"
-                                               style="box-shadow: none;">
-                                    </div>
-                                </div>
-
-                                <!-- Programa de Formación -->
-                                <div class="col-md-12">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Programa de Formación <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-graduation-cap text-white-50"></i></span>
-                                        <select class="form-select custom-input border-start-0 ps-0" name="programa_formacion" required autocomplete="off" style="box-shadow: none;">
-                                            <option value="" selected disabled>-- Selecciona tu programa --</option>
-                                            <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
-                                            <option value="MINERIA">Supervisión de Procesos Mineros</option>
-                                            <option value="SST">Gestión de la Seguridad y Salud en el Trabajo</option>
-                                            <option value="QUIMICA">Química Aplicada a la Industria</option>
-                                            <option value="TOPOGRAFIA">Levantamientos Topográficos y Georreferenciación</option>
-                                            <option value="VIAL">Construcción de Infraestructura Vial</option>
-                                            <option value="SANEAMIENTO">Sistemas de Agua y Saneamiento</option>
-                                            <option value="MAQUINARIA_PESADA">Operación de Maquinaria Pesada para Excavación</option>
-                                            <option value="MANTENIMIENTO_EQUIPO">Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <!-- Email -->
-                                <div class="col-md-12">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Correo Electrónico <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-envelope text-white-50"></i></span>
-                                        <input type="email" 
-                                               class="form-control custom-input border-start-0 ps-0" 
-                                               name="email" 
-                                               required 
-                                               title="Ingresa un correo electrónico válido (ej: nombre@correo.com)"
-                                               autocomplete="email"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="bottom"
-                                               style="box-shadow: none;">
-                                    </div>
-                                    <div class="invalid-feedback">Por favor ingresa un correo válido.</div>
-                                </div>
-                                
-                                <!-- Ficha -->
-                                <div class="col-md-12">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Número de Ficha <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-users text-white-50"></i></span>
-                                        <input type="text" 
-                                               class="form-control custom-input border-start-0 ps-0" 
-                                               name="ficha" 
-                                               id="id_ficha" 
-                                               required 
-                                               pattern="\d{5,20}" 
-                                               maxlength="20" 
-                                               title="Ingresa el número de tu ficha de formación"
-                                               autocomplete="off"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="bottom"
-                                               style="box-shadow: none;">
-                                    </div>
-                                </div>
-
-                                <!-- Contraseña -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Contraseña <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-lock text-white-50"></i></span>
-                                        <input type="password" 
-                                               name="contrasena" 
-                                               id="id_contrasena" 
-                                               class="form-control custom-input border-start-0 ps-0 border-end-0" 
-                                               required 
-                                               minlength="8" 
-                                               maxlength="128" 
-                                               title="La contraseña debe tener al menos 8 caracteres"
-                                               autocomplete="new-password"
-                                               data-bs-toggle="tooltip" 
-                                               data-bs-placement="top"
-                                               style="box-shadow: none;">
-                                        <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left: none;" type="button" id="togglePassword2" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <i class="fas fa-eye text-white-50"></i>
-                                        </button>
-                                    </div>
-                                    <div class="progress mt-2" style="height:6px;">
-                                        <div id="passwordStrengthBar" class="progress-bar" role="progressbar"></div>
-                                    </div>
-                                    <small id="passwordStrengthText" class="text-white-50"></small>
-                                </div>
-                                
-                                <!-- Confirmar Contraseña -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing: 0.5px;">Confirmar Clave <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right: none;"><i class="fas fa-check-circle text-white-50"></i></span>
-                                        <input type="password" 
-                                               id="confirmarContrasena" 
-                                               class="form-control custom-input border-start-0 ps-0 border-end-0" 
-                                               required 
-                                               minlength="8" 
-                                               maxlength="128"
-                                               autocomplete="new-password"
-                                               style="box-shadow: none;">
-                                        <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left: none;" type="button" id="togglePassword3" title="Mostrar/Ocultar contraseña" data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <i class="fas fa-eye text-white-50"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="registerAlert" class="alert d-none mt-4" role="alert"></div>
-                            <button type="submit" class="btn btn-success w-100 py-3 mt-4 fw-bold text-uppercase" style="letter-spacing: 1px; border-radius: 12px;">Finalizar Registro</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <i class="fas fa-circle"></i> SENA — Centro Minero
     </div>
+    <h1 class="hero-title">
+      Sistema de<br>
+      <span class="accent">Gestión</span><br>
+      <span class="outline">Deportiva</span>
+    </h1>
+    <p class="hero-sub">
+      Desarrolla tu potencial deportivo mientras te formas profesionalmente. Accede a recursos, inscríbete en torneos y reserva instalaciones.
+    </p>
+    <div class="hero-cta">
+      {% if not aprendiz_logueado %}
+        <button class="btn-primary-sport" data-bs-toggle="modal" data-bs-target="#modalForm">
+          <i class="fas fa-user-circle"></i> Acceder al sistema
+        </button>
+        <button class="btn-outline-sport" data-bs-toggle="modal" data-bs-target="#modalForm" onclick="setTimeout(()=>document.getElementById('register-tab').click(),300)">
+          Registrarse
+        </button>
+      {% else %}
+        <p style="color:rgba(255,255,255,0.6); margin-bottom:12px;">Bienvenido, <strong style="color:#fff;">{{ nombre_usuario }}</strong></p>
+        <a href="{% url 'perfil' %}" class="btn-primary-sport">
+          <i class="fas fa-tachometer-alt"></i> Ir a mi perfil
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<!-- COUNTDOWN -->
+<div class="countdown-strip">
+  <div>
+    <div class="countdown-label">Próximo evento</div>
+    <div class="countdown-title">Final Torneo Inter-Fichas 2025</div>
+  </div>
+  <div class="countdown-units">
+    <div class="countdown-box">
+      <span class="countdown-num" id="cd-days">00</span>
+      <span class="countdown-unit">días</span>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-box">
+      <span class="countdown-num" id="cd-hours">00</span>
+      <span class="countdown-unit">horas</span>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-box">
+      <span class="countdown-num" id="cd-mins">00</span>
+      <span class="countdown-unit">min</span>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-box">
+      <span class="countdown-num" id="cd-secs">00</span>
+      <span class="countdown-unit">seg</span>
+    </div>
+  </div>
 </div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">12</span>
+    <span class="stat-label">Equipos inscritos</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">3</span>
+    <span class="stat-label">Disciplinas activas</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">340+</span>
+    <span class="stat-label">Aprendices</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">6</span>
+    <span class="stat-label">Jornadas jugadas</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">2</span>
+    <span class="stat-label">Escenarios deportivos</span>
+  </div>
+</div>
+
+<!-- DISCIPLINAS -->
+<section>
+  <div class="section-tag">Disciplinas</div>
+  <h2 class="section-title">Nuestros<br>deportes</h2>
+  <p class="section-sub">Actividades disponibles para todos los aprendices del centro de formación.</p>
+
+  <div class="sports-grid">
+    <div class="sport-card">
+      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80');"></div>
+      <div class="sport-card-overlay"></div>
+      <div class="sport-card-num">01</div>
+      <div class="sport-card-content">
+        <span class="sport-badge">Popular</span>
+        <div class="sport-card-title">Futsal / Fútbol</div>
+        <p class="sport-card-desc">Torneos inter-fichas e inter-centros. Desarrolla trabajo en equipo y liderazgo.</p>
+        <div class="sport-card-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </div>
+    <div class="sport-card">
+      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80');"></div>
+      <div class="sport-card-overlay"></div>
+      <div class="sport-card-num">02</div>
+      <div class="sport-card-content">
+        <span class="sport-badge">Inscripciones abiertas</span>
+        <div class="sport-card-title">Baloncesto</div>
+        <p class="sport-card-desc">Competencias en nuestras canchas. Mejora tu técnica, agilidad y estrategia.</p>
+        <div class="sport-card-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </div>
+    <div class="sport-card">
+      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80');"></div>
+      <div class="sport-card-overlay"></div>
+      <div class="sport-card-num">03</div>
+      <div class="sport-card-content">
+        <span class="sport-badge">Mixto</span>
+        <div class="sport-card-title">Voleibol</div>
+        <p class="sport-card-desc">Torneos mixtos. Fortalece tu coordinación y reflejos en cada partido.</p>
+        <div class="sport-card-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section>
+  <div class="section-tag">Servicios</div>
+  <h2 class="section-title">¿Qué encontrarás<br>aquí?</h2>
+  <p class="section-sub">Gestiona tu vida deportiva de forma integral desde una sola plataforma.</p>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-trophy"></i></div>
+      <div class="service-title">Torneos Inter-Fichas</div>
+      <p class="service-desc">Inscribe tu equipo de formación, consulta fechas y sigue la tabla de posiciones en tiempo real.</p>
+      <a href="#" class="service-link">Ver tabla <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-calendar-check"></i></div>
+      <div class="service-title">Reserva Gimnasio</div>
+      <p class="service-desc">Sistema inteligente de turnos. Elige tu horario favorito y entrena en nuestras instalaciones.</p>
+      <a href="#" class="service-link">Reservar turno <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+      <div class="service-title">Estadísticas personales</div>
+      <p class="service-desc">Revisa tu historial deportivo, partidos jugados, goles y participación por temporada.</p>
+      <a href="#" class="service-link">Ver estadísticas <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-bell"></i></div>
+      <div class="service-title">Notificaciones de partidos</div>
+      <p class="service-desc">Recibe alertas de tus próximos partidos, cambios de horario y resultados en tiempo real.</p>
+      <a href="#" class="service-link">Activar alertas <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL AUTENTICACIÓN -->
+<div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content custom-modal">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bolder text-white fs-4" style="font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; text-transform:uppercase;">
+          <i class="fas fa-shield-alt me-2" style="color:var(--sena-green);"></i>Acceso al sistema
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <ul class="nav nav-pills nav-fill mb-4 gap-2" id="authTabs" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active fw-bold" id="login-tab" data-bs-toggle="pill" data-bs-target="#loginPanel" type="button" role="tab">
+              <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link fw-bold" id="register-tab" data-bs-toggle="pill" data-bs-target="#registerPanel" type="button" role="tab">
+              <i class="fas fa-user-plus me-1"></i> Registrarse
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="authTabsContent">
+          <!-- LOGIN -->
+          <div class="tab-pane fade show active" id="loginPanel" role="tabpanel">
+            <form id="loginForm" novalidate class="px-2 py-3">
+              {% csrf_token %}
+              <div class="mb-4">
+                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número de Documento</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-id-card text-white-50"></i></span>
+                  <input type="text" name="username" class="form-control custom-input border-start-0 ps-0" placeholder="Ej: 1052345678" required pattern="\d{5,20}" autocomplete="username" style="box-shadow:none;">
+                </div>
+              </div>
+              <div class="mb-4">
+                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Contraseña</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-lock text-white-50"></i></span>
+                  <input type="password" id="id_password" name="password" class="form-control custom-input border-start-0 ps-0 border-end-0" placeholder="Tu clave secreta" required minlength="8" autocomplete="current-password" style="box-shadow:none;">
+                  <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left:none;" type="button" id="togglePassword">
+                    <i class="fas fa-eye text-white-50"></i>
+                  </button>
+                </div>
+                <div class="text-end mt-3">
+                  <a href="{% url 'password_reset' %}" class="small text-decoration-none fw-bold" style="color:var(--sena-green);">¿Olvidaste tu contraseña?</a>
+                </div>
+              </div>
+              <div id="loginAlert" class="alert d-none" role="alert"></div>
+              <button type="submit" class="btn w-100 py-3 mt-2 fw-bold text-uppercase text-white" style="background:var(--sena-green); letter-spacing:1px; border-radius:4px; font-family:'Barlow Condensed',sans-serif; font-size:16px;">Ingresar al sistema</button>
+            </form>
+          </div>
+
+          <!-- REGISTRO -->
+          <div class="tab-pane fade" id="registerPanel" role="tabpanel">
+            <form id="registerForm" novalidate class="px-2 py-3">
+              {% csrf_token %}
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Tipo Documento <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-id-card-alt text-white-50"></i></span>
+                    <select class="form-select custom-input border-start-0 ps-0" name="tipo_documento" required style="box-shadow:none;">
+                      <option value="" selected disabled>-- Selecciona --</option>
+                      <option value="CC">Cédula de Ciudadanía</option>
+                      <option value="TI">Tarjeta de Identidad</option>
+                      <option value="CE">Cédula de Extranjería</option>
+                      <option value="PA">Pasaporte</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número Documento <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-hashtag text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username" style="box-shadow:none;">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Nombres <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-user text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="nombres" required minlength="2" maxlength="100" autocomplete="given-name" style="box-shadow:none;">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Apellidos <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-user text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="apellidos" required minlength="2" maxlength="100" autocomplete="family-name" style="box-shadow:none;">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Género <span class="text-muted fw-normal text-lowercase">(Opcional)</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-venus-mars text-white-50"></i></span>
+                    <select class="form-select custom-input border-start-0 ps-0" name="genero" style="box-shadow:none;">
+                      <option value="">-- Seleccionar (Opcional) --</option>
+                      <option value="M">Masculino</option>
+                      <option value="F">Femenino</option>
+                      <option value="O">Otro</option>
+                      <option value="NR">Prefiero no decirlo</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Teléfono <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-phone text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="telefono" required pattern="\d{7,15}" maxlength="15" autocomplete="tel" style="box-shadow:none;">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Programa de Formación <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-graduation-cap text-white-50"></i></span>
+                    <select class="form-select custom-input border-start-0 ps-0" name="programa_formacion" required style="box-shadow:none;">
+                      <option value="" selected disabled>-- Selecciona tu programa --</option>
+                      <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
+                      <option value="MINERIA">Supervisión de Procesos Mineros</option>
+                      <option value="SST">Gestión de la Seguridad y Salud en el Trabajo</option>
+                      <option value="QUIMICA">Química Aplicada a la Industria</option>
+                      <option value="TOPOGRAFIA">Levantamientos Topográficos y Georreferenciación</option>
+                      <option value="VIAL">Construcción de Infraestructura Vial</option>
+                      <option value="SANEAMIENTO">Sistemas de Agua y Saneamiento</option>
+                      <option value="MAQUINARIA_PESADA">Operación de Maquinaria Pesada para Excavación</option>
+                      <option value="MANTENIMIENTO_EQUIPO">Mantenimiento de Equipo Pesado</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Correo Electrónico <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-envelope text-white-50"></i></span>
+                    <input type="email" class="form-control custom-input border-start-0 ps-0" name="email" required autocomplete="email" style="box-shadow:none;">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número de Ficha <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-users text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" autocomplete="off" style="box-shadow:none;">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Contraseña <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-lock text-white-50"></i></span>
+                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password" style="box-shadow:none;">
+                    <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left:none;" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
+                  </div>
+                  <div class="progress mt-2" style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;">
+                    <div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="border-radius:2px;"></div>
+                  </div>
+                  <small id="passwordStrengthText" class="text-white-50"></small>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Confirmar Clave <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-check-circle text-white-50"></i></span>
+                    <input type="password" id="confirmarContrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password" style="box-shadow:none;">
+                    <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left:none;" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div id="registerAlert" class="alert d-none mt-4" role="alert"></div>
+              <button type="submit" class="btn w-100 py-3 mt-4 fw-bold text-uppercase text-white" style="background:var(--sena-green); letter-spacing:1px; border-radius:4px; font-family:'Barlow Condensed',sans-serif; font-size:16px;">Finalizar Registro</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('login') === '1') {
-            var myModal = new bootstrap.Modal(document.getElementById('modalForm'));
-            myModal.show();
-        }
-    });
+  // Countdown — cambia la fecha objetivo a la del próximo evento real
+  (function() {
+    const target = new Date('2025-05-31T10:00:00');
+    function update() {
+      const diff = target - new Date();
+      if (diff <= 0) { document.querySelector('.countdown-strip').style.display='none'; return; }
+      const d = Math.floor(diff/86400000);
+      const h = Math.floor((diff%86400000)/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      const pad = n => String(n).padStart(2,'0');
+      document.getElementById('cd-days').textContent = pad(d);
+      document.getElementById('cd-hours').textContent = pad(h);
+      document.getElementById('cd-mins').textContent = pad(m);
+      document.getElementById('cd-secs').textContent = pad(s);
+    }
+    update(); setInterval(update, 1000);
+  })();
+
+  // Abrir modal si viene ?login=1
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === '1') {
+      new bootstrap.Modal(document.getElementById('modalForm')).show();
+    }
+  });
 </script>
 {% endblock %}

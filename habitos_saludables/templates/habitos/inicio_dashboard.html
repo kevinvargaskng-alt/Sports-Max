@@ -1,198 +1,383 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}Mi Dashboard de Salud | Hábitos Saludables{% endblock %}
 
-{% block title %}
-  {% if vista == 'dashboard' %}Mi Dashboard de Salud{% else %}Inicio — Hábitos Saludables{% endif %}
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --acid: #C8FF00;
+    --acid-dim: rgba(200,255,0,0.1);
+    --acid-glow: rgba(200,255,0,0.3);
+    --surface: #0E0F11;
+    --surface2: #161819;
+    --surface3: #1E2022;
+    --border: rgba(255,255,255,0.07);
+    --muted: rgba(255,255,255,0.45);
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--surface); color: #fff; font-family: var(--font-body); }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 0 1.5rem;
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(20px);
+  }
+  .page-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.2rem; letter-spacing: 0.03em; margin-bottom: 4px;
+  }
+  .page-header .subtitle { color: var(--muted); font-size: 0.9rem; }
+
+  .btn-acid {
+    background: var(--acid); color: #0E0F11;
+    font-weight: 700; font-size: 0.85rem;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 11px 22px; border-radius: 10px; border: none;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .btn-acid:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--acid-glow); color: #0E0F11; }
+
+  .btn-outline {
+    background: transparent; color: #fff;
+    font-weight: 600; font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    padding: 10px 20px; border-radius: 10px;
+    border: 1px solid var(--border); cursor: pointer;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+    transition: border-color 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); color: #fff; }
+
+  /* ─── ALERT ─── */
+  .alert-habeas {
+    background: rgba(255,193,7,0.07);
+    border: 1px solid rgba(255,193,7,0.3);
+    border-radius: 14px; padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    flex-wrap: wrap; margin-bottom: 2rem;
+  }
+
+  /* ─── STAT CARDS ─── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 1.75rem 1.5rem;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .stat-card:hover { border-color: rgba(255,255,255,0.15); }
+  .stat-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 18px 18px 0 0;
+  }
+  .stat-card.green::before { background: var(--acid); }
+  .stat-card.blue::before { background: #5c9eff; }
+  .stat-card.pink::before { background: #ff6b9d; }
+  .stat-card.cyan::before { background: #00d4ff; }
+
+  .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.75rem; }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 3.5rem; line-height: 1; margin-bottom: 0.4rem;
+  }
+  .stat-card.green .stat-value { color: var(--acid); }
+  .stat-card.blue .stat-value { color: #5c9eff; }
+  .stat-card.pink .stat-value { color: #ff6b9d; }
+  .stat-card.cyan .stat-value { color: #00d4ff; }
+
+  .stat-badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .stat-change { font-size: 0.82rem; font-weight: 600; margin-top: 4px; }
+
+  /* ─── CHART CARDS ─── */
+  .chart-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 1.75rem;
+    height: 100%;
+  }
+  .chart-card h5 {
+    font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chart-card canvas { width: 100% !important; height: 220px !important; }
+
+  /* ─── IMC LEGEND ─── */
+  .imc-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+  .imc-pill {
+    font-size: 0.7rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 999px; letter-spacing: 0.05em;
+  }
+
+  /* ─── DETAIL GRID ─── */
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+  }
+  .detail-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem;
+  }
+  .detail-item .di-label { font-size: 0.73rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .detail-item .di-value { font-size: 0.95rem; font-weight: 600; }
+
+  /* ─── QUICK ACTIONS ─── */
+  .quick-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+  .quick-btn {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: #fff; font-weight: 600; font-size: 0.85rem;
+    padding: 13px 18px; border-radius: 12px;
+    text-decoration: none; display: flex; align-items: center; gap: 10px;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .quick-btn:hover { background: var(--acid-dim); border-color: var(--acid-glow); color: #fff; transform: translateX(4px); }
+  .quick-btn i { font-size: 1rem; opacity: 0.8; }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    text-align: center; padding: 5rem 2rem;
+    background: var(--surface2);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 20px; margin: 2rem 0;
+  }
+  .empty-state .big-icon { font-size: 5rem; opacity: 0.15; margin-bottom: 1.5rem; }
+  .empty-state h3 { font-family: var(--font-display); font-size: 2rem; margin-bottom: 0.75rem; }
+  .empty-state p { color: var(--muted); font-size: 0.95rem; max-width: 400px; margin: 0 auto 2rem; }
+
+  /* ─── CONTENT CARDS (inicio view) ─── */
+  .content-section-title {
+    font-family: var(--font-display);
+    font-size: 2rem; letter-spacing: 0.03em;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .habito-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    text-decoration: none; color: #fff;
+    display: block;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .habito-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.18); color: #fff; }
+  .habito-cat-pill {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .material-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; text-align: center;
+    transition: transform 0.25s;
+  }
+  .material-card:hover { transform: translateY(-3px); }
+  .tipo-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin: 0 auto 1rem;
+  }
+
+  /* ─── REVEAL ─── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── LAYOUT HELPERS ─── */
+  .row { display: flex; flex-wrap: wrap; margin: 0 -0.5rem; }
+  .col-lg-4 { flex: 0 0 33.333%; max-width: 33.333%; padding: 0 0.5rem; }
+  .col-lg-6 { flex: 0 0 50%; max-width: 50%; padding: 0 0.5rem; }
+  .col-lg-8 { flex: 0 0 66.666%; max-width: 66.666%; padding: 0 0.5rem; }
+  .col-12 { flex: 0 0 100%; max-width: 100%; padding: 0 0.5rem; }
+  @media(max-width:768px) { .col-lg-4,.col-lg-6,.col-lg-8 { flex:0 0 100%; max-width:100%; } }
+  .g-4 { gap: 1rem; }
+  .gy-4 { row-gap: 1rem; }
+  .mb-2 { margin-bottom: 0.5rem; }
+  .mb-4 { margin-bottom: 1.5rem; }
+  .mb-5 { margin-bottom: 3rem; }
+  .mt-3 { margin-top: 1rem; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; width: 100%; }
+  .pb-5 { padding-bottom: 3rem; }
+  .pt-4 { padding-top: 1.5rem; }
+  .d-flex { display: flex; }
+  .align-items-center { align-items: center; }
+  .justify-content-between { justify-content: space-between; }
+  .gap-3 { gap: 1rem; }
+  .fw-bold { font-weight: 700; }
+  .small { font-size: 0.85rem; }
+  .text-muted { color: var(--muted); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  @media(max-width:600px){ .grid-2{ grid-template-columns:1fr; } }
+</style>
 {% endblock %}
 
 {% block content %}
 
-{% if vista == 'dashboard' %}
-{# ═══════════════════════════════════════════════════════════════════
-   VISTA: DASHBOARD
-   Contexto esperado del view:
-     request.user, tiene_consent, ultimo (SeguimientoSalud|None),
-     color_imc, categoria_imc, cambio_peso,
-     fechas_json, pesos_json, imcs_json
-════════════════════════════════════════════════════════════════════ #}
-
+<!-- ════════════════════════════ PAGE HEADER -->
 <div class="page-header">
   <div class="container">
-    <div class="row align-items-center">
-      <div class="col">
-        <h1><i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard de Salud</h1>
-        <p class="subtitle mb-0">
-          Bienvenido, {{ request.user.get_full_name|default:request.user.username }} —
-          Seguimiento personal de bienestar
+    <div class="d-flex align-items-center justify-content-between gap-3" style="flex-wrap:wrap">
+      <div>
+        <h1><i class="fas fa-tachometer-alt" style="color:var(--acid); margin-right:10px; font-size:1.8rem;"></i>MI DASHBOARD</h1>
+        <p class="subtitle">
+          Bienvenido/a, {{ request.user.get_full_name|default:request.user.username }} — Seguimiento personal de bienestar
         </p>
       </div>
-      <div class="col-auto">
-        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-light fw-bold" style="border-radius:12px;color:var(--sena-dark)">
-          <i class="fas fa-plus-circle me-2"></i>Nuevo registro
-        </a>
-      </div>
+      <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid">
+        <i class="fas fa-plus-circle"></i> Nuevo Registro
+      </a>
     </div>
   </div>
 </div>
 
-<div class="container pb-5">
+<!-- ════════════════════════════ MAIN CONTENT -->
+<div class="container pb-5 pt-4">
 
+  {% if vista == 'dashboard' %}
+
+  <!-- HABEAS DATA ALERT -->
   {% if not tiene_consent %}
-  <div class="alert d-flex align-items-center gap-3 mb-4"
-       style="background:#fff3e0;border:2px solid #fb8c00;border-radius:16px">
-    <i class="fas fa-shield-alt fs-3" style="color:#fb8c00"></i>
-    <div>
-      <strong>Aceptación de Habeas Data requerida</strong><br>
-      <span class="small">Para registrar y ver tu información de salud debes aceptar el tratamiento de datos personales.</span>
+  <div class="alert-habeas">
+    <i class="fas fa-shield-alt" style="font-size:1.6rem; color:#ffc107; flex-shrink:0;"></i>
+    <div style="flex:1;">
+      <strong>Aceptación de Habeas Data requerida</strong>
+      <div class="small text-muted" style="margin-top:3px;">Para registrar y ver tu información de salud debes aceptar el tratamiento de datos personales.</div>
     </div>
-    <a href="{% url 'habitos:habeas_data' %}"
-       class="btn btn-sm ms-auto fw-bold"
-       style="background:#fb8c00;color:#fff;border-radius:10px;white-space:nowrap">
+    <a href="{% url 'habitos:habeas_data' %}" style="background:#ffc107; color:#000; font-weight:700; font-size:0.82rem; padding:9px 18px; border-radius:10px; text-decoration:none; white-space:nowrap;">
       Aceptar ahora
     </a>
   </div>
   {% endif %}
 
   {% if ultimo %}
-  <!-- ── STATS CARDS ─────────────────────────────────────────────── -->
-  <div class="row g-4 mb-5">
 
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="imc-display text-{{ color_imc }}">{{ ultimo.imc|default:"—" }}</div>
-        <div class="stat-label">IMC</div>
-        <span class="badge bg-{{ color_imc }} mt-2">{{ categoria_imc.0 }}</span>
-      </div>
+  <!-- ─── STAT CARDS ─── -->
+  <div class="stats-grid mb-5">
+
+    <div class="stat-card green reveal">
+      <div class="stat-label">IMC</div>
+      <div class="stat-value">{{ ultimo.imc|default:"—" }}</div>
+      <span class="stat-badge" style="background:var(--acid-dim); color:var(--acid); border:1px solid var(--acid-glow);">
+        {{ categoria_imc.0 }}
+      </span>
     </div>
 
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-value">{{ ultimo.peso_kg }}</div>
-        <div class="stat-label">Peso actual (kg)</div>
-        {% if cambio_peso is not None %}
-        <small class="{% if cambio_peso < 0 %}text-success{% elif cambio_peso > 0 %}text-warning{% else %}text-muted{% endif %} fw-bold">
-          {% if cambio_peso > 0 %}+{% endif %}{{ cambio_peso }} kg desde inicio
-        </small>
-        {% endif %}
+    <div class="stat-card blue reveal" style="transition-delay:0.07s">
+      <div class="stat-label">Peso Actual</div>
+      <div class="stat-value">{{ ultimo.peso_kg }}</div>
+      <div style="font-size:0.78rem; color:var(--muted);">kg</div>
+      {% if cambio_peso is not None %}
+      <div class="stat-change" style="color:{% if cambio_peso < 0 %}#4ADE80{% elif cambio_peso > 0 %}#fcd34d{% else %}#8B9BB4{% endif %}; margin-top:8px;">
+        {% if cambio_peso > 0 %}+{% endif %}{{ cambio_peso }} kg desde inicio
       </div>
+      {% endif %}
     </div>
 
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-value" style="font-size:1.6rem">{{ ultimo.get_presion_arterial }}</div>
-        <div class="stat-label">Presión Arterial</div>
-        <small class="text-muted">Último registro</small>
-      </div>
+    <div class="stat-card cyan reveal" style="transition-delay:0.14s">
+      <div class="stat-label">Presión Arterial</div>
+      <div class="stat-value" style="font-size:2.4rem; letter-spacing:-0.02em;">{{ ultimo.get_presion_arterial }}</div>
+      <div style="font-size:0.78rem; color:var(--muted);">mmHg — último registro</div>
     </div>
 
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-value">{{ ultimo.frecuencia_cardiaca|default:"—" }}</div>
-        <div class="stat-label">Frec. Cardíaca (lpm)</div>
-        <small class="text-muted">Último registro</small>
-      </div>
+    <div class="stat-card pink reveal" style="transition-delay:0.21s">
+      <div class="stat-label">Frec. Cardíaca</div>
+      <div class="stat-value">{{ ultimo.frecuencia_cardiaca|default:"—" }}</div>
+      <div style="font-size:0.78rem; color:var(--muted);">lpm — último registro</div>
     </div>
 
   </div>
 
-  <!-- ── GRÁFICAS ────────────────────────────────────────────────── -->
-  <div class="row g-4 mb-4">
+  <!-- ─── CHARTS ROW ─── -->
+  <div class="row gy-4 mb-4">
     <div class="col-lg-6">
-      <div class="chart-container">
-        <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
-          <i class="fas fa-chart-line me-2"></i>Evolución del Peso
-        </h5>
-        <canvas id="chartPeso" height="200"></canvas>
+      <div class="chart-card reveal">
+        <h5><i class="fas fa-chart-line" style="color:#5c9eff;"></i> Evolución del Peso</h5>
+        <canvas id="chartPeso"></canvas>
       </div>
     </div>
     <div class="col-lg-6">
-      <div class="chart-container">
-        <h5 class="fw-bold mb-3" style="color:var(--sena-dark)">
-          <i class="fas fa-heartbeat me-2"></i>Evolución del IMC
-        </h5>
-        <canvas id="chartIMC" height="200"></canvas>
-        <div class="d-flex gap-2 flex-wrap mt-3" style="font-size:.75rem">
-          <span class="badge bg-warning text-dark">↓18.5 Bajo peso</span>
-          <span class="badge bg-success">18.5–24.9 Normal</span>
-          <span class="badge bg-warning text-dark">25–29.9 Sobrepeso</span>
-          <span class="badge bg-danger">≥30 Obesidad</span>
+      <div class="chart-card reveal" style="transition-delay:0.08s">
+        <h5><i class="fas fa-heartbeat" style="color:#ff6b9d;"></i> Evolución del IMC</h5>
+        <canvas id="chartIMC"></canvas>
+        <div class="imc-legend">
+          <span class="imc-pill" style="background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);">↓18.5 Bajo peso</span>
+          <span class="imc-pill" style="background:rgba(200,255,0,0.1);color:var(--acid);border:1px solid var(--acid-glow);">18.5–24.9 Normal</span>
+          <span class="imc-pill" style="background:rgba(251,146,60,0.15);color:#fdba74;border:1px solid rgba(251,146,60,0.3);">25–29.9 Sobrepeso</span>
+          <span class="imc-pill" style="background:rgba(244,63,94,0.15);color:#fda4af;border:1px solid rgba(244,63,94,0.3);">≥30 Obesidad</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── ÚLTIMO DETALLE + ACCIONES RÁPIDAS ──────────────────────── -->
-  <div class="row g-4">
+  <!-- ─── DETAIL + QUICK ACTIONS ─── -->
+  <div class="row gy-4">
     <div class="col-lg-8">
-      <div class="chart-container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="fw-bold mb-0" style="color:var(--sena-dark)">
-            <i class="fas fa-notes-medical me-2"></i>Último Registro
+      <div class="chart-card reveal">
+        <div class="d-flex align-items-center justify-content-between mb-4" style="gap:1rem; flex-wrap:wrap;">
+          <h5 style="font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin:0;">
+            <i class="fas fa-notes-medical" style="color:#4ADE80; margin-right:6px;"></i> Último Registro
           </h5>
-          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-sm btn-outline-sena">
+          <a href="{% url 'habitos:historial_salud' %}" class="btn-outline" style="font-size:0.8rem; padding:7px 14px;">
             Ver historial completo
           </a>
         </div>
-        <div class="row g-3">
-          {% with items=ultimo %}
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:var(--sena-light)">
-              <div class="small text-muted fw-bold">📅 Fecha</div>
-              <div class="fw-bold">{{ ultimo.fecha_evaluacion }}</div>
-            </div>
+        <div class="detail-grid">
+          {% for item in ultimo_items %}
+          <div class="detail-item">
+            <div class="di-label">{{ item.icon }} {{ item.label }}</div>
+            <div class="di-value">{{ item.value }}</div>
           </div>
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:var(--sena-light)">
-              <div class="small text-muted fw-bold">📏 Estatura</div>
-              <div class="fw-bold">{{ ultimo.estatura_cm }} cm</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:var(--sena-light)">
-              <div class="small text-muted fw-bold">🏃 Actividad</div>
-              <div class="fw-bold">{{ ultimo.get_nivel_actividad_display }}</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:var(--sena-light)">
-              <div class="small text-muted fw-bold">💧 Agua/día</div>
-              <div class="fw-bold">{{ ultimo.vasos_agua|default:"—" }} vasos</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:var(--sena-light)">
-              <div class="small text-muted fw-bold">😴 Sueño</div>
-              <div class="fw-bold">{{ ultimo.horas_sueno|default:"—" }} hrs</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="p-3 rounded-3" style="background:var(--sena-light)">
-              <div class="small text-muted fw-bold">📝 Observaciones</div>
-              <div class="fw-bold small">{{ ultimo.observaciones|default:"Sin notas"|truncatewords:8 }}</div>
-            </div>
-          </div>
-          {% endwith %}
+          {% empty %}
+          <div class="detail-item"><div class="di-label">📅 Fecha</div><div class="di-value">{{ ultimo.fecha_evaluacion }}</div></div>
+          <div class="detail-item"><div class="di-label">📏 Estatura</div><div class="di-value">{{ ultimo.estatura_cm }} cm</div></div>
+          <div class="detail-item"><div class="di-label">🏃 Actividad</div><div class="di-value">{{ ultimo.get_nivel_actividad_display }}</div></div>
+          <div class="detail-item"><div class="di-label">💧 Agua/día</div><div class="di-value">{{ ultimo.vasos_agua|default:"—" }} vasos</div></div>
+          <div class="detail-item"><div class="di-label">😴 Sueño</div><div class="di-value">{{ ultimo.horas_sueno|default:"—" }} hrs</div></div>
+          <div class="detail-item"><div class="di-label">📝 Observaciones</div><div class="di-value" style="font-size:0.85rem;">{{ ultimo.observaciones|default:"Sin notas"|truncatewords:8 }}</div></div>
+          {% endfor %}
         </div>
       </div>
     </div>
 
     <div class="col-lg-4">
-      <div class="chart-container h-100">
-        <h5 class="fw-bold mb-4" style="color:var(--sena-dark)">
-          <i class="fas fa-bolt me-2"></i>Acciones rápidas
-        </h5>
-        <div class="d-grid gap-3">
-          <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena">
-            <i class="fas fa-plus-circle me-2"></i>Nuevo seguimiento
+      <div class="chart-card reveal" style="transition-delay:0.1s">
+        <h5><i class="fas fa-bolt" style="color:#fcd34d;"></i> Acciones Rápidas</h5>
+        <div class="quick-actions">
+          <a href="{% url 'habitos:registrar_seguimiento' %}" class="quick-btn">
+            <i class="fas fa-plus-circle" style="color:var(--acid);"></i> Nuevo seguimiento
           </a>
-          <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-sena">
-            <i class="fas fa-history me-2"></i>Ver historial
+          <a href="{% url 'habitos:historial_salud' %}" class="quick-btn">
+            <i class="fas fa-history" style="color:#5c9eff;"></i> Ver historial
           </a>
-          <a href="{% url 'habitos:lista_rutinas' %}" class="btn btn-outline-sena">
-            <i class="fas fa-running me-2"></i>Ver rutinas
+          <a href="{% url 'habitos:lista_rutinas' %}" class="quick-btn">
+            <i class="fas fa-running" style="color:#ffc107;"></i> Ver rutinas
           </a>
-          <a href="{% url 'habitos:nutricion' %}" class="btn btn-outline-sena">
-            <i class="fas fa-utensils me-2"></i>Guía nutricional
+          <a href="{% url 'habitos:nutricion' %}" class="quick-btn">
+            <i class="fas fa-utensils" style="color:#dc3545;"></i> Guía nutricional
+          </a>
+          <a href="{% url 'habitos:biblioteca' %}" class="quick-btn">
+            <i class="fas fa-book-open" style="color:#a78bfa;"></i> Biblioteca
           </a>
         </div>
       </div>
@@ -200,307 +385,163 @@
   </div>
 
   {% else %}
-  <!-- Sin registros -->
-  <div class="text-center py-5">
-    <div style="font-size:5rem;opacity:0.3">📊</div>
-    <h3 class="fw-bold mb-2" style="color:var(--sena-dark)">Sin registros aún</h3>
-    <p class="text-muted mb-4">
-      Empieza a registrar tu información de salud para ver estadísticas y gráficas.
-    </p>
-    {% if tiene_consent %}
-    <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena btn-lg">
-      <i class="fas fa-plus-circle me-2"></i>Crear primer registro
+  <!-- ─── EMPTY STATE ─── -->
+  <div class="empty-state reveal">
+    <div class="big-icon">📊</div>
+    <h3>AÚN NO HAY DATOS</h3>
+    <p>Registra tu primer seguimiento de salud y empieza a visualizar tu evolución en tiempo real.</p>
+    <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid">
+      <i class="fas fa-plus-circle"></i> Registrar ahora
     </a>
-    {% else %}
-    <a href="{% url 'habitos:habeas_data' %}" class="btn btn-sena btn-lg">
-      <i class="fas fa-shield-alt me-2"></i>Aceptar Habeas Data y comenzar
-    </a>
-    {% endif %}
   </div>
   {% endif %}
 
-</div>
+  {% else %}
+  <!-- ════════════════════════════ INICIO VIEW -->
 
-{% else %}
-{# ═══════════════════════════════════════════════════════════════════
-   VISTA: INICIO (por defecto)
-   Contexto esperado del view:
-     request.user, tiene_consent,
-     habitos (últimos N), materiales (últimos N)
-════════════════════════════════════════════════════════════════════ #}
+  <!-- Quick Nav Links -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.75rem; margin-bottom:3rem;">
+    <a href="{% url 'habitos:lista_habitos' %}" class="quick-btn"><i class="fas fa-apple-alt" style="color:var(--acid);"></i> Guía de Hábitos</a>
+    <a href="{% url 'habitos:lista_rutinas' %}" class="quick-btn"><i class="fas fa-dumbbell" style="color:#ffc107;"></i> Rutinas Físicas</a>
+    <a href="{% url 'habitos:nutricion' %}" class="quick-btn"><i class="fas fa-utensils" style="color:#dc3545;"></i> Nutrición</a>
+    <a href="{% url 'habitos:biblioteca' %}" class="quick-btn"><i class="fas fa-book-open" style="color:#a78bfa;"></i> Biblioteca</a>
+  </div>
 
-<!-- ── HERO ──────────────────────────────────────────────────────── -->
-<section class="hero-habitos">
-  <div class="container position-relative" style="z-index:1">
-    <div class="row align-items-center">
-      <div class="col-lg-7">
-        <p class="mb-2 fw-bold" style="color:rgba(255,255,255,0.7);letter-spacing:.08em;font-size:.85rem">
-          ▸ SENA · MÓDULO INSTITUCIONAL
-        </p>
-        <h1 class="display-5 fw-black mb-3" style="font-family:'Poppins',sans-serif;font-weight:900">
-          Tu bienestar es<br>
-          <span style="color:#a8ff78">nuestra prioridad</span>
-        </h1>
-        <p class="lead mb-4" style="color:rgba(255,255,255,0.88)">
-          Hola, <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>.
-          Aquí encontrarás herramientas para mejorar tu calidad de vida:
-          hábitos, nutrición, rutinas físicas y seguimiento personal de salud.
-        </p>
-        <div class="d-flex gap-3 flex-wrap">
-          <a href="{% url 'habitos:registrar_seguimiento' %}"
-             class="btn btn-light fw-bold px-4 py-2"
-             style="border-radius:12px;color:var(--sena-dark)">
-            <i class="fas fa-plus-circle me-2"></i>Registrar mi salud
-          </a>
-          <a href="{% url 'habitos:dashboard' %}"
-             class="btn btn-outline-light fw-bold px-4 py-2"
-             style="border-radius:12px">
-            <i class="fas fa-tachometer-alt me-2"></i>Ver mi dashboard
-          </a>
+  {% if habitos %}
+  <div class="mb-5">
+    <div class="content-section-title">
+      CONTENIDO EDUCATIVO
+      <a href="{% url 'habitos:lista_habitos' %}" class="btn-outline" style="font-size:0.8rem; padding:7px 14px;">Ver todos</a>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem;">
+      {% for habito in habitos %}
+      <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="habito-card reveal">
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(200,255,0,0.08);display:flex;align-items:center;justify-content:center;color:var(--acid);font-size:1rem;flex-shrink:0;">
+            <i class="fas {{ habito.icono_css }}"></i>
+          </div>
+          <span class="habito-cat-pill" style="background:rgba(200,255,0,0.08);color:var(--acid);border:1px solid var(--acid-glow);margin:0;">
+            {{ habito.get_categoria_display }}
+          </span>
         </div>
-        {% if not tiene_consent %}
-        <div class="alert mt-4 mb-0"
-             style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.5);border-radius:12px;color:#fff">
-          <i class="fas fa-shield-alt me-2"></i>
-          <strong>Pendiente:</strong> Acepta el tratamiento de datos para registrar tu salud.
-          <a href="{% url 'habitos:habeas_data' %}"
-             class="btn btn-sm ms-2"
-             style="background:var(--sena-accent);color:#fff;border-radius:8px">
-            Aceptar ahora
-          </a>
-        </div>
-        {% endif %}
-      </div>
-      <div class="col-lg-5 text-center d-none d-lg-block">
-        <div style="font-size:9rem;opacity:0.15;line-height:1">🌿</div>
-      </div>
+        <h5 style="font-weight:700; margin-bottom:0.4rem; font-size:1rem;">{{ habito.titulo }}</h5>
+        <p style="font-size:0.83rem; color:var(--muted); line-height:1.5;">{{ habito.descripcion|truncatewords:20 }}</p>
+        <span style="font-size:0.8rem; color:var(--acid); margin-top:0.75rem; display:inline-block;">Leer más →</span>
+      </a>
+      {% endfor %}
     </div>
   </div>
-</section>
+  {% endif %}
 
-<!-- ── ACCESOS RÁPIDOS ───────────────────────────────────────────── -->
-<section class="container py-5">
-  <h2 class="fw-bold mb-1" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
-    ¿Qué deseas hacer hoy?
-  </h2>
-  <p class="text-muted mb-4">Accede a cada sección del módulo</p>
-
-  <div class="row g-4">
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:lista_habitos' %}" class="text-decoration-none">
-        <div class="card-habito card p-0">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon icon-alimentacion">
-              <i class="fas fa-lightbulb"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Hábitos Saludables</h6>
-              <p class="small text-muted mb-2">Consejos, rutinas y estilo de vida</p>
-              <span class="badge-categoria cat-alimentacion">Ver contenido →</span>
-            </div>
-          </div>
-        </div>
-      </a>
+  {% if materiales %}
+  <div>
+    <div class="content-section-title">
+      MATERIAL RECIENTE
+      <a href="{% url 'habitos:biblioteca' %}" class="btn-outline" style="font-size:0.8rem; padding:7px 14px;">Ver biblioteca</a>
     </div>
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:lista_rutinas' %}" class="text-decoration-none">
-        <div class="card-habito card p-0">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon icon-ejercicio">
-              <i class="fas fa-running"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Rutinas Físicas</h6>
-              <p class="small text-muted mb-2">Por nivel y objetivo personal</p>
-              <span class="badge-categoria cat-ejercicio">Ver rutinas →</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:nutricion' %}" class="text-decoration-none">
-        <div class="card-habito card p-0">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon icon-hidratacion">
-              <i class="fas fa-utensils"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Pirámide Nutricional</h6>
-              <p class="small text-muted mb-2">Guía de alimentación saludable</p>
-              <span class="badge-categoria cat-hidratacion">Explorar →</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-sm-6 col-lg-3">
-      <a href="{% url 'habitos:biblioteca' %}" class="text-decoration-none">
-        <div class="card-habito card p-0">
-          <div class="card-body d-flex align-items-start gap-3">
-            <div class="card-icon icon-mental">
-              <i class="fas fa-book-open"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">Biblioteca SENA</h6>
-              <p class="small text-muted mb-2">Cartillas, videos y documentos</p>
-              <span class="badge-categoria cat-mental">Acceder →</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-
-  </div>
-</section>
-
-<!-- ── ÚLTIMOS HÁBITOS ───────────────────────────────────────────── -->
-{% if habitos %}
-<section class="container pb-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
-      Contenido educativo
-    </h2>
-    <a href="{% url 'habitos:lista_habitos' %}" class="btn btn-outline-sena">Ver todos</a>
-  </div>
-  <div class="row g-4">
-    {% for habito in habitos %}
-    <div class="col-md-6 col-lg-4">
-      <div class="card-habito card">
-        <div class="card-body">
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="card-icon icon-{{ habito.categoria }}">
-              <i class="fas {{ habito.icono_css }}"></i>
-            </div>
-            <span class="badge-categoria cat-{{ habito.categoria }}">
-              {{ habito.get_categoria_display }}
-            </span>
-          </div>
-          <h5 class="fw-bold mb-2" style="color:var(--sena-dark)">{{ habito.titulo }}</h5>
-          <p class="text-muted small mb-3">{{ habito.descripcion|truncatewords:20 }}</p>
-          <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="btn btn-sena btn-sm">
-            Leer más <i class="fas fa-arrow-right ms-1"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
-
-<!-- ── MATERIAL RECIENTE ─────────────────────────────────────────── -->
-{% if materiales %}
-<section class="py-5" style="background:#fff">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold mb-0" style="font-family:'Poppins',sans-serif;color:var(--sena-dark)">
-        Material reciente
-      </h2>
-      <a href="{% url 'habitos:biblioteca' %}" class="btn btn-outline-sena">Ver biblioteca</a>
-    </div>
-    <div class="row g-3">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
       {% for mat in materiales %}
-      <div class="col-sm-6 col-lg-3">
-        <div class="material-card card">
-          <div class="card-body text-center py-4">
-            <div class="tipo-icon tipo-{{ mat.tipo_contenido }} mb-3">
-              <i class="fas {{ mat.get_icono }}"></i>
-            </div>
-            <h6 class="fw-bold mb-1" style="color:var(--sena-dark)">{{ mat.titulo|truncatewords:6 }}</h6>
-            <p class="small text-muted mb-3">{{ mat.get_tipo_contenido_display }}</p>
-            <a href="{% url 'habitos:descargar_material' mat.pk %}" class="btn btn-sm btn-sena">
-              <i class="fas fa-download me-1"></i>Acceder
-            </a>
-          </div>
+      <div class="material-card reveal">
+        <div class="tipo-icon" style="background:rgba(92,158,255,0.1); color:#5c9eff;">
+          <i class="fas {{ mat.get_icono }}"></i>
         </div>
+        <h6 style="font-weight:700; margin-bottom:4px;">{{ mat.titulo|truncatewords:6 }}</h6>
+        <p style="font-size:0.78rem; color:var(--muted); margin-bottom:1rem;">{{ mat.get_tipo_contenido_display }}</p>
+        <a href="{% url 'habitos:descargar_material' mat.pk %}" class="btn-acid" style="font-size:0.78rem; padding:8px 16px;">
+          <i class="fas fa-download"></i> Acceder
+        </a>
       </div>
       {% endfor %}
     </div>
   </div>
-</section>
-{% endif %}
+  {% endif %}
 
-{% endif %}{# fin if vista == 'dashboard' #}
+  {% endif %}
 
+</div>
 {% endblock %}
 
-
 {% block extra_js %}
-{% if vista == 'dashboard' and ultimo %}
-{# Chart.js debe estar cargado en base.html o aquí como CDN #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const fechas = {{ fechas_json|safe }};
-const pesos  = {{ pesos_json|safe }};
-const imcs   = {{ imcs_json|safe }};
+  /* Reveal */
+  const io = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting){ x.target.classList.add('visible'); io.unobserve(x.target); } }), {threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(r => io.observe(r));
 
-const configBase = {
-  responsive: true,
-  plugins: { legend: { display: false } },
-  scales: {
-    x: { grid: { display: false } },
-    y: { grid: { color: '#f0f0f0' } }
-  }
-};
+  {% if vista == 'dashboard' and ultimo %}
+  const fechas = {{ fechas_json|safe }};
+  const pesos  = {{ pesos_json|safe }};
+  const imcs   = {{ imcs_json|safe }};
 
-new Chart(document.getElementById('chartPeso'), {
-  type: 'line',
-  data: {
-    labels: fechas,
-    datasets: [{
-      data: pesos,
-      borderColor: '#39a900',
-      backgroundColor: 'rgba(57,169,0,0.08)',
-      borderWidth: 3,
-      pointRadius: 5,
-      pointBackgroundColor: '#39a900',
-      fill: true,
-      tension: 0.4,
-    }]
-  },
-  options: {
-    ...configBase,
-    scales: { ...configBase.scales, y: { ...configBase.scales.y, title: { display: true, text: 'kg' } } }
-  }
-});
+  Chart.defaults.color = 'rgba(255,255,255,0.45)';
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+  Chart.defaults.font.size = 12;
 
-new Chart(document.getElementById('chartIMC'), {
-  type: 'line',
-  data: {
-    labels: fechas,
-    datasets: [
-      {
-        data: imcs,
-        borderColor: '#1565c0',
-        backgroundColor: 'rgba(21,101,192,0.08)',
-        borderWidth: 3,
-        pointRadius: 5,
-        pointBackgroundColor: '#1565c0',
-        fill: true,
-        tension: 0.4,
-        label: 'IMC',
-      },
-      {
-        data: Array(fechas.length).fill(24.9),
-        borderColor: '#43a047',
-        borderWidth: 1,
-        borderDash: [6, 3],
-        pointRadius: 0,
-        fill: false,
-        label: 'Límite normal (24.9)',
-      }
-    ]
-  },
-  options: {
-    ...configBase,
-    plugins: { legend: { display: true, labels: { boxWidth: 12 } } }
-  }
-});
+  const gridCol = 'rgba(255,255,255,0.05)';
+
+  const baseOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#1E2022',
+      borderColor: 'rgba(255,255,255,0.1)',
+      borderWidth: 1,
+      titleColor: '#fff',
+      bodyColor: 'rgba(255,255,255,0.6)',
+      padding: 12, cornerRadius: 10,
+    }},
+    scales: {
+      x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.35)', font:{size:11} } },
+      y: { grid: { color: gridCol }, ticks: { color: 'rgba(255,255,255,0.35)', font:{size:11} } }
+    }
+  };
+
+  new Chart(document.getElementById('chartPeso'), {
+    type: 'line',
+    data: {
+      labels: fechas,
+      datasets: [{
+        data: pesos,
+        borderColor: '#5c9eff',
+        backgroundColor: (ctx) => {
+          const g = ctx.chart.ctx.createLinearGradient(0,0,0,220);
+          g.addColorStop(0,'rgba(92,158,255,0.2)'); g.addColorStop(1,'rgba(92,158,255,0)');
+          return g;
+        },
+        borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#5c9eff',
+        pointBorderColor: '#0E0F11', pointBorderWidth: 2,
+        fill: true, tension: 0.4,
+      }]
+    },
+    options: { ...baseOpts, scales: { ...baseOpts.scales, y: { ...baseOpts.scales.y, title:{ display:true, text:'kg', color:'#5c9eff' } } } }
+  });
+
+  new Chart(document.getElementById('chartIMC'), {
+    type: 'line',
+    data: {
+      labels: fechas,
+      datasets: [
+        {
+          data: imcs, label: 'IMC',
+          borderColor: '#C8FF00',
+          backgroundColor: (ctx) => {
+            const g = ctx.chart.ctx.createLinearGradient(0,0,0,220);
+            g.addColorStop(0,'rgba(200,255,0,0.18)'); g.addColorStop(1,'rgba(200,255,0,0)');
+            return g;
+          },
+          borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#C8FF00',
+          pointBorderColor: '#0E0F11', pointBorderWidth: 2,
+          fill: true, tension: 0.4,
+        },
+        {
+          data: Array(fechas.length).fill(24.9), label: 'Límite normal (24.9)',
+          borderColor: 'rgba(200,255,0,0.3)', borderWidth: 1.5,
+          borderDash: [6,4], pointRadius: 0, fill: false,
+        }
+      ]
+    },
+    options: { ...baseOpts, plugins: { ...baseOpts.plugins, legend: { display:true, labels:{ boxWidth:12, color:'rgba(255,255,255,0.5)', font:{size:11} } } } }
+  });
+  {% endif %}
 </script>
-{% endif %}
 {% endblock %}

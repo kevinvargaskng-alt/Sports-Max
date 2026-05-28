@@ -4,8 +4,8 @@
         <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show shadow-lg border-0"
              role="alert" style="border-radius:12px; font-size:.9rem; font-weight:500; min-width:300px; 
              background: rgba(22, 27, 34, 0.95); backdrop-filter: blur(10px); color: #fff;
-             border-left: 4px solid {% if 'success' in msg.tags %}#56d364{% elif 'error' in msg.tags or 'danger' in msg.tags %}#ff7b72{% elif 'warning' in msg.tags %}#f0b429{% else %}#79c0ff{% endif %} !important;">
-            <i class="fas {% if 'success' in msg.tags %}fa-check-circle text-success{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle text-danger{% elif 'warning' in msg.tags %}fa-exclamation-triangle text-warning{% else %}fa-info-circle text-info{% endif %} me-2 fs-5" style="vertical-align: middle;"></i>
+             border-left: 4px solid {% if 'info' in msg.tags %}#56d364{% elif 'error' in msg.tags or 'danger' in msg.tags %}#ff7b72{% elif 'warning' in msg.tags %}#f0b429{% else %}#79c0ff{% endif %} !important;">
+            <i class="fas {% if 'info' in msg.tags %}fa-check-circle text-info{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle text-danger{% elif 'warning' in msg.tags %}fa-exclamation-triangle text-warning{% else %}fa-info-circle text-info{% endif %} me-2 fs-5" style="vertical-align: middle;"></i>
             {{ msg }}
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" style="font-size:0.8rem; padding-top: 1rem;"></button>
         </div>

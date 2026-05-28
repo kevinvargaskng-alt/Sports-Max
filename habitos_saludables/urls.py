@@ -6,15 +6,16 @@ Prefijo sugerido en el proyecto: path('habitos/', include('habitos_saludables.ur
 from django.urls import path
 from . import views
 
+app_name = 'habitos'
 
 urlpatterns = [
 
     # ── Inicio y dashboard ──────────────────────────
-    path('', views.inicio, name='inicio_habitos'),
-    path('dashboard/', views.dashboard, name='dashboard_habitos'),
+    path('', views.inicio, name='inicio'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 
     # ── Habeas Data ─────────────────────────────────
-    path('habeas-data/', views.habeas_data, name='habeas_data_habitos'),
+    path('habeas-data/', views.habeas_data, name='habeas_data'),
 
     # ── Hábitos saludables (contenido educativo) ────
     path('habitos/', views.lista_habitos, name='lista_habitos'),
