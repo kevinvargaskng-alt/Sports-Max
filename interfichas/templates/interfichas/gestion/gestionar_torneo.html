@@ -180,16 +180,6 @@
         </div>
     </div>
 
-    <!-- MENSAJES -->
-    {% if messages %}
-        {% for m in messages %}
-        <div class="alert {% if m.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
-            <i class="fas {% if m.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
-            {{ m }}
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-        </div>
-        {% endfor %}
-    {% endif %}
 
     <!-- GENERAR GRUPOS (si no hay grupos) -->
     {% if not grupos_con_tabla %}

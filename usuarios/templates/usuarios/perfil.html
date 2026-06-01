@@ -93,9 +93,9 @@
     
     /* Estilo de alerta armonizado con el sistema */
     #reportAlert {
-        background-color: rgba(0, 210, 255, 0.1) !important;
+        background-color: rgba(74, 158, 255, 0.1) !important;
         color: #fff !important;
-        border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        border: 1px solid rgba(74, 158, 255, 0.2) !important;
         border-left: 5px solid var(--accent-blue) !important;
     }
     
@@ -118,7 +118,7 @@
         font-size: 4.5rem;
         font-weight: bold;
         border: 3px solid var(--accent-blue);
-        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        box-shadow: 0 0 20px rgba(74, 158, 255, 0.2);
     }
     .initial-avatar-sm {
         width: 120px;
@@ -159,7 +159,7 @@
                         {% endif %}
                     </div>
                     <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
-                    <span class="badge {% if usuario.is_staff or usuario.rol == 'admin' %}bg-warning{% elif usuario.rol == 'instructor' %}bg-success{% else %}bg-info{% endif %} text-dark px-3 py-1 mb-3">
+                    <span class="badge {% if usuario.is_staff or usuario.rol == 'admin' %}bg-warning{% elif usuario.rol == 'instructor' %}bg-info{% else %}bg-info{% endif %} text-dark px-3 py-1 mb-3">
                         <i class="fas {% if usuario.is_staff or usuario.rol == 'admin' %}fa-user-shield{% elif usuario.rol == 'instructor' %}fa-chalkboard-teacher{% else %}fa-user-graduate{% endif %} me-1"></i>
                         {% if usuario.is_staff or usuario.rol == 'admin' %}Administrador{% elif usuario.rol == 'instructor' %}Instructor{% else %}Aprendiz sena{% endif %}
                     </span>
@@ -297,7 +297,7 @@
                                     <td>{{ r.fecha|date:"d/m/Y" }}</td>
                                     <td>{{ r.hora_entrada }}</td>
                                     <td>{{ r.hora_salida }}</td>
-                                    <td><span class="badge bg-success text-cap">Finalizado</span></td>
+                                    <td><span class="badge bg-info text-cap">Finalizado</span></td>
                                 </tr>
                                 {% empty %}
                                 <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No tienes registros de ingreso.</td></tr>
@@ -363,7 +363,7 @@
                                     <td class="fw-bold text-cap">{{ e.nombre_equipo|lower }}</td>
                                     <td class="text-cap">{{ e.disciplina|lower }}</td>
                                     <td>{{ e.ficha }}</td>
-                                    <td><span class="badge bg-success text-cap">Inscrito</span></td>
+                                    <td><span class="badge bg-info text-cap">Inscrito</span></td>
                                 </tr>
                                 {% empty %}
                                 <tr><td colspan="4" class="text-center py-4 text-white-50 text-cap">No participas en torneos inter-fichas.</td></tr>
@@ -411,7 +411,7 @@
                                     <td><span class="badge bg-secondary text-cap">{{ u.rol }}</span></td>
                                     <td>
                                         {% if u.is_active %}
-                                            <span class="text-success small"><i class="fas fa-check-circle me-1"></i>Activo</span>
+                                            <span class="text-info small"><i class="fas fa-check-circle me-1"></i>Activo</span>
                                         {% else %}
                                             <span class="text-danger small"><i class="fas fa-ban me-1"></i>Bloqueado</span>
                                         {% endif %}
@@ -421,7 +421,7 @@
                                             {% if u.id != usuario.id %}
                                             <form action="{% url 'toggle_usuario' u.id %}" method="POST" style="display:inline;">
                                                 {% csrf_token %}
-                                                <button type="submit" class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}" title="Cambiar estado">
+                                                <button type="submit" class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-info{% endif %}" title="Cambiar estado">
                                                     <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
                                                 </button>
                                             </form>
@@ -473,14 +473,14 @@
                                     <td>{{ s.fecha|date:"d/m/Y" }}</td>
                                     <td>
                                         {% if s.respuesta %}
-                                            <span class="badge bg-success text-cap"><i class="fas fa-check-circle me-1"></i>Corregido</span>
+                                            <span class="badge bg-info text-cap"><i class="fas fa-check-circle me-1"></i>Corregido</span>
                                         {% else %}
                                             <span class="badge bg-danger text-cap">Pendiente</span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <button class="btn btn-sm {% if s.respuesta %}btn-success text-white{% else %}btn-warning text-dark{% endif %} fw-bold px-3" 
+                                            <button class="btn btn-sm {% if s.respuesta %}btn-info text-white{% else %}btn-warning text-dark{% endif %} fw-bold px-3" 
                                                     onclick="abrirModalRespuesta('{{ s.id }}', '{{ s.comentario|escapejs }}', '{{ s.respuesta|escapejs }}', '{% if s.imagen %}{{ s.imagen.url }}{% endif %}')">
                                                 <i class="fas {% if s.respuesta %}fa-edit{% else %}fa-reply{% endif %} me-1"></i>
                                                 {% if s.respuesta %}Ver/Editar{% else %}Atender{% endif %}
@@ -573,7 +573,7 @@
 
 <div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 16px;">
+        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(74, 158, 255, 0.2); border-radius: 16px;">
             <div class="modal-header border-0 pb-1">
                 <h4 class="modal-title fw-bold">
                     <i class="fas fa-bug text-info me-3"></i>Buzón de Reportes y Fallos
@@ -631,7 +631,7 @@
                         {% if sugerencias_usuario %} {# Línea 462 #}
                             {% for s in sugerencias_usuario %}
                             <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-{{ s.id }}"
-                                 style="border-left: 5px solid {% if s.respuesta %}#22c55e{% else %}#eab308{% endif %};">
+                                 style="border-left: 5px solid {% if s.respuesta %}var(--accent-blue){% else %}#eab308{% endif %};">
                                 <div class="d-flex justify-content-between mb-3">
                                     <div>
                                         <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
@@ -661,8 +661,8 @@
                                 {% endif %}
 
                                 {% if s.respuesta %}
-                                    <div class="p-3 rounded bg-success bg-opacity-10 border-start border-success border-3">
-                                        <strong class="text-success"><i class="fas fa-check-circle me-1"></i>Reporte Corregido:</strong><br>
+                                    <div class="p-3 rounded bg-info bg-opacity-10 border-start border-info border-3">
+                                        <strong class="text-info"><i class="fas fa-check-circle me-1"></i>Reporte Corregido:</strong><br>
                                         <p class="small text-white mt-1 mb-0">{{ s.respuesta }}</p>
                                     </div>
                                 {% else %}
@@ -736,7 +736,7 @@
                                     <label class="form-label small text-white-50">Estatura (cm)</label>
                                     <input type="number" id="inputAltura" class="form-control bg-dark text-white border-secondary" placeholder="170">
                                 </div>
-                                <div class="mt-4 p-3 rounded text-center" style="background: rgba(0, 210, 255, 0.1);">
+                                <div class="mt-4 p-3 rounded text-center" style="background: rgba(74, 158, 255, 0.1);">
                                     <span class="d-block small text-white-50">Tu IMC Estimado</span>
                                     <h3 id="valorIMC" class="fw-bold text-info mb-1">--.-</h3>
                                     <span id="estadoIMC" class="badge bg-secondary">Sin datos</span>

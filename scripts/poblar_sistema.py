@@ -85,13 +85,16 @@ def poblar_datos():
     # 3. Elementos Deportivos (Inventario)
     elementos_nombres = ["Balón de Fútbol", "Mesa de Ping Pong", "Mesa de Billar", "Pesa 10kg", "Colchoneta", "Balón Baloncesto", "Net de Voleibol", "Cronómetro", "Cinta Métrica", "Set de Ajedrez"]
     elementos_objs = []
+    usuarios_staff = [u for u in usuarios_creados if u.is_staff]
     for i, nombre in enumerate(elementos_nombres):
         e, _ = ElementoDeportivo.objects.get_or_create(
             tipo_maquina=nombre,
             defaults={
                 'cantidad_total': random.randint(5, 20),
                 'estado_general': random.choice(['Bueno', 'Regular']),
-                'usuario_responsable': random.choice(usuarios_creados) if usuarios_creados else None
+                'usuario_responsable': random.choice(usuarios_staff) if usuarios_staff else None,
+                'fecha_adquisicion': date.today() - timedelta(days=random.randint(10, 365)),
+                'descripcion': f"Elemento deportivo de tipo {nombre} en excelentes condiciones para el uso de los aprendices."
             }
         )
         elementos_objs.append(e)

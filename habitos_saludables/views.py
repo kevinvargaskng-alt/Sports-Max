@@ -82,6 +82,7 @@ def inicio(request):
         'ultimo_seguimiento': ultimo_seguimiento,
         'tiene_consent': tiene_consent,
         'titulo_pagina': 'Inicio — Hábitos Saludables',
+        'vista': 'inicio', # Aunque no se usa en inicio.html, es buena práctica
     }
     return render(request, 'habitos/inicio.html', ctx)
 
@@ -124,8 +125,9 @@ def dashboard(request):
         'imcs_json': json.dumps(imcs),
         'tiene_consent': tiene_habeas_data(request.user),
         'titulo_pagina': 'Mi Dashboard de Salud',
+        'vista': 'dashboard',
     }
-    return render(request, 'habitos/dashboard.html', ctx)
+    return render(request, 'habitos/inicio_dashboard.html', ctx)
 
 
 # ─────────────────────────────────────────────
@@ -163,9 +165,10 @@ def habeas_data(request):
     else:
         form = HabeasDataForm()
 
-    return render(request, 'habitos/habeas_data.html', {
+    return render(request, 'habitos/salud.html', {
         'form': form,
-        'titulo_pagina': 'Autorización Habeas Data'
+        'titulo_pagina': 'Autorización Habeas Data',
+        'vista': 'habeas_data',
     })
 
 
@@ -188,8 +191,9 @@ def lista_habitos(request):
         'categorias': categorias,
         'categoria_activa': categoria,
         'titulo_pagina': 'Hábitos Saludables',
+        'vista': 'habitos',
     }
-    return render(request, 'habitos/habitos.html', ctx)
+    return render(request, 'habitos/contenido_educativo.html', ctx)
 
 
 @login_required
@@ -200,10 +204,11 @@ def detalle_habito(request, pk):
         categoria=habito.categoria, activo=True
     ).exclude(pk=pk)[:3]
 
-    return render(request, 'habitos/detalle_habito.html', {
+    return render(request, 'habitos/contenido_educativo.html', {
         'habito': habito,
         'relacionados': relacionados,
         'titulo_pagina': habito.titulo,
+        'vista': 'detalle_habito',
     })
 
 
@@ -229,17 +234,19 @@ def lista_rutinas(request):
         'nivel_activo': nivel,
         'objetivo_activo': objetivo,
         'titulo_pagina': 'Rutinas Físicas',
+        'vista': 'rutinas',
     }
-    return render(request, 'habitos/rutinas.html', ctx)
+    return render(request, 'habitos/contenido_educativo.html', ctx)
 
 
 @login_required
 def detalle_rutina(request, pk):
     """Detalle de una rutina física."""
     rutina = get_object_or_404(RutinaFisica, pk=pk, activo=True)
-    return render(request, 'habitos/detalle_rutina.html', {
+    return render(request, 'habitos/contenido_educativo.html', {
         'rutina': rutina,
         'titulo_pagina': rutina.nombre,
+        'vista': 'detalle_rutina',
     })
 
 
@@ -269,8 +276,9 @@ def piramide_nutricional(request):
         'categorias': PiramideNutricional.CATEGORIA_CHOICES,
         'categoria_activa': categoria,
         'titulo_pagina': 'Pirámide Nutricional',
+        'vista': 'nutricion',
     }
-    return render(request, 'habitos/nutricion.html', ctx)
+    return render(request, 'habitos/contenido_educativo.html', ctx)
 
 
 # ─────────────────────────────────────────────
@@ -298,8 +306,9 @@ def biblioteca(request):
         'form': form,
         'total': materiales.count(),
         'titulo_pagina': 'Biblioteca de Materiales',
+        'vista': 'biblioteca',
     }
-    return render(request, 'habitos/biblioteca.html', ctx)
+    return render(request, 'habitos/contenido_educativo.html', ctx)
 
 
 @login_required
@@ -354,9 +363,10 @@ def registrar_seguimiento(request):
     else:
         form = SeguimientoSaludForm(initial={'fecha_evaluacion': timezone.now().date()})
 
-    return render(request, 'habitos/registrar_seguimiento.html', {
+    return render(request, 'habitos/salud.html', {
         'form': form,
         'titulo_pagina': 'Registrar Seguimiento de Salud',
+        'vista': 'registrar',
     })
 
 
@@ -390,8 +400,9 @@ def historial_salud(request):
         'cambio_peso': cambio_peso,
         'data_json': json.dumps(data_grafica),
         'titulo_pagina': 'Mi Historial de Salud',
+        'vista': 'historial',
     }
-    return render(request, 'habitos/historial_salud.html', ctx)
+    return render(request, 'habitos/salud.html', ctx)
 
 
 @login_required
@@ -404,11 +415,12 @@ def detalle_seguimiento(request, pk):
     )
     categoria, color = seguimiento.get_categoria_imc()
 
-    return render(request, 'habitos/detalle_seguimiento.html', {
+    return render(request, 'habitos/salud.html', {
         'seg': seguimiento,
         'categoria_imc': categoria,
         'color_imc': color,
         'titulo_pagina': f'Seguimiento — {seguimiento.fecha_evaluacion}',
+        'vista': 'detalle',
     })
 
 

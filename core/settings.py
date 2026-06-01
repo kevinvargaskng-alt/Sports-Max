@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'gimnasio',
     'inventario',
     'usuarios',
+    'habitos_saludables',
 ]
 
 MIDDLEWARE = [

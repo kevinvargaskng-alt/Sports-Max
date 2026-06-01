@@ -297,16 +297,6 @@
 {% block content %}
 <div class="container-fluid px-3 px-md-4 py-4" style="max-width: 1200px; margin: 0 auto;">
 
-  {% if messages %}
-    {% for msg in messages %}
-      <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show mb-3"
-           role="alert" style="border-radius:10px; font-size:.88rem;">
-        <i class="fas {% if 'success' in msg.tags %}fa-check-circle{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
-        {{ msg }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
 
 
   {% if es_admin %}

@@ -9,5 +9,8 @@ LISTA_PROGRAMAS = [
     "Construcción de Infraestructura Vial",
     "Sistemas de Agua y Saneamiento",
     "Operación de Maquinaria Pesada para Excavación",
-    "Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte"
+    "Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte",
+    "Administrativos",
+    "Electromecanica",
+    "Instructores"
 ]

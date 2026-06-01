@@ -17,6 +17,7 @@ def login_view(request):
     if request.method == 'POST':
         doc      = request.POST.get('username')
         password = request.POST.get('password')
+        next_url = request.POST.get('next') or request.GET.get('next') or '/perfil/'
 
         user = authenticate(request, username=doc, password=password)
         if user:
@@ -24,7 +25,7 @@ def login_view(request):
             return JsonResponse({
                 'status': 'success',
                 'success': True,
-                'redirect': '/perfil/',
+                'redirect': next_url,
                 'message': 'Bienvenido al sistema'
             })
 
