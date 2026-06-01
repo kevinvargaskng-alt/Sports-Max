@@ -7,6 +7,9 @@ class ElementoDeportivo(models.Model):
     tipo_maquina = models.CharField(max_length=100, verbose_name="Tipo de Máquina/Elemento")
     cantidad_total = models.IntegerField(default=1)
     estado_general = models.CharField(max_length=50, default='Buen estado')
+    fecha_adquisicion = models.DateField(null=True, blank=True)
+    descripcion = models.TextField(blank=True, null=True)
+    imagen = models.ImageField(upload_to='elementos_deportivos/', null=True, blank=True)
     
     # El campo que ajustamos para el MER:
     usuario_responsable = models.ForeignKey(

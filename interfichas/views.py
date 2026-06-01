@@ -11,18 +11,6 @@ from .models import (
     JugadorEquipo, GrupoInterfichas, PartidoInterfichas, ResultadoTorneo
 )
 
-PROGRAMAS_GLOBALES = [
-    "Análisis y Desarrollo de Software (ADSO)",
-    "Supervisión de Procesos Mineros",
-    "Gestión de la Seguridad y Salud en el Trabajo",
-    "Química Aplicada a la Industria",
-    "Levantamientos Topográficos y Georreferenciación",
-    "Construcción de Infraestructura Vial",
-    "Sistemas de Agua y Saneamiento",
-    "Operación de Maquinaria Pesada para Excavación",
-    "Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte",
-]
-
 
 def es_admin(user):
     return user.is_authenticated and user.is_staff
@@ -223,7 +211,6 @@ def interfichas_list(request):
         'torneos':             torneos,
         'equipos':             equipos,
         'disciplinas':         disciplinas,
-        'PROGRAMAS_GLOBALES':  PROGRAMAS_GLOBALES,
         'es_admin':            admin,
         # Aprendiz
         'mis_equipos':         mis_equipos,

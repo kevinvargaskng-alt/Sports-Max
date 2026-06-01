@@ -5,29 +5,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap');
 
 :root {
-    --primary-dark: #0D0D0D;
-    --accent-blue: #0277BD;
-    --accent-hover: #039BE5;
-    --deep-blue: #1A237E;
-    --text-white: #ECEFF1;
-    --glass-bg: rgba(26, 35, 126, 0.25);
-    --neon-border: rgba(2, 119, 189, 0.5);
+    --primary-dark: #0b0e14;
+    --accent-blue: #2b7de9;
+    /* Azul más oscuro */
+    --accent-hover: #1f64c8;
+    /* Hover aún más oscuro */
+    --deep-blue: #0f1a2e;
+    --text-white: #e2e8f0;
+    --glass-bg: rgba(43, 125, 233, 0.06);
+    --neon-border: rgba(43, 125, 233, 0.2);
     --card-bg: rgba(255, 255, 255, 0.03);
     --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --danger: #f85149;
-    --success: #238636;
+    --danger: #ff4d4f;
+    --success: #2b7de9;
     --warning: #ffc107;
-    --info: #58a6ff;
+    --info: #2b7de9;
 }
 
 /* ============================================================
    CONFIGURACIÓN GLOBAL Y FONDO
    ============================================================ */
-*, *::before, *::after {
-    margin: 0; padding: 0; box-sizing: border-box;
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     background-color: var(--primary-dark);
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
@@ -38,20 +45,29 @@ html, body {
 body::before {
     content: "";
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url('/static/img/balon.png'); 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/static/img/balon.png');
     background-size: cover;
     background-position: center;
-    opacity: 0.12; 
+    opacity: 0.12;
     z-index: -1;
     pointer-events: none;
 }
 
 /* Scrollbar Personalizada */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--primary-dark); }
-::-webkit-scrollbar-thumb { 
-    background: var(--accent-blue); 
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-blue);
     border-radius: 10px;
 }
 
@@ -92,11 +108,13 @@ body::before {
     white-space: nowrap;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
     background: var(--accent-blue) !important;
+    /* Azul oscuro al hover/active */
     color: white !important;
-    box-shadow: 0 0 15px var(--accent-blue);
-    transform: translateY(-2px);
+    box-shadow: none;
+    transform: translateY(-1px);
 }
 
 .navbar-brand {
@@ -111,14 +129,17 @@ body::before {
    PANELES, TARJETAS Y HERO
    ============================================================ */
 .hero-header {
-    background: radial-gradient(circle at top, rgba(26, 35, 126, 0.4) 0%, rgba(13, 13, 13, 1) 100%);
+    background: radial-gradient(circle at top, rgba(43, 125, 233, 0.15) 0%, rgba(11, 14, 20, 1) 100%);
     border-radius: 0 0 60px 60px;
     padding: 60px 20px;
     margin-bottom: 40px;
     border-bottom: 2px solid var(--deep-blue);
 }
 
-.panel-modulo, .main-card, .sport-card, .service-card {
+.panel-modulo,
+.main-card,
+.sport-card,
+.service-card {
     background: var(--card-bg);
     backdrop-filter: blur(15px);
     border: 1px solid var(--neon-border);
@@ -128,12 +149,16 @@ body::before {
     transition: var(--transition);
 }
 
-.main-card { padding: 0; overflow: hidden; } /* Específico para Tablas */
+.main-card {
+    padding: 0;
+    overflow: hidden;
+}
 
-.sport-card:hover, .service-card:hover {
-    background: rgba(2, 119, 189, 0.1);
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(2, 119, 189, 0.2);
+.sport-card:hover,
+.service-card:hover {
+    background: rgba(43, 125, 233, 0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 .card-icon {
@@ -149,8 +174,15 @@ body::before {
 }
 
 @keyframes floating {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
 }
 
 /* ============================================================
@@ -162,30 +194,35 @@ body::before {
     border: 1px solid var(--neon-border);
 }
 
-.table { color: var(--text-white) !important; background: rgba(0, 0, 0, 0.4); margin-bottom: 0; }
+.table {
+    color: var(--text-white) !important;
+    background: rgba(0, 0, 0, 0.4);
+    margin-bottom: 0;
+}
 
 .table thead {
-    background: rgba(26, 35, 126, 0.5); /* Fondo deep blue translúcido */
-    color: var(--info);
+    background: rgba(15, 26, 46, 0.8);
+    color: var(--accent-blue);
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 1px;
     font-weight: 800;
 }
 
-.table th, .table td {
-    border-color: rgba(2, 119, 189, 0.1);
+.table th,
+.table td {
+    border-color: rgba(43, 125, 233, 0.1);
     vertical-align: middle;
     padding: 15px;
 }
 
-.table tbody tr:hover { 
-    background: rgba(2, 119, 189, 0.08) !important; 
+.table tbody tr:hover {
+    background: rgba(43, 125, 233, 0.06) !important;
 }
 
 /* Fila Detalle (Inyectada por JS) */
 .fila-detalle {
-    background: rgba(26, 35, 126, 0.1) !important;
+    background: rgba(43, 125, 233, 0.08) !important;
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -194,21 +231,38 @@ body::before {
 }
 
 /* Badges Dinámicos */
-.badge-ficha, .badge-status {
+.badge-ficha,
+.badge-status {
     padding: 4px 10px;
     border-radius: 6px;
     font-weight: 600;
     font-size: 0.75rem;
     border: 1px solid transparent;
 }
-.badge-ficha { background: rgba(88, 166, 255, 0.1); color: var(--info); border-color: rgba(88, 166, 255, 0.4); }
-.status-active { background: rgba(35, 134, 54, 0.1); color: #3fb950; border-color: #3fb950; }
-.status-danger { background: rgba(248, 81, 73, 0.1); color: var(--danger); border-color: var(--danger); }
+
+.badge-ficha {
+    background: rgba(43, 125, 233, 0.1);
+    color: var(--info);
+    border-color: rgba(43, 125, 233, 0.4);
+}
+
+.status-active {
+    background: rgba(43, 125, 233, 0.1);
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.status-danger {
+    background: rgba(248, 81, 73, 0.1);
+    color: var(--danger);
+    border-color: var(--danger);
+}
 
 /* ============================================================
    BOTONES Y ACCIONES
    ============================================================ */
-.btn-primary, .btn-ingresar {
+.btn-primary,
+.btn-ingresar {
     background: linear-gradient(45deg, var(--deep-blue), var(--accent-blue)) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     color: white !important;
@@ -218,15 +272,16 @@ body::before {
     transition: var(--transition) !important;
 }
 
-.btn-primary:hover, .btn-ingresar:hover {
-    box-shadow: 0 0 20px var(--accent-blue);
-    transform: scale(1.03);
+.btn-primary:hover,
+.btn-ingresar:hover {
+    box-shadow: 0 4px 12px rgba(43, 125, 233, 0.3);
+    transform: scale(1.02);
 }
 
 .btn-profile {
-    background: rgba(26, 35, 126, 0.4) !important;
-    border: 2px solid var(--accent-blue) !important;
-    color: #ECEFF1 !important;
+    background: rgba(43, 125, 233, 0.12) !important;
+    border: 1px solid rgba(43, 125, 233, 0.3) !important;
+    color: var(--text-white) !important;
     border-radius: 50px !important;
     padding: 8px 22px !important;
     font-weight: 600 !important;
@@ -234,42 +289,76 @@ body::before {
     align-items: center;
     gap: 10px;
     text-decoration: none !important;
-    box-shadow: 0 0 10px rgba(2, 119, 189, 0.3);
+    box-shadow: none;
     transition: var(--transition);
 }
 
-.btn-outline-info { color: var(--info) !important; border-color: var(--info) !important; }
-.btn-outline-danger { color: var(--danger) !important; border-color: var(--danger) !important; }
-.btn-outline-info:hover, .btn-outline-danger:hover { color: white !important; transform: scale(1.1); }
+.btn-outline-info {
+    color: var(--info) !important;
+    border-color: var(--info) !important;
+}
+
+.btn-outline-danger {
+    color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+.btn-outline-info:hover,
+.btn-outline-danger:hover {
+    color: white !important;
+    transform: scale(1.1);
+}
 
 .btn-expand {
     background: var(--glass-bg);
     border: 1px solid var(--accent-blue);
     color: white;
     border-radius: 50%;
-    width: 35px; height: 35px;
-    display: flex; align-items: center; justify-content: center;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: var(--transition);
 }
 
-.btn-expand:hover { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); transform: scale(1.1); }
+.btn-expand:hover {
+    background: var(--accent-blue);
+    box-shadow: none;
+    transform: scale(1.05);
+}
 
 /* Botón Cámara / Perfil */
 .btn-camera {
-    position: absolute; bottom: 0; right: 0;
-    background: var(--accent-blue); color: #000;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--accent-blue);
+    color: #000;
     border: 2px solid var(--primary-dark);
     border-radius: 50%;
-    width: 35px; height: 35px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: var(--transition);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
 }
-.btn-camera:hover { background: var(--accent-hover); color: white; transform: scale(1.1); }
+
+.btn-camera:hover {
+    background: var(--accent-hover);
+    color: white;
+    transform: scale(1.1);
+}
 
 /* ============================================================
    FORMULARIOS Y MODALES
    ============================================================ */
-.custom-input, .form-control, .form-select, .jira-input {
+.custom-input,
+.form-control,
+.form-select,
+.jira-input {
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid var(--neon-border) !important;
     border-radius: 12px !important;
@@ -277,9 +366,12 @@ body::before {
     transition: 0.2s;
 }
 
-.custom-input:focus, .form-control:focus, .form-select:focus, .jira-input:focus {
+.custom-input:focus,
+.form-control:focus,
+.form-select:focus,
+.jira-input:focus {
     border-color: var(--accent-blue) !important;
-    box-shadow: 0 0 15px rgba(2, 119, 189, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(43, 125, 233, 0.15) !important;
     outline: none;
 }
 
@@ -289,14 +381,16 @@ body::before {
 }
 
 .custom-modal {
-    background: rgba(13, 13, 13, 0.98) !important;
+    background: rgba(11, 14, 20, 0.98) !important;
     backdrop-filter: blur(25px);
-    border: 2px solid var(--accent-blue);
-    border-radius: 30px;
-    box-shadow: 0 0 40px rgba(2, 119, 189, 0.4);
+    border: 1px solid var(--neon-border);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
-.btn-close-white { filter: invert(1) grayscale(100%) brightness(200%); }
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
 
 /* Forzar color de iconos en inputs date/time */
 input[type="date"]::-webkit-calendar-picker-indicator,
@@ -308,7 +402,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 /* ============================================================
    TABS Y TOOLTIPS
    ============================================================ */
-.nav-tabs { border-bottom: 1px solid var(--neon-border) !important; }
+.nav-tabs {
+    border-bottom: 1px solid var(--neon-border) !important;
+}
 
 .nav-tabs .nav-link {
     color: var(--text-white) !important;
@@ -318,15 +414,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     margin-right: 5px;
 }
 
-.nav-tabs .nav-link.active, .nav-pills .nav-link.active {
+.nav-tabs .nav-link.active,
+.nav-pills .nav-link.active {
     background-color: var(--accent-blue) !important;
     color: white !important;
     border-color: var(--accent-blue) !important;
-    box-shadow: 0 -5px 15px rgba(2, 119, 189, 0.3) !important;
+    box-shadow: none !important;
 }
 
 /* Tabs Botones (Inventario/Interfichas) */
-.inter-ficha-btn, .inter-centro-btn {
+.inter-ficha-btn,
+.inter-centro-btn {
     background: transparent;
     border: 2px solid var(--neon-border);
     color: var(--text-white);
@@ -334,38 +432,48 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     border-radius: 30px;
     font-weight: 600;
     transition: var(--transition);
-    margin-right: 10px; margin-bottom: 15px;
+    margin-right: 10px;
+    margin-bottom: 15px;
 }
 
-.inter-ficha-btn:hover, .inter-centro-btn:hover,
-.inter-ficha-btn.active, .inter-centro-btn.active {
+.inter-ficha-btn:hover,
+.inter-centro-btn:hover,
+.inter-ficha-btn.active,
+.inter-centro-btn.active {
     background: var(--accent-blue);
     border-color: var(--accent-blue);
-    box-shadow: 0 0 15px var(--accent-blue);
+    box-shadow: none;
     color: white;
 }
 
 .tooltip-inner {
-    background: rgba(13, 13, 13, 0.95) !important;
+    background: rgba(11, 14, 20, 0.95) !important;
     backdrop-filter: blur(10px);
-    border: 1px solid var(--accent-blue) !important;
+    border: 1px solid var(--neon-border) !important;
     color: var(--text-white) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 25px rgba(2, 119, 189, 0.4) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ============================================================
    ANIMACIONES, IMÁGENES Y OTROS
    ============================================================ */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 #previewImagenElemento {
     border: 2px dashed var(--accent-blue);
     border-radius: 12px;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
     max-height: 200px;
     object-fit: cover;
 }
@@ -373,47 +481,63 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .empty-state {
     text-align: center;
     padding: 60px;
-    color: rgba(255,255,255,0.2);
+    color: rgba(255, 255, 255, 0.2);
 }
-.empty-state i { font-size: 3.5rem; margin-bottom: 15px; display: block; }
+
+.empty-state i {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
 
 .modulo-header {
-    display: flex; align-items: center; gap: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
     margin-bottom: 25px;
     border-bottom: 2px solid var(--glass-bg);
     padding-bottom: 15px;
 }
+
 .modulo-header i {
     font-size: 2.2rem;
     color: var(--accent-blue);
-    text-shadow: 0 0 10px var(--accent-blue);
+    text-shadow: none;
 }
+
 .fecha-calculada {
-        background: rgba(0, 210, 255, 0.1);
-        border: 1px solid var(--accent-blue);
-        color: #00d2ff;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        display: none;
-        animation: fadeIn 0.3s ease;
+    background: rgba(43, 125, 233, 0.1);
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.badge-stock {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.table-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
 
-    .badge-stock {
-        font-size: 0.75rem;
-        padding: 5px 10px;
-        border-radius: 20px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-
-    .table-img {
-        width: 45px; 
-        height: 45px; 
-        object-fit: cover; 
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+}
