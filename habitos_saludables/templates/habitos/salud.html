@@ -4,102 +4,127 @@
 {% block title %}{{ titulo_pagina }} | Hábitos Saludables{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
-    .glass-card {
-        background: rgba(30, 35, 41, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        padding: 2rem;
-        color: white;
-    }
-    .form-control, .form-select {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        color: white !important;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: var(--sena-green) !important;
-        box-shadow: 0 0 0 0.25rem rgba(26, 95, 180, 0.25) !important;
-        background-color: rgba(255, 255, 255, 0.12) !important;
-    }
-    .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.5) !important;
-    }
-    .form-label {
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 600;
-    }
-    .table-dark-glass {
-        background: rgba(30, 35, 41, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
-    }
-    .table-dark-glass th, .table-dark-glass td {
-        border-color: rgba(255, 255, 255, 0.1) !important;
-        color: white;
-    }
-    .table-dark-glass th {
-        background-color: rgba(255, 255, 255, 0.05);
-    }
-    .alert-habeas {
-        background-color: rgba(25, 135, 84, 0.1);
-        border-color: rgba(25, 135, 84, 0.3);
-        color: #20c997;
-    }
-    .alert-habeas .btn-close {
-        filter: invert(0.8) sepia(1) saturate(5) hue-rotate(100deg) brightness(0.9);
-    }
+:root {
+  --acid: #C8FF00;
+  --surface: #0A0C0E;
+  --surface2: #111316;
+  --surface3: #1A1D21;
+  --border: rgba(255,255,255,0.07);
+  --border-h: rgba(255,255,255,0.13);
+  --muted: rgba(255,255,255,0.4);
+  --teal: #20c997;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+body { background: var(--surface); color: #fff; font-family: var(--font-body); }
+
+/* Headers */
+.page-header { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.75rem 0; margin-bottom: 2rem; }
+.page-header h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-bottom: 2px; }
+
+/* Panels */
+.panel { background: var(--surface2); border: 1px solid var(--border); border-radius: 18px; padding: 2.5rem; }
+
+/* Forms */
+.form-control, .form-select {
+    background-color: var(--surface3) !important;
+    border: 1px solid var(--border) !important;
+    color: white !important;
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--acid) !important;
+    box-shadow: 0 0 0 3px rgba(200,255,0,0.1) !important;
+    background-color: rgba(255,255,255,0.05) !important;
+}
+.form-label { color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+
+/* Buttons */
+.btn-acid {
+    background: var(--acid); color: #0A0C0E; font-weight: 700; font-size: 0.85rem;
+    padding: 11px 22px; border-radius: 11px; border: none; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-acid:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,255,0,0.25); color: #0A0C0E; }
+.btn-outline-sm {
+    background: transparent; color: rgba(255,255,255,0.7); font-weight: 600; font-size: 0.82rem;
+    padding: 9px 16px; border-radius: 10px; border: 1px solid var(--border);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.btn-outline-sm:hover { border-color: var(--border-h); background: rgba(255,255,255,0.05); color: #fff; }
+
+/* Table */
+.table-dark-glass { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.table-dark-glass th { background-color: var(--surface3); color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; }
+.table-dark-glass td { border-color: var(--border) !important; color: white; vertical-align: middle; padding: 1rem 1.5rem; }
+.table-hover tbody tr:hover { background-color: rgba(255,255,255,0.02) !important; }
+
+/* Badges */
+.badge-acid { background: rgba(200,255,0,0.1); color: var(--acid); border: 1px solid rgba(200,255,0,0.2); }
+.badge-teal { background: rgba(32,201,151,0.1); color: var(--teal); border: 1px solid rgba(32,201,151,0.2); padding: 5px 12px; }
+
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1 class="mb-4 text-white fw-bold">{{ titulo_pagina }}</h1>
-    <hr class="border-secondary mb-4">
+<div class="page-header">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h1>{{ titulo_pagina }}</h1>
+            <div style="color: var(--muted); font-size: 0.88rem;">Módulo de Hábitos Saludables</div>
+        </div>
+        {% if vista != 'habeas_data' %}
+        <a href="{% url 'habitos:dashboard' %}" class="btn-outline-sm"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+        {% endif %}
+    </div>
+</div>
 
+<div class="container pb-5">
     {% if vista == 'habeas_data' %}
-    <div class="row justify-content-center">
+    <div class="row justify-content-center reveal">
         <div class="col-lg-8">
-            <div class="glass-card">
-                <h2 class="text-white fw-bold mb-4">Autorización de Tratamiento de Datos Personales</h2>
-                <p class="text-white-75">
+            <div class="panel">
+                <h2 style="font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; margin-bottom: 1rem;">Autorización de Tratamiento de Datos Personales</h2>
+                <p style="color: var(--muted); line-height: 1.6; margin-bottom: 2rem;">
                     Para poder registrar y hacer seguimiento a tu información de salud, necesitamos tu consentimiento para el tratamiento de tus datos personales.
                     Esto se realiza conforme a la Ley 1581 de 2012 y la política de privacidad del SENA.
                 </p>
                 <form method="post">
                     {% csrf_token %}
-                    <div class="form-check mb-4">
+                    <div class="form-check mb-4 p-3 rounded" style="background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.15);">
                         {{ form.acepta }}
-                        <label class="form-check-label text-white-75" for="{{ form.acepta.id_for_label }}">
+                        <label class="form-check-label ms-2" for="{{ form.acepta.id_for_label }}" style="color: white; font-weight: 600;">
                             {{ form.acepta.label }}
                         </label>
                         {% if form.acepta.errors %}
                             <div class="text-danger small mt-1">{{ form.acepta.errors }}</div>
                         {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-success btn-lg"><i class="fas fa-check-circle me-2"></i>Aceptar y Continuar</button>
+                    <button type="submit" class="btn-acid"><i class="fas fa-check-circle"></i> Aceptar y Continuar</button>
                 </form>
             </div>
         </div>
     </div>
 
     {% elif vista == 'registrar' %}
-    <div class="row justify-content-center">
+    <div class="row justify-content-center reveal">
         <div class="col-lg-10">
-            <div class="glass-card">
-                <h2 class="text-white fw-bold mb-4">Registrar Nuevo Seguimiento</h2>
+            <div class="panel">
                 <form method="post">
                     {% csrf_token %}
-                    <div class="row g-3">
+                    <div class="row g-4">
                         {% for field in form %}
                         <div class="col-md-{{ field.field.widget.attrs.col|default:'6' }}">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                             {{ field }}
                             {% if field.help_text %}
-                                <small class="form-text text-white-50">{{ field.help_text }}</small>
+                                <small style="color: var(--muted); font-size: 0.75rem; display: block; margin-top: 6px;">{{ field.help_text }}</small>
                             {% endif %}
                             {% if field.errors %}
                                 <div class="text-danger small mt-1">{{ field.errors }}</div>
@@ -107,49 +132,49 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <button type="submit" class="btn btn-success btn-lg mt-4"><i class="fas fa-save me-2"></i>Guardar Seguimiento</button>
+                    <button type="submit" class="btn-acid mt-4 w-100" style="padding: 14px;"><i class="fas fa-save" style="font-size: 1.1rem;"></i> Guardar Seguimiento</button>
                 </form>
             </div>
         </div>
     </div>
 
     {% elif vista == 'historial' %}
-    <a href="{% url 'habitos:dashboard' %}" class="btn btn-outline-light mb-4"><i class="fas fa-arrow-left me-2"></i>Volver al Dashboard</a>
-    <p class="lead text-white-50 mb-4">Aquí puedes ver la evolución de tus indicadores de salud.</p>
     {% if seguimientos %}
-    <div class="row g-4">
+    <div class="row g-4 mb-4 reveal">
         <div class="col-lg-8">
-            <div class="glass-card">
-                <h3 class="text-white fw-bold mb-3">Gráfica de Evolución</h3>
-                <canvas id="healthChart"></canvas>
+            <div class="panel h-100">
+                <h3 style="font-size: 1rem; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem;"><i class="fas fa-chart-line"></i> Gráfica de Evolución</h3>
+                <div style="height: 250px;"><canvas id="healthChart"></canvas></div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="glass-card h-100 d-flex flex-column justify-content-center align-items-center text-center">
-                <i class="fas fa-weight-hanging fs-1 text-info mb-3"></i>
-                <h4 class="text-white fw-bold">Cambio de Peso</h4>
+            <div class="panel d-flex flex-column justify-content-center align-items-center text-center h-100">
+                <i class="fas fa-weight-hanging mb-3" style="font-size: 2.5rem; color: #5c9eff;"></i>
+                <h4 style="font-weight: 700; font-size: 1.1rem; color: var(--muted); margin-bottom: 0.5rem;">Cambio de Peso</h4>
                 {% if cambio_peso %}
-                    <p class="fs-3 fw-bold {% if cambio_peso > 0 %}text-danger{% elif cambio_peso < 0 %}text-success{% else %}text-white{% endif %}">{{ cambio_peso|floatformat:2 }} kg</p>
-                    <p class="text-white-50">Desde tu primer registro.</p>
+                    <p style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 800; color: {% if cambio_peso > 0 %}#f87171{% elif cambio_peso < 0 %}var(--acid){% else %}white{% endif %}; margin-bottom: 0; line-height: 1;">
+                        {{ cambio_peso|floatformat:2 }} kg
+                    </p>
+                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 5px;">Desde tu primer registro</p>
                 {% else %}
-                    <p class="text-white-50">Necesitas más de un registro para ver la evolución.</p>
+                    <p style="font-size: 0.85rem; color: var(--muted);">Necesitas más de un registro para ver evolución.</p>
                 {% endif %}
-                <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sm btn-outline-success mt-3"><i class="fas fa-plus-circle me-2"></i>Nuevo Registro</a>
+                <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-outline-sm mt-3"><i class="fas fa-plus-circle"></i> Nuevo Registro</a>
             </div>
         </div>
     </div>
 
-    <div class="glass-card mt-5 p-0 table-dark-glass">
-        <h3 class="text-white fw-bold p-4 mb-0">Todos tus Registros</h3>
+    <div class="table-dark-glass reveal p-0 mt-4">
+        <h3 style="font-size: 1rem; font-weight: 700; text-transform: uppercase; color: var(--muted); margin: 0; padding: 1.5rem;"><i class="fas fa-list"></i> Todos tus Registros</h3>
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Fecha</th>
-                        <th>Peso (kg)</th>
-                        <th>Estatura (cm)</th>
+                        <th>Peso</th>
+                        <th>Estatura</th>
                         <th>IMC</th>
-                        <th>Categoría IMC</th>
+                        <th>Categoría</th>
                         <th>Actividad</th>
                         <th>Acciones</th>
                     </tr>
@@ -157,18 +182,20 @@
                 <tbody>
                     {% for seg in seguimientos %}
                     <tr>
-                        <td>{{ seg.fecha_evaluacion|date:"d M Y" }}</td>
-                        <td>{{ seg.peso_kg }}</td>
-                        <td>{{ seg.estatura_cm }}</td>
-                        <td>{{ seg.imc|default:"N/A" }}</td>
-                        <td>{{ seg.get_categoria_imc }}</td>
-                        <td>{{ seg.get_nivel_actividad_display }}</td>
+                        <td style="font-weight: 600;">{{ seg.fecha_evaluacion|date:"d M Y" }}</td>
+                        <td>{{ seg.peso_kg }} kg</td>
+                        <td>{{ seg.estatura_cm }} cm</td>
+                        <td>{{ seg.imc|default:"—" }}</td>
+                        <td><span class="badge badge-teal rounded-pill">{{ seg.get_categoria_imc }}</span></td>
+                        <td style="font-size: 0.85rem;">{{ seg.get_nivel_actividad_display }}</td>
                         <td>
-                            <a href="{% url 'habitos:detalle_seguimiento' seg.pk %}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                            <form action="{% url 'habitos:eliminar_seguimiento' seg.pk %}" method="post" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este registro?')"><i class="fas fa-trash"></i></button>
-                            </form>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'habitos:detalle_seguimiento' seg.pk %}" class="btn btn-sm btn-outline-info" style="border-radius: 8px;"><i class="fas fa-eye"></i></a>
+                                <form action="{% url 'habitos:eliminar_seguimiento' seg.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="border-radius: 8px;" onclick="return confirm('¿Estás seguro de eliminar este registro?')"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -177,32 +204,64 @@
         </div>
     </div>
     {% else %}
-    <div class="glass-card text-center py-5">
-        <i class="fas fa-chart-line fs-1 text-white-50 mb-3"></i>
-        <p class="lead text-white-50">Aún no tienes registros de seguimiento de salud.</p>
-        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-success btn-lg mt-3"><i class="fas fa-plus-circle me-2"></i>Registrar mi primer seguimiento</a>
+    <div class="panel text-center py-5 reveal">
+        <i class="fas fa-chart-line mb-3" style="font-size: 4rem; opacity: 0.1;"></i>
+        <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.5rem;">SIN REGISTROS</h3>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">Aún no tienes registros de seguimiento de salud.</p>
+        <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid"><i class="fas fa-plus-circle"></i> Registrar mi primer seguimiento</a>
     </div>
     {% endif %}
 
     {% elif vista == 'detalle' %}
-    <div class="row justify-content-center">
+    <div class="row justify-content-center reveal">
         <div class="col-lg-8">
-            <div class="glass-card">
-                <h2 class="text-white fw-bold mb-4">Detalle de Seguimiento ({{ seg.fecha_evaluacion|date:"d M Y" }})</h2>
-                <div class="row g-3">
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Peso:</strong> {{ seg.peso_kg }} kg</p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Estatura:</strong> {{ seg.estatura_cm }} cm</p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>IMC:</strong> {{ seg.imc|default:"N/A" }} <span class="badge bg-{{ color_imc }}">{{ seg.categoria_imc }}</span></p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Presión Arterial:</strong> {{ seg.presion_sistolica|default:"N/A" }}/{{ seg.presion_diastolica|default:"N/A" }} mmHg</p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Frecuencia Cardíaca:</strong> {{ seg.frecuencia_cardiaca|default:"N/A" }} lpm</p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Nivel de Actividad:</strong> {{ seg.get_nivel_actividad_display }}</p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Horas de Sueño:</strong> {{ seg.horas_sueno|default:"N/A" }}</p></div>
-                    <div class="col-md-6"><p class="text-white-75 mb-0"><strong>Vasos de Agua:</strong> {{ seg.vasos_agua|default:"N/A" }}</p></div>
+            <div class="panel">
+                <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Detalle del Seguimiento</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Fecha</div>
+                        <div style="font-weight: 600; font-size: 1.1rem;">{{ seg.fecha_evaluacion|date:"d M Y" }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">IMC</div>
+                        <div style="font-weight: 600; font-size: 1.1rem;">{{ seg.imc|default:"—" }} <span class="badge bg-{{ color_imc }} ms-1 rounded-pill" style="font-size: 0.75rem;">{{ seg.categoria_imc }}</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Peso</div>
+                        <div style="font-weight: 600;">{{ seg.peso_kg }} kg</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Estatura</div>
+                        <div style="font-weight: 600;">{{ seg.estatura_cm }} cm</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Presión Arterial</div>
+                        <div style="font-weight: 600;">{{ seg.presion_sistolica|default:"—" }}/{{ seg.presion_diastolica|default:"—" }} mmHg</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Frecuencia Cardíaca</div>
+                        <div style="font-weight: 600;">{{ seg.frecuencia_cardiaca|default:"—" }} lpm</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Horas de Sueño</div>
+                        <div style="font-weight: 600;">{{ seg.horas_sueno|default:"—" }} hrs</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Vasos de Agua</div>
+                        <div style="font-weight: 600;">{{ seg.vasos_agua|default:"—" }}</div>
+                    </div>
+                    <div class="col-12">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 2px;">Nivel de Actividad</div>
+                        <div style="font-weight: 600;">{{ seg.get_nivel_actividad_display }}</div>
+                    </div>
                     {% if seg.observaciones %}
-                    <div class="col-12"><p class="text-white-75 mb-0"><strong>Observaciones:</strong> {{ seg.observaciones }}</p></div>
+                    <div class="col-12 mt-3 pt-3" style="border-top: 1px dashed var(--border);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 5px;">Observaciones</div>
+                        <p style="margin: 0; color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.5;">{{ seg.observaciones }}</p>
+                    </div>
                     {% endif %}
                 </div>
-                <a href="{% url 'habitos:historial_salud' %}" class="btn btn-outline-primary mt-4"><i class="fas fa-arrow-left me-2"></i>Volver al Historial</a>
+                <a href="{% url 'habitos:historial_salud' %}" class="btn-outline-sm mt-4"><i class="fas fa-arrow-left"></i> Volver al Historial</a>
             </div>
         </div>
     </div>
@@ -211,11 +270,27 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    const io = new IntersectionObserver(entries => {
+        entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+                setTimeout(() => { e.target.classList.add('visible'); io.unobserve(e.target); }, i * 80);
+            }
+        });
+    }, { threshold: 0.05 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
 {% if vista == 'historial' and seguimientos %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const data = JSON.parse('{{ data_json|escapejs }}');
     const ctx = document.getElementById('healthChart').getContext('2d');
+    
+    Chart.defaults.color = 'rgba(255,255,255,0.4)';
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+    Chart.defaults.font.size = 11;
+    
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -224,46 +299,42 @@
                 {
                     label: 'Peso (kg)',
                     data: data.pesos,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
-                    tension: 0.3,
-                    fill: true
+                    borderColor: '#5c9eff',
+                    backgroundColor: (context) => {
+                        const g = context.chart.ctx.createLinearGradient(0,0,0,250);
+                        g.addColorStop(0, 'rgba(92,158,255,0.15)'); g.addColorStop(1, 'rgba(92,158,255,0)');
+                        return g;
+                    },
+                    borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#5c9eff', pointBorderColor: '#0A0C0E',
+                    tension: 0.4, fill: true
                 },
                 {
                     label: 'IMC',
                     data: data.imcs,
-                    borderColor: '#20c997',
-                    backgroundColor: 'rgba(32, 201, 151, 0.2)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Frecuencia Cardíaca (lpm)',
-                    data: data.fc,
-                    borderColor: '#ffc107',
-                    backgroundColor: 'rgba(255, 193, 7, 0.2)',
-                    tension: 0.3,
-                    fill: true
+                    borderColor: '#C8FF00',
+                    backgroundColor: (context) => {
+                        const g = context.chart.ctx.createLinearGradient(0,0,0,250);
+                        g.addColorStop(0, 'rgba(200,255,0,0.15)'); g.addColorStop(1, 'rgba(200,255,0,0)');
+                        return g;
+                    },
+                    borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#C8FF00', pointBorderColor: '#0A0C0E',
+                    tension: 0.4, fill: true
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255,255,255,0.1)' },
-                    ticks: { color: 'rgba(255,255,255,0.7)' }
-                },
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.1)' },
-                    ticks: { color: 'rgba(255,255,255,0.7)' }
+            plugins: {
+                legend: { labels: { boxWidth: 10, font: {size: 11} } },
+                tooltip: {
+                    backgroundColor: '#1A1D21', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+                    titleColor: '#fff', bodyColor: 'rgba(255,255,255,0.7)', padding: 12, cornerRadius: 8
                 }
             },
-            plugins: {
-                legend: {
-                    labels: { color: 'white' }
-                }
+            scales: {
+                x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }
             }
         }
     });

@@ -21,7 +21,7 @@ urlpatterns = [
     # ── Partidos ───────────────────────────────────────────────────
     path('partido/<int:partido_id>/resultado/', views.registrar_resultado,   name='registrar_resultado'),
     path('partido/<int:partido_id>/fecha/',     views.asignar_fecha_partido, name='asignar_fecha_partido'),
-
+    path('torneo/<int:torneo_id>/grupos/manual/', views.generar_grupos_manual, name='generar_grupos_manual'),
     # ── Equipos ────────────────────────────────────────────────────
     path('equipo/<int:equipo_id>/editar/',      views.editar_equipo,         name='editar_equipo'),
     path('equipo/<int:equipo_id>/eliminar/',    views.eliminar_equipo,       name='eliminar_equipo'),

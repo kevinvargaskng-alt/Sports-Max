@@ -335,7 +335,13 @@ def editar_elemento(request, id):
         elemento.tipo_maquina        = request.POST.get('tipo_maquina')
         elemento.cantidad_total      = request.POST.get('cantidad_total')
         elemento.estado_general      = request.POST.get('estado_general')
-        elemento.docente_responsable = request.POST.get('docente_responsable')
+        
+        responsable_id = request.POST.get('usuario_responsable')
+        if responsable_id:
+            elemento.usuario_responsable = Usuario.objects.get(id=responsable_id)
+        else:
+            elemento.usuario_responsable = None
+            
         elemento.save()
         messages.success(request, "Elemento actualizado correctamente.")
         return redirect('inventario')

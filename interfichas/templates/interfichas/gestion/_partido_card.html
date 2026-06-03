@@ -1,58 +1,63 @@
-<div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
-    <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
-    <div class="text-center" style="min-width:100px;">
-        {% if partido.jugado %}
-            {% if tipo_marcador == 'sets' %}
-                <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                {% if partido.sets_local %}
-                <span class="parciales-sets">
-                    {% for i in partido.sets_local %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
-                    /
-                    {% for i in partido.sets_visitante %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
-                </span>
+<div class="contenedor-partidos-grupo d-flex flex-column gap-3">
+    {% for partido in g.partidos %}
+    <div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
+        <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
+        <div class="text-center" style="min-width:100px;">
+            {% if partido.jugado %}
+                {% if tipo_marcador == 'sets' %}
+                    <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                    {% if partido.sets_local %}
+                    <span class="parciales-sets">
+                        {% for i in partido.sets_local %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
+                        /
+                        {% for i in partido.sets_visitante %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
+                    </span>
+                    {% endif %}
+                {% elif tipo_marcador == 'puntos' %}
+                    <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                    <span class="parciales-sets">pts</span>
+                {% else %}
+                    <span class="resultado-display">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
                 {% endif %}
-            {% elif tipo_marcador == 'puntos' %}
-                <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                <span class="parciales-sets">pts</span>
             {% else %}
-                <span class="resultado-display">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                <span class="vs-badge">VS</span>
             {% endif %}
-        {% else %}
-            <span class="vs-badge">VS</span>
+        </div>
+        <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
+        <div class="ms-auto d-flex gap-2 align-items-center flex-wrap">
+            {% if partido.fecha_partido %}
+            <small class="text-white-50"
+                   title="{{ partido.fecha_partido|date:'l j' }} de {{ partido.fecha_partido|date:'F' }}">
+                {{ partido.fecha_partido|date:"d/m" }}
+                {% if partido.hora_partido %} {{ partido.hora_partido|time:"H:i" }}{% endif %}
+            </small>
+            {% endif %}
+            <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
+                    onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}', '{{ partido.tarjetas_amarillas_local|default:0 }}', '{{ partido.tarjetas_amarillas_visitante|default:0 }}', '{{ partido.tarjetas_rojas_local|default:0 }}', '{{ partido.tarjetas_rojas_visitante|default:0 }}', '{{ partido.tarjetas_azules_local|default:0 }}', '{{ partido.tarjetas_azules_visitante|default:0 }}', '{{ partido.detalles_sanciones|escapejs }}')"
+                    title="{% if partido.jugado %}Editar resultado{% else %}Registrar resultado{% endif %}">
+                <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
+            </button>
+        </div>
+        
+        {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante or partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante or partido.tarjetas_azules_local or partido.tarjetas_azules_visitante or partido.detalles_sanciones %}
+        <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100" style="font-size:0.75rem; border-color: #21262d !important;">
+            <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
+            {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}
+                <span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ partido.tarjetas_amarillas_local }} - {{ partido.tarjetas_amarillas_visitante }}</span>
+            {% endif %}
+            {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}
+                <span class="badge bg-danger text-white px-2 ms-1">🟥 {{ partido.tarjetas_rojas_local }} - {{ partido.tarjetas_rojas_visitante }}</span>
+            {% endif %}
+            {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}
+                <span class="badge bg-primary text-white px-2 ms-1">🟦 {{ partido.tarjetas_azules_local }} - {{ partido.tarjetas_azules_visitante }}</span>
+            {% endif %}
+            {% if partido.detalles_sanciones %}
+                <span class="d-block text-white-50 italic mt-1 ms-1">"{{ partido.detalles_sanciones }}"</span>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
-    <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
-    <div class="ms-auto d-flex gap-2 align-items-center flex-wrap">
-        {% if partido.fecha_partido %}
-        <small class="text-white-50"
-               title="{{ partido.fecha_partido|date:'l j' }} de {{ partido.fecha_partido|date:'F' }}">
-            {{ partido.fecha_partido|date:"d/m" }}
-            {% if partido.hora_partido %} {{ partido.hora_partido|time:"H:i" }}{% endif %}
-        </small>
-        {% endif %}
-        <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
-                onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}', '{{ partido.tarjetas_amarillas_local|default:0 }}', '{{ partido.tarjetas_amarillas_visitante|default:0 }}', '{{ partido.tarjetas_rojas_local|default:0 }}', '{{ partido.tarjetas_rojas_visitante|default:0 }}', '{{ partido.tarjetas_azules_local|default:0 }}', '{{ partido.tarjetas_azules_visitante|default:0 }}', '{{ partido.detalles_sanciones|escapejs }}')"
-                title="{% if partido.jugado %}Editar resultado{% else %}Registrar resultado{% endif %}">
-            <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
-        </button>
-    </div>
-    
-    <!-- Sanciones/Tarjetas en el card -->
-    {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante or partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante or partido.tarjetas_azules_local or partido.tarjetas_azules_visitante or partido.detalles_sanciones %}
-    <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100" style="font-size:0.75rem; border-color: #21262d !important;">
-        <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
-        {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}
-            <span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ partido.tarjetas_amarillas_local }} - {{ partido.tarjetas_amarillas_visitante }}</span>
-        {% endif %}
-        {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}
-            <span class="badge bg-danger text-white px-2 ms-1">🟥 {{ partido.tarjetas_rojas_local }} - {{ partido.tarjetas_rojas_visitante }}</span>
-        {% endif %}
-        {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}
-            <span class="badge bg-primary text-white px-2 ms-1">🟦 {{ partido.tarjetas_azules_local }} - {{ partido.tarjetas_azules_visitante }}</span>
-        {% endif %}
-        {% if partido.detalles_sanciones %}
-            <span class="d-block text-white-50 italic mt-1 ms-1">"{{ partido.detalles_sanciones }}"</span>
-        {% endif %}
-    </div>
-    {% endif %}
+    {% empty %}
+    <div class="text-center text-white-50 py-3">No hay partidos generados para este grupo.</div>
+    {% endfor %}
 </div>
