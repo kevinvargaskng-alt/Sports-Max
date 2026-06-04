@@ -7,7 +7,6 @@
 
 {% block extra_css %}
 <style>
-<style>
   :root {
     --bg-deep:    #0d1117;
     --bg-card:    #161b22;
@@ -283,6 +282,20 @@
   .p-fase-semifinal { background: rgba(210,153,34,.12); color: #f0b429; border: 1px solid rgba(210,153,34,.3); }
   .p-fase-final     { background: rgba(218,54,51,.12); color: #ff7b72; border: 1px solid rgba(218,54,51,.3); }
 
+  /* ── Separador de fecha (Nuevo) ── */
+  .fecha-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0 12px; padding: 8px 12px;
+    background: linear-gradient(90deg, rgba(121,192,255,0.1) 0%, transparent 100%);
+    border-left: 3px solid #79c0ff; border-radius: 0 6px 6px 0;
+  }
+  .fecha-dia { font-size: 0.9rem; font-weight: 800; color: #79c0ff; text-transform: capitalize; }
+  .fecha-divider-sin-fecha {
+    display: flex; align-items: center; gap: 8px; margin: 15px 0 8px;
+    color: var(--muted); font-size: 0.8rem; font-style: italic;
+  }
+  .fecha-divider-sin-fecha i { font-size: 0.9rem; }
+
   .mi-resultado-win  { color: #56d364; }
   .mi-resultado-loss { color: #ff7b72; }
   .mi-resultado-pen  { color: var(--muted); font-style: italic; }
@@ -301,16 +314,6 @@
 {% block content %}
 <div class="container-fluid px-3 px-md-4 py-4" style="max-width: 1200px; margin: 0 auto;">
 
-  {% if messages %}
-    {% for msg in messages %}
-      <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show mb-3"
-           role="alert" style="border-radius:10px; font-size:.88rem;">
-        <i class="fas {% if 'success' in msg.tags %}fa-check-circle{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
-        {{ msg }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
 
   {% if es_admin %}
 
@@ -581,6 +584,20 @@
     </div>
     {% for p in mis_partidos %}
     {% if p.equipo_local.id == mi_eq.id or p.equipo_visitante.id == mi_eq.id %}
+
+    {% ifchanged p.fecha_partido %}
+      {% if p.fecha_partido %}
+        <div class="fecha-divider">
+          <i class="fas fa-calendar-day" style="color:#79c0ff;"></i>
+          <span class="fecha-dia">{{ p.fecha_partido|date:"l, j \de F" }}</span>
+        </div>
+      {% else %}
+        <div class="fecha-divider-sin-fecha">
+          <i class="fas fa-clock-rotate-left"></i> Sin fecha programada aún
+        </div>
+      {% endif %}
+    {% endifchanged %}
+
     <div class="partido-row {% if p.jugado %}jugado{% else %}pendiente{% endif %}">
 
       <span class="p-fase-badge
@@ -635,6 +652,25 @@
           <small class="mi-resultado-pen">Pendiente</small>
         {% endif %}
       </div>
+
+      <!-- Sanciones/Tarjetas en el card del Aprendiz -->
+      {% if p.tarjetas_amarillas_local or p.tarjetas_amarillas_visitante or p.tarjetas_rojas_local or p.tarjetas_rojas_visitante or p.tarjetas_azules_local or p.tarjetas_azules_visitante or p.detalles_sanciones %}
+      <div class="mt-2 small text-muted border-top border-secondary pt-1 w-100" style="font-size:0.75rem; border-color: #30363d !important;">
+          <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
+          {% if p.tarjetas_amarillas_local or p.tarjetas_amarillas_visitante %}
+              <span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ p.tarjetas_amarillas_local }} - {{ p.tarjetas_amarillas_visitante }}</span>
+          {% endif %}
+          {% if p.tarjetas_rojas_local or p.tarjetas_rojas_visitante %}
+              <span class="badge bg-danger text-white px-2 ms-1">🟥 {{ p.tarjetas_rojas_local }} - {{ p.tarjetas_rojas_visitante }}</span>
+          {% endif %}
+          {% if p.tarjetas_azules_local or p.tarjetas_azules_visitante %}
+              <span class="badge bg-primary text-white px-2 ms-1">🟦 {{ p.tarjetas_azules_local }} - {{ p.tarjetas_azules_visitante }}</span>
+          {% endif %}
+          {% if p.detalles_sanciones %}
+              <span class="d-block text-white-50 italic mt-1 ms-1">“{{ p.detalles_sanciones }}”</span>
+          {% endif %}
+      </div>
+      {% endif %}
 
     </div>
     {% endif %}
@@ -920,15 +956,13 @@
           {% endif %}
 
           <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Nombre del equipo</label>
-              <input type="text" name="nombre_equipo" class="custom-input form-control"
-                     placeholder="Los Campeones…" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Capitán</label>
+            <div class="col-md-12">
+              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Capitán del equipo</label>
               <input type="text" name="capitan" class="custom-input form-control"
-                     placeholder="Nombre completo" required>
+                     placeholder="Nombre completo del capitán" required>
+              <small class="text-white-50 mt-1 d-block" style="font-size:0.78rem;">
+                <i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.
+              </small>
             </div>
           </div>
 

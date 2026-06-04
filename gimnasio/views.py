@@ -1,41 +1,30 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from .models import Reserva
-import json
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import GimnasioConfig, FechaIngreso
-from django.db.models import Q 
-
+from .models import Reserva, GimnasioConfig, FechaIngreso
+from django.db.models import Q
+import json
 
 
 @login_required
 def gimnasio_list(request):
-    """
-    Controla el acceso al gimnasio y muestra el historial personal.
-    """
-    # 1. DEFINIR IDENTIDAD PARA FILTRADO
-    # CAMBIO REAL: Filtramos por el OBJETO de usuario (request.user), no por su nombre.
     mis_reservas = Reserva.objects.filter(
-        usuario_solicitante=request.user 
+        usuario_solicitante=request.user
     ).order_by('-fecha_entrada', '-hora_entrada')
-    
-    # 2. LÓGICA DE CONTROL DE ACCESO
+
     ahora = timezone.localtime(timezone.now())
     horario_ok = 7 <= ahora.hour < 17
-    dia_semana = ahora.weekday() 
+    dia_semana = ahora.weekday()
     es_fin_de_semana = dia_semana in [5, 6]
-    
+
     festivos_2026 = [
-        "01-01", "01-06", "03-23", "04-02", "04-03", "05-01", 
+        "01-01", "01-06", "03-23", "04-02", "04-03", "05-01",
         "05-18", "06-08", "06-15", "06-29", "07-20", "08-07",
         "08-17", "10-12", "11-02", "11-16", "12-08", "12-25"
     ]
     es_festivo = ahora.strftime("%m-%d") in festivos_2026
-    
+
     config = GimnasioConfig.get_config()
     estado_manual = config.estado == 'abierta'
 
@@ -46,7 +35,6 @@ def gimnasio_list(request):
         and estado_manual
     )
 
-    # 3. PROCESAR REGISTRO DE ENTRADA (POST)
     if request.method == 'POST':
         accion = request.POST.get('accion')
 
@@ -56,14 +44,12 @@ def gimnasio_list(request):
                 return redirect('gimnasio')
 
             try:
-                # CAMBIO REAL: Pasamos el objeto request.user completo al crear
                 Reserva.objects.create(
-                    usuario_solicitante=request.user, # <-- Esto ahora es una FK
+                    usuario_solicitante=request.user,
                     fecha_entrada=ahora.date(),
                     hora_entrada=ahora.time(),
                     hora_prestamo=ahora.time(),
-                    # Asegúrate de que el campo sea tiempo_permanencia si lo renombraste
-                    tiempo_permanencia=60, 
+                    tiempo_permanencia=60,
                     hora_salida=ahora.time(),
                     fecha_salida=ahora.date(),
                     estado='Activa'
@@ -71,10 +57,9 @@ def gimnasio_list(request):
                 messages.success(request, f"¡Entrada registrada! Bienvenido(a).")
             except Exception as e:
                 messages.error(request, f"Error técnico: {e}")
-            
+
             return redirect('gimnasio')
 
-    # 4. RENDERIZADO
     return render(request, 'gimnasio/gimnasio.html', {
         'reservas': mis_reservas,
         'esta_abierto': esta_abierto,
@@ -85,31 +70,25 @@ def gimnasio_list(request):
         'admin_reservas': Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
     })
 
+
 # --- ELIMINAR REGISTRO ---
 @login_required
 def eliminar_reserva(request, id):
-    # Solo permitimos borrar si el registro existe
     reserva = get_object_or_404(Reserva, codigo_registro=id)
     reserva.delete()
     messages.warning(request, "El registro de asistencia ha sido eliminado.")
     return redirect('gimnasio')
+
 
 # --- EDITAR REGISTRO ---
 @login_required
 def editar_reserva(request, id):
     reserva = get_object_or_404(Reserva, codigo_registro=id)
     if request.method == 'POST':
-        # Aquí puedes añadir lógica para editar campos específicos si lo deseas
         reserva.save()
         messages.info(request, "Información actualizada.")
         return redirect('gimnasio')
     return render(request, 'gimnasio/editar.html', {'reserva': reserva})
-
-
-
-import json
-from django.contrib.auth.decorators import user_passes_test
-from .models import GimnasioConfig, FechaIngreso
 
 
 def es_admin(user):
@@ -123,8 +102,8 @@ def admin_disponibilidad(request):
     config = GimnasioConfig.get_config()
 
     if request.method == 'POST':
-        estado       = request.POST.get('estado', config.estado)
-        dias_json    = request.POST.get('dias_json', '[]')
+        estado    = request.POST.get('estado', config.estado)
+        dias_json = request.POST.get('dias_json', '[]')
         try:
             dias = json.loads(dias_json)
         except (ValueError, TypeError):
@@ -134,12 +113,12 @@ def admin_disponibilidad(request):
         horario_cierre   = request.POST.get('horario_cierre',   '17:00')
         capacidad        = request.POST.get('capacidad_maxima', 40)
 
-        config.estado            = estado
-        config.dias_habilitados  = dias
-        config.horario_apertura  = horario_apertura
-        config.horario_cierre    = horario_cierre
-        config.capacidad_maxima  = int(capacidad)
-        config.actualizado_por   = request.user
+        config.estado           = estado
+        config.dias_habilitados = dias
+        config.horario_apertura = horario_apertura
+        config.horario_cierre   = horario_cierre
+        config.capacidad_maxima = int(capacidad)
+        config.actualizado_por  = request.user
         config.save()
 
         messages.success(request, 'Configuración actualizada correctamente.')
@@ -156,10 +135,10 @@ def admin_disponibilidad(request):
     ]
 
     return render(request, 'gimnasio/disponibilidad.html', {
-        'config':          config,
-        'dias_semana':     dias_semana,
-        'dias_activos':    config.dias_habilitados,
-        'seccion_activa':  'disponibilidad',
+        'config':         config,
+        'dias_semana':    dias_semana,
+        'dias_activos':   config.dias_habilitados,
+        'seccion_activa': 'disponibilidad',
     })
 
 
@@ -233,16 +212,12 @@ def admin_nuevo_registro(request):
         'seccion_activa': 'nuevo_registro',
     })
 
-# ── VER TODAS LAS RESERVAS ──────────────────────────
+
+# ── VER TODAS LAS RESERVAS ──────────────────────────────────
 @login_required
 @user_passes_test(es_admin)
 def admin_reservas(request):
-
-    reservas = Reserva.objects.all().order_by(
-        '-fecha_entrada',
-        '-hora_entrada'
-    )
-
+    reservas = Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
     return render(request, 'gimnasio/gimnasio.html', {
         'admin_reservas': reservas,
         'seccion_activa': 'reservas',
@@ -250,55 +225,46 @@ def admin_reservas(request):
     })
 
 
-# ── CANCELAR RESERVA ──────────────────────────
+# ── CANCELAR RESERVA ────────────────────────────────────────
 @login_required
 @user_passes_test(es_admin)
 def cancelar_reserva_admin(request, id):
-
-    reserva = get_object_or_404(
-        Reserva,
-        codigo_registro=id
-    )
-
+    reserva = get_object_or_404(Reserva, codigo_registro=id)
     reserva.estado = 'Cancelada'
     reserva.save()
-
-    messages.warning(
-        request,
-        'La reservación fue cancelada correctamente.'
-    )
-    
+    messages.warning(request, 'La reservación fue cancelada correctamente.')
     request.session['abrir_admin'] = True
-    request.session['seccion_admin'] = 'reservas'   
+    request.session['seccion_admin'] = 'reservas'
     return redirect('gimnasio')
 
 
-# ── CERRAR / ABRIR GIMNASIO ──────────────────────────
+# ── CERRAR / ABRIR GIMNASIO ─────────────────────────────────
 @login_required
 @user_passes_test(es_admin)
 def cerrar_gimnasio(request):
-
     config = GimnasioConfig.get_config()
 
     if request.method == 'POST':
-
         accion = request.POST.get('accion')
 
         if accion == 'cerrar':
             config.estado = 'cerrada'
-            messages.error(
-                request,
-                'El gimnasio fue cerrado.'
-            )
-
+            messages.error(request, 'El gimnasio fue cerrado.')
         elif accion == 'abrir':
             config.estado = 'abierta'
-            messages.success(
-                request,
-                'El gimnasio fue abierto.'
-            )
+            messages.success(request, 'El gimnasio fue abierto.')
 
         config.actualizado_por = request.user
         config.save()
 
     return redirect('gimnasio')
+
+
+# ── LISTA ANAMNESIS (FICHAS DE SALUD) ───────────────────────
+@login_required
+@user_passes_test(es_admin)
+def admin_lista_anamnesis(request):
+    # Reemplaza Anamnesis con tu modelo real cuando lo tengas
+    return render(request, 'gimnasio/admin_lista_anamnesis.html', {
+        'seccion_activa': 'anamnesis',
+    })

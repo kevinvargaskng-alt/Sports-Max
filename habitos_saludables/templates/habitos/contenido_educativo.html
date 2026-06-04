@@ -1,397 +1,416 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-  {% if vista == 'habitos' %}Hábitos Saludables
-  {% elif vista == 'detalle_rutina' %}{{ rutina.nombre }}
-  {% elif vista == 'nutricion' %}Pirámide Nutricional
-  {% elif vista == 'biblioteca' %}Biblioteca de Materiales SENA
-  {% else %}Contenido Educativo
-  {% endif %}
+{% block title %}{{ titulo_pagina }} | Hábitos Saludables{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --acid: #C8FF00;
+  --surface: #0A0C0E;
+  --surface2: #111316;
+  --surface3: #1A1D21;
+  --border: rgba(255,255,255,0.07);
+  --border-h: rgba(255,255,255,0.13);
+  --muted: rgba(255,255,255,0.4);
+  --teal: #20c997;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+body { background: var(--surface); color: #fff; font-family: var(--font-body); }
+
+/* Headers */
+.page-header { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.75rem 0; margin-bottom: 2rem; }
+.page-header h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-bottom: 2px; }
+
+/* Panels and Cards */
+.panel { background: var(--surface2); border: 1px solid var(--border); border-radius: 18px; padding: 2rem; }
+
+.content-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; text-decoration: none; color: #fff;
+    display: flex; flex-direction: column; height: 100%;
+    transition: transform 0.25s, border-color 0.25s;
+}
+.content-card:hover { transform: translateY(-4px); border-color: rgba(200,255,0,0.3); color: #fff; }
+
+.icon-wrapper {
+    width: 50px; height: 50px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1rem;
+}
+.icon-green { background: rgba(32, 201, 151, 0.1); color: var(--teal); }
+.icon-blue { background: rgba(13, 110, 253, 0.1); color: #5c9eff; }
+.icon-purple { background: rgba(111, 66, 193, 0.1); color: #a78bfa; }
+.icon-warning { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+.icon-danger { background: rgba(220, 53, 69, 0.1); color: #f87171; }
+
+/* Buttons */
+.btn-acid {
+    background: var(--acid); color: #0A0C0E; font-weight: 700; font-size: 0.85rem;
+    padding: 10px 20px; border-radius: 11px; border: none; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 7px; transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-acid:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,255,0,0.25); color: #0A0C0E; }
+.btn-outline-sm {
+    background: transparent; color: rgba(255,255,255,0.7); font-weight: 600; font-size: 0.82rem;
+    padding: 9px 16px; border-radius: 10px; border: 1px solid var(--border);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.btn-outline-sm:hover, .btn-outline-sm.active { border-color: rgba(200,255,0,0.3); background: rgba(200,255,0,0.05); color: var(--acid); }
+
+.filter-btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+
+/* Search Input */
+.search-input {
+    background-color: var(--surface3); border: 1px solid var(--border); color: white;
+    border-radius: 10px; padding: 10px 15px; width: 100%;
+}
+.search-input:focus { outline: none; border-color: var(--acid); box-shadow: 0 0 0 3px rgba(200,255,0,0.1); }
+
+/* Pyramid */
+.pyramid-container {
+    display: flex;
+    flex-direction: column-reverse; /* Nivel 1 (base) queda abajo */
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 0;
+}
+.pyramid-level {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+/* Hacer que los niveles de más arriba sean más angostos visualmente */
+.pyramid-container > div:nth-child(1) .pyramid-level { max-width: 100%; } /* Base (Nivel 1) */
+.pyramid-container > div:nth-child(2) .pyramid-level { max-width: 80%; }
+.pyramid-container > div:nth-child(3) .pyramid-level { max-width: 60%; }
+.pyramid-container > div:nth-child(4) .pyramid-level { max-width: 40%; }
+.pyramid-container > div:nth-child(5) .pyramid-level { max-width: 25%; } /* Punta */
+
+.pyramid-item {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    width: 150px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: transform 0.2s ease, border-color 0.2s;
+}
+.pyramid-item:hover { transform: translateY(-5px); border-color: var(--acid); box-shadow: 0 8px 20px rgba(200,255,0,0.1); }
+.pyramid-item img {
+    background-color: rgba(255,255,255,0.03);
+    border-radius: 50%;
+    padding: 8px;
+    width: 70px; height: 70px; object-fit: cover;
+    margin-bottom: 0.75rem; border: 1px solid rgba(255,255,255,0.1);
+}
+.pyramid-item h6 { color: white; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; line-height: 1.3; }
+.pyramid-item small { color: var(--muted); font-size: 0.75rem; line-height: 1.2; }
+
+/* Material / Library */
+.material-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; text-align: center;
+    display: flex; flex-direction: column; height: 100%;
+    transition: transform 0.25s, border-color 0.25s;
+}
+.material-card:hover { transform: translateY(-3px); border-color: rgba(92,158,255,0.3); }
+.material-card .icon { font-size: 2.5rem; color: #5c9eff; margin-bottom: 1rem; opacity: 0.8; }
+.material-card h5 { font-weight: 700; color: white; margin-bottom: 0.5rem; font-size: 1.05rem; }
+.material-card p { color: var(--muted); font-size: 0.85rem; flex-grow: 1; }
+.material-card .meta { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+/* Reveals */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Badges */
+.badge-cat { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.badge-green { background: rgba(32,201,151,0.1); color: var(--teal); border: 1px solid rgba(32,201,151,0.2); }
+.badge-yellow { background: rgba(255,193,7,0.1); color: #ffc107; border: 1px solid rgba(255,193,7,0.2); }
+.badge-blue { background: rgba(92,158,255,0.1); color: #5c9eff; border: 1px solid rgba(92,158,255,0.2); }
+</style>
 {% endblock %}
 
 {% block content %}
-
-{# ═══════════════════════════════════════════════════════════════════
-   VISTA: HÁBITOS SALUDABLES
-   Contexto esperado: habitos (queryset), categorias (choices), categoria_activa
-════════════════════════════════════════════════════════════════════ #}
-{% if vista == 'habitos' %}
-
 <div class="page-header">
-  <div class="container">
-    <h1><i class="fas fa-lightbulb me-2"></i>Hábitos Saludables</h1>
-    <p class="subtitle mb-0">Contenido educativo para mejorar tu calidad de vida</p>
-  </div>
-</div>
-
-<div class="container pb-5">
-
-  <div class="d-flex gap-2 flex-wrap mb-4">
-    <a href="{% url 'habitos:lista_habitos' %}"
-       class="filtro-pill {% if not categoria_activa %}active{% endif %}">Todos</a>
-    {% for val, label in categorias %}
-    <a href="?categoria={{ val }}"
-       class="filtro-pill {% if categoria_activa == val %}active{% endif %}">{{ label }}</a>
-    {% endfor %}
-  </div>
-
-  {% if habitos %}
-  <div class="row g-4">
-    {% for habito in habitos %}
-    <div class="col-md-6 col-lg-4">
-      <div class="card-habito card">
-        {% if habito.imagen %}
-        <img src="{{ habito.imagen.url }}"
-             class="card-img-top"
-             style="height:160px;object-fit:cover"
-             alt="{{ habito.titulo }}">
-        {% endif %}
-        <div class="card-body">
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <div class="card-icon icon-{{ habito.categoria }}">
-              <i class="fas {{ habito.icono_css }}"></i>
-            </div>
-            <span class="badge-categoria cat-{{ habito.categoria }}">
-              {{ habito.get_categoria_display }}
-            </span>
-          </div>
-          <h5 class="fw-bold mb-2" style="color:var(--sena-dark)">{{ habito.titulo }}</h5>
-          <p class="text-muted small mb-3">{{ habito.descripcion|truncatewords:25 }}</p>
-
-          {% if habito.get_consejos_lista %}
-          <div class="mb-3">
-            <div class="small fw-bold mb-2" style="color:var(--sena-green)">
-              <i class="fas fa-check-circle me-1"></i>Consejos clave:
-            </div>
-            {% for consejo in habito.get_consejos_lista|slice:":2" %}
-            <div class="small text-muted mb-1">• {{ consejo }}</div>
-            {% endfor %}
-          </div>
-          {% endif %}
-
-          <a href="{% url 'habitos:detalle_habito' habito.pk %}"
-             class="btn btn-sena btn-sm w-100">
-            Ver completo <i class="fas fa-arrow-right ms-1"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  {% else %}
-  <div class="text-center py-5">
-    <div style="font-size:4rem;opacity:0.3">💡</div>
-    <h4 class="text-muted">No hay contenido en esta categoría aún.</h4>
-  </div>
-  {% endif %}
-
-</div>
-
-{# ═══════════════════════════════════════════════════════════════════
-   VISTA: DETALLE RUTINA
-   Contexto esperado: rutina (Rutina)
-════════════════════════════════════════════════════════════════════ #}
-{% elif vista == 'detalle_rutina' %}
-
-<div class="page-header">
-  <div class="container">
-    <a href="{% url 'habitos:lista_rutinas' %}"
-       class="btn btn-light btn-sm mb-3"
-       style="border-radius:10px">
-      <i class="fas fa-arrow-left me-1"></i>Volver a rutinas
-    </a>
-    <h1>{{ rutina.nombre }}</h1>
-    <div class="d-flex gap-2 flex-wrap mt-2">
-      <span class="nivel-badge-pill nivel-{{ rutina.nivel }}">{{ rutina.get_nivel_display }}</span>
-      <span class="badge"
-            style="background:rgba(255,255,255,0.2);color:#fff;border-radius:20px;padding:.35rem 1rem">
-        {{ rutina.get_objetivo_display }}
-      </span>
-      <span class="badge"
-            style="background:rgba(255,255,255,0.2);color:#fff;border-radius:20px;padding:.35rem 1rem">
-        <i class="fas fa-clock me-1"></i>{{ rutina.duracion_minutos }} minutos
-      </span>
-    </div>
-  </div>
-</div>
-
-<div class="container pb-5" style="max-width:900px">
-  <div class="row g-4">
-
-    <!-- Descripción + ejercicios -->
-    <div class="col-lg-8">
-      <div class="form-section">
-        <h5 class="form-section-title"><i class="fas fa-info-circle me-2"></i>Descripción</h5>
-        <p>{{ rutina.descripcion }}</p>
-      </div>
-
-      <div class="form-section">
-        <h5 class="form-section-title">
-          <i class="fas fa-list-check me-2"></i>Ejercicios ({{ rutina.get_ejercicios_lista|length }})
-        </h5>
-        {% for ejercicio in rutina.get_ejercicios_lista %}
-        <div class="ejercicio-item d-flex align-items-center gap-2">
-          <span class="badge rounded-circle"
-                style="background:var(--sena-green);min-width:28px;height:28px;display:flex;align-items:center;justify-content:center">
-            {{ forloop.counter }}
-          </span>
-          {{ ejercicio }}
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="col-lg-4">
-      {% if rutina.imagen %}
-      <img src="{{ rutina.imagen.url }}"
-           class="img-fluid rounded-3 mb-4 shadow"
-           alt="{{ rutina.nombre }}">
-      {% endif %}
-
-      <div class="form-section">
-        <h6 class="form-section-title">Resumen</h6>
-        <div class="d-grid gap-2">
-          <div class="d-flex justify-content-between p-2 rounded-3" style="background:var(--sena-light)">
-            <span class="small fw-bold text-muted">Nivel</span>
-            <span class="fw-bold" style="color:var(--sena-dark)">{{ rutina.get_nivel_display }}</span>
-          </div>
-          <div class="d-flex justify-content-between p-2 rounded-3" style="background:var(--sena-light)">
-            <span class="small fw-bold text-muted">Objetivo</span>
-            <span class="fw-bold" style="color:var(--sena-dark)">{{ rutina.get_objetivo_display }}</span>
-          </div>
-          <div class="d-flex justify-content-between p-2 rounded-3" style="background:var(--sena-light)">
-            <span class="small fw-bold text-muted">Duración</span>
-            <span class="fw-bold" style="color:var(--sena-dark)">{{ rutina.duracion_minutos }} min</span>
-          </div>
-          <div class="d-flex justify-content-between p-2 rounded-3" style="background:var(--sena-light)">
-            <span class="small fw-bold text-muted">Ejercicios</span>
-            <span class="fw-bold" style="color:var(--sena-dark)">{{ rutina.get_ejercicios_lista|length }}</span>
-          </div>
-        </div>
-      </div>
-
-      <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn btn-sena w-100">
-        <i class="fas fa-journal-whills me-2"></i>Registrar mi salud
-      </a>
-    </div>
-
-  </div>
-</div>
-
-{# ═══════════════════════════════════════════════════════════════════
-   VISTA: NUTRICIÓN
-   Contexto esperado:
-     categorias (choices), categoria_activa, por_nivel (dict), alimentos (queryset)
-════════════════════════════════════════════════════════════════════ #}
-{% elif vista == 'nutricion' %}
-
-<div class="page-header">
-  <div class="container">
-    <h1><i class="fas fa-utensils me-2"></i>Pirámide Nutricional</h1>
-    <p class="subtitle mb-0">Guía de alimentación saludable para tu bienestar diario</p>
-  </div>
-</div>
-
-<div class="container pb-5">
-
-  <div class="d-flex gap-2 flex-wrap mb-4">
-    <a href="{% url 'habitos:nutricion' %}"
-       class="filtro-pill {% if not categoria_activa %}active{% endif %}">Todos</a>
-    {% for val, label in categorias %}
-    <a href="?categoria={{ val }}"
-       class="filtro-pill {% if categoria_activa == val %}active{% endif %}">{{ label }}</a>
-    {% endfor %}
-  </div>
-
-  {% if not categoria_activa %}
-  <div class="mb-5">
-    <h4 class="fw-bold mb-3" style="color:var(--sena-dark)">
-      <i class="fas fa-mountain me-2"></i>Estructura de la Pirámide
-    </h4>
-    {% for nivel, alimentos_nivel in por_nivel.items %}
-    <div class="piramide-nivel nivel-{{ nivel }}">
-      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
-          <span class="badge mb-2" style="background:var(--sena-green)">Nivel {{ nivel }}</span>
-          <div class="d-flex flex-wrap gap-2">
-            {% for alimento in alimentos_nivel %}
-            <span class="badge rounded-pill fw-normal px-3 py-2"
-                  style="background:rgba(0,0,0,0.1);color:inherit;font-size:.85rem">
-              {{ alimento.nombre }}
-            </span>
-            {% endfor %}
-          </div>
+            <h1>{{ titulo_pagina }}</h1>
+            <div style="color: var(--muted); font-size: 0.88rem;">Módulo de Hábitos Saludables</div>
         </div>
-        <div class="small text-muted fw-bold" style="min-width:180px">
-          {% with alimentos_nivel.0 as a %}{{ a.get_nivel_piramide_display }}{% endwith %}
+        <div>
+            {% if vista == 'habitos' or vista == 'rutinas' or vista == 'nutricion' or vista == 'biblioteca' %}
+            <a href="{% url 'habitos:dashboard' %}" class="btn-outline-sm"><i class="fas fa-chart-line"></i> Dashboard</a>
+            {% else %}
+            <button onclick="history.back()" class="btn-outline-sm"><i class="fas fa-arrow-left"></i> Volver</button>
+            {% endif %}
         </div>
-      </div>
     </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <h4 class="fw-bold mb-4" style="color:var(--sena-dark)">
-    <i class="fas fa-th me-2"></i>
-    {% if categoria_activa %}Alimentos — {{ categoria_activa }}{% else %}Todos los grupos alimentarios{% endif %}
-  </h4>
-
-  {% if alimentos %}
-  <div class="row g-4">
-    {% for alimento in alimentos %}
-    <div class="col-md-6 col-lg-4">
-      <div class="card-alimento card position-relative">
-        {% if alimento.imagen %}
-        <img src="{{ alimento.imagen.url }}"
-             class="card-img-top"
-             style="height:140px;object-fit:cover"
-             alt="{{ alimento.nombre }}">
-        {% else %}
-        <div style="height:100px;background:{{ alimento.color_tarjeta }};opacity:0.15"></div>
-        {% endif %}
-        <span class="nivel-badge">Nivel {{ alimento.nivel_piramide }}</span>
-
-        <div class="card-body">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <div style="width:12px;height:12px;border-radius:50%;background:{{ alimento.color_tarjeta }}"></div>
-            <small class="text-muted fw-bold text-uppercase"
-                   style="font-size:.72rem;letter-spacing:.04em">
-              {{ alimento.get_categoria_display }}
-            </small>
-          </div>
-          <h5 class="fw-bold mb-2" style="color:var(--sena-dark)">{{ alimento.nombre }}</h5>
-
-          <div class="mb-2 p-2 rounded-3" style="background:var(--sena-light)">
-            <div class="small fw-bold" style="color:var(--sena-green)">
-              <i class="fas fa-clock me-1"></i>{{ alimento.cantidad_recomendada }}
-            </div>
-          </div>
-
-          <p class="small text-muted mb-2">{{ alimento.beneficios|truncatewords:18 }}</p>
-
-          {% if alimento.get_ejemplos_lista %}
-          <div class="d-flex flex-wrap gap-1">
-            {% for ej in alimento.get_ejemplos_lista|slice:":4" %}
-            <span class="badge rounded-pill"
-                  style="background:{{ alimento.color_tarjeta }}20;color:{{ alimento.color_tarjeta }};font-weight:600;font-size:.72rem">
-              {{ ej }}
-            </span>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="text-center py-5">
-    <div style="font-size:4rem;opacity:0.3">🥗</div>
-    <h4 class="text-muted">No hay alimentos registrados en esta categoría.</h4>
-  </div>
-  {% endif %}
-
-</div>
-
-{# ═══════════════════════════════════════════════════════════════════
-   VISTA: BIBLIOTECA
-   Contexto esperado: form (BusquedaForm), materiales (queryset), total (int)
-════════════════════════════════════════════════════════════════════ #}
-{% elif vista == 'biblioteca' %}
-
-<div class="page-header">
-  <div class="container">
-    <h1><i class="fas fa-book-open me-2"></i>Biblioteca de Materiales SENA</h1>
-    <p class="subtitle mb-0">Cartillas, videos, documentos e infografías institucionales</p>
-  </div>
 </div>
 
 <div class="container pb-5">
 
-  <div class="form-section mb-4">
-    <form method="get" class="row g-3 align-items-end">
-      <div class="col-md-7">
-        <label class="form-label fw-bold small text-muted text-uppercase">Buscar material</label>
-        {{ form.q }}
-      </div>
-      <div class="col-md-3">
-        <label class="form-label fw-bold small text-muted text-uppercase">Tipo de contenido</label>
-        {{ form.tipo }}
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-sena w-100">
-          <i class="fas fa-search me-1"></i>Buscar
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <p class="text-muted mb-4 fw-bold">
-    <i class="fas fa-copy me-1"></i>{{ total }} material{{ total|pluralize:"es" }} encontrado{{ total|pluralize:"s" }}
-  </p>
-
-  {% if materiales %}
-  <div class="row g-4">
-    {% for mat in materiales %}
-    <div class="col-sm-6 col-lg-4">
-      <div class="material-card card">
-        {% if mat.imagen_portada %}
-        <img src="{{ mat.imagen_portada.url }}"
-             class="card-img-top"
-             style="height:140px;object-fit:cover"
-             alt="{{ mat.titulo }}">
-        {% else %}
-        <div class="text-center pt-4 pb-2">
-          <div class="tipo-icon tipo-{{ mat.tipo_contenido }}">
-            <i class="fas {{ mat.get_icono }}"></i>
-          </div>
+    {% if vista == 'habitos' %}
+    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Explora nuestra colección de hábitos saludables para mejorar tu bienestar.</p>
+    <div class="row mb-4 reveal">
+        <div class="col-md-8">
+            <div class="filter-btn-group">
+                <a href="{% url 'habitos:lista_habitos' %}" class="btn-outline-sm {% if not categoria_activa %}active{% endif %}">Todas</a>
+                {% for key, value in categorias %}
+                <a href="{% url 'habitos:lista_habitos' %}?categoria={{ key }}" class="btn-outline-sm {% if categoria_activa == key %}active{% endif %}">{{ value }}</a>
+                {% endfor %}
+            </div>
         </div>
-        {% endif %}
-
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="badge rounded-pill"
-                  style="background:var(--sena-light);color:var(--sena-dark);font-weight:700;font-size:.72rem">
-              {{ mat.get_tipo_contenido_display }}
-            </span>
-            <small class="text-muted">{{ mat.fecha_publicacion|date:"d M Y" }}</small>
-          </div>
-
-          <h5 class="fw-bold mb-1" style="color:var(--sena-dark)">{{ mat.titulo|truncatewords:8 }}</h5>
-          <p class="small text-muted mb-1">{{ mat.descripcion|truncatewords:15 }}</p>
-          <small class="text-muted"><i class="fas fa-user me-1"></i>{{ mat.autor }}</small>
-
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <small class="text-muted">
-              <i class="fas fa-download me-1"></i>{{ mat.descargas }} descargas
-            </small>
-            <a href="{% url 'habitos:descargar_material' mat.pk %}" class="btn btn-sm btn-sena">
-              {% if mat.tipo_contenido == 'video' %}
-                <i class="fas fa-play me-1"></i>Ver
-              {% else %}
-                <i class="fas fa-download me-1"></i>Descargar
-              {% endif %}
-            </a>
-          </div>
+        <div class="col-md-4">
+            <input type="text" id="habitsSearch" class="search-input" placeholder="Buscar hábito...">
         </div>
-      </div>
     </div>
-    {% endfor %}
-  </div>
+    <div class="row g-4">
+        {% for habito in habitos %}
+        <div class="col-md-6 col-lg-4 habit-card reveal">
+            <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="content-card">
+                <div class="icon-wrapper icon-green"><i class="fas fa-{{ habito.icono_css }}"></i></div>
+                <h5 style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem;">{{ habito.titulo }}</h5>
+                <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;">{{ habito.descripcion|truncatechars:100 }}</p>
+                <div><span class="badge-cat badge-green">{{ habito.get_categoria_display }}</span></div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12"><p style="color: var(--muted);">No hay hábitos disponibles en esta categoría.</p></div>
+        {% endfor %}
+    </div>
 
-  {% else %}
-  <div class="text-center py-5">
-    <div style="font-size:4rem;opacity:0.3">📁</div>
-    <h4 class="text-muted">No se encontraron materiales</h4>
-    <p class="text-muted">Intenta cambiar los filtros de búsqueda.</p>
-  </div>
-  {% endif %}
+    {% elif vista == 'detalle_habito' %}
+    <div class="row g-4 reveal">
+        <div class="col-lg-8">
+            <div class="panel">
+                {% if habito.imagen %}<img src="{{ habito.imagen.url }}" alt="{{ habito.titulo }}" style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border);">{% endif %}
+                <span class="badge-cat badge-green mb-3">{{ habito.get_categoria_display }}</span>
+                <h2 style="font-family: var(--font-display); font-weight: 800; font-size: 2rem; margin-bottom: 1rem;">{{ habito.titulo }}</h2>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.7;">{{ habito.descripcion }}</p>
+                
+                {% if habito.get_consejos_lista %}
+                <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
+                    <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 1rem;"><i class="fas fa-lightbulb" style="color: #ffc107; margin-right: 8px;"></i>Consejos clave:</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for consejo in habito.get_consejos_lista %}
+                        <li style="display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start;">
+                            <i class="fas fa-check-circle" style="color: var(--teal); margin-top: 4px;"></i>
+                            <span style="color: rgba(255,255,255,0.75); line-height: 1.5;">{{ consejo }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel">
+                <h4 style="font-weight: 700; font-size: 1.1rem; margin-bottom: 1.5rem;">Hábitos relacionados</h4>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for rel_habito in relacionados %}
+                    <a href="{% url 'habitos:detalle_habito' rel_habito.pk %}" style="text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; transition: background 0.2s;">
+                        <div class="icon-wrapper icon-blue" style="margin: 0; width: 40px; height: 40px; font-size: 1rem;"><i class="fas fa-{{ rel_habito.icono_css }}"></i></div>
+                        <div>
+                            <h6 style="color: white; font-weight: 700; margin: 0; font-size: 0.9rem;">{{ rel_habito.titulo }}</h6>
+                            <small style="color: var(--muted); font-size: 0.75rem;">{{ rel_habito.get_categoria_display }}</small>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <p style="color: var(--muted); font-size: 0.85rem;">No hay hábitos relacionados.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 
+    {% elif vista == 'rutinas' %}
+    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Encuentra la rutina de ejercicio perfecta para ti.</p>
+    <div class="row mb-4 reveal">
+        <div class="col-lg-8">
+            <div class="filter-btn-group">
+                <a href="{% url 'habitos:lista_rutinas' %}" class="btn-outline-sm {% if not nivel_activo and not objetivo_activo %}active{% endif %}">Todas</a>
+                {% for key, value in niveles %}
+                <a href="{% url 'habitos:lista_rutinas' %}?nivel={{ key }}" class="btn-outline-sm {% if nivel_activo == key %}active{% endif %}">{{ value }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <input type="text" id="routinesSearch" class="search-input" placeholder="Buscar rutina...">
+        </div>
+    </div>
+    <div class="row g-4">
+        {% for rutina in rutinas %}
+        <div class="col-md-6 col-lg-4 routine-card reveal">
+            <a href="{% url 'habitos:detalle_rutina' rutina.pk %}" class="content-card" style="padding: 0; overflow: hidden;">
+                {% if rutina.imagen %}
+                <img src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" style="width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid var(--border);">
+                {% else %}
+                <div style="width: 100%; height: 160px; background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border);">
+                    <i class="fas fa-dumbbell" style="font-size: 3rem; opacity: 0.2;"></i>
+                </div>
+                {% endif %}
+                <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
+                    <h5 style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem;">{{ rutina.nombre }}</h5>
+                    <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;">{{ rutina.descripcion|truncatechars:90 }}</p>
+                    <div style="display: flex; gap: 8px;">
+                        <span class="badge-cat badge-blue">{{ rutina.get_nivel_display }}</span>
+                        <span class="badge-cat badge-yellow">{{ rutina.get_objetivo_display }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12"><p style="color: var(--muted);">No hay rutinas disponibles con estos filtros.</p></div>
+        {% endfor %}
+    </div>
+
+    {% elif vista == 'detalle_rutina' %}
+    <div class="panel reveal">
+        {% if rutina.imagen %}<img src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border);">{% endif %}
+        <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
+            <span class="badge-cat badge-blue">{{ rutina.get_nivel_display }}</span>
+            <span class="badge-cat badge-yellow">{{ rutina.get_objetivo_display }}</span>
+        </div>
+        <h2 style="font-family: var(--font-display); font-weight: 800; font-size: 2rem; margin-bottom: 1rem;">{{ rutina.nombre }}</h2>
+        <p style="color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem;">{{ rutina.descripcion }}</p>
+        
+        <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 1rem;"><i class="fas fa-list-ol" style="color: var(--teal); margin-right: 8px;"></i>Ejercicios:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                {% for ejercicio in rutina.get_ejercicios_lista %}
+                <li style="display: flex; gap: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 12px; border-radius: 10px; align-items: center;">
+                    <div style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255,193,7,0.1); color: #ffc107; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;"><i class="fas fa-dumbbell"></i></div>
+                    <span style="color: rgba(255,255,255,0.8); font-size: 0.95rem;">{{ ejercicio }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="margin-top: 2rem; padding: 15px; background: rgba(92,158,255,0.05); border-left: 4px solid #5c9eff; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0; color: rgba(255,255,255,0.8); font-weight: 600;"><i class="fas fa-stopwatch" style="color: #5c9eff; margin-right: 8px;"></i>Duración estimada: {{ rutina.duracion_minutos }} minutos</p>
+        </div>
+    </div>
+
+    {% elif vista == 'nutricion' %}
+    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Descubre los alimentos esenciales para una dieta equilibrada a través de la Pirámide Nutricional.</p>
+    
+    <div class="panel reveal" style="background: url('data:image/svg+xml;utf8,<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"rgba(255,255,255,0.03)\"/></svg>'); background-size: 20px 20px;">
+        
+        <div class="pyramid-container">
+            {% for nivel, alimentos_nivel in por_nivel.items %}
+            <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--acid); margin-bottom: 0.5rem; font-weight: 700;">
+                    Nivel {{ nivel }} - {{ alimentos_nivel.0.get_nivel_piramide_display }}
+                </div>
+                <div class="pyramid-level">
+                    {% for alimento in alimentos_nivel %}
+                    <div class="pyramid-item" style="border-bottom: 3px solid {{ alimento.color_tarjeta|default:'var(--border)' }};">
+                        {% if alimento.imagen %}
+                        <img src="{{ alimento.imagen.url }}" alt="{{ alimento.nombre }}">
+                        {% else %}
+                        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; color: var(--muted); font-size: 1.5rem;"><i class="fas fa-utensils"></i></div>
+                        {% endif %}
+                        <h6>{{ alimento.nombre }}</h6>
+                        <small>{{ alimento.cantidad_recomendada }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--muted);">No hay información nutricional disponible.</p>
+            {% endfor %}
+        </div>
+        
+    </div>
+
+    {% elif vista == 'biblioteca' %}
+    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
+    <div class="panel mb-4 reveal p-3">
+        <form method="get" style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex-grow: 1;">{{ form.q }}</div>
+            <div style="width: 200px;">{{ form.tipo }}</div>
+            <button type="submit" class="btn-acid"><i class="fas fa-search"></i> Buscar</button>
+            <a href="{% url 'habitos:biblioteca' %}" class="btn-outline-sm" style="border: 1px solid var(--border);"><i class="fas fa-redo"></i> Limpiar</a>
+        </form>
+    </div>
+    <div class="row g-4">
+        {% for material in materiales %}
+        <div class="col-md-6 col-lg-4 reveal">
+            <div class="material-card">
+                <div class="icon">
+                    {% if material.tipo_contenido == 'pdf' %}<i class="fas fa-file-pdf"></i>
+                    {% elif material.tipo_contenido == 'video' %}<i class="fas fa-video"></i>
+                    {% elif material.tipo_contenido == 'documento' %}<i class="fas fa-file-alt"></i>
+                    {% elif material.tipo_contenido == 'infografia' %}<i class="fas fa-chart-pie"></i>
+                    {% elif material.tipo_contenido == 'presentacion' %}<i class="fas fa-file-powerpoint"></i>
+                    {% else %}<i class="fas fa-file"></i>{% endif %}
+                </div>
+                <h5>{{ material.titulo }}</h5>
+                <p>{{ material.descripcion|truncatechars:100 }}</p>
+                <div class="meta">
+                    <span style="display: block; margin-bottom: 3px;"><strong>Autor:</strong> {{ material.autor }}</span>
+                    <span style="display: block; margin-bottom: 3px;"><strong>Publicado:</strong> {{ material.fecha_publicacion|date:"d M Y" }}</span>
+                    <span style="display: block; color: var(--teal);"><strong>Descargas:</strong> {{ material.descargas }}</span>
+                </div>
+                <a href="{% url 'habitos:descargar_material' material.pk %}" class="btn-outline-sm" style="margin-top: 1rem; width: 100%; justify-content: center; border-color: rgba(92,158,255,0.3); color: #5c9eff;">
+                    {% if material.tipo_contenido == 'video' %}<i class="fas fa-external-link-alt"></i> Ver Video
+                    {% else %}<i class="fas fa-download"></i> Descargar
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12"><p style="color: var(--muted);">No se encontraron materiales de apoyo.</p></div>
+        {% endfor %}
+    </div>
+
+    {% endif %}
 </div>
+{% endblock %}
 
-{% endif %}{# fin bloque de vistas #}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const io = new IntersectionObserver(entries => {
+        entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+                setTimeout(() => { e.target.classList.add('visible'); io.unobserve(e.target); }, i * 60);
+            }
+        });
+    }, { threshold: 0.05 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+    // Buscador de Hábitos
+    const habitsSearch = document.getElementById('habitsSearch');
+    if (habitsSearch) {
+        habitsSearch.addEventListener('input', function() {
+            const term = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.habit-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(term) ? '' : 'none';
+            });
+        });
+    }
+
+    // Buscador de Rutinas
+    const routinesSearch = document.getElementById('routinesSearch');
+    if (routinesSearch) {
+        routinesSearch.addEventListener('input', function() {
+            const term = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.routine-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(term) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

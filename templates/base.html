@@ -17,13 +17,16 @@
     
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <!-- Header -->
     {% include "partials/header.html" %}
 
     <!-- Contenido principal -->
-    <main>
+    <main class="flex-grow-1">
+        <!-- Notificaciones Globales -->
+        {% include "partials/messages.html" %}
+        
         {% block content %}{% endblock %}
     </main>
 

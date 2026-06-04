@@ -11,16 +11,22 @@ from .models import (
     JugadorEquipo, GrupoInterfichas, PartidoInterfichas, ResultadoTorneo
 )
 
+
+PAISES_TORNEO = [
+    "Argentina", "Brasil", "Francia", "España", "Inglaterra",
+    "Alemania", "Portugal", "Países Bajos", "Colombia", "Uruguay",
+    "Croacia", "Bélgica", "Noruega", "Japón", "Estados Unidos",
+    "México"
+]
+
 PROGRAMAS_GLOBALES = [
-    "Análisis y Desarrollo de Software (ADSO)",
-    "Supervisión de Procesos Mineros",
-    "Gestión de la Seguridad y Salud en el Trabajo",
-    "Química Aplicada a la Industria",
-    "Levantamientos Topográficos y Georreferenciación",
-    "Construcción de Infraestructura Vial",
-    "Sistemas de Agua y Saneamiento",
-    "Operación de Maquinaria Pesada para Excavación",
-    "Mantenimiento de Equipo Pesado para Infraestructura, Minería y Transporte",
+    "Tecnología en Sistemas",
+    "Administración de Empresas",
+    "Contabilidad y Finanzas",
+    "Diseño Gráfico",
+    "Mecatrónica",
+    "Salud Ocupacional",
+    "Otro",
 ]
 
 
@@ -72,6 +78,46 @@ def _ficha_duplicada(torneo, ficha, excluir_equipo_id=None):
     if excluir_equipo_id:
         qs = qs.exclude(pk=excluir_equipo_id)
     return qs.exists()
+
+
+def _reordenar_partidos_con_descanso(partidos_lista):
+    """
+    Algoritmo para ordenar partidos evitando que un equipo juegue de forma consecutiva.
+    """
+    if not partidos_lista:
+        return []
+        
+    resultado = []
+    # Mezclamos inicialmente para que no tengan siempre un patrón fijo de combinaciones
+    random.shuffle(partidos_lista)
+    
+    partidos_restantes = partidos_lista.copy()
+    
+    # Insertar el primer partido de manera segura
+    resultado.append(partidos_restantes.pop(0))
+    
+    intentos_fallidos = 0
+    max_intentos = len(partidos_lista) * 2
+
+    while partidos_restantes and intentos_fallidos < max_intentos:
+        ultimo_partido = resultado[-1]
+        equipos_ultimo_partido = {ultimo_partido['local'].id, ultimo_partido['visitante'].id}
+        
+        encontrado = False
+        for i, partido in enumerate(partidos_restantes):
+            # Comprobamos si el partido no comparte equipos con el último que se jugó
+            if partido['local'].id not in equipos_ultimo_partido and partido['visitante'].id not in equipos_ultimo_partido:
+                resultado.append(partidos_restantes.pop(i))
+                encontrado = True
+                break
+                
+        if not encontrado:
+            # Si no hay ningún partido ideal disponible, sacamos uno de los restantes al azar 
+            # para evitar bucles infinitos en grupos muy pequeños
+            resultado.append(partidos_restantes.pop(0))
+            intentos_fallidos += 1
+            
+    return resultado
 
 
 @login_required
@@ -160,9 +206,18 @@ def interfichas_list(request):
                 )
                 return redirect('interfichas')
 
+            nombres_existentes = set(torneo_obj.equipos.values_list('nombre_equipo', flat=True))
+            nombre_equipo = ""
+            for pais in PAISES_TORNEO:
+                if pais not in nombres_existentes:
+                    nombre_equipo = pais
+                    break
+            if not nombre_equipo:
+                nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
+
             nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,
-                nombre_equipo=request.POST.get('nombre_equipo', '').strip(),
+                nombre_equipo=nombre_equipo,
                 capitan=request.POST.get('capitan', '').strip(),
                 ficha=ficha,
                 programa=request.POST.get('programa', '').strip(),
@@ -183,29 +238,22 @@ def interfichas_list(request):
             )
             return redirect('interfichas')
 
-    # ── Contexto extra para aprendiz ─────────────────────────────
-    mis_equipos        = []
-    mis_partidos       = PartidoInterfichas.objects.none()
-    torneos_disponibles = torneos  # fallback: todos los abiertos
+    mis_equipos         = []
+    mis_partidos        = PartidoInterfichas.objects.none()
+    torneos_disponibles = torneos
 
     if not admin:
-        # 1. Obtenemos los equipos (como QuerySet para luego filtrar los partidos)
         mis_equipos_qs = (
             EquipoInterfichas.objects
             .filter(usuario_registra=request.user)
             .select_related('torneo', 'torneo__disciplina')
             .prefetch_related('jugadores')
         )
-        
-        # Convertimos a lista para poder inyectarle el grupo a cada equipo
         mis_equipos = list(mis_equipos_qs)
-        
-        # Buscamos en la base de datos a qué grupo pertenece cada equipo y se lo asignamos
         for eq in mis_equipos:
             grupo_asignado = GrupoInterfichas.objects.filter(torneo=eq.torneo, equipos=eq).first()
-            eq.mi_grupo = grupo_asignado  # Creamos un atributo dinámico llamado 'mi_grupo'
+            eq.mi_grupo = grupo_asignado
 
-        # 2. Obtenemos los partidos usando el QuerySet original
         mis_partidos = (
             PartidoInterfichas.objects
             .filter(
@@ -215,17 +263,14 @@ def interfichas_list(request):
             .order_by('fecha_partido', 'id')
         )
 
-        # Torneos donde el usuario aún NO tiene equipo inscrito
-        torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
+        torneos_con_equipo  = mis_equipos_qs.values_list('torneo_id', flat=True)
         torneos_disponibles = torneos.exclude(pk__in=torneos_con_equipo)
 
     return render(request, 'interfichas/interfichas.html', {
         'torneos':             torneos,
         'equipos':             equipos,
         'disciplinas':         disciplinas,
-        'PROGRAMAS_GLOBALES':  PROGRAMAS_GLOBALES,
         'es_admin':            admin,
-        # Aprendiz
         'mis_equipos':         mis_equipos,
         'mis_partidos':        mis_partidos,
         'torneos_disponibles': torneos_disponibles,
@@ -305,16 +350,32 @@ def gestionar_torneo(request, torneo_id):
 
     tipo_marcador = torneo.disciplina.tipo_marcador if torneo.disciplina else 'goles'
 
+    num_eq = equipos_total.count()
+
+    # Opciones de número de grupos: de 1 hasta min(8, num_eq // 2)
+    max_grupos_posibles = min(8, num_eq // 2) if num_eq >= 2 else 1
+    num_grupos_opciones = list(range(1, max_grupos_posibles + 1))
+
+    # Para re-sorteo manual: usar grupos actuales o máximo posible
+    letras = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    num_grupos_actuales  = grupos.count() if grupos.exists() else min(4, num_eq // 4)
+    grupos_manual_range  = [{'letra': letras[i]} for i in range(min(8, max_grupos_posibles))]
+
     return render(request, 'interfichas/gestion/gestionar_torneo.html', {
-        'torneo':             torneo,
-        'equipos_total':      equipos_total,
-        'grupos_con_tabla':   grupos_con_tabla,
-        'partidos_cuartos':   partidos_cuartos,
-        'partidos_semifinal': partidos_semifinal,
-        'partidos_final':     partidos_final,
-        'fase_actual':        fase_actual,
-        'num_equipos':        equipos_total.count(),
-        'tipo_marcador':      tipo_marcador,
+        'torneo':              torneo,
+        'equipos_total':       equipos_total,
+        'grupos_con_tabla':    grupos_con_tabla,
+        'partidos_cuartos':    partidos_cuartos,
+        'partidos_semifinal':  partidos_semifinal,
+        'partidos_final':      partidos_final,
+        'fase_actual':         fase_actual,
+        'num_equipos':         num_eq,
+        'tipo_marcador':       tipo_marcador,
+        'PAISES_TORNEO':       PAISES_TORNEO,
+        'PROGRAMAS_GLOBALES':  PROGRAMAS_GLOBALES,
+        # Configurador de grupos
+        'num_grupos_opciones': num_grupos_opciones,
+        'grupos_manual_range': grupos_manual_range,
     })
 
 
@@ -328,28 +389,139 @@ def generar_grupos(request, torneo_id):
     equipos = list(torneo.equipos.all())
     random.shuffle(equipos)
 
-    if len(equipos) < 4:
-        messages.error(request, "Se necesitan al menos 4 equipos.")
+    # Leer configuración del POST
+    try:
+        num_grupos   = int(request.POST.get('num_grupos', 0))
+        eq_por_grupo = int(request.POST.get('equipos_por_grupo', 0))
+    except ValueError:
+        num_grupos = eq_por_grupo = 0
+
+    # Fallback automático si los parámetros no son válidos
+    if num_grupos < 1 or eq_por_grupo < 2:
+        eq_por_grupo = 4
+        num_grupos   = min(4, len(equipos) // 4)
+
+    necesarios = num_grupos * eq_por_grupo
+    if len(equipos) < necesarios:
+        messages.error(
+            request,
+            f"Se necesitan al menos {necesarios} equipos para {num_grupos} grupo(s) "
+            f"de {eq_por_grupo} equipos. Actualmente hay {len(equipos)}."
+        )
         return redirect('gestionar_torneo', torneo_id=torneo_id)
 
-    letras     = ['A', 'B', 'C', 'D']
-    num_grupos = min(4, len(equipos) // 4)
+    letras      = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     grupos_list = []
 
     for i in range(num_grupos):
-        g = GrupoInterfichas.objects.create(torneo=torneo, nombre_grupo=letras[i])
-        eq_grupo = equipos[i*4:(i+1)*4]
+        g        = GrupoInterfichas.objects.create(torneo=torneo, nombre_grupo=letras[i])
+        eq_grupo = equipos[i * eq_por_grupo:(i + 1) * eq_por_grupo]
         g.equipos.set(eq_grupo)
         grupos_list.append((g, eq_grupo))
 
+    # Recopilar todos los partidos generados en los grupos
+    partidos_temporales = []
     for g, eq_grupo in grupos_list:
         for local, visitante in combinations(eq_grupo, 2):
-            PartidoInterfichas.objects.create(
-                torneo=torneo, grupo=g, fase='grupo',
-                equipo_local=local, equipo_visitante=visitante
-            )
+            partidos_temporales.append({
+                'grupo': g,
+                'local': local,
+                'visitante': visitante
+            })
 
-    messages.success(request, f"¡{num_grupos} grupos generados con sus partidos!")
+    # Aplicamos el filtro de descanso inteligente
+    partidos_ordenados = _reordenar_partidos_con_descanso(partidos_temporales)
+
+    # Guardamos en la base de datos con el nuevo orden distribuido
+    for p in partidos_ordenados:
+        PartidoInterfichas.objects.create(
+            torneo=torneo, grupo=p['grupo'], fase='grupo',
+            equipo_local=p['local'], equipo_visitante=p['visitante']
+        )
+
+    messages.success(
+        request,
+        f"¡{num_grupos} grupo(s) de {eq_por_grupo} equipos generados con partidos alternados correctamente!"
+    )
+    return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+
+@solo_admin
+@require_POST
+def generar_grupos_manual(request, torneo_id):
+    torneo = get_object_or_404(TorneoInterfichas, pk=torneo_id)
+    torneo.grupos.all().delete()
+    PartidoInterfichas.objects.filter(torneo=torneo).delete()
+
+    try:
+        eq_por_grupo = int(request.POST.get('equipos_por_grupo', 4))
+    except ValueError:
+        eq_por_grupo = 4
+
+    letras         = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    grupos_creados = []
+    equipos_usados = set()
+
+    for letra in letras:
+        ids = [v for v in request.POST.getlist(f'grupo_{letra}[]') if v.strip()]
+        if not ids:
+            continue
+
+        if len(ids) != eq_por_grupo:
+            messages.error(
+                request,
+                f"El Grupo {letra} necesita exactamente {eq_por_grupo} equipo(s). "
+                f"Tiene {len(ids)}."
+            )
+            return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+        for eid in ids:
+            if eid in equipos_usados:
+                messages.error(request, "Un equipo aparece en más de un grupo. Corrige la asignación.")
+                return redirect('gestionar_torneo', torneo_id=torneo_id)
+            equipos_usados.add(eid)
+
+        try:
+            equipos_grupo = [
+                get_object_or_404(EquipoInterfichas, pk=int(eid), torneo=torneo)
+                for eid in ids
+            ]
+        except (ValueError, EquipoInterfichas.DoesNotExist):
+            messages.error(request, f"Equipo inválido en Grupo {letra}.")
+            return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+        g = GrupoInterfichas.objects.create(torneo=torneo, nombre_grupo=letra)
+        g.equipos.set(equipos_grupo)
+        grupos_creados.append((g, equipos_grupo))
+
+    if not grupos_creados:
+        messages.error(request, "No se asignó ningún equipo. Completa la asignación manual.")
+        return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+    # Recopilar partidos de la asignación manual
+    partidos_temporales = []
+    for g, eq_grupo in grupos_creados:
+        for local, visitante in combinations(eq_grupo, 2):
+            partidos_temporales.append({
+                'grupo': g,
+                'local': local,
+                'visitante': visitante
+            })
+
+    # Aplicamos el filtro de descanso inteligente
+    partidos_ordenados = _reordenar_partidos_con_descanso(partidos_temporales)
+
+    # Guardamos en la base de datos
+    for p in partidos_ordenados:
+        PartidoInterfichas.objects.create(
+            torneo=torneo, grupo=p['grupo'], fase='grupo',
+            equipo_local=p['local'], equipo_visitante=p['visitante']
+        )
+
+    messages.success(
+        request,
+        f"¡{len(grupos_creados)} grupo(s) de {eq_por_grupo} equipos creados manualmente con partidos alternados!"
+    )
     return redirect('gestionar_torneo', torneo_id=torneo_id)
 
 
@@ -392,6 +564,18 @@ def registrar_resultado(request, partido_id):
             except ValueError:
                 messages.error(request, "Resultado inválido.")
                 return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+    if partido.tipo_marcador == 'goles':
+        try:
+            partido.tarjetas_amarillas_local     = int(request.POST.get('amarillas_local', 0) or 0)
+            partido.tarjetas_amarillas_visitante = int(request.POST.get('amarillas_visitante', 0) or 0)
+            partido.tarjetas_rojas_local         = int(request.POST.get('rojas_local', 0) or 0)
+            partido.tarjetas_rojas_visitante     = int(request.POST.get('rojas_visitante', 0) or 0)
+            partido.tarjetas_azules_local        = int(request.POST.get('azules_local', 0) or 0)
+            partido.tarjetas_azules_visitante    = int(request.POST.get('azules_visitante', 0) or 0)
+        except ValueError:
+            pass
+        partido.detalles_sanciones = request.POST.get('detalles_sanciones', '').strip()
 
     partido.save()
     messages.success(request, "Resultado guardado correctamente.")
@@ -544,3 +728,47 @@ def reporte_torneo(request, torneo_id):
         'partidos_semifinal': torneo.partidos.filter(fase='semifinal').select_related('equipo_local', 'equipo_visitante'),
         'partidos_final':     torneo.partidos.filter(fase='final').select_related('equipo_local', 'equipo_visitante'),
     })
+
+
+@solo_admin
+def editar_equipo(request, equipo_id):
+    equipo = get_object_or_404(EquipoInterfichas, pk=equipo_id)
+    if request.method == 'POST':
+        equipo.nombre_equipo = request.POST.get('nombre_equipo', equipo.nombre_equipo).strip()
+        equipo.capitan       = request.POST.get('capitan',       equipo.capitan).strip()
+        equipo.ficha         = request.POST.get('ficha',         equipo.ficha)
+        equipo.programa      = request.POST.get('programa',      equipo.programa).strip()
+        equipo.save()
+        messages.success(request, f"Equipo '{equipo.nombre_equipo}' actualizado correctamente.")
+        return redirect('gestionar_torneo', torneo_id=equipo.torneo.pk)
+
+    return JsonResponse({
+        'id':            equipo.pk,
+        'nombre_equipo': equipo.nombre_equipo,
+        'capitan':       equipo.capitan,
+        'ficha':         equipo.ficha,
+        'programa':      equipo.programa,
+    })
+
+
+@solo_admin
+@require_POST
+def eliminar_equipo(request, equipo_id):
+    equipo    = get_object_or_404(EquipoInterfichas, pk=equipo_id)
+    torneo_id = equipo.torneo.pk
+    nombre    = equipo.nombre_equipo
+    equipo.delete()
+    messages.warning(request, f"Equipo '{nombre}' eliminado del torneo.")
+    return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+
+@solo_admin
+@require_POST
+def asignar_paises_torneo(request, torneo_id):
+    torneo  = get_object_or_404(TorneoInterfichas, pk=torneo_id)
+    equipos = list(torneo.equipos.all().order_by('fecha_inscripcion', 'codigo_equipo_interfichas'))
+    for i, eq in enumerate(equipos):
+        eq.nombre_equipo = PAISES_TORNEO[i] if i < len(PAISES_TORNEO) else f"Equipo {i + 1}"
+        eq.save()
+    messages.success(request, "Nombres de países asignados a los equipos en orden.")
+    return redirect('gestionar_torneo', torneo_id=torneo_id)

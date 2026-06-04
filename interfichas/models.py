@@ -133,6 +133,15 @@ class PartidoInterfichas(models.Model):
     sets_local      = models.JSONField(null=True, blank=True)
     sets_visitante  = models.JSONField(null=True, blank=True)
 
+    # Tarjetas y Sanciones Disciplinarias
+    tarjetas_amarillas_local = models.IntegerField(default=0, verbose_name="Amarillas Local")
+    tarjetas_amarillas_visitante = models.IntegerField(default=0, verbose_name="Amarillas Visitante")
+    tarjetas_rojas_local = models.IntegerField(default=0, verbose_name="Rojas Local")
+    tarjetas_rojas_visitante = models.IntegerField(default=0, verbose_name="Rojas Visitante")
+    tarjetas_azules_local = models.IntegerField(default=0, verbose_name="Azules Local (Fútsal)")
+    tarjetas_azules_visitante = models.IntegerField(default=0, verbose_name="Azules Visitante (Fútsal)")
+    detalles_sanciones = models.TextField(blank=True, default='', verbose_name="Detalles de Sanciones")
+
     jugado = models.BooleanField(default=False)
 
     def __str__(self):

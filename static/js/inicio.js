@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('login') === '1') {
+    if (urlParams.get('login') === '1' || urlParams.has('next')) {
         const modalAuth = document.getElementById('modalForm');
         if (modalAuth) {
             var myModal = new bootstrap.Modal(modalAuth);
@@ -104,7 +104,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 loginAlert.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando credenciales...';
             }
 
-            fetch('/login/', {
+            const nextUrl = urlParams.get('next');
+            const url = nextUrl ? `/login/?next=${encodeURIComponent(nextUrl)}` : '/login/';
+
+            fetch(url, {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
