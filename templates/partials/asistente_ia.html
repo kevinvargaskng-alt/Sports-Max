@@ -8,7 +8,7 @@
   --surface:#141417;--surface2:#1C1C21;--surface3:#25252C;
   --border:rgba(255,255,255,0.08);
   --text:#F5F5F7;--muted:rgba(255,255,255,0.42);
-  --green:#34D399;--radius:20px;
+  --green:#34D399;--red:#FF453A;--radius:20px;
   --font:'DM Sans',sans-serif;
 }
 
@@ -38,7 +38,7 @@
 .chat-window{
   background:var(--surface);border:0.5px solid var(--border);
   border-radius:var(--radius);overflow:hidden;
-  display:flex;flex-direction:column;height:560px;
+  display:flex;flex-direction:column;height:580px;
   box-shadow:0 24px 60px rgba(0,0,0,0.5);
   max-width:380px;
   position: fixed !important;
@@ -79,6 +79,23 @@
 .pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.8s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.72)}}
 
+/* Voz pill para header */
+.voice-pill{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,69,58,.08);border:0.5px solid rgba(255,69,58,.2);
+  border-radius:20px;padding:3px 9px;
+  font-size:10px;font-weight:600;color:var(--red);letter-spacing:.05em;
+  cursor:pointer;
+  transition:background .15s,border-color .15s;
+  display:none;
+}
+.voice-pill.visible{ display:flex; }
+.voice-pill .pulse-red{
+  width:6px;height:6px;border-radius:50%;background:var(--red);
+  animation:pulse-red 0.8s ease-in-out infinite;
+}
+@keyframes pulse-red{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
+
 .modules {
   display: flex;
   gap: 8px;
@@ -88,7 +105,6 @@
   flex-wrap: wrap;
   justify-content: flex-start;
 }
-.modules::-webkit-scrollbar { display: none; }
 .chip {
   background: var(--surface3);
   border: 0.5px solid var(--border);
@@ -140,6 +156,35 @@
 .btime{font-size:10px;color:var(--muted);margin-top:3px;display:block}
 .btime.right{text-align:right}
 
+/* Indicador de escucha */
+.listen-bubble{
+  background:rgba(255,69,58,.08);
+  border:0.5px solid rgba(255,69,58,.3);
+  border-radius:16px 16px 16px 3px;
+  padding:10px 14px;
+  font-size:13px;
+  color:var(--red);
+  display:flex;align-items:center;gap:8px;
+  max-width:80%;
+}
+.listen-waves{display:flex;gap:3px;align-items:center;height:18px}
+.listen-waves span{
+  width:3px;border-radius:3px;background:var(--red);
+  animation:wave 0.8s ease-in-out infinite;
+}
+.listen-waves span:nth-child(1){height:6px;animation-delay:0s}
+.listen-waves span:nth-child(2){height:14px;animation-delay:0.1s}
+.listen-waves span:nth-child(3){height:10px;animation-delay:0.2s}
+.listen-waves span:nth-child(4){height:16px;animation-delay:0.3s}
+.listen-waves span:nth-child(5){height:8px;animation-delay:0.4s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.6)}}
+
+/* Indicador Tux hablando */
+.speaking-row .bubble.bot{
+  border-color:rgba(10,132,255,.35);
+  background:rgba(10,132,255,.1);
+}
+
 .typing-bubble{background:var(--surface3);border:0.5px solid var(--border);border-radius:16px 16px 16px 3px;padding:12px 16px;display:flex;gap:5px;align-items:center}
 .typing-bubble span{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;animation:bounce 1.2s ease-in-out infinite}
 .typing-bubble span:nth-child(2){animation-delay:.18s}
@@ -154,11 +199,42 @@
   transition:border-color .15s;
 }
 .input-wrap:focus-within{border-color:rgba(10,132,255,.5)}
+.input-wrap.listening{border-color:rgba(255,69,58,.5);background:rgba(255,69,58,.04)}
 .chat-input{
   flex:1;background:transparent;border:none;outline:none;
   font-family:var(--font);font-size:13px;color:var(--text);padding:6px 0;
 }
 .chat-input::placeholder{color:var(--muted)}
+
+/* Botón micrófono */
+.mic-btn{
+  width:36px;height:36px;border-radius:11px;
+  background:var(--surface2);border:0.5px solid var(--border);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .12s,border-color .15s;flex-shrink:0;
+}
+.mic-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+.mic-btn:active{transform:scale(.88)}
+.mic-btn.active{
+  background:rgba(255,69,58,.15);
+  border-color:rgba(255,69,58,.5);
+}
+.mic-btn.active svg{stroke:var(--red);}
+
+/* Botón hablar respuesta */
+.speak-btn{
+  width:36px;height:36px;border-radius:11px;
+  background:transparent;border:0.5px solid var(--border);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .12s;flex-shrink:0;
+}
+.speak-btn:hover{background:rgba(255,255,255,.06)}
+.speak-btn:active{transform:scale(.88)}
+.speak-btn.speaking{background:rgba(10,132,255,.15);border-color:rgba(10,132,255,.4);}
+.speak-btn.speaking svg{stroke:var(--brand);}
+
 .send-btn{
   width:36px;height:36px;border-radius:11px;
   background:var(--brand);border:none;cursor:pointer;
@@ -167,13 +243,31 @@
 }
 .send-btn:hover{background:var(--brand-dark)}
 .send-btn:active{transform:scale(.88)}
-.input-footer{text-align:center;font-size:10px;color:var(--muted);margin-top:7px;letter-spacing:.03em}
+
+.input-footer{
+  text-align:center;font-size:10px;color:var(--muted);
+  margin-top:7px;letter-spacing:.03em;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.voice-support-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  color:var(--green);font-size:10px;
+}
 
 .appear{animation:fadeup .22s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .bubble.err{background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.25);color:#FCA5A5}
+
+/* Barra volumen lateral al hablar */
+.tts-bar{
+  position:absolute;left:-8px;top:50%;transform:translateY(-50%);
+  width:3px;border-radius:3px;background:var(--brand);
+  animation:tts-pulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes tts-pulse{0%{height:8px;opacity:.5}100%{height:20px;opacity:1}}
 </style>
 
+<!-- Botón toggle -->
 <button id="tux-toggle" aria-label="Abrir asistente IA">
     <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polygon points="6,13 10,4 14,13" fill="white" opacity=".95"/>
@@ -212,11 +306,11 @@
       <div class="header-sub">SENA Centro Minero</div>
     </div>
     <div class="status-pill"><span class="pulse"></span>En línea</div>
+    <div class="voice-pill" id="voicePill"><span class="pulse-red"></span>Escuchando</div>
   </div>
 
   <div class="modules">
     <button class="chip" onclick="sendQuick('¿Cuántas reservas hay pendientes en el gimnasio?')">🏋️ Gimnasio</button>
-
     <button class="chip" onclick="sendQuick('¿Cuántos torneos de interfichas hay activos?')">📋 Interfichas</button>
     <button class="chip" onclick="sendQuick('¿Qué elementos hay en el inventario deportivo?')">📦 Inventario</button>
   </div>
@@ -234,26 +328,41 @@
         </svg>
       </div>
       <div>
-        <div class="bubble bot">¡Hola! 🐱 Soy <strong>Tux</strong>, tu asistente IA del SENA. Estoy conectado a la base de datos. ¿En qué te ayudo hoy?</div>
+        <div class="bubble bot">¡Hola! 🐱 Soy <strong>Tux</strong>, tu asistente IA del SENA. Estoy conectado a la base de datos. Puedes escribirme o <strong>hablarme</strong> con el micrófono 🎙️ ¿En qué te ayudo hoy?</div>
         <span class="btime">ahora</span>
       </div>
     </div>
   </div>
 
   <div class="input-area">
-    <div class="input-wrap">
-      <input class="chat-input" id="chatIn" type="text" placeholder="Pregúntame sobre el sistema..." onkeydown="if(event.key==='Enter')send()"/>
+    <div class="input-wrap" id="inputWrap">
+      <input class="chat-input" id="chatIn" type="text" placeholder="Pregúntame o usa el micrófono..." onkeydown="if(event.key==='Enter')send()"/>
+      <!-- Botón micrófono -->
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Hablar con Tux" aria-label="Activar micrófono">
+        <svg id="micIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
       <button class="send-btn" onclick="send()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
       </button>
     </div>
-    <div class="input-footer">Tux · Gestión Deportiva SENA · Motor IA propio</div>
+    <div class="input-footer">
+      Tux · Gestión Deportiva SENA · Motor IA propio
+      <span class="voice-support-badge" id="voiceBadge" style="display:none">· 🎙️ Voz activa</span>
+    </div>
   </div>
 </div>
 
 <script>
+// ══════════════════════════════════════════════
+//  TOGGLE VENTANA
+// ══════════════════════════════════════════════
 const tuxToggle = document.getElementById('tux-toggle');
 const chatWindow = document.querySelector('.chat-window');
 
@@ -261,114 +370,325 @@ tuxToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     chatWindow.classList.toggle('open');
 });
-
 document.addEventListener('click', (e) => {
     if (!chatWindow.contains(e.target) && e.target !== tuxToggle && !tuxToggle.contains(e.target)) {
         chatWindow.classList.remove('open');
     }
 });
 
+// ══════════════════════════════════════════════
+//  CSRF
+// ══════════════════════════════════════════════
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+    let val = null;
+    if (document.cookie) {
+        document.cookie.split(';').forEach(c => {
+            c = c.trim();
+            if (c.startsWith(name + '=')) val = decodeURIComponent(c.substring(name.length + 1));
+        });
     }
-    return cookieValue;
+    return val;
 }
 
+// ══════════════════════════════════════════════
+//  ESTADO
+// ══════════════════════════════════════════════
 let history = [];
+let isListening = false;
+let recognition = null;
+let currentUtterance = null;
+let ttsEnabled = true;  // Síntesis de voz activada por defecto
 
+// ══════════════════════════════════════════════
+//  SPEECH RECOGNITION (STT) — Web Speech API
+// ══════════════════════════════════════════════
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const voiceBadge = document.getElementById('voiceBadge');
+const voicePill = document.getElementById('voicePill');
+
+if (SpeechRecognition) {
+    voiceBadge.style.display = 'inline-flex';
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'es-CO';         // Español Colombia
+    recognition.interimResults = true;  // Mostrar texto mientras habla
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+        isListening = true;
+        document.getElementById('micBtn').classList.add('active');
+        document.getElementById('inputWrap').classList.add('listening');
+        voicePill.classList.add('visible');
+        document.getElementById('chatIn').placeholder = '🎙️ Te estoy escuchando...';
+        showListenBubble();
+    };
+
+    recognition.onresult = (event) => {
+        let interim = '';
+        let final = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const t = event.results[i][0].transcript;
+            if (event.results[i].isFinal) final += t;
+            else interim += t;
+        }
+        // Mostrar en input lo que dice
+        document.getElementById('chatIn').value = final || interim;
+        updateListenBubble(final || interim);
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        document.getElementById('micBtn').classList.remove('active');
+        document.getElementById('inputWrap').classList.remove('listening');
+        voicePill.classList.remove('visible');
+        document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
+        removeListenBubble();
+
+        // Si hay texto en el input, enviarlo automáticamente
+        const texto = document.getElementById('chatIn').value.trim();
+        if (texto) {
+            setTimeout(() => send(), 100);
+        }
+    };
+
+    recognition.onerror = (event) => {
+        isListening = false;
+        document.getElementById('micBtn').classList.remove('active');
+        document.getElementById('inputWrap').classList.remove('listening');
+        voicePill.classList.remove('visible');
+        removeListenBubble();
+        document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
+
+        if (event.error === 'not-allowed') {
+            addMsg('🎙️ Permiso de micrófono denegado. Actívalo en la configuración del navegador.', 'bot', now());
+        } else if (event.error !== 'no-speech') {
+            addMsg(`⚠️ Error de voz: ${event.error}`, 'bot', now());
+        }
+    };
+}
+
+function toggleMic() {
+    if (!SpeechRecognition) {
+        addMsg('⚠️ Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.', 'bot', now());
+        return;
+    }
+    if (isListening) {
+        recognition.stop();
+    } else {
+        // Parar TTS si está hablando
+        stopSpeaking();
+        recognition.start();
+    }
+}
+
+// ── Burbuja de escucha visual ──
+let listenRow = null;
+function showListenBubble() {
+    const msgs = document.getElementById('msgs');
+    listenRow = document.createElement('div');
+    listenRow.id = 'listen-row';
+    listenRow.className = 'msg-row appear';
+    listenRow.innerHTML = `${catAv()}<div>
+      <div class="listen-bubble">
+        <div class="listen-waves"><span></span><span></span><span></span><span></span><span></span></div>
+        <span id="listenText" style="flex:1;color:rgba(255,255,255,0.7);font-size:12px;">Escuchando...</span>
+      </div>
+    </div>`;
+    msgs.appendChild(listenRow);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+function updateListenBubble(text) {
+    const lt = document.getElementById('listenText');
+    if (lt) lt.textContent = text || 'Escuchando...';
+}
+function removeListenBubble() {
+    const r = document.getElementById('listen-row');
+    if (r) r.remove();
+    listenRow = null;
+}
+
+// ══════════════════════════════════════════════
+//  SPEECH SYNTHESIS (TTS) — Web Speech API
+// ══════════════════════════════════════════════
+function speak(text) {
+    if (!ttsEnabled || !window.speechSynthesis) return;
+    stopSpeaking();
+
+    // Limpiar markdown básico para leer más natural
+    const clean = text
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+        .substring(0, 500); // Máx 500 chars para no ser muy largo
+
+    currentUtterance = new SpeechSynthesisUtterance(clean);
+    currentUtterance.lang = 'es-CO';
+    currentUtterance.rate = 1.05;
+    currentUtterance.pitch = 1.1;
+    currentUtterance.volume = 1;
+
+    // Intentar voz en español si hay disponible
+    const voices = window.speechSynthesis.getVoices();
+    const esVoice = voices.find(v => v.lang.startsWith('es') && v.localService)
+        || voices.find(v => v.lang.startsWith('es'));
+    if (esVoice) currentUtterance.voice = esVoice;
+
+    currentUtterance.onstart = () => {
+        // Marcar la última burbuja bot como hablando
+        const botBubbles = document.querySelectorAll('.msg-row:not(.user)');
+        if (botBubbles.length) botBubbles[botBubbles.length - 1].classList.add('speaking-row');
+    };
+    currentUtterance.onend = () => {
+        document.querySelectorAll('.speaking-row').forEach(r => r.classList.remove('speaking-row'));
+        currentUtterance = null;
+    };
+
+    window.speechSynthesis.speak(currentUtterance);
+}
+
+function stopSpeaking() {
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        document.querySelectorAll('.speaking-row').forEach(r => r.classList.remove('speaking-row'));
+        currentUtterance = null;
+    }
+}
+
+// Cargar voces (Chrome las carga async)
+if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+}
+
+// ══════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════
 function now(){
-  return new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    return new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
 }
 
 function catAv(){
-  return `<div class="msg-av"><svg width="14" height="14" viewBox="0 0 32 32" fill="none"><polygon points="6,13 10,4 14,13" fill="white" opacity=".9"/><polygon points="18,13 22,4 26,13" fill="white" opacity=".9"/><ellipse cx="16" cy="19" rx="10" ry="9" fill="white" opacity=".97"/><ellipse cx="12" cy="18" rx="1.5" ry="1.8" fill="#0A84FF"/><ellipse cx="20" cy="18" rx="1.5" ry="1.8" fill="#0A84FF"/></svg></div>`;
+    return `<div class="msg-av"><svg width="14" height="14" viewBox="0 0 32 32" fill="none"><polygon points="6,13 10,4 14,13" fill="white" opacity=".9"/><polygon points="18,13 22,4 26,13" fill="white" opacity=".9"/><ellipse cx="16" cy="19" rx="10" ry="9" fill="white" opacity=".97"/><ellipse cx="12" cy="18" rx="1.5" ry="1.8" fill="#0A84FF"/><ellipse cx="20" cy="18" rx="1.5" ry="1.8" fill="#0A84FF"/></svg></div>`;
 }
 
-function addMsg(html, role, t){
-  const msgs = document.getElementById('msgs');
-  const row = document.createElement('div');
-  row.className = 'msg-row appear' + (role==='user'?' user':'');
-  if(role==='user'){
-    row.innerHTML=`<div><div class="bubble user">${html}</div><span class="btime right">${t}</span></div>`;
-  } else {
-    row.innerHTML=`${catAv()}<div><div class="bubble bot">${html}</div><span class="btime">${t}</span></div>`;
-  }
-  msgs.appendChild(row);
-  msgs.scrollTop=msgs.scrollHeight;
-  return row;
+function addMsg(html, role, t, rawText){
+    const msgs = document.getElementById('msgs');
+    const row = document.createElement('div');
+    row.className = 'msg-row appear' + (role==='user'?' user':'');
+
+    if(role==='user'){
+        row.innerHTML = `<div><div class="bubble user">${html}</div><span class="btime right">${t}</span></div>`;
+    } else {
+        // Botón para que Tux repita la respuesta en voz
+        const speakBtnHtml = window.speechSynthesis
+            ? `<button class="speak-btn" onclick="speakMessage(this, '${encodeURIComponent(rawText||html)}')" title="Escuchar respuesta" aria-label="Escuchar respuesta" style="width:22px;height:22px;border-radius:7px;margin-top:4px;margin-left:2px">
+                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" stroke-linecap="round">
+                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                 </svg>
+               </button>`
+            : '';
+        row.innerHTML = `${catAv()}<div style="position:relative"><div class="bubble bot">${html}</div><div style="display:flex;gap:4px;align-items:center"><span class="btime">${t}</span>${speakBtnHtml}</div></div>`;
+    }
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
+    return row;
+}
+
+function speakMessage(btn, encodedText) {
+    const text = decodeURIComponent(encodedText);
+    if (currentUtterance) {
+        stopSpeaking();
+        btn.classList.remove('speaking');
+        return;
+    }
+    btn.classList.add('speaking');
+
+    const clean = text.replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/<[^>]+>/g,'');
+    const u = new SpeechSynthesisUtterance(clean.substring(0, 500));
+    u.lang = 'es-CO'; u.rate = 1.05; u.pitch = 1.1;
+    const voices = window.speechSynthesis.getVoices();
+    const v = voices.find(v=>v.lang.startsWith('es')&&v.localService)||voices.find(v=>v.lang.startsWith('es'));
+    if(v) u.voice = v;
+    u.onend = () => { btn.classList.remove('speaking'); currentUtterance=null; };
+    currentUtterance = u;
+    window.speechSynthesis.speak(u);
 }
 
 function addTyping(){
-  const msgs=document.getElementById('msgs');
-  const row=document.createElement('div');
-  row.className='msg-row appear';
-  row.id='typing-row';
-  row.innerHTML=`${catAv()}<div class="typing-bubble"><span></span><span></span><span></span></div>`;
-  msgs.appendChild(row);
-  msgs.scrollTop=msgs.scrollHeight;
+    const msgs=document.getElementById('msgs');
+    const row=document.createElement('div');
+    row.className='msg-row appear';
+    row.id='typing-row';
+    row.innerHTML=`${catAv()}<div class="typing-bubble"><span></span><span></span><span></span></div>`;
+    msgs.appendChild(row);
+    msgs.scrollTop=msgs.scrollHeight;
 }
 
 function removeTyping(){
-  const t=document.getElementById('typing-row');
-  if(t)t.remove();
+    const t=document.getElementById('typing-row');
+    if(t)t.remove();
 }
 
+// ══════════════════════════════════════════════
+//  ENVÍO DE MENSAJE
+// ══════════════════════════════════════════════
 function sendQuick(text){
-  document.getElementById('chatIn').value=text;
-  send();
+    document.getElementById('chatIn').value=text;
+    send();
 }
 
 async function send(){
-  const input=document.getElementById('chatIn');
-  const text=input.value.trim();
-  if(!text)return;
+    const input=document.getElementById('chatIn');
+    const text=input.value.trim();
+    if(!text) return;
 
-  const t=now();
-  addMsg(text,'user',t);
-  history.push({"role": "user", "content": text});
-  input.value='';
-  addTyping();
+    // Parar cualquier TTS en curso
+    stopSpeaking();
 
-  try{
-    const res = await fetch('/api/chat-tux/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken')
-      },
-      body: JSON.stringify({ message: text, history: history })
-    });
+    const t=now();
+    addMsg(text,'user',t,text);
+    history.push({"role":"user","content":text});
+    input.value='';
+    addTyping();
 
-    const data = await res.json();
-    removeTyping();
+    try{
+        const res = await fetch('/api/chat-tux/', {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRFToken':getCookie('csrftoken')
+            },
+            body:JSON.stringify({message:text, history:history})
+        });
 
-    if(data.error){
-      addMsg(`⚠️ ${data.error}`, 'bot', now());
-      return;
+        const data = await res.json();
+        removeTyping();
+
+        if(data.error){
+            const errMsg = `⚠️ ${data.error}`;
+            addMsg(errMsg,'bot',now(),errMsg);
+            return;
+        }
+
+        const reply = data.reply || "No recibí respuesta.";
+        const safeReply = reply
+            .replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/\n/g,'<br>')
+            .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g,'<em>$1</em>');
+
+        history.push({"role":"assistant","content":reply});
+        addMsg(safeReply,'bot',now(),reply);
+
+        // ── Hablar la respuesta automáticamente ──
+        speak(reply);
+
+    } catch(e){
+        removeTyping();
+        const errMsg="🔌 No se pudo conectar con el servidor. Verifica que Django e ia_server.py estén corriendo.";
+        addMsg(errMsg,'bot',now(),errMsg);
     }
-
-    const reply = data.reply || "No recibí respuesta.";
-    const safeReply = reply
-      .replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\n/g,'<br>')
-      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g,'<em>$1</em>');
-
-    history.push({"role": "assistant", "content": reply});
-    addMsg(safeReply, 'bot', now());
-
-  } catch(e){
-    removeTyping();
-    addMsg("🔌 No se pudo conectar con el servidor. Verifica que Django e ia_server.py estén corriendo.", 'bot', now());
-  }
 }
 </script>

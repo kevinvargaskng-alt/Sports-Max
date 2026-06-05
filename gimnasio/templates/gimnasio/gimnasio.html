@@ -678,36 +678,30 @@
         </div>
         <!-- Ficha de salud -->
         <div class="col-6 col-md-4">
-            <a href="{% url 'anamnesis_propia' %}" class="gym-nav-card accent-red">
-                <i class="fas fa-heartbeat nav-icon" style="color:#f85149;"></i>
+            <a href="{% url ' fa-heartbeat nav-icon" style="color:#f85149;"></i>
                 <span class="nav-label">Mi Ficha de Salud</span>
-                <span class="nav-sub">IMC · Anamnesis</span>
-            </a>
+                <span class="nav-sub">IMC · Historial</sp
         </div>
         <!-- Tests físicos -->
         <div class="col-6 col-md-4">
-            <a href="{% url 'tests_fisicos' %}" class="gym-nav-card accent-warn">
-                <i class="fas fa-running nav-icon" style="color:#e3b341;"></i>
-                <span class="nav-label">Tests Físicos</span>
-                <span class="nav-sub">Cooper · Ruffier-Dickson</span>
+            <a href="{% url 'habitos:registrar_seguimiento' %}" class="gym-nav-card accent-warn">
+                <i class="fas fa-rF
+                <span class="nav-sub">Registrar Medidas</span>
             </a>
-        </div>
-        <!-- Rutinas cardio -->
+        </div>a
         <div class="col-6 col-md-6">
-            <a href="{% url 'mis_rutinas' %}?tipo=cardio" class="gym-nav-card accent-green">
+            <a href="{% url 'habitos:lista_rutinas' %}?objetivo=cardio" class="gym-nav-card accent-green">
                 <i class="fas fa-bicycle nav-icon" style="color:#56d364;"></i>
                 <span class="nav-label">Rutinas Cardio</span>
-                <span class="nav-sub">Banda · Elíptica · Spinning</span>
-            </a>
+                <span class="nav-s
         </div>
         <!-- Rutinas fuerza -->
         <div class="col-6 col-md-6">
-            <a href="{% url 'mis_rutinas' %}?tipo=fuerza" class="gym-nav-card accent-cyan">
+            <a href="{% url 'habitos:lista_rutinas' %}?objetivo=fuerza" class="gym-nav-card accent-cyan">
                 <i class="fas fa-dumbbell nav-icon" style="color:#22d3ee;"></i>
                 <span class="nav-label">Rutinas Fuerza</span>
                 <span class="nav-sub">Máquinas · Peso libre</span>
             </a>
-        </div>
     </nav>
 
     <!-- REGISTRO DE ENTRADA -->

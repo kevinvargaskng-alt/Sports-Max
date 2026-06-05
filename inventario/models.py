@@ -7,6 +7,9 @@ class ElementoDeportivo(models.Model):
     tipo_maquina = models.CharField(max_length=100, verbose_name="Tipo de Máquina/Elemento")
     cantidad_total = models.IntegerField(default=1)
     estado_general = models.CharField(max_length=50, default='Buen estado')
+    fecha_adquisicion = models.DateField(null=True, blank=True)
+    descripcion = models.TextField(blank=True, null=True)
+    imagen = models.ImageField(upload_to='elementos_deportivos/', null=True, blank=True)
     
     # El campo que ajustamos para el MER:
     usuario_responsable = models.ForeignKey(
@@ -41,6 +44,9 @@ class Prestamo(models.Model):
         on_delete=models.CASCADE,
         related_name='prestamos_realizados'
     )
+    elemento = models.ForeignKey(ElementoDeportivo, on_delete=models.CASCADE, null=True, blank=True)
+    cantidad_prestada = models.IntegerField(default=1)
+    fecha_devolucion = models.DateField(null=True, blank=True)
     fecha_prestamo = models.DateField(auto_now_add=True)
     hora_prestamo = models.TimeField(auto_now_add=True)
     dias_prestamo = models.IntegerField(default=1)
@@ -65,8 +71,12 @@ class DetallePrestamo(models.Model):
 class Devolucion(models.Model):
     codigo_devolucion = models.AutoField(primary_key=True)
     prestamo = models.ForeignKey(Prestamo, on_delete=models.CASCADE, related_name='devoluciones')
+    cantidad_devuelta = models.IntegerField(default=1)
     fecha_devolucion = models.DateField(auto_now_add=True)
     hora_devolucion = models.TimeField(auto_now_add=True)
+    tiene_novedad = models.BooleanField(default=False)
+    estado_elemento_devolucion = models.CharField(max_length=50, blank=True, null=True)
+    tipo_novedad_devolucion = models.CharField(max_length=100, blank=True, null=True)
     observaciones_devolucion = models.TextField(blank=True)
 
     def __str__(self):

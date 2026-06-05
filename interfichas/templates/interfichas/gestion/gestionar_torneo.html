@@ -78,6 +78,7 @@
     transition: all 0.25s; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.82rem;
 }
 .btn-action-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,119,189,0.4); color: #fff; }
+.btn-action-primary:disabled { opacity: 0.45; transform: none; box-shadow: none; cursor: not-allowed; }
 .btn-action-warning {
     background: linear-gradient(135deg, #e65100, #f0c040); border: none; color: #0D0D0D;
     font-weight: 700; padding: 0.6rem 1.4rem; border-radius: 8px;
@@ -119,10 +120,83 @@
     border: 2px solid #3fb950; border-radius: 16px; padding: 2rem; text-align: center;
 }
 
+/* ── Configurador de grupos ── */
+.cfg-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+.cfg-box .form-select {
+    background: #0d1117 !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
+    border-radius: 8px !important;
+}
+.cfg-box .form-select:focus {
+    border-color: #58a6ff !important;
+    box-shadow: 0 0 0 3px rgba(88,166,255,0.15) !important;
+}
+.cfg-feedback-ok  { color: #3fb950; }
+.cfg-feedback-err { color: #f85149; }
+
+/* Tarjeta de equipo con ficha */
+.equipo-card-item { transition: border-color 0.25s; }
+.equipo-card-item:hover { border-color: #58a6ff !important; }
+.equipo-ficha-badge {
+    font-size: 0.68rem;
+    color: #8b949e;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #30363d;
+    border-radius: 5px;
+    padding: 1px 6px;
+    letter-spacing: 0.3px;
+}
+
 @media (max-width: 768px) {
     .torneo-hero { padding: 1.25rem; }
     .equipo-nombre { min-width: 90px; font-size: 0.8rem; }
     .partido-item { gap: 0.5rem; }
+}
+
+/* Estilos personalizados para pestañas (Tabs) */
+.nav-tabs .nav-link {
+    color: #8b949e !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    transition: all 0.2s ease-in-out;
+    background: transparent !important;
+}
+.nav-tabs .nav-link.active {
+    color: #58a6ff !important;
+    border-bottom: 3px solid #58a6ff !important;
+}
+.nav-tabs .nav-link:hover {
+    color: #e6edf3 !important;
+    border-bottom: 3px solid rgba(88,166,255,0.4) !important;
+}
+
+/* Separador de fecha en lista de partidos */
+.fecha-divider {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin: 1rem 0 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(90deg, rgba(88,166,255,0.12) 0%, transparent 100%);
+    border-left: 3px solid #58a6ff;
+    border-radius: 0 6px 6px 0;
+}
+.fecha-divider .fecha-dia {
+    font-size: 0.95rem; font-weight: 800;
+    color: #58a6ff; text-transform: capitalize;
+}
+.fecha-divider .fecha-num {
+    font-size: 0.78rem; color: #8b949e;
+    text-transform: capitalize;
+}
+.fecha-divider-sin-fecha {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin: 0.75rem 0 0.4rem;
+    color: #8b949e; font-size: 0.78rem; font-style: italic;
 }
 </style>
 {% endblock %}
@@ -180,266 +254,590 @@
         </div>
     </div>
 
-    <!-- MENSAJES -->
-    {% if messages %}
-        {% for m in messages %}
-        <div class="alert {% if m.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
-            <i class="fas {% if m.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
-            {{ m }}
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-        </div>
-        {% endfor %}
-    {% endif %}
-
-    <!-- GENERAR GRUPOS (si no hay grupos) -->
-    {% if not grupos_con_tabla %}
-    <div class="estado-panel text-center py-5">
-        <i class="fas fa-layer-group fa-3x text-white-50 mb-3"></i>
-        <h5 class="text-white fw-bold mb-2">Generar Grupos del Torneo</h5>
-        <p class="text-white-50 small mb-4">
-            Se distribuirán aleatoriamente los {{ num_equipos }} equipos en grupos de 4.
-            Los partidos de todos contra todos se crean automáticamente.
-        </p>
-        {% if num_equipos >= 4 %}
-        <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-action-primary btn">
-                <i class="fas fa-random me-2"></i>Sortear Grupos y Generar Partidos
+    <!-- ══════════════════════════════════════════
+         NAVEGACIÓN POR PESTAÑAS
+         ══════════════════════════════════════════ -->
+    <ul class="nav nav-tabs mb-4 border-bottom border-secondary" id="torneoTabs" role="tablist" style="gap:0.25rem;">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold px-4 py-2" id="tab-equipos" data-bs-toggle="tab" data-bs-target="#pane-equipos" type="button" role="tab">
+                <i class="fas fa-users me-2"></i>Equipos
+                <span class="badge bg-success ms-2 small">{{ num_equipos }}</span>
             </button>
-        </form>
-        {% else %}
-        <div class="alert alert-warning d-inline-block">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            Se necesitan al menos 4 equipos. Actualmente hay <strong>{{ num_equipos }}</strong>.
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
-
-    <!-- GRUPOS + TABLAS + PARTIDOS -->
-    {% if grupos_con_tabla %}
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h4 class="text-white fw-bold mb-0">
-            <i class="fas fa-layer-group text-info me-2"></i>Fase de Grupos
-        </h4>
-        {% if fase_actual == 'grupos' %}
-        <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}"
-              onsubmit="return confirm('¿Re-sortear grupos? Se borrarán todos los partidos actuales.')">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-warning btn-sm fw-bold">
-                <i class="fas fa-sync me-1"></i>Re-sortear grupos
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold px-4 py-2" id="tab-grupos" data-bs-toggle="tab" data-bs-target="#pane-grupos" type="button" role="tab">
+                <i class="fas fa-layer-group me-2"></i>Grupos
             </button>
-        </form>
-        {% endif %}
-    </div>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold px-4 py-2" id="tab-partidos" data-bs-toggle="tab" data-bs-target="#pane-partidos" type="button" role="tab">
+                <i class="fas fa-futbol me-2"></i>Partidos
+            </button>
+        </li>
+    </ul>
 
-    <div class="row g-4">
-        {% for item in grupos_con_tabla %}
-        <div class="col-12 col-lg-6">
-            <div class="grupo-card">
-                <div class="grupo-header">
-                    <div class="grupo-badge">{{ item.grupo.nombre_grupo }}</div>
-                    <div>
-                        <div class="text-white fw-bold">Grupo {{ item.grupo.nombre_grupo }}</div>
-                        <div class="text-white-50 small">{{ item.grupo.equipos.count }} equipos</div>
-                    </div>
+    <div class="tab-content" id="torneoTabsContent">
+
+        <!-- ══ PESTAÑA 1: EQUIPOS ══ -->
+        <div class="tab-pane fade show active" id="pane-equipos" role="tabpanel">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <h5 class="fw-bold mb-0 text-white"><i class="fas fa-users text-success me-2"></i>Equipos Participantes</h5>
+                    <small class="text-white-50">Administra los equipos, edita sus datos o elimínalos del torneo.</small>
                 </div>
+                <form method="POST" action="{% url 'asignar_paises_torneo' torneo_id=torneo.codigo_torneo_fichas %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-warning fw-bold"
+                            onclick="return confirm('¿Asignar nombres de países automáticamente? Se asignarán según el orden de la lista. Los nombres actuales serán reemplazados.')">
+                        <i class="fas fa-flag me-2"></i>Asignar Nombres de Países
+                    </button>
+                </form>
+            </div>
 
-                <!-- Tabla de posiciones -->
-                <div class="p-3">
-                    <table class="tabla-posiciones">
-                        <thead>
-                            <tr>
-                                <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th>
-                                <th>PP</th>
-                                {% if tipo_marcador == 'sets' %}
-                                    <th>SF</th><th>SC</th>
-                                {% elif tipo_marcador == 'puntos' %}
-                                    <th>PF</th><th>PC</th>
-                                {% else %}
-                                    <th>GF</th><th>GC</th>
-                                {% endif %}
-                                <th>DIF</th><th>PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for fila in item.tabla %}
-                            <tr class="{% if forloop.counter == 1 %}clasificado-1{% elif forloop.counter == 2 %}clasificado-2{% endif %}">
-                                <td class="fw-bold text-white-50">{{ forloop.counter }}</td>
-                                <td class="fw-bold text-white"
-                                    style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
-                                    title="{{ fila.equipo.nombre_equipo }}">{{ fila.equipo.nombre_equipo }}</td>
-                                <td>{{ fila.pj }}</td>
-                                <td class="text-success">{{ fila.pg }}</td>
-                                <td>{{ fila.pe }}</td>
-                                <td class="text-danger">{{ fila.pp }}</td>
-                                <td>{{ fila.gf }}</td>
-                                <td>{{ fila.gc }}</td>
-                                <td class="{% if fila.dg > 0 %}text-success{% elif fila.dg < 0 %}text-danger{% endif %}">
-                                    {% if fila.dg > 0 %}+{% endif %}{{ fila.dg }}
-                                </td>
-                                <td class="fw-bold text-warning">{{ fila.pts }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="mt-2 d-flex gap-3" style="font-size:0.72rem;color:#8b949e;">
-                        <span><span style="display:inline-block;width:10px;height:10px;background:#f0c040;border-radius:2px;margin-right:4px;"></span>1° Clasifica</span>
-                        <span><span style="display:inline-block;width:10px;height:10px;background:#58a6ff;border-radius:2px;margin-right:4px;"></span>2° Clasifica</span>
-                    </div>
-                </div>
-
-                <!-- Partidos del grupo -->
-                <div class="border-top border-secondary px-3 py-2">
-                    <div class="text-white-50 small fw-bold mb-2 text-uppercase" style="letter-spacing:0.8px;">
-                        <i class="fas fa-futbol me-1"></i>Partidos
-                    </div>
-                    {% for partido in item.partidos %}
-                    <div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
-                        <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
-                        <div class="text-center" style="min-width:100px;">
-                            {% if partido.jugado %}
-                                {% if tipo_marcador == 'sets' %}
-                                    <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                                    {% if partido.sets_local %}
-                                    <span class="parciales-sets">
-                                        {% for i in partido.sets_local %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
-                                        /
-                                        {% for i in partido.sets_visitante %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
-                                    </span>
-                                    {% endif %}
-                                {% elif tipo_marcador == 'puntos' %}
-                                    <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                                    <span class="parciales-sets">pts</span>
-                                {% else %}
-                                    <span class="resultado-display">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                                {% endif %}
-                            {% else %}
-                                <span class="vs-badge">VS</span>
-                            {% endif %}
+            {% if equipos_total %}
+            <div class="row g-3">
+                {% for eq in equipos_total %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="p-3 rounded border d-flex flex-column justify-content-between h-100 equipo-card-item" style="background:#0d1117; border-color: #21262d !important;">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold mb-0 text-info" style="font-size:1.05rem;">{{ eq.nombre_equipo }}</h6>
+                                <span class="badge bg-secondary text-white-50" style="font-size:0.7rem;">Ficha: {{ eq.ficha }}</span>
+                            </div>
+                            <!-- ★ Ficha debajo del nombre -->
+                            <div class="mb-2">
+                                <span class="equipo-ficha-badge">
+                                    <i class="fas fa-id-card me-1" style="color:#58a6ff;"></i>Ficha: {{ eq.ficha }}
+                                </span>
+                            </div>
+                            <p class="mb-1 text-white-50 small" style="font-size:0.8rem;">
+                                <i class="fas fa-user text-success me-1"></i>Capitán: <strong class="text-white">{{ eq.capitan }}</strong>
+                            </p>
+                            <p class="mb-0 text-white-50 small" style="font-size:0.8rem;">
+                                <i class="fas fa-graduation-cap text-primary me-1"></i>{{ eq.programa }}
+                            </p>
                         </div>
-                        <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
-                        <div class="ms-auto d-flex gap-2 align-items-center flex-wrap">
-                            {% if partido.fecha_partido %}
-                            <small class="text-white-50">
-                                {{ partido.fecha_partido|date:"d/m" }}
-                                {% if partido.hora_partido %} {{ partido.hora_partido|time:"H:i" }}{% endif %}
-                            </small>
-                            {% endif %}
-                            <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
-                                    onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}')"
-                                    title="{% if partido.jugado %}Editar resultado{% else %}Registrar resultado{% endif %}">
-                                <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
+                        <div class="d-flex gap-2 mt-3 pt-2 border-top" style="border-color: #21262d !important;">
+                            <button class="btn btn-sm btn-outline-info flex-fill fw-bold text-uppercase" style="font-size:0.75rem;"
+                                    onclick="abrirEditarEquipo('{{ eq.pk }}', '{{ eq.nombre_equipo|escapejs }}', '{{ eq.capitan|escapejs }}', '{{ eq.ficha|escapejs }}', '{{ eq.programa|escapejs }}')">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </button>
+                            <form method="POST" action="{% url 'eliminar_equipo' equipo_id=eq.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar a {{ eq.nombre_equipo }}? Se eliminarán sus partidos asociados.')" class="flex-fill d-flex">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger flex-fill fw-bold text-uppercase" style="font-size:0.75rem;">
+                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-white-50">
+                <i class="fas fa-users fa-3x mb-3 opacity-30"></i>
+                <h6 class="text-white-50">No hay equipos inscritos aún</h6>
+                <p class="small mb-0">Los equipos aparecerán aquí cuando se registren.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ══ PESTAÑA 2: GRUPOS ══ -->
+        <div class="tab-pane fade" id="pane-grupos" role="tabpanel">
+
+            {% if not grupos_con_tabla %}
+            <!-- ══════════════════════════════════════
+                 GENERAR GRUPOS (primer sorteo)
+                 ══════════════════════════════════════ -->
+            <div class="estado-panel py-4">
+                <div class="text-center mb-4">
+                    <i class="fas fa-layer-group fa-3x text-white-50 mb-3"></i>
+                    <h5 class="text-white fw-bold mb-2">Generar Grupos del Torneo</h5>
+                    <p class="text-white-50 small mb-0">
+                        {{ num_equipos }} equipo(s) inscritos. Configura los grupos antes de generarlos.
+                    </p>
+                </div>
+
+                {% if num_equipos >= 4 %}
+
+                <!-- ── CONFIGURADOR ─────────────────────────── -->
+                <div class="row justify-content-center mb-4">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="cfg-box">
+                            <p class="text-white-50 small fw-bold text-uppercase mb-3" style="letter-spacing:.6px; font-size:0.72rem;">
+                                <i class="fas fa-sliders-h text-info me-1"></i>Configuración de grupos
+                            </p>
+                            <div class="row g-3 align-items-end">
+                                <div class="col-6">
+                                    <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="letter-spacing:.5px; font-size:0.72rem;">
+                                        <i class="fas fa-layer-group text-info me-1"></i>Nº de Grupos
+                                    </label>
+                                    <select id="cfg-num-grupos" class="form-select" onchange="actualizarConfiguracion()">
+                                        {% for n in num_grupos_opciones %}
+                                        <option value="{{ n }}"{% if n == 2 %} selected{% endif %}>{{ n }} grupo{{ n|pluralize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="letter-spacing:.5px; font-size:0.72rem;">
+                                        <i class="fas fa-users text-success me-1"></i>Equipos por Grupo
+                                    </label>
+                                    <select id="cfg-eq-por-grupo" class="form-select" onchange="actualizarConfiguracion()">
+                                        <option value="2">2 equipos</option>
+                                        <option value="3">3 equipos</option>
+                                        <option value="4" selected>4 equipos</option>
+                                        <option value="5">5 equipos</option>
+                                        <option value="6">6 equipos</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="cfg-feedback" class="mt-3 text-center small" style="min-height:22px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TABS MÉTODO ──────────────────────────── -->
+                <ul class="nav nav-pills justify-content-center mb-4 gap-2" id="metodoGrupoTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active fw-bold px-4" id="tab-sorteo-auto"
+                                data-bs-toggle="pill" data-bs-target="#pane-sorteo-auto" type="button">
+                            <i class="fas fa-random me-2"></i>Sorteo Automático
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link fw-bold px-4" id="tab-sorteo-manual"
+                                data-bs-toggle="pill" data-bs-target="#pane-sorteo-manual" type="button">
+                            <i class="fas fa-hand-paper me-2"></i>Asignación Manual
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- AUTO -->
+                    <div class="tab-pane fade show active text-center" id="pane-sorteo-auto">
+                        <p class="text-white-50 small mb-3">
+                            Los equipos se distribuyen aleatoriamente según la configuración elegida arriba.
+                        </p>
+                        <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}" id="formAutoGrupos">
+                            {% csrf_token %}
+                            <input type="hidden" name="num_grupos"        id="auto-num-grupos"    value="2">
+                            <input type="hidden" name="equipos_por_grupo" id="auto-eq-por-grupo"  value="4">
+                            <button type="submit" class="btn-action-primary btn" id="btn-auto-sortear">
+                                <i class="fas fa-random me-2"></i>Sortear Grupos y Generar Partidos
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- MANUAL -->
+                    <div class="tab-pane fade" id="pane-sorteo-manual">
+                        <p class="text-white-50 small text-center mb-3">
+                            Asigna los equipos manualmente. Cada grupo debe tener exactamente
+                            <strong id="manual-eq-label" class="text-info">4</strong> equipos.
+                        </p>
+                        <form method="POST" action="{% url 'generar_grupos_manual' torneo_id=torneo.codigo_torneo_fichas %}" id="formGruposManual">
+                            {% csrf_token %}
+                            <input type="hidden" name="num_grupos"        id="manual-num-grupos"   value="2">
+                            <input type="hidden" name="equipos_por_grupo" id="manual-eq-por-grupo" value="4">
+                            <div class="row g-3" id="grupos-manual-container">
+                                <!-- Se construye dinámicamente con JS -->
+                            </div>
+                            <div class="text-center mt-4">
+                                <div id="manual-warning" class="alert alert-warning d-none mb-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <span id="manual-warning-msg"></span>
+                                </div>
+                                <button type="submit" class="btn-action-primary btn" onclick="return validarGruposManual()">
+                                    <i class="fas fa-check me-2"></i>Confirmar Grupos y Generar Partidos
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {% else %}
+                <div class="text-center">
+                    <div class="alert alert-warning d-inline-block">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Se necesitan al menos 4 equipos. Actualmente hay <strong>{{ num_equipos }}</strong>.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- ══ Grupos con tablas ══ -->
+            {% if grupos_con_tabla %}
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h5 class="text-white fw-bold mb-0">
+                    <i class="fas fa-layer-group text-info me-2"></i>Tablas de Posición
+                </h5>
+                {% if fase_actual == 'grupos' %}
+                <div class="d-flex gap-2 flex-wrap">
+                    <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}"
+                          onsubmit="return confirm('¿Re-sortear grupos automáticamente? Se borrarán todos los partidos actuales.')">
+                        {% csrf_token %}
+                        <input type="hidden" name="num_grupos"        value="{{ grupos_con_tabla|length }}">
+                        <input type="hidden" name="equipos_por_grupo" value="4">
+                        <button type="submit" class="btn btn-outline-warning btn-sm fw-bold">
+                            <i class="fas fa-random me-1"></i>Re-sortear automático
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-outline-info btn-sm fw-bold"
+                            onclick="document.getElementById('panel-resortear-manual').classList.toggle('d-none')">
+                        <i class="fas fa-hand-paper me-1"></i>Re-sortear manual
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- PANEL RE-SORTEO MANUAL (colapsable) -->
+            {% if fase_actual == 'grupos' %}
+            <div id="panel-resortear-manual" class="d-none mb-4">
+                <div class="estado-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-white fw-bold mb-0">
+                            <i class="fas fa-hand-paper text-info me-2"></i>Asignación Manual de Grupos
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-outline-secondary border-0"
+                                onclick="document.getElementById('panel-resortear-manual').classList.add('d-none')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Configurador para re-sorteo -->
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-md-8">
+                            <div class="cfg-box">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-6">
+                                        <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="font-size:0.72rem; letter-spacing:.5px;">
+                                            <i class="fas fa-layer-group text-info me-1"></i>Nº de Grupos
+                                        </label>
+                                        <select id="recfg-num-grupos" class="form-select" onchange="actualizarConfiguracionRemanual()">
+                                            {% for n in num_grupos_opciones %}
+                                            <option value="{{ n }}"{% if n == grupos_con_tabla|length %} selected{% endif %}>{{ n }} grupo{{ n|pluralize }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="font-size:0.72rem; letter-spacing:.5px;">
+                                            <i class="fas fa-users text-success me-1"></i>Equipos por Grupo
+                                        </label>
+                                        <select id="recfg-eq-por-grupo" class="form-select" onchange="actualizarConfiguracionRemanual()">
+                                            <option value="2">2 equipos</option>
+                                            <option value="3">3 equipos</option>
+                                            <option value="4" selected>4 equipos</option>
+                                            <option value="5">5 equipos</option>
+                                            <option value="6">6 equipos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="recfg-feedback" class="mt-3 text-center small" style="min-height:22px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-white-50 small mb-3 text-center">
+                        Se borrarán los grupos y partidos actuales al confirmar.
+                    </p>
+                    <form method="POST" action="{% url 'generar_grupos_manual' torneo_id=torneo.codigo_torneo_fichas %}"
+                          id="formResortearManual"
+                          onsubmit="return confirm('¿Re-asignar grupos manualmente? Se borrarán todos los partidos actuales.') && validarGruposRemanual()">
+                        {% csrf_token %}
+                        <input type="hidden" name="num_grupos"        id="remanual-num-grupos"   value="{{ grupos_con_tabla|length }}">
+                        <input type="hidden" name="equipos_por_grupo" id="remanual-eq-por-grupo" value="4">
+                        <div class="row g-3" id="grupos-remanual-container">
+                            <!-- Se construye dinámicamente -->
+                        </div>
+                        <div class="text-center mt-4">
+                            <div id="remanual-warning" class="alert alert-warning d-none mb-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span id="remanual-warning-msg"></span>
+                            </div>
+                            <button type="submit" class="btn-action-primary btn">
+                                <i class="fas fa-check me-2"></i>Confirmar y Re-generar Partidos
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- TABLAS DE POSICIÓN -->
+            <div class="row g-4">
+                {% for item in grupos_con_tabla %}
+                <div class="col-12 col-lg-6">
+                    <div class="grupo-card">
+                        <div class="grupo-header">
+                            <div class="grupo-badge">{{ item.grupo.nombre_grupo }}</div>
+                            <div>
+                                <div class="text-white fw-bold">Grupo {{ item.grupo.nombre_grupo }}</div>
+                                <div class="text-white-50 small">{{ item.grupo.equipos.count }} equipos</div>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <table class="tabla-posiciones">
+                                <thead>
+                                    <tr>
+                                        <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th>
+                                        <th>PP</th>
+                                        {% if tipo_marcador == 'sets' %}
+                                            <th>SF</th><th>SC</th>
+                                        {% elif tipo_marcador == 'puntos' %}
+                                            <th>PF</th><th>PC</th>
+                                        {% else %}
+                                            <th>GF</th><th>GC</th>
+                                        {% endif %}
+                                        <th>DIF</th><th>PTS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fila in item.tabla %}
+                                    <tr class="{% if forloop.counter == 1 %}clasificado-1{% elif forloop.counter == 2 %}clasificado-2{% endif %}">
+                                        <td class="fw-bold text-white-50">{{ forloop.counter }}</td>
+                                        <td class="fw-bold text-white"
+                                            style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                                            title="{{ fila.equipo.nombre_equipo }}">{{ fila.equipo.nombre_equipo }}</td>
+                                        <td>{{ fila.pj }}</td>
+                                        <td class="text-success">{{ fila.pg }}</td>
+                                        <td>{{ fila.pe }}</td>
+                                        <td class="text-danger">{{ fila.pp }}</td>
+                                        <td>{{ fila.gf }}</td>
+                                        <td>{{ fila.gc }}</td>
+                                        <td class="{% if fila.dg > 0 %}text-success{% elif fila.dg < 0 %}text-danger{% endif %}">
+                                            {% if fila.dg > 0 %}+{% endif %}{{ fila.dg }}
+                                        </td>
+                                        <td class="fw-bold text-warning">{{ fila.pts }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="mt-2 d-flex gap-3" style="font-size:0.72rem;color:#8b949e;">
+                                <span><span style="display:inline-block;width:10px;height:10px;background:#f0c040;border-radius:2px;margin-right:4px;"></span>1° Clasifica</span>
+                                <span><span style="display:inline-block;width:10px;height:10px;background:#58a6ff;border-radius:2px;margin-right:4px;"></span>2° Clasifica</span>
+                            </div>
+                        </div>
                     </div>
-                    {% empty %}
-                    <p class="text-white-50 small text-center py-2">Sin partidos generados.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if fase_actual == 'cuartos' %}
+            <div class="text-center my-4">
+                <div class="alert alert-success d-inline-block mb-3">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Todos los grupos terminados. ¡Hora de eliminatorias!
+                </div><br>
+                <form method="POST" action="{% url 'generar_cuartos' torneo_id=torneo.codigo_torneo_fichas %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action-warning btn">
+                        <i class="fas fa-sitemap me-2"></i>Generar Cuartos de Final
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- ══ PESTAÑA 3: PARTIDOS ══ -->
+        <div class="tab-pane fade" id="pane-partidos" role="tabpanel">
+
+            {% if grupos_con_tabla %}
+            <div class="mb-4">
+                <h5 class="text-white fw-bold mb-3"><i class="fas fa-layer-group text-info me-2"></i>Fase de Grupos — Partidos</h5>
+                <div class="row g-3">
+                    {% for item in grupos_con_tabla %}
+                    <div class="col-12 col-lg-6">
+                        <div class="grupo-card">
+                            <div class="grupo-header">
+                                <div class="grupo-badge">{{ item.grupo.nombre_grupo }}</div>
+                                <div>
+                                    <div class="text-white fw-bold">Grupo {{ item.grupo.nombre_grupo }}</div>
+                                    <div class="text-white-50 small">{{ item.partidos|length }} partido(s)</div>
+                                </div>
+                            </div>
+                            <div class="px-3 py-2">
+                                {% for partido in item.partidos %}
+                                {% ifchanged partido.fecha_partido %}
+                                    {% if partido.fecha_partido %}
+                                    <div class="fecha-divider">
+                                        <i class="fas fa-calendar-day" style="color:#58a6ff;"></i>
+                                        <span class="fecha-dia">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
+                                        {% if partido.hora_partido %}
+                                        <span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="fecha-divider-sin-fecha">
+                                        <i class="fas fa-clock-rotate-left"></i> Sin fecha asignada
+                                    </div>
+                                    {% endif %}
+                                {% endifchanged %}
+                                <div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
+                                    <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
+                                    <div class="text-center" style="min-width:100px;">
+                                        {% if partido.jugado %}
+                                            {% if tipo_marcador == 'sets' %}
+                                                <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                            {% elif tipo_marcador == 'puntos' %}
+                                                <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                            {% else %}
+                                                <span class="resultado-display">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="vs-badge">VS</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
+                                    <div class="ms-auto d-flex gap-2 align-items-center">
+                                        {% if partido.hora_partido and not partido.fecha_partido %}
+                                        <small class="text-white-50">{{ partido.hora_partido|time:"H:i" }}</small>
+                                        {% elif partido.hora_partido %}
+                                        <small class="text-white-50">{{ partido.hora_partido|time:"H:i" }}</small>
+                                        {% endif %}
+                                        <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
+                                                onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}', '{{ partido.tarjetas_amarillas_local|default:0 }}', '{{ partido.tarjetas_amarillas_visitante|default:0 }}', '{{ partido.tarjetas_rojas_local|default:0 }}', '{{ partido.tarjetas_rojas_visitante|default:0 }}', '{{ partido.tarjetas_azules_local|default:0 }}', '{{ partido.tarjetas_azules_visitante|default:0 }}', '{{ partido.detalles_sanciones|escapejs }}')">
+                                            <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
+                                        </button>
+                                    </div>
+                                    {% if partido.tarjetas_amarillas_local or partido.tarjetas_rojas_local or partido.tarjetas_azules_local or partido.detalles_sanciones %}
+                                    <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100" style="font-size:0.75rem; border-color:#21262d !important;">
+                                        <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
+                                        {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}<span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ partido.tarjetas_amarillas_local }}-{{ partido.tarjetas_amarillas_visitante }}</span>{% endif %}
+                                        {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}<span class="badge bg-danger text-white px-2 ms-1">🟥 {{ partido.tarjetas_rojas_local }}-{{ partido.tarjetas_rojas_visitante }}</span>{% endif %}
+                                        {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}<span class="badge bg-primary text-white px-2 ms-1">🟦 {{ partido.tarjetas_azules_local }}-{{ partido.tarjetas_azules_visitante }}</span>{% endif %}
+                                        {% if partido.detalles_sanciones %}<span class="d-block mt-1 ms-1">"{{ partido.detalles_sanciones }}"</span>{% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% empty %}
+                                <p class="text-white-50 small text-center py-2">Sin partidos generados.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
+            {% endif %}
 
-    <!-- Botón generar cuartos -->
-    {% if fase_actual == 'cuartos' %}
-    <div class="text-center my-4">
-        <div class="alert alert-success d-inline-block mb-3">
-            <i class="fas fa-check-circle me-2"></i>
-            Todos los partidos de grupo han sido jugados. ¡Es hora de las eliminatorias!
-        </div><br>
-        <form method="POST" action="{% url 'generar_cuartos' torneo_id=torneo.codigo_torneo_fichas %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-action-warning btn">
-                <i class="fas fa-sitemap me-2"></i>Generar Cuartos de Final
-            </button>
-        </form>
-    </div>
-    {% endif %}
-    {% endif %}
-
-    <!-- CUARTOS DE FINAL -->
-    {% if partidos_cuartos %}
-    <div class="fase-section mt-4">
-        <div class="fase-title fase-cuartos"><i class="fas fa-sitemap"></i> Cuartos de Final</div>
-        <div class="row g-3">
-            {% for partido in partidos_cuartos %}
-            <div class="col-12 col-md-6">
-                {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador %}
+            {% if partidos_cuartos %}
+            <div class="fase-section mt-4">
+                <div class="fase-title fase-cuartos"><i class="fas fa-sitemap"></i> Cuartos de Final</div>
+                {% for partido in partidos_cuartos %}
+                {% ifchanged partido.fecha_partido %}
+                    {% if partido.fecha_partido %}
+                    <div class="fecha-divider">
+                        <i class="fas fa-calendar-day" style="color:#58a6ff;"></i>
+                        <span class="fecha-dia">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
+                        {% if partido.hora_partido %}<span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>{% endif %}
+                    </div>
+                    {% else %}
+                    <div class="fecha-divider-sin-fecha"><i class="fas fa-clock-rotate-left"></i> Sin fecha asignada</div>
+                    {% endif %}
+                {% endifchanged %}
+                <div class="mb-2">
+                    {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador %}
+                </div>
+                {% endfor %}
+                {% if fase_actual == 'semifinal' %}
+                <div class="text-center mt-3">
+                    <form method="POST" action="{% url 'generar_siguiente_fase' torneo_id=torneo.codigo_torneo_fichas %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="fase_origen" value="cuartos">
+                        <button type="submit" class="btn-action-warning btn">
+                            <i class="fas fa-bolt me-2"></i>Generar Semifinal (sorteo)
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
-        </div>
-        {% if fase_actual == 'semifinal' %}
-        <div class="text-center mt-3">
-            <form method="POST" action="{% url 'generar_siguiente_fase' torneo_id=torneo.codigo_torneo_fichas %}">
-                {% csrf_token %}
-                <input type="hidden" name="fase_origen" value="cuartos">
-                <button type="submit" class="btn-action-warning btn">
-                    <i class="fas fa-bolt me-2"></i>Generar Semifinal (sorteo)
-                </button>
-            </form>
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
+            {% endif %}
 
-    <!-- SEMIFINAL -->
-    {% if partidos_semifinal %}
-    <div class="fase-section mt-4">
-        <div class="fase-title fase-semifinal"><i class="fas fa-bolt"></i> Semifinal</div>
-        <div class="row g-3">
-            {% for partido in partidos_semifinal %}
-            <div class="col-12 col-md-6">
-                {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador %}
+            {% if partidos_semifinal %}
+            <div class="fase-section mt-4">
+                <div class="fase-title fase-semifinal"><i class="fas fa-bolt"></i> Semifinal</div>
+                {% for partido in partidos_semifinal %}
+                {% ifchanged partido.fecha_partido %}
+                    {% if partido.fecha_partido %}
+                    <div class="fecha-divider">
+                        <i class="fas fa-calendar-day" style="color:#f0c040;"></i>
+                        <span class="fecha-dia" style="color:#f0c040;">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
+                        {% if partido.hora_partido %}<span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>{% endif %}
+                    </div>
+                    {% else %}
+                    <div class="fecha-divider-sin-fecha"><i class="fas fa-clock-rotate-left"></i> Sin fecha asignada</div>
+                    {% endif %}
+                {% endifchanged %}
+                <div class="mb-2">
+                    {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador %}
+                </div>
+                {% endfor %}
+                {% if fase_actual == 'final' %}
+                <div class="text-center mt-3">
+                    <form method="POST" action="{% url 'generar_siguiente_fase' torneo_id=torneo.codigo_torneo_fichas %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="fase_origen" value="semifinal">
+                        <button type="submit" class="btn-action-warning btn">
+                            <i class="fas fa-star me-2"></i>Generar ¡La Final!
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
-        </div>
-        {% if fase_actual == 'final' %}
-        <div class="text-center mt-3">
-            <form method="POST" action="{% url 'generar_siguiente_fase' torneo_id=torneo.codigo_torneo_fichas %}">
-                {% csrf_token %}
-                <input type="hidden" name="fase_origen" value="semifinal">
-                <button type="submit" class="btn-action-warning btn">
-                    <i class="fas fa-star me-2"></i>Generar ¡La Final!
-                </button>
-            </form>
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
+            {% endif %}
 
-    <!-- FINAL -->
-    {% if partidos_final %}
-    <div class="fase-section mt-4">
-        <div class="fase-title fase-final"><i class="fas fa-star"></i> ¡Gran Final!</div>
-        <div class="row g-3">
-            {% for partido in partidos_final %}
-            <div class="col-12">
-                {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador es_final=True %}
+            {% if partidos_final %}
+            <div class="fase-section mt-4">
+                <div class="fase-title fase-final"><i class="fas fa-star"></i> ¡Gran Final!</div>
+                {% for partido in partidos_final %}
+                {% ifchanged partido.fecha_partido %}
+                    {% if partido.fecha_partido %}
+                    <div class="fecha-divider" style="border-left-color:#ff6b6b;">
+                        <i class="fas fa-calendar-day" style="color:#ff6b6b;"></i>
+                        <span class="fecha-dia" style="color:#ff6b6b;">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
+                        {% if partido.hora_partido %}<span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>{% endif %}
+                    </div>
+                    {% else %}
+                    <div class="fecha-divider-sin-fecha"><i class="fas fa-clock-rotate-left"></i> Sin fecha asignada</div>
+                    {% endif %}
+                {% endifchanged %}
+                <div class="mb-2">
+                    {% include "interfichas/gestion/_partido_card.html" with partido=partido tipo_marcador=tipo_marcador es_final=True %}
+                </div>
+                {% endfor %}
+                {% if fase_actual == 'terminado' %}
+                {% for partido in partidos_final %}{% if partido.jugado %}
+                <div class="ganador-card mt-4">
+                    <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                    <h3 class="text-white fw-bold mb-1">¡Campeón del Torneo!</h3>
+                    <h2 class="text-warning fw-bold mb-2">
+                        {% if partido.goles_local > partido.goles_visitante %}{{ partido.equipo_local.nombre_equipo }}
+                        {% else %}{{ partido.equipo_visitante.nombre_equipo }}{% endif %}
+                    </h2>
+                    <p class="text-white-50 small">{{ torneo.nombre_torneo }} · {{ torneo.disciplina }}</p>
+                </div>
+                {% endif %}{% endfor %}
+                {% endif %}
             </div>
-            {% endfor %}
-        </div>
-        {% if fase_actual == 'terminado' %}
-        {% for partido in partidos_final %}{% if partido.jugado %}
-        <div class="ganador-card mt-4">
-            <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
-            <h3 class="text-white fw-bold mb-1">¡Campeón del Torneo!</h3>
-            <h2 class="text-warning fw-bold mb-2">
-                {% if partido.goles_local > partido.goles_visitante %}{{ partido.equipo_local.nombre_equipo }}
-                {% else %}{{ partido.equipo_visitante.nombre_equipo }}{% endif %}
-            </h2>
-            <p class="text-white-50 small">{{ torneo.nombre_torneo }} · {{ torneo.disciplina }}</p>
-        </div>
-        {% endif %}{% endfor %}
-        {% endif %}
-    </div>
-    {% endif %}
+            {% endif %}
 
+            {% if not grupos_con_tabla and not partidos_cuartos and not partidos_semifinal and not partidos_final %}
+            <div class="text-center py-5 text-white-50">
+                <i class="fas fa-futbol fa-3x mb-3 opacity-30"></i>
+                <h6 class="text-white-50">Sin partidos generados</h6>
+                <p class="small">Ve a la pestaña <strong class="text-info">Grupos</strong> para generar los partidos del torneo.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div><!-- /tab-content -->
 </div>
 
 <!-- ══════════════════════════════════════════════════════
-     MODAL: REGISTRAR / EDITAR RESULTADO (adaptativo)
+     MODAL: REGISTRAR / EDITAR RESULTADO
      ══════════════════════════════════════════════════════ -->
 <div class="modal fade modal-resultado" id="modalResultado" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -457,8 +855,6 @@
             <form method="POST" id="formResultado" action="">
                 {% csrf_token %}
                 <div class="modal-body p-4">
-
-                    <!-- ── BLOQUE: GOLES o PUNTOS ─────────────── -->
                     <div id="bloque-normal">
                         <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
                             <div class="text-center">
@@ -477,19 +873,15 @@
                             Deja en blanco para guardar solo la fecha
                         </small>
                     </div>
-
-                    <!-- ── BLOQUE: SETS (Voleibol / Pimpón) ──── -->
                     <div id="bloque-sets" style="display:none;">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="text-white-50 small fw-bold text-uppercase" style="letter-spacing:.5px;">
                                 <i class="fas fa-table-tennis me-1 text-info"></i>Sets jugados
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-info border-0"
-                                    onclick="agregarSet()">
+                            <button type="button" class="btn btn-sm btn-outline-info border-0" onclick="agregarSet()">
                                 <i class="fas fa-plus me-1"></i>Set
                             </button>
                         </div>
-                        <!-- Cabecera de equipos -->
                         <div class="d-flex gap-2 mb-1 px-1" style="font-size:0.75rem;color:#8b949e;">
                             <span style="min-width:52px;"></span>
                             <span style="width:70px;text-align:center;" id="sets-label-local">Local</span>
@@ -501,24 +893,60 @@
                             El ganador de sets se calcula automáticamente
                         </small>
                     </div>
-
-                    <!-- ── FECHA Y HORA ──────────────────────── -->
                     <div class="row g-3 mt-1">
                         <div class="col-7">
                             <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">
                                 <i class="fas fa-calendar me-1"></i>Fecha
                             </label>
-                            <input type="date" name="fecha_partido" id="fecha-partido"
-                                   class="form-control"
+                            <input type="date" name="fecha_partido" id="fecha-partido" class="form-control"
                                    style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
                         </div>
                         <div class="col-5">
                             <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">
                                 <i class="fas fa-clock me-1"></i>Hora
                             </label>
-                            <input type="time" name="hora_partido" id="hora-partido"
-                                   class="form-control"
+                            <input type="time" name="hora_partido" id="hora-partido" class="form-control"
                                    style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
+                        </div>
+                    </div>
+                    <div id="bloque-sanciones" class="mt-3 border-top border-secondary pt-3" style="display:none; border-color: #30363d !important;">
+                        <h6 class="text-white small fw-bold text-uppercase mb-3" style="letter-spacing:.5px;">
+                            <i class="fas fa-exclamation-triangle text-warning me-1"></i>Tarjetas y Sanciones Disciplinarias
+                        </h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small text-white-50 mb-1" style="font-size:0.75rem;">🟨 Amarillas (Local / Visitante)</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="amarillas_local" id="amarillas-local" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <span class="input-group-text bg-secondary text-white-50 border-secondary">—</span>
+                                    <input type="number" name="amarillas_visitante" id="amarillas-visitante" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small text-white-50 mb-1" style="font-size:0.75rem;">🟥 Rojas (Local / Visitante)</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="rojas_local" id="rojas-local" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <span class="input-group-text bg-secondary text-white-50 border-secondary">—</span>
+                                    <input type="number" name="rojas_visitante" id="rojas-visitante" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3" id="bloque-azules" style="display:none;">
+                            <div class="col-12">
+                                <label class="form-label small text-white-50 mb-1" style="font-size:0.75rem;">🟦 Tarjetas Azules (Local / Visitante)</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="azules_local" id="azules-local" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <span class="input-group-text bg-secondary text-white-50 border-secondary">—</span>
+                                    <input type="number" name="azules_visitante" id="azules-visitante" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small text-white-50 mb-1">Detalle de Sanciones / Observaciones</label>
+                            <textarea name="detalles_sanciones" id="detalles-sanciones" rows="2"
+                                      class="form-control bg-dark text-white border-secondary small"
+                                      style="background:#161b22 !important; border-color:#30363d !important;"
+                                      placeholder="Ej. Expulsión del capitán visitante..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -533,38 +961,263 @@
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════
+     MODAL: EDITAR EQUIPO
+     ══════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalEditarEquipo" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white" style="background:#0d1117; border: 1px solid #30363d; border-radius:16px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-white"><i class="fas fa-edit text-info me-2"></i>Editar Datos del Equipo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditarEquipo" action="">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Nombre del Equipo</label>
+                        {% if tipo_marcador == 'goles' %}
+                        <div class="mb-2">
+                            <select id="edit-equipo-pais-selector" class="form-select form-control" style="background:#1a2236 !important; border:1px solid #30363d !important; color:#79c0ff;">
+                                <option value="">— Seleccionar país 🌍 —</option>
+                                {% for p in PAISES_TORNEO %}
+                                <option value="{{ p }}">{{ p }}</option>
+                                {% endfor %}
+                                <option value="__custom__">✏️ Nombre personalizado…</option>
+                            </select>
+                        </div>
+                        {% endif %}
+                        <input type="text" name="nombre_equipo" id="edit-equipo-nombre" class="form-control bg-dark text-white border-secondary" style="background:#161b22 !important; border-color:#30363d !important;" required placeholder="Nombre del equipo">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Capitán</label>
+                        <input type="text" name="capitan" id="edit-equipo-capitan" class="form-control bg-dark text-white border-secondary" style="background:#161b22 !important; border-color:#30363d !important;" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Ficha del Capitán</label>
+                        <input type="text" name="ficha" id="edit-equipo-ficha" class="form-control bg-dark text-white border-secondary" style="background:#161b22 !important; border-color:#30363d !important;" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Programa</label>
+                        <!-- ✅ FIX: value="{{ p }}" agregado para que el JS pueda seleccionar el programa correcto al editar -->
+                        <select name="programa" id="edit-equipo-programa" class="form-control bg-dark text-white border-secondary form-select" style="background:#161b22 !important; border-color:#30363d !important;" required>
+                            <option value="">— Selecciona —</option>
+                            {% for p in PROGRAMAS_GLOBALES %}
+                            <option value="{{ p }}">{{ p }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-action-primary btn">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Tipo de marcador inyectado desde Django
-const TIPO_MARCADOR = "{{ tipo_marcador }}";
-let numSets = 0;
+const TIPO_MARCADOR   = "{{ tipo_marcador }}";
+const TOTAL_EQUIPOS   = {{ num_equipos }};
+const LETRAS_GRUPOS   = ['A','B','C','D','E','F','G','H'];
+let   numSets         = 0;
 
-function abrirModalResultado(partidoId, local, visitante, fecha, hora) {
-    // Nombres
+// ════════════════════════════════════════════════
+//  Lista de equipos para grilla manual (JSON inline)
+// ════════════════════════════════════════════════
+window.EQUIPOS_TORNEO = [
+    {% for eq in equipos_total %}
+    { id: {{ eq.pk }}, nombre: "{{ eq.nombre_equipo|escapejs }}", capitan: "{{ eq.capitan|escapejs }}", ficha: "{{ eq.ficha|escapejs }}" }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+// ════════════════════════════════════════════════
+//  CONFIGURADOR — PRIMER SORTEO
+// ════════════════════════════════════════════════
+function actualizarConfiguracion() {
+    const numGrupos  = parseInt(document.getElementById('cfg-num-grupos')?.value)   || 2;
+    const eqPorGrupo = parseInt(document.getElementById('cfg-eq-por-grupo')?.value) || 4;
+    _sincronizarHiddens('auto', numGrupos, eqPorGrupo);
+    _sincronizarHiddens('manual', numGrupos, eqPorGrupo);
+    _mostrarFeedback('cfg-feedback', 'btn-auto-sortear', numGrupos, eqPorGrupo);
+    document.getElementById('manual-eq-label').textContent = eqPorGrupo;
+    construirGrilla('grupos-manual-container', 'formGruposManual', numGrupos, eqPorGrupo, 'manual');
+}
+
+function _sincronizarHiddens(prefix, numGrupos, eqPorGrupo) {
+    const ng = document.getElementById(prefix + '-num-grupos');
+    const ep = document.getElementById(prefix + '-eq-por-grupo');
+    if (ng) ng.value = numGrupos;
+    if (ep) ep.value = eqPorGrupo;
+}
+
+function _mostrarFeedback(feedbackId, btnId, numGrupos, eqPorGrupo) {
+    const necesarios = numGrupos * eqPorGrupo;
+    const fb  = document.getElementById(feedbackId);
+    const btn = document.getElementById(btnId);
+    if (!fb) return;
+    if (necesarios > TOTAL_EQUIPOS) {
+        fb.innerHTML = `<span class="cfg-feedback-err"><i class="fas fa-times-circle me-1"></i>Necesitas <strong>${necesarios}</strong> equipos pero solo hay <strong>${TOTAL_EQUIPOS}</strong>.</span>`;
+        if (btn) btn.disabled = true;
+    } else {
+        const sobrantes = TOTAL_EQUIPOS - necesarios;
+        fb.innerHTML = `<span class="cfg-feedback-ok"><i class="fas fa-check-circle me-1"></i><strong>${necesarios}</strong> equipos en juego`
+            + (sobrantes > 0 ? ` &nbsp;·&nbsp; <span style="color:#f0c040;">${sobrantes} sin grupo</span>` : '')
+            + `</span>`;
+        if (btn) btn.disabled = false;
+    }
+}
+
+// ════════════════════════════════════════════════
+//  CONFIGURADOR — RE-SORTEO MANUAL
+// ════════════════════════════════════════════════
+function actualizarConfiguracionRemanual() {
+    const numGrupos  = parseInt(document.getElementById('recfg-num-grupos')?.value)   || 2;
+    const eqPorGrupo = parseInt(document.getElementById('recfg-eq-por-grupo')?.value) || 4;
+    const ngH = document.getElementById('remanual-num-grupos');
+    const epH = document.getElementById('remanual-eq-por-grupo');
+    if (ngH) ngH.value = numGrupos;
+    if (epH) epH.value = eqPorGrupo;
+    _mostrarFeedback('recfg-feedback', null, numGrupos, eqPorGrupo);
+    construirGrilla('grupos-remanual-container', 'formResortearManual', numGrupos, eqPorGrupo, 'remanual');
+}
+
+// ════════════════════════════════════════════════
+//  CONSTRUIR GRILLA MANUAL DINÁMICA
+// ════════════════════════════════════════════════
+function construirGrilla(containerId, formId, numGrupos, eqPorGrupo, prefix) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    const equipos = window.EQUIPOS_TORNEO || [];
+
+    for (let i = 0; i < numGrupos; i++) {
+        const letra = LETRAS_GRUPOS[i];
+        const col   = document.createElement('div');
+        col.className = 'col-12 col-md-6';
+
+        let slotsHtml = '';
+        for (let s = 0; s < eqPorGrupo; s++) {
+            let options = `<option value="">— Equipo ${s + 1} —</option>`;
+            equipos.forEach(eq => {
+                options += `<option value="${eq.id}">${eq.nombre} · Ficha: ${eq.ficha}</option>`;
+            });
+            slotsHtml += `
+            <div class="mb-2">
+                <select name="grupo_${letra}[]"
+                        class="form-select form-control grupo-${prefix}-select-${letra}"
+                        style="background:#161b22 !important; border-color:#30363d !important; color:#e6edf3;"
+                        onchange="actualizarContadorGrilla('${prefix}', '${letra}', ${eqPorGrupo})">
+                    ${options}
+                </select>
+            </div>`;
+        }
+
+        col.innerHTML = `
+        <div class="grupo-card">
+            <div class="grupo-header">
+                <div class="grupo-badge">${letra}</div>
+                <div>
+                    <div class="text-white fw-bold">Grupo ${letra}</div>
+                    <div class="text-white-50 small" id="cnt-${prefix}-${letra}">0 / ${eqPorGrupo} equipos</div>
+                </div>
+            </div>
+            <div class="p-3">${slotsHtml}</div>
+        </div>`;
+        container.appendChild(col);
+    }
+}
+
+function actualizarContadorGrilla(prefix, letra, total) {
+    const sels   = document.querySelectorAll(`.grupo-${prefix}-select-${letra}`);
+    const filled = [...sels].filter(s => s.value).length;
+    const cnt    = document.getElementById(`cnt-${prefix}-${letra}`);
+    if (cnt) cnt.textContent = `${filled} / ${total} equipos`;
+}
+
+// ════════════════════════════════════════════════
+//  VALIDACIÓN MANUAL
+// ════════════════════════════════════════════════
+function _validarForm(formId, warnId, warnMsgId, numGruposInputId, eqPorGrupoInputId, prefix) {
+    const eqPorGrupo = parseInt(document.getElementById(eqPorGrupoInputId)?.value) || 4;
+    const numGrupos  = parseInt(document.getElementById(numGruposInputId)?.value)  || 2;
+    const valores    = [];
+    let   vacios     = 0;
+    for (let i = 0; i < numGrupos; i++) {
+        const letra = LETRAS_GRUPOS[i];
+        document.querySelectorAll(`.grupo-${prefix}-select-${letra}`).forEach(s => {
+            if (!s.value) vacios++;
+            else valores.push(s.value);
+        });
+    }
+    const warn    = document.getElementById(warnId);
+    const warnMsg = document.getElementById(warnMsgId);
+    if (vacios > 0) {
+        warn.classList.remove('d-none');
+        warnMsg.textContent = `Faltan ${vacios} equipo(s) por asignar.`;
+        return false;
+    }
+    if (valores.length !== new Set(valores).size) {
+        warn.classList.remove('d-none');
+        warnMsg.textContent = 'Un equipo está en más de un grupo.';
+        return false;
+    }
+    warn.classList.add('d-none');
+    return true;
+}
+
+function validarGruposManual() {
+    return _validarForm('formGruposManual', 'manual-warning', 'manual-warning-msg',
+                        'manual-num-grupos', 'manual-eq-por-grupo', 'manual');
+}
+
+function validarGruposRemanual() {
+    return _validarForm('formResortearManual', 'remanual-warning', 'remanual-warning-msg',
+                        'remanual-num-grupos', 'remanual-eq-por-grupo', 'remanual');
+}
+
+// ════════════════════════════════════════════════
+//  MODAL RESULTADO
+// ════════════════════════════════════════════════
+function abrirModalResultado(partidoId, local, visitante, fecha, hora,
+                              amarillasL, amarillasV, rojasL, rojasV, azulesL, azulesV, detallesSanciones) {
     document.getElementById('label-local').textContent          = local;
     document.getElementById('label-visitante').textContent      = visitante;
     document.getElementById('sets-label-local').textContent     = local;
     document.getElementById('sets-label-visitante').textContent = visitante;
     document.getElementById('modal-partido-nombres').textContent = local + ' vs ' + visitante;
-
-    // URL del formulario
-    document.getElementById('formResultado').action =
-        '/interfichas/partido/' + partidoId + '/resultado/';
-
-    // Limpiar campos
-    document.getElementById('goles-local').value    = '';
+    document.getElementById('formResultado').action = '/interfichas/partido/' + partidoId + '/resultado/';
+    document.getElementById('goles-local').value     = '';
     document.getElementById('goles-visitante').value = '';
-    document.getElementById('fecha-partido').value  = fecha || '';
-    document.getElementById('hora-partido').value   = hora  || '';
+    document.getElementById('fecha-partido').value   = fecha || '';
+    document.getElementById('hora-partido').value    = hora  || '';
+    document.getElementById('amarillas-local').value    = amarillasL || 0;
+    document.getElementById('amarillas-visitante').value = amarillasV || 0;
+    document.getElementById('rojas-local').value         = rojasL    || 0;
+    document.getElementById('rojas-visitante').value     = rojasV    || 0;
+    const azL = document.getElementById('azules-local');
+    const azV = document.getElementById('azules-visitante');
+    if (azL) azL.value = azulesL || 0;
+    if (azV) azV.value = azulesV || 0;
+    document.getElementById('detalles-sanciones').value = detallesSanciones || '';
 
-    // Adaptar UI según disciplina
     const esSet    = TIPO_MARCADOR === 'sets';
     const esPuntos = TIPO_MARCADOR === 'puntos';
+    const esGoles  = TIPO_MARCADOR === 'goles';
 
-    document.getElementById('bloque-normal').style.display = esSet ? 'none' : '';
-    document.getElementById('bloque-sets').style.display   = esSet ? ''     : 'none';
+    document.getElementById('bloque-normal').style.display    = esSet ? 'none' : '';
+    document.getElementById('bloque-sets').style.display      = esSet ? ''     : 'none';
+    document.getElementById('bloque-sanciones').style.display = esGoles ? ''   : 'none';
+
+    const NOMBRE_DISCIPLINA = "{{ torneo.disciplina.nombre_disciplina|escapejs }}";
+    const esFutsal = NOMBRE_DISCIPLINA.toLowerCase().includes('futsal') || NOMBRE_DISCIPLINA.toLowerCase().includes('fútsal');
+    document.getElementById('bloque-azules').style.display = esFutsal ? '' : 'none';
 
     if (esPuntos) {
         document.getElementById('modal-tipo-label').textContent = 'Resultado (Puntos)';
@@ -572,15 +1225,13 @@ function abrirModalResultado(partidoId, local, visitante, fecha, hora) {
     } else if (esSet) {
         document.getElementById('modal-tipo-label').textContent = 'Resultado por Sets';
         document.getElementById('modal-icono').className = 'fas fa-table-tennis text-info me-2';
-        // Inicializar sets
         numSets = 0;
         document.getElementById('sets-container').innerHTML = '';
-        agregarSet(); agregarSet(); agregarSet(); // mínimo 3
+        agregarSet(); agregarSet(); agregarSet();
     } else {
         document.getElementById('modal-tipo-label').textContent = 'Resultado del Partido';
         document.getElementById('modal-icono').className = 'fas fa-futbol text-success me-2';
     }
-
     new bootstrap.Modal(document.getElementById('modalResultado')).show();
 }
 
@@ -602,5 +1253,63 @@ function agregarSet() {
         </button>`;
     c.appendChild(row);
 }
+
+// ════════════════════════════════════════════════
+//  MODAL EDITAR EQUIPO
+// ════════════════════════════════════════════════
+function abrirEditarEquipo(id, nombre, capitan, ficha, programa) {
+    document.getElementById('edit-equipo-nombre').value   = nombre;
+    document.getElementById('edit-equipo-capitan').value  = capitan;
+    document.getElementById('edit-equipo-ficha').value    = ficha;
+    document.getElementById('edit-equipo-programa').value = programa;
+    document.getElementById('formEditarEquipo').action    = '/interfichas/equipo/' + id + '/editar/';
+    const sel = document.getElementById('edit-equipo-pais-selector');
+    if (sel) {
+        let found = false;
+        for (let opt of sel.options) {
+            if (opt.value === nombre) { sel.value = nombre; found = true; break; }
+        }
+        if (!found) sel.value = '__custom__';
+    }
+    new bootstrap.Modal(document.getElementById('modalEditarEquipo')).show();
+}
+
+const paisSel = document.getElementById('edit-equipo-pais-selector');
+if (paisSel) {
+    paisSel.addEventListener('change', function() {
+        const nombreInput = document.getElementById('edit-equipo-nombre');
+        if (this.value && this.value !== '__custom__') {
+            nombreInput.value = this.value;
+        } else if (this.value === '__custom__') {
+            nombreInput.value = '';
+            nombreInput.focus();
+        }
+    });
+}
+
+// ════════════════════════════════════════════════
+//  INICIALIZAR AL CARGAR
+// ════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function () {
+    // Primer sorteo
+    if (document.getElementById('cfg-num-grupos')) {
+        actualizarConfiguracion();
+    }
+    // Re-sorteo manual (si el panel ya existe)
+    if (document.getElementById('recfg-num-grupos')) {
+        actualizarConfiguracionRemanual();
+    }
+    // Re-sorteo manual: inicializar al abrir el panel
+    const btnPanel = document.querySelector('[onclick*="panel-resortear-manual"]');
+    if (btnPanel) {
+        btnPanel.addEventListener('click', function () {
+            setTimeout(function () {
+                if (document.getElementById('recfg-num-grupos')) {
+                    actualizarConfiguracionRemanual();
+                }
+            }, 50);
+        });
+    }
+});
 </script>
 {% endblock %}

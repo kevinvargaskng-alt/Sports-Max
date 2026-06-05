@@ -85,6 +85,8 @@ def recopilar_datos() -> dict:
     datos["equipos_interfichas"] = EquipoInterfichas.objects.count()
     datos["partidos_jugados"] = PartidoInterfichas.objects.filter(jugado=True).count()
 
+
+
     return datos
 
 

@@ -8,216 +8,131 @@
     }
 
     .nav-pill-center {
-        background: rgba(22, 27, 34, 0.8);
-        border: 1px solid #30363d;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 50px;
         padding: 5px 20px;
         display: flex;
-        gap: 15px;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     .nav-pill-center .nav-link {
-        color: #ffffff;
-        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 600;
+        font-size: 0.9rem;
         transition: all 0.3s ease;
-        border-radius: 20px;
-        padding: 8px 14px;
+        border-radius: 30px;
+        padding: 8px 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .nav-pill-center .nav-link:hover {
-        background: #198754;
+        background: rgba(255, 255, 255, 0.1);
         color: white;
-        transform: translateY(-2px);
     }
 
-    .btn-habitos {
-        background: linear-gradient(135deg, #198754, #20c997);
-        border-radius: 20px;
-        color: white !important;
-        font-weight: bold;
+    .nav-pill-center .nav-link.active {
+        background: var(--sena-green, #1a5fb4);
+        color: white;
+        box-shadow: 0 0 15px rgba(26, 95, 180, 0.4);
     }
+
+    /* Balón: Ahora utiliza el color corporativo para una mejor integración */
+    .icon-balon {
+        color: var(--sena-green, #1a5fb4);
+        filter: drop-shadow(0 0 8px rgba(26, 95, 180, 0.4));
+        animation: pulse-icon 2s infinite;
+    }
+
+    @keyframes pulse-icon {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .navbar-brand span {
+        letter-spacing: -0.5px;
+        transition: 0.3s;
+    }
+    .navbar-brand:hover span { opacity: 0.8; }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark p-0"
-     style="position: sticky; top: 0; z-index: 1030;">
-
-    <div class="container-fluid d-flex align-items-center px-3 px-md-4 py-2"
-         style="background: rgba(13, 17, 23, 0.95);
-                backdrop-filter: blur(10px);
-                border-bottom: 1px solid #30363d;">
-
-        <!-- LOGO -->
-        <a class="navbar-brand d-flex align-items-center me-auto"
-           href="{% url 'home' %}">
-
-            <i class="fas fa-futbol me-2 text-warning"></i>
-
-            <span class="fw-bold text-white fs-6 fs-md-5">
-                Gestión Deportiva
+<nav class="navbar navbar-expand-lg navbar-dark p-0" style="position: sticky; top: 0; z-index: 1030;">
+    <div class="container-fluid d-flex align-items-center px-3 px-md-4 py-2" style="background: rgba(10, 14, 17, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid var(--neon-border);">
+        
+        <a class="navbar-brand d-flex align-items-center me-auto" href="{% url 'home' %}">
+            <i class="fas fa-futbol me-2 icon-balon"></i>
+            <span class="fw-bold fs-6 fs-md-5 text-white">
+                Gestión 
+                <span style="color: var(--sena-green, #1a5fb4);">Deportiva</span>
             </span>
         </a>
 
-        <!-- BOTÓN MOBILE -->
-        <button class="navbar-toggler border-0 shadow-none p-0 ms-2"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
-
+        <button class="navbar-toggler border-0 shadow-none p-0 ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <i class="fas fa-bars fs-3 text-white"></i>
         </button>
 
-        <!-- MENÚ -->
-        <div class="collapse navbar-collapse justify-content-center"
-             id="navbarNav">
-
-            <!-- PC -->
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            {% with url_name=request.resolver_match.url_name %}
             <div class="nav-pill-center d-none d-lg-flex">
-
-                <a class="nav-link"
-                   href="{% url 'home' %}">
-                    Inicio
+                <a class="nav-link {% if url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                    <i class="fas fa-home"></i> Inicio
                 </a>
-
-                <a class="nav-link"
-                   href="{% url 'interfichas' %}">
-                    Inter-Fichas
+                <a class="nav-link {% if url_name == 'interfichas' %}active{% endif %}" href="{% url 'interfichas' %}">
+                    <i class="fas fa-trophy"></i> Inter-Fichas
                 </a>
-
-                <a class="nav-link"
-                   href="{% url 'gimnasio_home' %}">
-                    Gimnasio
+                <a class="nav-link {% if url_name == 'gimnasio' %}active{% endif %}" href="{% url 'gimnasio' %}">
+                    <i class="fas fa-dumbbell"></i> Gimnasio
                 </a>
-
-                <a class="nav-link"
-                   href="{% url 'inventario' %}">
-                    Inventario
+                <a class="nav-link {% if url_name == 'inventario' %}active{% endif %}" href="{% url 'inventario' %}">
+                    <i class="fas fa-box"></i> Inventario
                 </a>
-
-                <!-- NUEVO MÓDULO -->
-                <!-- NUEVO MÓDULO -->
-<a class="nav-link btn-habitos" href="{% url 'habitos:inicio' %}">
-    <i class="fas fa-heartbeat me-1"></i>
-    Hábitos Saludables
-</a>
-
+                <a class="nav-link {% if url_name == 'inicio' and request.resolver_match.namespace == 'habitos' %}active{% endif %}" href="{% url 'habitos:inicio' %}">
+                    <i class="fas fa-heartbeat me-1"></i>
+                    Hábitos Saludables
+                </a>
             </div>
 
-            <!-- MOBILE -->
             <ul class="navbar-nav d-lg-none mt-3">
-
-                <li class="nav-item border-bottom border-secondary">
-                    <a class="nav-link py-3 px-2"
-                       href="{% url 'home' %}">
-                        Inicio
-                    </a>
-                </li>
-
-                <li class="nav-item border-bottom border-secondary">
-                    <a class="nav-link py-3 px-2"
-                       href="{% url 'interfichas' %}">
-                        Inter-Fichas
-                    </a>
-                </li>
-
-
-
-                <li class="nav-item border-bottom border-secondary">
-                    <a class="nav-link py-3 px-2"
-                       href="{% url 'gimnasio_home' %}">
-                        Gimnasio
-                    </a>
-                </li>
-
-                <li class="nav-item border-bottom border-secondary">
-                    <a class="nav-link py-3 px-2"
-                       href="{% url 'inventario' %}">
-                        Inventario
-                    </a>
-                </li>
-
-                <!-- NUEVO MÓDULO MOBILE -->
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'home' %}">Inicio</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'interfichas' %}">Inter-Fichas</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'gimnasio' %}">Gimnasio</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'inventario' %}">Inventario</a></li>
                 <li class="nav-item">
-                    <!-- NUEVO MÓDULO -->
-<a class="nav-link btn-habitos" href="{% url 'habitos:inicio' %}">
-    <i class="fas fa-heartbeat me-1"></i>
-    Hábitos Saludables
-</a>
+                    <a class="nav-link py-3 px-2" href="{% url 'habitos:inicio' %}">
+                        <i class="fas fa-heartbeat me-1"></i>
+                        Hábitos Saludables
+                    </a>
                 </li>
-
             </ul>
+            {% endwith %}
         </div>
 
-        <!-- PERFIL -->
         <div class="ms-auto ps-3 d-flex align-items-center">
-
             {% if user.is_authenticated %}
-
             <div class="dropdown">
-
-                <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2"
-                   href="#"
-                   role="button"
-                   data-bs-toggle="dropdown">
-
+                <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
                     {% if user.foto_perfil %}
-                        <img src="{{ user.foto_perfil.url }}"
-                             alt="Perfil"
-                             class="rounded-circle"
-                             style="width: 25px;
-                                    height: 25px;
-                                    object-fit: cover;
-                                    border: 1px solid var(--accent-blue);">
+                        <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle" style="width: 25px; height: 25px; object-fit: cover; border: 1px solid var(--accent-blue);">
                     {% else %}
                         <i class="fas fa-user-circle fs-5"></i>
                     {% endif %}
-
-                    <span class="d-none d-md-inline">
-                        {{ user.first_name|default:user.username|upper }}
-                    </span>
-
+                    <span class="d-none d-md-inline">{{ user.first_name|default:user.username|upper }}</span>
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow border-secondary">
-
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'perfil' %}">
-
-                            <i class="fas fa-id-badge me-2"></i>
-                            Mi Perfil
-                        </a>
-                    </li>
-
-                    <li>
-                        <hr class="dropdown-divider border-secondary">
-                    </li>
-
-                    <li>
-                        <a class="dropdown-item text-danger"
-                           href="{% url 'logout' %}">
-
-                            <i class="fas fa-sign-out-alt me-2"></i>
-                            Cerrar Sesión
-                        </a>
-                    </li>
-
+                    <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-id-badge me-2"></i>Mi Perfil</a></li>
+                    <li><hr class="dropdown-divider border-secondary"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                 </ul>
             </div>
-
             {% else %}
-
-            <button class="btn-ingresar btn-sm py-2 px-3"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalForm">
-
-                <i class="fas fa-sign-in-alt me-1"></i>
-
-                <span class="d-none d-sm-inline">
-                    Ingresar
-                </span>
-
+            <button class="btn-ingresar btn-sm py-2 px-3" data-bs-toggle="modal" data-bs-target="#modalForm">
+                <i class="fas fa-sign-in-alt me-1"></i> <span class="d-none d-sm-inline">Ingresar</span>
             </button>
-
             {% endif %}
         </div>
     </div>
