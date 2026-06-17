@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion
 from datetime import datetime, date, timedelta
@@ -311,6 +312,7 @@ def sanciones_list(request):
 # ─────────────────────────────────────────────────────────────
 
 @login_required
+@require_POST
 def eliminar_elemento(request, id):
     """Solo admin puede eliminar elementos."""
     if not request.user.is_staff:
@@ -349,6 +351,7 @@ def editar_elemento(request, id):
 
 
 @login_required
+@require_POST
 def eliminar_prestamo(request, id):
     """
     Admin puede eliminar cualquier préstamo.

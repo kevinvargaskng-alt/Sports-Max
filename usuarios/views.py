@@ -315,3 +315,24 @@ def admin_editar_usuario(request, user_id):
         u.email = request.POST.get('email', u.email).strip()
         u.save()
     return redirect('perfil')
+
+@login_required(login_url='home')
+def gestionar_usuarios_view(request):
+    """Vista para la página de gestión de usuarios exclusiva para admins"""
+    if not request.user.is_staff:
+        messages.error(request, 'No tienes permisos para acceder a esta página.')
+        return redirect('perfil')
+
+    todos_usuarios = Usuario.objects.all().order_by('-fecha_registro')
+    total_usuarios = todos_usuarios.count()
+    total_activos = todos_usuarios.filter(is_active=True).count()
+    total_bloqueados = todos_usuarios.filter(is_active=False).count()
+
+    contexto = {
+        'usuario': request.user,
+        'todos_usuarios': todos_usuarios,
+        'total_usuarios': total_usuarios,
+        'total_activos': total_activos,
+        'total_bloqueados': total_bloqueados,
+    }
+    return render(request, 'usuarios/gestionar_usuarios.html', contexto)

@@ -16,7 +16,7 @@ PAISES_TORNEO = [
     "Argentina", "Brasil", "Francia", "España", "Inglaterra",
     "Alemania", "Portugal", "Países Bajos", "Colombia", "Uruguay",
     "Croacia", "Bélgica", "Noruega", "Japón", "Estados Unidos",
-    "México"
+    "México","Croacia"
 ]
 
 PROGRAMAS_GLOBALES = [
