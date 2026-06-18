@@ -289,7 +289,7 @@ def interfichas_list(request):
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
         torneos_disponibles = torneos.exclude(pk__in=torneos_con_equipo)
 
-    return render(request, 'interfichas/interfichas.html', {
+    context = {
         'torneos':             torneos,
         'equipos':             equipos,
         'disciplinas':         disciplinas,
@@ -297,7 +297,8 @@ def interfichas_list(request):
         'mis_equipos':         mis_equipos,
         'mis_partidos':        mis_partidos,
         'torneos_disponibles': torneos_disponibles,
-    })
+    }
+    return render(request, 'interfichas/interfichas.html', context)
 
 
 @solo_admin
@@ -393,7 +394,7 @@ def gestionar_torneo(request, torneo_id):
     grupos_manual_range = [{'letra': letras[i]}
                            for i in range(min(8, max_grupos_posibles))]
 
-    return render(request, 'interfichas/gestion/gestionar_torneo.html', {
+    context = {
         'torneo':              torneo,
         'equipos_total':       equipos_total,
         'grupos_con_tabla':    grupos_con_tabla,
@@ -408,7 +409,8 @@ def gestionar_torneo(request, torneo_id):
         # Configurador de grupos
         'num_grupos_opciones': num_grupos_opciones,
         'grupos_manual_range': grupos_manual_range,
-    })
+    }
+    return render(request, 'interfichas/gestion/gestionar_torneo.html', context)
 
 
 @solo_admin
@@ -776,13 +778,14 @@ def reporte_torneo(request, torneo_id):
         for g in grupos
     ]
 
-    return render(request, 'interfichas/reporte_torneo.html', {
+    context = {
         'torneo':             torneo,
         'grupos_con_tabla':   grupos_con_tabla,
         'partidos_cuartos':   torneo.partidos.filter(fase='cuartos').select_related('equipo_local', 'equipo_visitante'),
         'partidos_semifinal': torneo.partidos.filter(fase='semifinal').select_related('equipo_local', 'equipo_visitante'),
         'partidos_final':     torneo.partidos.filter(fase='final').select_related('equipo_local', 'equipo_visitante'),
-    })
+    }
+    return render(request, 'interfichas/reporte_torneo.html', context)
 
 
 @solo_admin

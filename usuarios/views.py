@@ -111,7 +111,7 @@ def gimnasio_list(request):
     abrir_admin = request.session.pop('abrir_admin', False)
     seccion_admin = request.session.pop('seccion_admin', '')
 
-    return render(request, 'gimnasio/gimnasio.html', {
+    context = {
         'abrir_admin': abrir_admin,
         'seccion_activa': seccion_admin,
         'reservas': mis_reservas,
@@ -121,7 +121,8 @@ def gimnasio_list(request):
         'es_festivo': es_festivo,
         'config': config,
         'admin_reservas': Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
-    })
+    }
+    return render(request, 'gimnasio/gimnasio.html', context)
 
 
 def registro_view(request):

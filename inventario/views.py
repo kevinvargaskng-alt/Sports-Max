@@ -150,12 +150,13 @@ def inventario_list(request):
             )
             return redirect('inventario')
 
-    return render(request, 'inventario/inventario.html', {
+    context = {
         'elementos': elementos,
         'prestamos': prestamos,
         'sanciones': sanciones,
         'usuarios_staff': usuarios_staff,
-    })
+    }
+    return render(request, 'inventario/inventario.html', context)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -262,10 +263,11 @@ def devoluciones_list(request):
             messages.success(request, "Devolución registrada correctamente.")
             return redirect('devoluciones')
 
-    return render(request, 'inventario/devoluciones.html', {
+    context = {
         'prestamos_activos': prestamos_activos,
         'devoluciones':      devoluciones,
-    })
+    }
+    return render(request, 'inventario/devoluciones.html', context)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -316,10 +318,11 @@ def sanciones_list(request):
             messages.success(request, "Sanción cerrada correctamente.")
             return redirect('sanciones')
 
-    return render(request, 'inventario/sanciones.html', {
+    context = {
         'sanciones': sanciones,
         'usuarios':  usuarios,
-    })
+    }
+    return render(request, 'inventario/sanciones.html', context)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -363,7 +366,8 @@ def editar_elemento(request, id):
         elemento.save()
         messages.success(request, "Elemento actualizado correctamente.")
         return redirect('inventario')
-    return render(request, 'inventario/editar.html', {'elemento': elemento})
+    context = {'elemento': elemento}
+    return render(request, 'inventario/editar.html', context)
 
 
 @login_required

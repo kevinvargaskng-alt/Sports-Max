@@ -61,7 +61,7 @@ def gimnasio_list(request):
 
             return redirect('gimnasio')
 
-    return render(request, 'gimnasio/gimnasio.html', {
+    context = {
         'reservas': mis_reservas,
         'esta_abierto': esta_abierto,
         'ahora': ahora,
@@ -69,7 +69,8 @@ def gimnasio_list(request):
         'es_festivo': es_festivo,
         'config': config,
         'admin_reservas': Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
-    })
+    }
+    return render(request, 'gimnasio/gimnasio.html', context)
 
 
 # --- ELIMINAR REGISTRO ---
@@ -90,7 +91,8 @@ def editar_reserva(request, id):
         reserva.save()
         messages.info(request, "Información actualizada.")
         return redirect('gimnasio')
-    return render(request, 'gimnasio/editar.html', {'reserva': reserva})
+    context = {'reserva': reserva}
+    return render(request, 'gimnasio/editar.html', context)
 
 
 def es_admin(user):
@@ -136,12 +138,13 @@ def admin_disponibilidad(request):
         {'codigo': 'dom', 'label': 'DOM'},
     ]
 
-    return render(request, 'gimnasio/disponibilidad.html', {
+    context = {
         'config':         config,
         'dias_semana':    dias_semana,
         'dias_activos':   config.dias_habilitados,
         'seccion_activa': 'disponibilidad',
-    })
+    }
+    return render(request, 'gimnasio/disponibilidad.html', context)
 
 
 # ── HORARIOS ────────────────────────────────────────────────
@@ -149,10 +152,11 @@ def admin_disponibilidad(request):
 @user_passes_test(es_admin)
 def admin_horarios(request):
     config = GimnasioConfig.get_config()
-    return render(request, 'gimnasio/admin_horarios.html', {
+    context = {
         'config':         config,
         'seccion_activa': 'horarios',
-    })
+    }
+    return render(request, 'gimnasio/admin_horarios.html', context)
 
 
 # ── FECHAS DE INGRESO ───────────────────────────────────────
@@ -180,10 +184,11 @@ def admin_fechas_ingreso(request):
 
         return redirect('admin_fechas_ingreso')
 
-    return render(request, 'gimnasio/admin_fechas_ingreso.html', {
+    context = {
         'fechas':         fechas,
         'seccion_activa': 'fechas_ingreso',
-    })
+    }
+    return render(request, 'gimnasio/admin_fechas_ingreso.html', context)
 
 
 # ── ELIMINAR FECHA ──────────────────────────────────────────
@@ -200,19 +205,19 @@ def admin_eliminar_fecha(request, pk):
 @user_passes_test(es_admin)
 def admin_configuracion(request):
     config = GimnasioConfig.get_config()
-    return render(request, 'gimnasio/admin_configuracion.html', {
+    context = {
         'config':         config,
         'seccion_activa': 'configuracion',
-    })
+    }
+    return render(request, 'gimnasio/admin_configuracion.html', context)
 
 
 # ── NUEVO REGISTRO ──────────────────────────────────────────
 @login_required
 @user_passes_test(es_admin)
 def admin_nuevo_registro(request):
-    return render(request, 'gimnasio/admin_nuevo_registro.html', {
-        'seccion_activa': 'nuevo_registro',
-    })
+    context = {'seccion_activa': 'nuevo_registro'}
+    return render(request, 'gimnasio/admin_nuevo_registro.html', context)
 
 
 # ── VER TODAS LAS RESERVAS ──────────────────────────────────
@@ -220,11 +225,12 @@ def admin_nuevo_registro(request):
 @user_passes_test(es_admin)
 def admin_reservas(request):
     reservas = Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
-    return render(request, 'gimnasio/gimnasio.html', {
+    context = {
         'admin_reservas': reservas,
         'seccion_activa': 'reservas',
         'config': GimnasioConfig.get_config(),
-    })
+    }
+    return render(request, 'gimnasio/gimnasio.html', context)
 
 
 # ── CANCELAR RESERVA ────────────────────────────────────────
@@ -267,6 +273,5 @@ def cerrar_gimnasio(request):
 @user_passes_test(es_admin)
 def admin_lista_anamnesis(request):
     # Reemplaza Anamnesis con tu modelo real cuando lo tengas
-    return render(request, 'gimnasio/admin_lista_anamnesis.html', {
-        'seccion_activa': 'anamnesis',
-    })
+    context = {'seccion_activa': 'anamnesis'}
+    return render(request, 'gimnasio/admin_lista_anamnesis.html', context)

@@ -143,10 +143,11 @@ def habeas_data(request):
     try:
         consent = request.user.habeas_data
         if consent.acepta:
-            return render(request, 'habitos/habeas_data_ok.html', {
+            context = {
                 'consent': consent,
                 'titulo_pagina': 'Habeas Data — Aceptado'
-            })
+            }
+            return render(request, 'habitos/habeas_data_ok.html', context)
     except HabeasDataConsent.DoesNotExist:
         consent = None
 
@@ -167,11 +168,12 @@ def habeas_data(request):
     else:
         form = HabeasDataForm()
 
-    return render(request, 'habitos/salud.html', {
+    context = {
         'form': form,
         'titulo_pagina': 'Autorización Habeas Data',
         'vista': 'habeas_data',
-    })
+    }
+    return render(request, 'habitos/salud.html', context)
 
 
 # ─────────────────────────────────────────────
@@ -206,12 +208,13 @@ def detalle_habito(request, pk):
         categoria=habito.categoria, activo=True
     ).exclude(pk=pk)[:3]
 
-    return render(request, 'habitos/contenido_educativo.html', {
+    context = {
         'habito': habito,
         'relacionados': relacionados,
         'titulo_pagina': habito.titulo,
         'vista': 'detalle_habito',
-    })
+    }
+    return render(request, 'habitos/contenido_educativo.html', context)
 
 
 # ─────────────────────────────────────────────
@@ -245,11 +248,12 @@ def lista_rutinas(request):
 def detalle_rutina(request, pk):
     """Detalle de una rutina física."""
     rutina = get_object_or_404(RutinaFisica, pk=pk, activo=True)
-    return render(request, 'habitos/contenido_educativo.html', {
+    context = {
         'rutina': rutina,
         'titulo_pagina': rutina.nombre,
         'vista': 'detalle_rutina',
-    })
+    }
+    return render(request, 'habitos/contenido_educativo.html', context)
 
 
 # ─────────────────────────────────────────────
@@ -366,11 +370,12 @@ def registrar_seguimiento(request):
         form = SeguimientoSaludForm(
             initial={'fecha_evaluacion': timezone.now().date()})
 
-    return render(request, 'habitos/salud.html', {
+    context = {
         'form': form,
         'titulo_pagina': 'Registrar Seguimiento de Salud',
         'vista': 'registrar',
-    })
+    }
+    return render(request, 'habitos/salud.html', context)
 
 
 @login_required
@@ -418,13 +423,14 @@ def detalle_seguimiento(request, pk):
     )
     categoria, color = seguimiento.get_categoria_imc()
 
-    return render(request, 'habitos/salud.html', {
+    context = {
         'seg': seguimiento,
         'categoria_imc': categoria,
         'color_imc': color,
         'titulo_pagina': f'Seguimiento — {seguimiento.fecha_evaluacion}',
         'vista': 'detalle',
-    })
+    }
+    return render(request, 'habitos/salud.html', context)
 
 
 @login_required
