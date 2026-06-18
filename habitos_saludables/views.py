@@ -5,6 +5,7 @@ views.py - Vistas del módulo Hábitos Saludables SENA
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.http import FileResponse, Http404, JsonResponse
 from django.db.models import Q, Avg
@@ -425,6 +426,7 @@ def detalle_seguimiento(request, pk):
 
 
 @login_required
+@require_POST
 def eliminar_seguimiento(request, pk):
     """Elimina un registro de seguimiento (solo el propio usuario)."""
     seguimiento = get_object_or_404(

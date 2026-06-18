@@ -527,6 +527,201 @@
     background: var(--sena-green) !important;
     color: #fff !important;
   }
+
+  /* ── ESCÁNER DE CARNET ── */
+  .scanner-btn {
+    width: 100%;
+    background: rgba(26,95,180,0.12);
+    border: 1.5px dashed rgba(26,95,180,0.5);
+    border-radius: 6px;
+    padding: 14px 20px;
+    color: #7eb3e8;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .scanner-btn:hover, .scanner-btn:active {
+    background: rgba(26,95,180,0.22);
+    border-color: rgba(26,95,180,0.8);
+    color: #fff;
+  }
+
+  /* Wrapper del visor de cámara */
+  #scannerWrapper {
+    display: none;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid rgba(26,95,180,0.5);
+    position: relative;
+  }
+  #scannerWrapper.active { display: block; }
+
+  #scannerVideo {
+    width: 100%;
+    max-height: 260px;
+    object-fit: cover;
+    display: block;
+    background: #000;
+  }
+  #scannerCanvas { display: none; }
+
+  /* Mira de escaneo */
+  .scan-reticle {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 120px;
+    pointer-events: none;
+  }
+
+  /* Línea animada de escaneo */
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--sena-green), transparent);
+    animation: scanMove 1.8s ease-in-out infinite;
+  }
+  @keyframes scanMove {
+    0%   { top: 10%; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { top: 90%; opacity: 0; }
+  }
+
+  /* Esquinas de la mira */
+  .reticle-corner {
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--sena-green);
+    border-style: solid;
+    opacity: 0.9;
+  }
+  .rc-tl { top: 0; left: 0; border-width: 3px 0 0 3px; }
+  .rc-tr { top: 0; right: 0; border-width: 3px 3px 0 0; }
+  .rc-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; }
+  .rc-br { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
+
+  /* Texto de estado del escáner */
+  #scanStatus {
+    position: absolute;
+    bottom: 10px; left: 0; right: 0;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+
+  /* Badge de verificación SENA */
+  .sena-verified-badge {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(26,95,180,0.15);
+    border: 1px solid rgba(26,95,180,0.4);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #7eb3e8;
+  }
+  .sena-verified-badge.show { display: flex; }
+  .sena-verified-badge .badge-icon {
+    width: 36px; height: 36px;
+    background: var(--sena-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .sena-verified-badge .badge-text { flex: 1; }
+  .sena-verified-badge .badge-text small {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.7;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Input verificado (readonly visual) */
+  .input-verified {
+    border-color: rgba(26,95,180,0.6) !important;
+    background: rgba(26,95,180,0.08) !important;
+  }
+  .input-verified:focus {
+    border-color: rgba(26,95,180,0.8) !important;
+  }
+
+  /* Botón cerrar escáner */
+  #btnCerrarScanner {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(0,0,0,0.6);
+    border: none;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  #btnCerrarScanner:hover, #btnCerrarScanner:active { background: rgba(200,50,50,0.8); }
+
+  /* Spinner de carga cámara */
+  #scannerLoader {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 5;
+  }
+  #scannerLoader.active { display: flex; }
+  #scannerLoader .loader-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+  }
+  .spinner-ring {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: var(--sena-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 {% endblock %}
 
@@ -761,12 +956,53 @@
           <div class="tab-pane fade" id="registerPanel" role="tabpanel">
             <form id="registerForm" novalidate class="px-2 py-3">
               {% csrf_token %}
+
+              <!-- ══ ESCÁNER DE CARNET SENA ══ -->
+              <button type="button" class="scanner-btn" id="btnAbrirScanner">
+                <i class="fas fa-qrcode fa-lg"></i>
+                <span>Escanear carnet SENA con cámara</span>
+              </button>
+
+              <!-- Badge de verificación -->
+              <div class="sena-verified-badge" id="senaVerifiedBadge">
+                <div class="badge-icon"><i class="fas fa-check text-white"></i></div>
+                <div class="badge-text">
+                  <span id="senaVerifiedNombre">Aprendiz verificado</span>
+                  <small id="senaVerifiedFicha">Ficha SENA detectada</small>
+                </div>
+                <i class="fas fa-shield-alt" style="color:var(--sena-green); font-size:20px;"></i>
+              </div>
+
+              <!-- Visor de cámara -->
+              <div id="scannerWrapper">
+                <video id="scannerVideo" autoplay playsinline muted></video>
+                <canvas id="scannerCanvas"></canvas>
+                <!-- Mira visual -->
+                <div class="scan-reticle">
+                  <span class="reticle-corner rc-tl"></span>
+                  <span class="reticle-corner rc-tr"></span>
+                  <span class="reticle-corner rc-bl"></span>
+                  <span class="reticle-corner rc-br"></span>
+                  <div class="scan-line"></div>
+                </div>
+                <div id="scanStatus">Apunta al código QR o de barras del carnet</div>
+                <!-- Spinner mientras arranca la cámara -->
+                <div id="scannerLoader">
+                  <div class="spinner-ring"></div>
+                  <div class="loader-text">Iniciando cámara...</div>
+                </div>
+                <button id="btnCerrarScanner" type="button" title="Cerrar cámara">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <!-- ══════════════════════════════ -->
+
               <div class="row g-4">
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Tipo Documento <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-id-card-alt text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="tipo_documento" required style="box-shadow:none;">
+                    <select class="form-select custom-input border-start-0 ps-0" name="tipo_documento" id="id_tipo_documento" required style="box-shadow:none;">
                       <option value="" selected disabled>-- Selecciona --</option>
                       <option value="CC">Cédula de Ciudadanía</option>
                       <option value="TI">Tarjeta de Identidad</option>
@@ -779,21 +1015,21 @@
                   <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número Documento <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-hashtag text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username" style="box-shadow:none;">
+                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="numero_documento" id="id_numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username" style="box-shadow:none;">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Nombres <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="nombres" required minlength="2" maxlength="100" autocomplete="given-name" style="box-shadow:none;">
+                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" autocomplete="given-name" style="box-shadow:none;">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Apellidos <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="apellidos" required minlength="2" maxlength="100" autocomplete="family-name" style="box-shadow:none;">
+                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" autocomplete="family-name" style="box-shadow:none;">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -820,7 +1056,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Programa de Formación <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-graduation-cap text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="programa_formacion" required style="box-shadow:none;">
+                    <select class="form-select custom-input border-start-0 ps-0" name="programa_formacion" id="id_programa_formacion" required style="box-shadow:none;">
                       <option value="" selected disabled>-- Selecciona tu programa --</option>
                       <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
                       <option value="MINERIA">Supervisión de Procesos Mineros</option>
@@ -882,33 +1118,315 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- jsQR: decodifica QR desde frames de video -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
-  // Countdown — cambia la fecha objetivo a la del próximo evento real
-  (function() {
-    const target = new Date('2025-05-31T10:00:00');
-    function update() {
-      const diff = target - new Date();
-      if (diff <= 0) { document.querySelector('.countdown-strip').style.display='none'; return; }
-      const d = Math.floor(diff/86400000);
-      const h = Math.floor((diff%86400000)/3600000);
-      const m = Math.floor((diff%3600000)/60000);
-      const s = Math.floor((diff%60000)/1000);
-      const pad = n => String(n).padStart(2,'0');
-      document.getElementById('cd-days').textContent = pad(d);
-      document.getElementById('cd-hours').textContent = pad(h);
-      document.getElementById('cd-mins').textContent = pad(m);
-      document.getElementById('cd-secs').textContent = pad(s);
-    }
-    update(); setInterval(update, 1000);
-  })();
+/* ═══════════════════════════════════════════════════════════
+   MÓDULO: ESCÁNER DE CARNET SENA — versión móvil robusta
+   ═══════════════════════════════════════════════════════════ */
+(function () {
 
-  // Abrir modal si viene ?login=1
-  document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('login') === '1') {
-      new bootstrap.Modal(document.getElementById('modalForm')).show();
+  /* ── Referencias DOM ── */
+  const btnAbrir    = document.getElementById('btnAbrirScanner');
+  const btnCerrar   = document.getElementById('btnCerrarScanner');
+  const wrapper     = document.getElementById('scannerWrapper');
+  const video       = document.getElementById('scannerVideo');
+  const canvas      = document.getElementById('scannerCanvas');
+  const statusEl    = document.getElementById('scanStatus');
+  const loaderEl    = document.getElementById('scannerLoader');
+  const badgeEl     = document.getElementById('senaVerifiedBadge');
+  const badgeNombre = document.getElementById('senaVerifiedNombre');
+  const badgeFicha  = document.getElementById('senaVerifiedFicha');
+
+  let streamActivo  = null;
+  let animFrame     = null;
+  let escaneando    = false;
+
+  /* ── Cadena de constraints: de más específica a más permisiva ── */
+  const CONSTRAINTS_LIST = [
+    /* 1. Cámara trasera ideal (la preferida en móvil) */
+    { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+    /* 2. Cámara trasera sin resolución forzada */
+    { video: { facingMode: 'environment' } },
+    /* 3. Cualquier cámara disponible (fallback desktop / iOS Safari) */
+    { video: true },
+    /* 4. Último recurso: sin constraints en absoluto */
+    { video: {}, audio: false }
+  ];
+
+  /* ── Abrir cámara ── */
+  btnAbrir.addEventListener('click', abrirCamara);
+
+  async function abrirCamara() {
+    /* Comprobación básica de soporte */
+    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+      mostrarError('Tu navegador no permite acceso a la cámara. Ingresa los datos manualmente o usa Chrome/Firefox actualizados.');
+      return;
     }
-  });
+
+    /* Mostrar visor con spinner */
+    wrapper.classList.add('active');
+    loaderEl.classList.add('active');
+    btnAbrir.style.display = 'none';
+    statusEl.textContent = 'Iniciando cámara...';
+
+    let stream = null;
+
+    for (const constraints of CONSTRAINTS_LIST) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        break; /* Salir del loop en cuanto funcione */
+      } catch (err) {
+        const nombre = err.name || '';
+        /* Si el usuario denegó el permiso explícitamente, no seguir intentando */
+        if (nombre === 'NotAllowedError' || nombre === 'PermissionDeniedError') {
+          mostrarError('Permiso de cámara denegado. Ve a los ajustes del navegador y permite el acceso a la cámara para este sitio.');
+          cerrarCamara();
+          return;
+        }
+        /* Cualquier otro error (NotFoundError, OverconstrainedError, etc.): probar siguiente constraint */
+      }
+    }
+
+    if (!stream) {
+      mostrarError('No se encontró ninguna cámara disponible. Verifica que el dispositivo tenga cámara y que el sitio use HTTPS.');
+      cerrarCamara();
+      return;
+    }
+
+    streamActivo = stream;
+
+    /* Vincular stream al elemento <video> de forma compatible con iOS Safari */
+    try {
+      video.srcObject = stream;
+    } catch (_) {
+      /* Fallback muy antiguo — raro pero seguro */
+      video.src = URL.createObjectURL(stream);
+    }
+
+    /* Esperar a que el video esté listo antes de iniciar el loop */
+    video.onloadedmetadata = function () {
+      video.play()
+        .then(() => {
+          loaderEl.classList.remove('active');
+          escaneando = true;
+          statusEl.textContent = 'Apunta al código QR o de barras del carnet';
+          animFrame = requestAnimationFrame(procesarFrame);
+        })
+        .catch(err => {
+          mostrarError('No se pudo reproducir el video de la cámara: ' + (err.message || err));
+          cerrarCamara();
+        });
+    };
+
+    /* Por si onloadedmetadata ya disparó (algunos browsers) */
+    if (video.readyState >= 1) {
+      video.onloadedmetadata();
+    }
+  }
+
+  /* ── Cerrar cámara ── */
+  btnCerrar.addEventListener('click', cerrarCamara);
+
+  function cerrarCamara() {
+    escaneando = false;
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    if (streamActivo) {
+      streamActivo.getTracks().forEach(t => t.stop());
+      streamActivo = null;
+    }
+    video.srcObject = null;
+    video.src = '';
+    loaderEl.classList.remove('active');
+    wrapper.classList.remove('active');
+    btnAbrir.style.display = '';
+  }
+
+  /* Cerrar si el modal Bootstrap se cierra */
+  document.getElementById('modalForm').addEventListener('hidden.bs.modal', cerrarCamara);
+
+  /* ── Loop de detección de frames ── */
+  function procesarFrame() {
+    if (!escaneando) return;
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+      const ctx = canvas.getContext('2d');
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      /* ─ Intentar BarcodeDetector nativo (Chrome Android 8+, Chrome Desktop) ─ */
+      if ('BarcodeDetector' in window) {
+        const bd = new BarcodeDetector({
+          formats: ['qr_code', 'code_128', 'code_39', 'pdf417', 'data_matrix', 'ean_13', 'ean_8']
+        });
+        bd.detect(canvas).then(barcodes => {
+          if (barcodes.length > 0 && escaneando) {
+            onCodigoDetectado(barcodes[0].rawValue);
+          }
+        }).catch(() => {/* BarcodeDetector puede fallar en algunos frames — ignorar */});
+      }
+
+      /* ─ jsQR como respaldo universal ─ */
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const qr = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'attemptBoth' /* mejora detección en fondos oscuros */
+      });
+      if (qr && qr.data && escaneando) {
+        onCodigoDetectado(qr.data);
+        return; /* No pedir otro frame */
+      }
+    }
+
+    animFrame = requestAnimationFrame(procesarFrame);
+  }
+
+  /* ── Código detectado ── */
+  function onCodigoDetectado(raw) {
+    escaneando = false;
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    statusEl.textContent = '✓ Código detectado — procesando...';
+
+    const datos = parsearDatosCarnet(raw);
+
+    if (!datos || !datos.numero_doc) {
+      statusEl.textContent = '✗ No se reconoció como carnet SENA. Intenta de nuevo.';
+      setTimeout(() => {
+        if (streamActivo) { /* Solo reiniciar si la cámara sigue activa */
+          escaneando = true;
+          statusEl.textContent = 'Apunta al código QR o de barras del carnet';
+          animFrame = requestAnimationFrame(procesarFrame);
+        }
+      }, 2000);
+      return;
+    }
+
+    llenarFormulario(datos);
+    cerrarCamara();
+  }
+
+  /* ── Parser de datos del carnet SENA ──────────────────────────
+     Formatos soportados:
+       1) JSON   {"nombres":"...","apellidos":"...","tipo_doc":"CC","numero_doc":"...","ficha":"..."}
+       2) CSV    "NOMBRES;APELLIDOS;TIPO_DOC;NUMERO_DOC;FICHA;PROGRAMA"
+       3) Solo número de cédula (barcode simple)
+  ─────────────────────────────────────────────────────────── */
+  function parsearDatosCarnet(raw) {
+    raw = (raw || '').trim();
+    if (!raw) return null;
+
+    /* Intento 1: JSON */
+    try {
+      const obj = JSON.parse(raw);
+      return normalizarDatos(obj);
+    } catch (_) {}
+
+    /* Intento 2: separadores ; | , */
+    const sep = raw.includes(';') ? ';' : raw.includes('|') ? '|' : ',';
+    const partes = raw.split(sep).map(s => s.trim());
+    if (partes.length >= 4) {
+      return normalizarDatos({
+        nombres:    partes[0] || '',
+        apellidos:  partes[1] || '',
+        tipo_doc:   partes[2] || 'CC',
+        numero_doc: partes[3] || '',
+        ficha:      partes[4] || '',
+        programa:   partes[5] || ''
+      });
+    }
+
+    /* Intento 3: solo número de documento */
+    if (/^\d{5,20}$/.test(raw)) {
+      return normalizarDatos({ numero_doc: raw, tipo_doc: 'CC' });
+    }
+
+    return null;
+  }
+
+  function normalizarDatos(obj) {
+    return {
+      nombres:    (obj.nombres    || obj.first_name || obj.nombre   || '').toUpperCase().trim(),
+      apellidos:  (obj.apellidos  || obj.last_name  || obj.apellido || '').toUpperCase().trim(),
+      tipo_doc:   (obj.tipo_doc   || obj.tipo_documento              || 'CC').toUpperCase().trim(),
+      numero_doc: (obj.numero_doc || obj.numero_documento || obj.cedula || obj.documento || '').replace(/\D/g, '').trim(),
+      ficha:      (obj.ficha      || obj.numero_ficha                || '').replace(/\D/g, '').trim(),
+      programa:   (obj.programa   || obj.programa_formacion          || '').toUpperCase().trim()
+    };
+  }
+
+  /* ── Rellenar formulario de registro ── */
+  function llenarFormulario(datos) {
+    function setVal(id, val) {
+      const el = document.getElementById(id);
+      if (el && val) { el.value = val; el.classList.add('input-verified'); }
+    }
+
+    setVal('id_nombres',          datos.nombres);
+    setVal('id_apellidos',        datos.apellidos);
+    setVal('id_numero_documento', datos.numero_doc);
+    setVal('id_ficha',            datos.ficha);
+
+    /* Tipo de documento */
+    const tipoEl = document.getElementById('id_tipo_documento');
+    if (tipoEl && datos.tipo_doc) {
+      for (const opt of tipoEl.options) {
+        if (opt.value === datos.tipo_doc) { opt.selected = true; break; }
+      }
+      tipoEl.classList.add('input-verified');
+    }
+
+    /* Programa de formación */
+    const progEl = document.getElementById('id_programa_formacion');
+    if (progEl && datos.programa) {
+      for (const opt of progEl.options) {
+        if (opt.value === datos.programa) { opt.selected = true; break; }
+      }
+    }
+
+    /* Badge de verificación */
+    const nombreCompleto = [datos.nombres, datos.apellidos].filter(Boolean).join(' ') || 'Aprendiz SENA';
+    badgeNombre.textContent = nombreCompleto;
+    badgeFicha.textContent  = datos.ficha ? 'Ficha ' + datos.ficha : 'Carnet escaneado correctamente';
+    badgeEl.classList.add('show');
+
+    document.getElementById('registerForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── Mostrar error ── */
+  function mostrarError(msg) {
+    const alertEl = document.getElementById('registerAlert');
+    alertEl.className = 'alert alert-danger mt-2';
+    alertEl.textContent = msg;
+    alertEl.classList.remove('d-none');
+    setTimeout(() => alertEl.classList.add('d-none'), 6000);
+  }
+
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   COUNTDOWN
+═══════════════════════════════════════════════════════════ */
+(function () {
+  const target = new Date('2025-05-31T10:00:00');
+  function update() {
+    const diff = target - new Date();
+    if (diff <= 0) { document.querySelector('.countdown-strip').style.display = 'none'; return; }
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('cd-days').textContent  = pad(Math.floor(diff / 86400000));
+    document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 60000) / 1000));
+  }
+  update();
+  setInterval(update, 1000);
+})();
+
+/* Abrir modal si viene ?login=1 */
+document.addEventListener('DOMContentLoaded', function () {
+  if (new URLSearchParams(window.location.search).get('login') === '1') {
+    new bootstrap.Modal(document.getElementById('modalForm')).show();
+  }
+});
 </script>
 {% endblock %}
