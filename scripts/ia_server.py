@@ -43,10 +43,12 @@ CORS(app, origins=["http://127.0.0.1:8000", "http://localhost:8000"])
 log.info("Cargando motor IA...")
 motor = MotorIA.cargar()
 if motor._entrenado:
-    log.info(f"Modelo cargado. Última actualización: {motor.ultima_actualizacion}")
+    log.info(
+        f"Modelo cargado. Última actualización: {motor.ultima_actualizacion}")
     log.info(f"Documentos en conocimiento: {len(motor.conocimiento)}")
 else:
-    log.warning("Motor sin entrenar. Llama a POST /ia/entrenar para inicializarlo.")
+    log.warning(
+        "Motor sin entrenar. Llama a POST /ia/entrenar para inicializarlo.")
 
 
 # ============================================================
@@ -69,7 +71,8 @@ def chat():
 
         resultado = motor.responder(mensaje, historial)
 
-        log.info(f"Pregunta: '{mensaje[:60]}' | Módulo: {resultado['modulo']} | Confianza: {resultado['confianza']}")
+        log.info(
+            f"Pregunta: '{mensaje[:60]}' | Módulo: {resultado['modulo']} | Confianza: {resultado['confianza']}")
 
         return jsonify({
             "reply": resultado["respuesta"],

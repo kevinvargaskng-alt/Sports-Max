@@ -12,9 +12,12 @@ urlpatterns = [
     path('usuarios/', views.gestionar_usuarios_view, name='gestionar_usuarios'),
 
     # ─── ACCIONES DE USUARIO (llamadas desde gestionar_usuarios) ───────────────
-    path('perfil/toggle/<int:user_id>/',         views.toggle_usuario_estado, name='toggle_usuario'),
-    path('perfil/rol/<int:user_id>/',            views.cambiar_rol_usuario,   name='cambiar_rol'),
-    path('perfil/editar-usuario/<int:user_id>/', views.admin_editar_usuario,  name='admin_editar_usuario'),
+    path('perfil/toggle/<int:user_id>/',
+         views.toggle_usuario_estado, name='toggle_usuario'),
+    path('perfil/rol/<int:user_id>/',
+         views.cambiar_rol_usuario,   name='cambiar_rol'),
+    path('perfil/editar-usuario/<int:user_id>/',
+         views.admin_editar_usuario,  name='admin_editar_usuario'),
 
     # ─── RECUPERACIÓN DE CONTRASEÑA (funciona con cualquier correo) ────────────
     # 1. Formulario donde el usuario ingresa su correo

@@ -83,7 +83,7 @@ def inicio(request):
         'ultimo_seguimiento': ultimo_seguimiento,
         'tiene_consent': tiene_consent,
         'titulo_pagina': 'Inicio — Hábitos Saludables',
-        'vista': 'inicio', # Aunque no se usa en inicio.html, es buena práctica
+        'vista': 'inicio',  # Aunque no se usa en inicio.html, es buena práctica
     }
     return render(request, 'habitos/inicio.html', ctx)
 
@@ -153,7 +153,8 @@ def habeas_data(request):
     if request.method == 'POST':
         form = HabeasDataForm(request.POST)
         if form.is_valid():
-            obj, _ = HabeasDataConsent.objects.get_or_create(usuario=request.user)
+            obj, _ = HabeasDataConsent.objects.get_or_create(
+                usuario=request.user)
             obj.acepta = True
             obj.direccion_ip = get_client_ip(request)
             obj.save()
@@ -362,7 +363,8 @@ def registrar_seguimiento(request):
             )
             return redirect('habitos:historial_salud')
     else:
-        form = SeguimientoSaludForm(initial={'fecha_evaluacion': timezone.now().date()})
+        form = SeguimientoSaludForm(
+            initial={'fecha_evaluacion': timezone.now().date()})
 
     return render(request, 'habitos/salud.html', {
         'form': form,

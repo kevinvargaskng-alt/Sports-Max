@@ -14,16 +14,19 @@ from usuarios.models import Usuario
 @login_required
 def inventario_list(request):
     elementos = ElementoDeportivo.objects.all()
-    usuarios_staff = Usuario.objects.filter(is_staff=True, is_active=True).order_by('first_name')
+    usuarios_staff = Usuario.objects.filter(
+        is_staff=True, is_active=True).order_by('first_name')
 
     # Admin ve todos los préstamos; usuario solo los suyos
     if request.user.is_staff:
         prestamos = Prestamo.objects.all().order_by('-fecha_prestamo')
     else:
-        prestamos = Prestamo.objects.filter(usuario=request.user).order_by('-fecha_prestamo')
+        prestamos = Prestamo.objects.filter(
+            usuario=request.user).order_by('-fecha_prestamo')
 
     # Sanciones activas del usuario actual (para el aviso en modal de préstamo)
-    sanciones = Sancion.objects.filter(usuario=request.user, estado_sancion='Activa')
+    sanciones = Sancion.objects.filter(
+        usuario=request.user, estado_sancion='Activa')
 
     if request.method == 'POST':
         accion = request.POST.get('accion')
@@ -31,21 +34,25 @@ def inventario_list(request):
         # ─── 1. CREAR ELEMENTO — solo admin ───────────────────────
         if accion == 'crear_elemento':
             if not request.user.is_staff:
-                messages.error(request, "No tienes permisos para crear elementos.")
+                messages.error(
+                    request, "No tienes permisos para crear elementos.")
                 return redirect('inventario')
 
             # Obtener el ID del responsable desde el POST
             responsable_id = request.POST.get('usuario_responsable')
-            responsable = Usuario.objects.get(id=responsable_id) if responsable_id else None
+            responsable = Usuario.objects.get(
+                id=responsable_id) if responsable_id else None
 
             ElementoDeportivo.objects.create(
-                tipo_maquina         = request.POST.get('nombre_elemento'), # el form manda nombre_elemento
-                cantidad_total       = request.POST.get('cantidad_total'),
-                estado_general       = request.POST.get('estado_general'),
-                fecha_adquisicion    = request.POST.get('fecha_adquisicion') or None,
-                descripcion          = request.POST.get('descripcion', ''),
-                imagen               = request.FILES.get('imagen'),
-                usuario_responsable  = responsable,
+                # el form manda nombre_elemento
+                tipo_maquina=request.POST.get('nombre_elemento'),
+                cantidad_total=request.POST.get('cantidad_total'),
+                estado_general=request.POST.get('estado_general'),
+                fecha_adquisicion=request.POST.get(
+                    'fecha_adquisicion') or None,
+                descripcion=request.POST.get('descripcion', ''),
+                imagen=request.FILES.get('imagen'),
+                usuario_responsable=responsable,
             )
             messages.success(request, "Elemento creado exitosamente.")
             return redirect('inventario')
@@ -53,7 +60,8 @@ def inventario_list(request):
         # ─── 2. EDITAR ELEMENTO — solo admin ──────────────────────
         elif accion == 'editar_elemento':
             if not request.user.is_staff:
-                messages.error(request, "No tienes permisos para editar elementos.")
+                messages.error(
+                    request, "No tienes permisos para editar elementos.")
                 return redirect('inventario')
 
             codigo = request.POST.get('codigo_elemento')
@@ -63,25 +71,29 @@ def inventario_list(request):
                 # Obtener el ID del responsable desde el POST
                 responsable_id = request.POST.get('usuario_responsable')
                 if responsable_id:
-                    elemento.usuario_responsable = Usuario.objects.get(id=responsable_id)
+                    elemento.usuario_responsable = Usuario.objects.get(
+                        id=responsable_id)
                 else:
                     elemento.usuario_responsable = None
 
-                elemento.tipo_maquina         = request.POST.get('nombre_elemento')
-                elemento.cantidad_total       = request.POST.get('cantidad_total')
-                elemento.estado_general       = request.POST.get('estado_general')
-                elemento.fecha_adquisicion    = request.POST.get('fecha_adquisicion') or None
-                elemento.descripcion          = request.POST.get('descripcion', '')
+                elemento.tipo_maquina = request.POST.get('nombre_elemento')
+                elemento.cantidad_total = request.POST.get('cantidad_total')
+                elemento.estado_general = request.POST.get('estado_general')
+                elemento.fecha_adquisicion = request.POST.get(
+                    'fecha_adquisicion') or None
+                elemento.descripcion = request.POST.get('descripcion', '')
                 if 'imagen' in request.FILES:
                     elemento.imagen = request.FILES['imagen']
                 elemento.save()
-                messages.success(request, "Elemento actualizado correctamente.")
+                messages.success(
+                    request, "Elemento actualizado correctamente.")
             return redirect('inventario')
 
         # ─── 3. CREAR PRÉSTAMO — solo usuarios normales ───────────
         elif accion == 'crear_prestamo':
             if request.user.is_staff:
-                messages.error(request, "Los administradores no realizan préstamos.")
+                messages.error(
+                    request, "Los administradores no realizan préstamos.")
                 return redirect('inventario')
 
             # Bloquear si tiene sanciones activas
@@ -93,8 +105,8 @@ def inventario_list(request):
                 return redirect('inventario')
 
             id_elemento = request.POST.get('elemento')
-            cantidad    = int(request.POST.get('cantidad_prestada', 0))
-            dias        = int(request.POST.get('dias_prestamo', 1))
+            cantidad = int(request.POST.get('cantidad_prestada', 0))
+            dias = int(request.POST.get('dias_prestamo', 1))
 
             elemento = get_object_or_404(ElementoDeportivo, id=id_elemento)
 
@@ -112,19 +124,20 @@ def inventario_list(request):
 
             # Validar días
             if dias < 1 or dias > 15:
-                messages.error(request, "Los días de préstamo deben estar entre 1 y 15.")
+                messages.error(
+                    request, "Los días de préstamo deben estar entre 1 y 15.")
                 return redirect('inventario')
 
             fecha_devolucion = date.today() + timedelta(days=dias)
 
             Prestamo.objects.create(
-                usuario              = request.user,
-                elemento             = elemento,
-                cantidad_prestada    = cantidad,
-                dias_prestamo        = dias,
-                fecha_devolucion     = fecha_devolucion,
-                observacion_prestamo = request.POST.get('observacion', ''),
-                estado_prestamo      = 'Activo',
+                usuario=request.user,
+                elemento=elemento,
+                cantidad_prestada=cantidad,
+                dias_prestamo=dias,
+                fecha_devolucion=fecha_devolucion,
+                observacion_prestamo=request.POST.get('observacion', ''),
+                estado_prestamo='Activo',
             )
 
             # Descontar del inventario
@@ -176,12 +189,12 @@ def devoluciones_list(request):
         accion = request.POST.get('accion')
 
         if accion == 'registrar_devolucion':
-            codigo_prestamo   = request.POST.get('prestamo')
+            codigo_prestamo = request.POST.get('prestamo')
             cantidad_devuelta = int(request.POST.get('cantidad_devuelta', 1))
-            tiene_novedad     = request.POST.get('tiene_novedad') == 'on'
-            estado_elemento   = request.POST.get('estado_elemento_devolucion')
-            tipo_novedad      = request.POST.get('tipo_novedad_devolucion', '')
-            observaciones     = request.POST.get('observaciones_devolucion', '')
+            tiene_novedad = request.POST.get('tiene_novedad') == 'on'
+            estado_elemento = request.POST.get('estado_elemento_devolucion')
+            tipo_novedad = request.POST.get('tipo_novedad_devolucion', '')
+            observaciones = request.POST.get('observaciones_devolucion', '')
 
             # Admin puede devolver cualquier préstamo activo;
             # usuario solo los suyos
@@ -208,14 +221,14 @@ def devoluciones_list(request):
 
             # Registrar devolución
             Devolucion.objects.create(
-                prestamo                   = prestamo,
-                cantidad_devuelta          = cantidad_devuelta,
-                fecha_devolucion           = date.today(),
-                hora_devolucion            = datetime.now().time(),
-                tiene_novedad              = tiene_novedad,
-                estado_elemento_devolucion = estado_elemento,
-                tipo_novedad_devolucion    = tipo_novedad,
-                observaciones_devolucion   = observaciones,
+                prestamo=prestamo,
+                cantidad_devuelta=cantidad_devuelta,
+                fecha_devolucion=date.today(),
+                hora_devolucion=datetime.now().time(),
+                tiene_novedad=tiene_novedad,
+                estado_elemento_devolucion=estado_elemento,
+                tipo_novedad_devolucion=tipo_novedad,
+                observaciones_devolucion=observaciones,
             )
 
             # Restaurar stock
@@ -226,12 +239,12 @@ def devoluciones_list(request):
             # Sanción automática por daño o pérdida
             if tiene_novedad and tipo_novedad in ['Daño', 'Pérdida']:
                 Sancion.objects.create(
-                    usuario              = prestamo.usuario,
-                    tipo_sancion         = f"{tipo_novedad} de {elemento.tipo_maquina}",
-                    fecha_inicio_sancion = date.today(),
-                    fecha_fin_sancion    = date.today() + timedelta(days=30),
-                    estado_sancion       = 'Activa',
-                    descripcion_sancion  = (
+                    usuario=prestamo.usuario,
+                    tipo_sancion=f"{tipo_novedad} de {elemento.tipo_maquina}",
+                    fecha_inicio_sancion=date.today(),
+                    fecha_fin_sancion=date.today() + timedelta(days=30),
+                    estado_sancion='Activa',
+                    descripcion_sancion=(
                         f"Sanción automática por {tipo_novedad.lower()} del elemento "
                         f"'{elemento.tipo_maquina}'. Préstamo #{prestamo.codigo_prestamo}. "
                         f"Observación: {observaciones}"
@@ -266,7 +279,8 @@ def sanciones_list(request):
     Usuario: ve solo sus sanciones, sin acciones.
     """
     if request.user.is_staff:
-        sanciones = Sancion.objects.all().select_related('usuario').order_by('-fecha_inicio_sancion')
+        sanciones = Sancion.objects.all().select_related(
+            'usuario').order_by('-fecha_inicio_sancion')
     else:
         sanciones = Sancion.objects.filter(
             usuario=request.user
@@ -283,18 +297,19 @@ def sanciones_list(request):
 
         if accion == 'crear_sancion':
             Sancion.objects.create(
-                usuario_id           = request.POST.get('usuario_id'),
-                tipo_sancion         = request.POST.get('tipo_sancion'),
-                fecha_inicio_sancion = request.POST.get('fecha_inicio_sancion'),
-                fecha_fin_sancion    = request.POST.get('fecha_fin_sancion'),
-                estado_sancion       = 'Activa',
-                descripcion_sancion  = request.POST.get('descripcion_sancion', ''),
+                usuario_id=request.POST.get('usuario_id'),
+                tipo_sancion=request.POST.get('tipo_sancion'),
+                fecha_inicio_sancion=request.POST.get('fecha_inicio_sancion'),
+                fecha_fin_sancion=request.POST.get('fecha_fin_sancion'),
+                estado_sancion='Activa',
+                descripcion_sancion=request.POST.get(
+                    'descripcion_sancion', ''),
             )
             messages.success(request, "Sanción creada correctamente.")
             return redirect('sanciones')
 
         elif accion == 'cerrar_sancion':
-            codigo  = request.POST.get('codigo_sancion')
+            codigo = request.POST.get('codigo_sancion')
             sancion = get_object_or_404(Sancion, codigo_sancion=codigo)
             sancion.estado_sancion = 'Cerrada'
             sancion.save()
@@ -334,16 +349,17 @@ def editar_elemento(request, id):
     if request.method == 'POST':
         if 'imagen' in request.FILES:
             elemento.imagen = request.FILES['imagen']
-        elemento.tipo_maquina        = request.POST.get('tipo_maquina')
-        elemento.cantidad_total      = request.POST.get('cantidad_total')
-        elemento.estado_general      = request.POST.get('estado_general')
-        
+        elemento.tipo_maquina = request.POST.get('tipo_maquina')
+        elemento.cantidad_total = request.POST.get('cantidad_total')
+        elemento.estado_general = request.POST.get('estado_general')
+
         responsable_id = request.POST.get('usuario_responsable')
         if responsable_id:
-            elemento.usuario_responsable = Usuario.objects.get(id=responsable_id)
+            elemento.usuario_responsable = Usuario.objects.get(
+                id=responsable_id)
         else:
             elemento.usuario_responsable = None
-            
+
         elemento.save()
         messages.success(request, "Elemento actualizado correctamente.")
         return redirect('inventario')
@@ -360,7 +376,8 @@ def eliminar_prestamo(request, id):
     if request.user.is_staff:
         prestamo = get_object_or_404(Prestamo, codigo_prestamo=id)
     else:
-        prestamo = get_object_or_404(Prestamo, codigo_prestamo=id, usuario=request.user)
+        prestamo = get_object_or_404(
+            Prestamo, codigo_prestamo=id, usuario=request.user)
 
     # Restaurar stock si el préstamo estaba activo
     if prestamo.estado_prestamo == 'Activo':

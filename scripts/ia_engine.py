@@ -306,7 +306,8 @@ class MotorIA:
     Soporta contexto multi-turno y expansión de sinónimos.
     """
 
-    RUTA_MODELO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ia_model.pkl")
+    RUTA_MODELO = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "ia_model.pkl")
 
     def __init__(self):
         self.vectorizer = TfidfVectorizer(
@@ -418,7 +419,8 @@ class MotorIA:
                 "modulo": "interfichas",
             })
 
-        resumen = ", ".join(t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
+        resumen = ", ".join(
+            t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
         self.conocimiento.append({
             "pregunta": "cuántos torneos interfichas activos equipos partidos jugados resumen total fichas",
             "respuesta": (
@@ -447,7 +449,8 @@ class MotorIA:
                 "modulo": "intercentros",
             })
 
-        resumen = ", ".join(t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
+        resumen = ", ".join(
+            t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
         self.conocimiento.append({
             "pregunta": "cuántos torneos intercentros activos postulaciones aprendices inscritos competencias regional",
             "respuesta": (
@@ -549,7 +552,8 @@ class MotorIA:
                 motor.ultima_actualizacion = datos.get("ultima_actualizacion")
                 motor._entrenado = True
             except Exception as e:
-                print(f"[MotorIA] Error cargando modelo: {e}. Se creará uno nuevo al entrenar.")
+                print(
+                    f"[MotorIA] Error cargando modelo: {e}. Se creará uno nuevo al entrenar.")
         return motor
 
     # ── UTILIDADES ───────────────────────────────────────────

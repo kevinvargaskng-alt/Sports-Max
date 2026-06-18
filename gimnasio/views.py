@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from .models import Reserva, GimnasioConfig, FechaIngreso
-from django.db.models import Q
 import json
 
 
@@ -41,7 +40,8 @@ def gimnasio_list(request):
 
         if accion == 'crear_reserva':
             if not esta_abierto:
-                messages.error(request, "Acceso denegado: El sistema está bloqueado.")
+                messages.error(
+                    request, "Acceso denegado: El sistema está bloqueado.")
                 return redirect('gimnasio')
 
             try:
@@ -55,7 +55,7 @@ def gimnasio_list(request):
                     fecha_salida=ahora.date(),
                     estado='Activa'
                 )
-                messages.success(request, f"¡Entrada registrada! Bienvenido(a).")
+                messages.success(request, "¡Entrada registrada! Bienvenido(a).")
             except Exception as e:
                 messages.error(request, f"Error técnico: {e}")
 
@@ -104,7 +104,7 @@ def admin_disponibilidad(request):
     config = GimnasioConfig.get_config()
 
     if request.method == 'POST':
-        estado    = request.POST.get('estado', config.estado)
+        estado = request.POST.get('estado', config.estado)
         dias_json = request.POST.get('dias_json', '[]')
         try:
             dias = json.loads(dias_json)
@@ -112,15 +112,15 @@ def admin_disponibilidad(request):
             dias = []
 
         horario_apertura = request.POST.get('horario_apertura', '07:00')
-        horario_cierre   = request.POST.get('horario_cierre',   '17:00')
-        capacidad        = request.POST.get('capacidad_maxima', 40)
+        horario_cierre = request.POST.get('horario_cierre',   '17:00')
+        capacidad = request.POST.get('capacidad_maxima', 40)
 
-        config.estado           = estado
+        config.estado = estado
         config.dias_habilitados = dias
         config.horario_apertura = horario_apertura
-        config.horario_cierre   = horario_cierre
+        config.horario_cierre = horario_cierre
         config.capacidad_maxima = int(capacidad)
-        config.actualizado_por  = request.user
+        config.actualizado_por = request.user
         config.save()
 
         messages.success(request, 'Configuración actualizada correctamente.')
@@ -163,9 +163,9 @@ def admin_fechas_ingreso(request):
     fechas = FechaIngreso.objects.filter(config=config)
 
     if request.method == 'POST':
-        fecha_str   = request.POST.get('fecha', '').strip()
+        fecha_str = request.POST.get('fecha', '').strip()
         descripcion = request.POST.get('descripcion', '').strip()
-        habilitada  = request.POST.get('habilitada') == 'on'
+        habilitada = request.POST.get('habilitada') == 'on'
 
         if fecha_str:
             FechaIngreso.objects.create(

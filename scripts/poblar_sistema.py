@@ -1,3 +1,8 @@
+from habitos_saludables.models import PiramideNutricional, RutinaFisica, HabitoSaludable
+from interfichas.models import TorneoInterfichas, EquipoInterfichas, Disciplina
+from gimnasio.models import Reserva
+from inventario.models import ElementoDeportivo, Prestamo
+from usuarios.models import Usuario, Sugerencia
 import os
 import sys
 import django
@@ -12,20 +17,16 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
-from usuarios.models import Usuario, Sugerencia
-from inventario.models import ElementoDeportivo, Prestamo
-from gimnasio.models import Reserva
-from interfichas.models import TorneoInterfichas, EquipoInterfichas, Disciplina
-from habitos_saludables.models import PiramideNutricional, RutinaFisica, HabitoSaludable
+
 def poblar_datos():
     print("🚀 Iniciando la población de la base de datos...")
 
     # 1. Crear Usuarios (Admins, Instructores, Aprendices)
     programas = [
-        'ADSO', 'MINERIA', 'SST', 'QUIMICA', 'TOPOGRAFIA', 
+        'ADSO', 'MINERIA', 'SST', 'QUIMICA', 'TOPOGRAFIA',
         'VIAL', 'SANEAMIENTO', 'MAQUINARIA_PESADA', 'MANTENIMIENTO_EQUIPO'
     ]
-    
+
     # 1. Crear Admin principal
     admin_user, admin_created = Usuario.objects.get_or_create(
         username="0000000000",
@@ -76,7 +77,8 @@ def poblar_datos():
     print(f"✅ {len(usuarios_creados)} Usuarios listos.")
 
     # 2. Disciplinas
-    nombres_disciplinas = ["Fútbol", "Baloncesto", "Voleibol", "Tenis de Mesa", "Ajedrez", "Atletismo", "Natación", "Fútbol Sala", "Taekwondo", "Billar"]
+    nombres_disciplinas = ["Fútbol", "Baloncesto", "Voleibol", "Tenis de Mesa",
+                           "Ajedrez", "Atletismo", "Natación", "Fútbol Sala", "Taekwondo", "Billar"]
     disciplinas_objs = []
     for nombre in nombres_disciplinas:
         d, _ = Disciplina.objects.get_or_create(nombre_disciplina=nombre)
@@ -84,7 +86,8 @@ def poblar_datos():
     print("✅ Disciplinas creadas.")
 
     # 3. Elementos Deportivos (Inventario)
-    elementos_nombres = ["Balón de Fútbol", "Mesa de Ping Pong", "Mesa de Billar", "Pesa 10kg", "Colchoneta", "Balón Baloncesto", "Net de Voleibol", "Cronómetro", "Cinta Métrica", "Set de Ajedrez"]
+    elementos_nombres = ["Balón de Fútbol", "Mesa de Ping Pong", "Mesa de Billar", "Pesa 10kg",
+                         "Colchoneta", "Balón Baloncesto", "Net de Voleibol", "Cronómetro", "Cinta Métrica", "Set de Ajedrez"]
     elementos_objs = []
     usuarios_staff = [u for u in usuarios_creados if u.is_staff]
     for i, nombre in enumerate(elementos_nombres):
@@ -119,7 +122,7 @@ def poblar_datos():
                 nombre_equipo=f"Equipo {t.pk}-{j}",
                 defaults={
                     'capitan': f"Aprendiz Lider {j}",
-                    'ficha': f"27{random.randint(100,999)}",
+                    'ficha': f"27{random.randint(100, 999)}",
                     'programa': random.choice(programas),
                     'disciplina': t.disciplina,
                     'usuario_registra': random.choice(usuarios_creados)
@@ -175,21 +178,31 @@ def poblar_datos():
     print("✅ Sugerencias creadas.")
 
     # 9. Hábitos Saludables
-    PiramideNutricional.objects.get_or_create(nombre="Agua", defaults={'categoria':"agua", 'nivel_piramide':1, 'beneficios':"Hidratación esencial para el cuerpo", 'cantidad_recomendada':"2 a 3 litros diarios", 'ejemplos':"Agua natural", 'color_tarjeta':"#2196F3"})
-    PiramideNutricional.objects.get_or_create(nombre="Cereales y Tubérculos", defaults={'categoria':"cereales", 'nivel_piramide':1, 'beneficios':"Principal fuente de energía", 'cantidad_recomendada':"4 a 6 porciones diarias", 'ejemplos':"Avena, Arroz, Papa", 'color_tarjeta':"#FFC107"})
-    PiramideNutricional.objects.get_or_create(nombre="Frutas y Verduras", defaults={'categoria':"frutas", 'nivel_piramide':2, 'beneficios':"Aportan vitaminas y minerales", 'cantidad_recomendada':"Al menos 5 porciones diarias", 'ejemplos':"Manzana, Brócoli, Zanahoria", 'color_tarjeta':"#4CAF50"})
-    PiramideNutricional.objects.get_or_create(nombre="Proteínas y Lácteos", defaults={'categoria':"proteinas", 'nivel_piramide':3, 'beneficios':"Construcción y reparación de tejidos", 'cantidad_recomendada':"2 a 3 porciones diarias", 'ejemplos':"Pollo, Pescado, Huevos, Queso", 'color_tarjeta':"#F44336"})
-    PiramideNutricional.objects.get_or_create(nombre="Grasas y Azúcares", defaults={'categoria':"azucares", 'nivel_piramide':5, 'beneficios':"Consumo ocasional", 'cantidad_recomendada':"Consumo muy moderado", 'ejemplos':"Dulces, Mantequilla, Postres", 'color_tarjeta':"#9C27B0"})
-    
-    RutinaFisica.objects.get_or_create(nombre="Cuerpo Completo", defaults={'nivel':"principiante", 'objetivo':"bienestar", 'descripcion':"Rutina suave.", 'duracion_minutos':30, 'ejercicios':"10 Sentadillas\n15 Flexiones"})
-    RutinaFisica.objects.get_or_create(nombre="Cardio HIIT", defaults={'nivel':"avanzado", 'objetivo':"cardio", 'descripcion':"Alta intensidad.", 'duracion_minutos':25, 'ejercicios':"45s Burpees\n45s Jumping Jacks"})
-    
-    HabitoSaludable.objects.get_or_create(titulo="Dormir 8 horas diarias", defaults={'categoria':"sueno", 'descripcion':"Mantener un horario regular de sueño ayuda a la recuperación.", 'consejos':"Evitar pantallas 1 hora antes de dormir\nMantener la habitación oscura", 'icono_css':"bed"})
-    HabitoSaludable.objects.get_or_create(titulo="Pausas Activas", defaults={'categoria':"ejercicio", 'descripcion':"Realizar estiramientos.", 'consejos':"Estirar el cuello y los hombros\nCaminar 5 minutos", 'icono_css':"walking"})
-    
+    PiramideNutricional.objects.get_or_create(nombre="Agua", defaults={'categoria': "agua", 'nivel_piramide': 1, 'beneficios': "Hidratación esencial para el cuerpo",
+                                              'cantidad_recomendada': "2 a 3 litros diarios", 'ejemplos': "Agua natural", 'color_tarjeta': "#2196F3"})
+    PiramideNutricional.objects.get_or_create(nombre="Cereales y Tubérculos", defaults={
+                                              'categoria': "cereales", 'nivel_piramide': 1, 'beneficios': "Principal fuente de energía", 'cantidad_recomendada': "4 a 6 porciones diarias", 'ejemplos': "Avena, Arroz, Papa", 'color_tarjeta': "#FFC107"})
+    PiramideNutricional.objects.get_or_create(nombre="Frutas y Verduras", defaults={'categoria': "frutas", 'nivel_piramide': 2, 'beneficios': "Aportan vitaminas y minerales",
+                                              'cantidad_recomendada': "Al menos 5 porciones diarias", 'ejemplos': "Manzana, Brócoli, Zanahoria", 'color_tarjeta': "#4CAF50"})
+    PiramideNutricional.objects.get_or_create(nombre="Proteínas y Lácteos", defaults={
+                                              'categoria': "proteinas", 'nivel_piramide': 3, 'beneficios': "Construcción y reparación de tejidos", 'cantidad_recomendada': "2 a 3 porciones diarias", 'ejemplos': "Pollo, Pescado, Huevos, Queso", 'color_tarjeta': "#F44336"})
+    PiramideNutricional.objects.get_or_create(nombre="Grasas y Azúcares", defaults={
+                                              'categoria': "azucares", 'nivel_piramide': 5, 'beneficios': "Consumo ocasional", 'cantidad_recomendada': "Consumo muy moderado", 'ejemplos': "Dulces, Mantequilla, Postres", 'color_tarjeta': "#9C27B0"})
+
+    RutinaFisica.objects.get_or_create(nombre="Cuerpo Completo", defaults={
+                                       'nivel': "principiante", 'objetivo': "bienestar", 'descripcion': "Rutina suave.", 'duracion_minutos': 30, 'ejercicios': "10 Sentadillas\n15 Flexiones"})
+    RutinaFisica.objects.get_or_create(nombre="Cardio HIIT", defaults={
+                                       'nivel': "avanzado", 'objetivo': "cardio", 'descripcion': "Alta intensidad.", 'duracion_minutos': 25, 'ejercicios': "45s Burpees\n45s Jumping Jacks"})
+
+    HabitoSaludable.objects.get_or_create(titulo="Dormir 8 horas diarias", defaults={
+                                          'categoria': "sueno", 'descripcion': "Mantener un horario regular de sueño ayuda a la recuperación.", 'consejos': "Evitar pantallas 1 hora antes de dormir\nMantener la habitación oscura", 'icono_css': "bed"})
+    HabitoSaludable.objects.get_or_create(titulo="Pausas Activas", defaults={
+                                          'categoria': "ejercicio", 'descripcion': "Realizar estiramientos.", 'consejos': "Estirar el cuello y los hombros\nCaminar 5 minutos", 'icono_css': "walking"})
+
     print("✅ Hábitos, Rutinas y Pirámide nutricional creados.")
 
     print("\n✨ ¡Base de datos poblada con éxito!")
+
 
 if __name__ == '__main__':
     poblar_datos()

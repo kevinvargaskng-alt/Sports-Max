@@ -1,3 +1,6 @@
+from inventario.models import ElementoDeportivo, Prestamo, Sancion
+from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo
+from gimnasio.models import Reserva
 import json
 import urllib.request
 import urllib.error
@@ -8,9 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 IA_SERVER_URL = "http://127.0.0.1:5001"
 
 # Importación de modelos reales
-from gimnasio.models import Reserva
-from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo
-from inventario.models import ElementoDeportivo, Prestamo, Sancion
+
 
 @csrf_exempt
 def chat_tux_api(request):
@@ -22,7 +23,8 @@ def chat_tux_api(request):
         historial = data.get("history", [])
         if not mensaje:
             return JsonResponse({"error": "El mensaje está vacío."}, status=400)
-        payload = json.dumps({"message": mensaje, "history": historial}).encode("utf-8")
+        payload = json.dumps(
+            {"message": mensaje, "history": historial}).encode("utf-8")
         req = urllib.request.Request(
             f"{IA_SERVER_URL}/ia/chat",
             data=payload,

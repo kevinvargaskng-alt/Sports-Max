@@ -2,19 +2,23 @@ from django.db import models
 from django.conf import settings
 
 # Punto 1: ElementoDeportivo
+
+
 class ElementoDeportivo(models.Model):
     # Estos son los campos que tu Admin está pidiendo:
-    tipo_maquina = models.CharField(max_length=100, verbose_name="Tipo de Máquina/Elemento")
+    tipo_maquina = models.CharField(
+        max_length=100, verbose_name="Tipo de Máquina/Elemento")
     cantidad_total = models.IntegerField(default=1)
     estado_general = models.CharField(max_length=50, default='Buen estado')
     fecha_adquisicion = models.DateField(null=True, blank=True)
     descripcion = models.TextField(blank=True, null=True)
-    imagen = models.ImageField(upload_to='elementos_deportivos/', null=True, blank=True)
-    
+    imagen = models.ImageField(
+        upload_to='elementos_deportivos/', null=True, blank=True)
+
     # El campo que ajustamos para el MER:
     usuario_responsable = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL, 
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="Usuario Responsable"
@@ -23,6 +27,8 @@ class ElementoDeportivo(models.Model):
     def __str__(self):
         return f"{self.tipo_maquina} - {self.estado_general}"
 # Punto 6: RESERVA (¡Faltaba este modelo en tu código!)
+
+
 class Reserva(models.Model):
     codigo_reserva = models.AutoField(primary_key=True)
     usuario_solicitante = models.ForeignKey(
@@ -37,6 +43,8 @@ class Reserva(models.Model):
     estado_reserva = models.CharField(max_length=30, default='Pendiente')
 
 # 2. PRESTAMO (Cabecera) - ¡YA ESTÁ PERFECTO!
+
+
 class Prestamo(models.Model):
     codigo_prestamo = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(
@@ -44,7 +52,8 @@ class Prestamo(models.Model):
         on_delete=models.CASCADE,
         related_name='prestamos_realizados'
     )
-    elemento = models.ForeignKey(ElementoDeportivo, on_delete=models.CASCADE, null=True, blank=True)
+    elemento = models.ForeignKey(
+        ElementoDeportivo, on_delete=models.CASCADE, null=True, blank=True)
     cantidad_prestada = models.IntegerField(default=1)
     fecha_devolucion = models.DateField(null=True, blank=True)
     fecha_prestamo = models.DateField(auto_now_add=True)
@@ -57,9 +66,12 @@ class Prestamo(models.Model):
         return f"Préstamo #{self.codigo_prestamo} - {self.usuario.username}"
 
 # 3. DETALLE PRESTAMO - ¡YA ESTÁ PERFECTO!
+
+
 class DetallePrestamo(models.Model):
     id_detalle = models.AutoField(primary_key=True)
-    prestamo = models.ForeignKey(Prestamo, on_delete=models.CASCADE, related_name='detalles')
+    prestamo = models.ForeignKey(
+        Prestamo, on_delete=models.CASCADE, related_name='detalles')
     elemento = models.ForeignKey(ElementoDeportivo, on_delete=models.CASCADE)
     fecha_devolucion_prevista = models.DateField()
     estado = models.CharField(max_length=30, default='Pendiente')
@@ -68,30 +80,40 @@ class DetallePrestamo(models.Model):
         return f"Detalle #{self.id_detalle}"
 
 # 4. DEVOLUCION - ¡YA ESTÁ PERFECTO!
+
+
 class Devolucion(models.Model):
     codigo_devolucion = models.AutoField(primary_key=True)
-    prestamo = models.ForeignKey(Prestamo, on_delete=models.CASCADE, related_name='devoluciones')
+    prestamo = models.ForeignKey(
+        Prestamo, on_delete=models.CASCADE, related_name='devoluciones')
     cantidad_devuelta = models.IntegerField(default=1)
     fecha_devolucion = models.DateField(auto_now_add=True)
     hora_devolucion = models.TimeField(auto_now_add=True)
     tiene_novedad = models.BooleanField(default=False)
-    estado_elemento_devolucion = models.CharField(max_length=50, blank=True, null=True)
-    tipo_novedad_devolucion = models.CharField(max_length=100, blank=True, null=True)
+    estado_elemento_devolucion = models.CharField(
+        max_length=50, blank=True, null=True)
+    tipo_novedad_devolucion = models.CharField(
+        max_length=100, blank=True, null=True)
     observaciones_devolucion = models.TextField(blank=True)
 
     def __str__(self):
         return f"Devolución #{self.codigo_devolucion}"
 
 # 5. REVISION - ¡YA ESTÁ PERFECTO! (Alineado con nombres del MER)
+
+
 class Revision(models.Model):
     codigo_revision = models.AutoField(primary_key=True)
-    devolucion = models.ForeignKey(Devolucion, on_delete=models.CASCADE, related_name='revisiones', null=True)
-    tipo_novedad = models.CharField(max_length=100) 
+    devolucion = models.ForeignKey(
+        Devolucion, on_delete=models.CASCADE, related_name='revisiones', null=True)
+    tipo_novedad = models.CharField(max_length=100)
     descripcion_detallada = models.TextField(blank=True)
     estado_resolucion = models.CharField(max_length=30, default='Pendiente')
     fecha_registro = models.DateField(auto_now_add=True)
 
 # 6. SANCION - ¡YA ESTÁ PERFECTO!
+
+
 class Sancion(models.Model):
     codigo_sancion = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(
@@ -99,7 +121,8 @@ class Sancion(models.Model):
         on_delete=models.CASCADE,
         related_name='sanciones'
     )
-    devolucion = models.ForeignKey(Devolucion, on_delete=models.SET_NULL, null=True, blank=True)
+    devolucion = models.ForeignKey(
+        Devolucion, on_delete=models.SET_NULL, null=True, blank=True)
     tipo_sancion = models.CharField(max_length=100)
     fecha_inicio_sancion = models.DateField()
     fecha_fin_sancion = models.DateField()
