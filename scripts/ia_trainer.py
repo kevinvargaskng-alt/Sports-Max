@@ -9,6 +9,11 @@ Ejecutar:
     python ia_trainer.py
 """
 
+from ia_engine import MotorIA
+from interfichas.models import TorneoInterfichas, EquipoInterfichas, PartidoInterfichas
+from inventario.models import ElementoDeportivo, Prestamo
+from gimnasio.models import Reserva, GimnasioConfig
+import django
 import os
 import sys
 import logging
@@ -18,17 +23,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
-import django
 django.setup()
 
 # ── Importar modelos Django ───────────────────────────────
-from gimnasio.models import Reserva, GimnasioConfig
-from inventario.models import ElementoDeportivo, Prestamo
-from interfichas.models import TorneoInterfichas, EquipoInterfichas, PartidoInterfichas
 # ── Importar motor IA directamente ───────────────────────
-from ia_engine import MotorIA
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("ia_trainer")
 
 
@@ -71,7 +72,8 @@ def recopilar_datos() -> dict:
     ).count()
 
     # Interfichas
-    torneos_fichas = TorneoInterfichas.objects.select_related("disciplina").all()[:20]
+    torneos_fichas = TorneoInterfichas.objects.select_related("disciplina").all()[
+        :20]
     datos["torneos_interfichas"] = []
     for t in torneos_fichas:
         datos["torneos_interfichas"].append({
@@ -83,9 +85,8 @@ def recopilar_datos() -> dict:
             "num_equipos": t.equipos.count(),
         })
     datos["equipos_interfichas"] = EquipoInterfichas.objects.count()
-    datos["partidos_jugados"] = PartidoInterfichas.objects.filter(jugado=True).count()
-
-
+    datos["partidos_jugados"] = PartidoInterfichas.objects.filter(
+        jugado=True).count()
 
     return datos
 

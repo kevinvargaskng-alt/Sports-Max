@@ -134,7 +134,7 @@ class MaterialApoyoForm(forms.ModelForm):
                                                'placeholder': 'https://youtube.com/...'}),
             'autor': forms.TextInput(attrs={'class': 'form-control'}),
             'fecha_publicacion': forms.DateInput(attrs={'type': 'date',
-                                                         'class': 'form-control'}),
+                                                        'class': 'form-control'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

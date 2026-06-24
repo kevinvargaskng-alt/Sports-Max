@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Gestión de Usuarios - Sistema Deportivo{% endblock %}
+
+{% block extra_css %}
+<style>
+    .user-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+    .user-card:hover {
+        background: rgba(255,255,255,0.07);
+        transform: translateY(-2px);
+    }
+    .stat-pill {
+        background: rgba(74,158,255,0.1);
+        border: 1px solid rgba(74,158,255,0.2);
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 0.8rem;
+        color: var(--accent-blue);
+    }
+    .avatar-sm {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--accent-blue), #0056b3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .badge-rol {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+    .filter-btn.active {
+        background: var(--accent-blue) !important;
+        color: #050814 !important;
+        border-color: var(--accent-blue) !important;
+    }
+    .search-box {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        border-radius: 10px;
+    }
+    .search-box:focus {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--accent-blue);
+        color: #fff;
+        box-shadow: 0 0 0 2px rgba(74,158,255,0.2);
+    }
+    .action-btn {
+        border-radius: 8px;
+        font-size: 0.78rem;
+        padding: 5px 12px;
+    }
+    .table-user thead th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(255,255,255,0.4);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-weight: 600;
+    }
+    .table-user tbody tr {
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        transition: background 0.15s;
+    }
+    .table-user tbody tr:hover {
+        background: rgba(74,158,255,0.05);
+    }
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+        color: rgba(255,255,255,0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+    <div class="container-fluid" style="max-width: 1300px;">
+
+        <!-- ENCABEZADO -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'perfil' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+                <div>
+                    <h4 class="text-white fw-bold mb-0"><i class="fas fa-users-cog me-2 text-info"></i>Gestión de Usuarios</h4>
+                    <p class="text-white-50 small mb-0">Administra roles, estados y datos de todos los registrados</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <span class="stat-pill"><i class="fas fa-users me-1"></i>{{ total_usuarios }} usuarios</span>
+                <span class="stat-pill" style="color: #22c55e; border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.1);"><i class="fas fa-check-circle me-1"></i>{{ total_activos }} activos</span>
+                <span class="stat-pill" style="color: #ef4444; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1);"><i class="fas fa-ban me-1"></i>{{ total_bloqueados }} bloqueados</span>
+            </div>
+        </div>
+
+        <!-- MENSAJES -->
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show mb-3" role="alert" style="background: rgba(74,158,255,0.1); border: 1px solid rgba(74,158,255,0.2); color: #fff;">
+            <i class="fas fa-info-circle me-2 text-info"></i>{{ msg }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- BARRA DE FILTROS Y BÚSQUEDA -->
+        <div class="sport-card mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5);">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="buscadorUsuarios" class="form-control search-box border-start-0" 
+                               placeholder="Buscar por nombre, documento o correo..." 
+                               style="border-left: none !important;"
+                               oninput="filtrarTabla()">
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-light filter-btn active" onclick="filtrarPor('todos', this)">Todos</button>
+                        <button class="btn btn-sm btn-outline-info filter-btn" onclick="filtrarPor('aprendiz', this)">Aprendices</button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" onclick="filtrarPor('instructor', this)">Instructores</button>
+                        <button class="btn btn-sm btn-outline-danger filter-btn" onclick="filtrarPor('admin', this)">Admins</button>
+                        <button class="btn btn-sm btn-outline-secondary filter-btn" onclick="filtrarPor('bloqueado', this)">Bloqueados</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLA DE USUARIOS -->
+        <div class="sport-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark mb-0 table-user" id="tablaUsuarios">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Usuario</th>
+                            <th>Documento</th>
+                            <th>Correo</th>
+                            <th>Programa / Ficha</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th class="text-center pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyUsuarios">
+                        {% for u in todos_usuarios %}
+                        <tr data-rol="{{ u.rol }}" data-activo="{{ u.is_active|yesno:'si,no' }}"
+                            data-buscar="{{ u.get_full_name|lower }} {{ u.numero_documento }} {{ u.email|lower }}">
+                            <!-- USUARIO -->
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-sm">
+                                        {% if u.foto_perfil %}
+                                            <img src="{{ u.foto_perfil.url }}" class="rounded-circle" style="width:42px;height:42px;object-fit:cover;">
+                                        {% else %}
+                                            {{ u.first_name|first|upper }}
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-bold small" style="text-transform: capitalize;">{{ u.get_full_name|lower }}</div>
+                                        <div class="text-white-50" style="font-size: 0.72rem;">Desde {{ u.fecha_registro|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- DOCUMENTO -->
+                            <td class="py-3">
+                                <span class="text-info fw-bold small">{{ u.tipo_documento }} {{ u.numero_documento }}</span>
+                            </td>
+                            <!-- CORREO -->
+                            <td class="py-3">
+                                <span class="text-white-50 small">{{ u.email }}</span>
+                            </td>
+                            <!-- PROGRAMA -->
+                            <td class="py-3">
+                                <div class="small text-white-50" style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ u.get_programa_formacion_display|default:"-" }}
+                                </div>
+                                {% if u.ficha %}<span class="badge bg-dark border border-secondary text-white-50 small">Ficha: {{ u.ficha }}</span>{% endif %}
+                            </td>
+                            <!-- ROL -->
+                            <td class="py-3">
+                                <span class="badge badge-rol 
+                                    {% if u.is_staff or u.rol == 'admin' %}bg-warning text-dark
+                                    {% elif u.rol == 'instructor' %}bg-info text-dark
+                                    {% else %}bg-secondary{% endif %}">
+                                    <i class="fas {% if u.is_staff or u.rol == 'admin' %}fa-user-shield
+                                               {% elif u.rol == 'instructor' %}fa-chalkboard-teacher
+                                               {% else %}fa-user-graduate{% endif %} me-1"></i>
+                                    {{ u.rol|capfirst }}
+                                </span>
+                            </td>
+                            <!-- ESTADO -->
+                            <td class="py-3">
+                                {% if u.is_active %}
+                                    <span class="small" style="color: #22c55e;"><i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>Activo</span>
+                                {% else %}
+                                    <span class="small text-danger"><i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>Bloqueado</span>
+                                {% endif %}
+                            </td>
+                            <!-- ACCIONES -->
+                            <td class="py-3 pe-4 text-center">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <!-- Botón editar -->
+                                    <button class="btn btn-sm btn-outline-info action-btn"
+                                            onclick="abrirModalEditar('{{ u.id }}','{{ u.first_name|escapejs }}','{{ u.last_name|escapejs }}','{{ u.email|escapejs }}','{{ u.rol }}','{{ u.ficha|default:''|escapejs }}','{{ u.get_programa_formacion_display|default:''|escapejs }}')"
+                                            title="Editar datos">
+                                        <i class="fas fa-edit me-1"></i>Editar
+                                    </button>
+
+                                    <!-- Cambiar rol -->
+                                    {% if u.id != usuario.id %}
+                                    <button class="btn btn-sm btn-outline-warning action-btn"
+                                            onclick="abrirModalRol('{{ u.id }}','{{ u.get_full_name|lower|escapejs }}','{{ u.rol }}')"
+                                            title="Cambiar rol">
+                                        <i class="fas fa-user-tag me-1"></i>Rol
+                                    </button>
+
+                                    <!-- Bloquear / activar -->
+                                    <form action="{% url 'toggle_usuario' u.id %}" method="POST" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="btn btn-sm action-btn {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}"
+                                                title="{% if u.is_active %}Bloquear{% else %}Activar{% endif %}">
+                                            <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <span class="btn btn-sm btn-outline-secondary action-btn disabled opacity-50" title="Tu cuenta">
+                                        <i class="fas fa-user-shield"></i>
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-users fa-3x mb-3 d-block"></i>
+                                    No hay usuarios registrados
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- CONTADOR RESULTADO -->
+            <div class="px-4 py-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                <span class="text-white-50 small" id="contadorResultados">Mostrando {{ total_usuarios }} usuarios</span>
+                <span class="text-white-50 small">Sistema Deportivo SENA Centro Minero</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL EDITAR USUARIO
+     ============================================================ -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid rgba(74,158,255,0.3); border-radius: 16px;">
+            <div class="modal-header border-0 pb-2">
+                <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2 text-info"></i>Editar Usuario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'admin_editar_usuario' 0 %}" id="formEditarUsuario">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-white-50">Nombres</label>
+                            <input type="text" name="first_name" id="editNombre" class="custom-input form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-white-50">Apellidos</label>
+                            <input type="text" name="last_name" id="editApellido" class="custom-input form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-white-50">Correo electrónico</label>
+                            <input type="email" name="email" id="editEmail" class="custom-input form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-white-50">Ficha (solo lectura)</label>
+                            <input type="text" id="editFicha" class="form-control" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #aaa;" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-white-50">Programa</label>
+                            <input type="text" id="editPrograma" class="form-control" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #aaa;" disabled>
+                        </div>
+                    </div>
+                    <div class="alert border-0 mt-4 small" style="background: rgba(74,158,255,0.08); color: rgba(255,255,255,0.5);">
+                        <i class="fas fa-info-circle me-2 text-info"></i>El documento, ficha y programa son datos institucionales. Solo se puede editar nombre, apellido y correo.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info btn-sm fw-bold px-4">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL CAMBIAR ROL
+     ============================================================ -->
+<div class="modal fade" id="modalCambiarRol" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid rgba(234,179,8,0.3); border-radius: 16px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold"><i class="fas fa-user-tag me-2 text-warning"></i>Cambiar Rol de Usuario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'cambiar_rol' 0 %}" id="formCambiarRol">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p class="text-white-50 mb-3">Cambiando rol de: <strong class="text-white" id="labelNombreRol"></strong></p>
+                    <div class="d-flex flex-column gap-3">
+                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer" 
+                               style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                            <input type="radio" name="rol" value="aprendiz" class="form-check-input mt-0" id="rolAprendiz">
+                            <div>
+                                <div class="fw-bold text-white"><i class="fas fa-user-graduate me-2 text-info"></i>Aprendiz</div>
+                                <div class="text-white-50 small">Acceso estándar al sistema deportivo</div>
+                            </div>
+                        </label>
+                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer"
+                               style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                            <input type="radio" name="rol" value="instructor" class="form-check-input mt-0" id="rolInstructor">
+                            <div>
+                                <div class="fw-bold text-white"><i class="fas fa-chalkboard-teacher me-2 text-info"></i>Instructor</div>
+                                <div class="text-white-50 small">Puede consultar y supervisar actividades</div>
+                            </div>
+                        </label>
+                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer"
+                               style="background: rgba(255,255,255,0.04); border: 1px solid rgba(234,179,8,0.2);">
+                            <input type="radio" name="rol" value="admin" class="form-check-input mt-0" id="rolAdmin">
+                            <div>
+                                <div class="fw-bold text-warning"><i class="fas fa-user-shield me-2"></i>Administrador</div>
+                                <div class="text-white-50 small">Acceso completo a todas las funciones del sistema</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning btn-sm fw-bold text-dark px-4">
+                        <i class="fas fa-check me-2"></i>Aplicar Cambio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // --- FILTRO DE BÚSQUEDA ---
+    function filtrarTabla() {
+        const texto = document.getElementById('buscadorUsuarios').value.toLowerCase();
+        const filas = document.querySelectorAll('#tbodyUsuarios tr');
+        let visibles = 0;
+        filas.forEach(tr => {
+            const buscar = tr.dataset.buscar || '';
+            const visible = buscar.includes(texto);
+            tr.style.display = visible ? '' : 'none';
+            if (visible) visibles++;
+        });
+        document.getElementById('contadorResultados').textContent = `Mostrando ${visibles} usuarios`;
+    }
+
+    // --- FILTRO POR ROL/ESTADO ---
+    let filtroActual = 'todos';
+    function filtrarPor(tipo, btn) {
+        filtroActual = tipo;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filas = document.querySelectorAll('#tbodyUsuarios tr');
+        let visibles = 0;
+        filas.forEach(tr => {
+            let mostrar = false;
+            if (tipo === 'todos') mostrar = true;
+            else if (tipo === 'bloqueado') mostrar = tr.dataset.activo === 'no';
+            else mostrar = tr.dataset.rol === tipo;
+            tr.style.display = mostrar ? '' : 'none';
+            if (mostrar) visibles++;
+        });
+        document.getElementById('contadorResultados').textContent = `Mostrando ${visibles} usuarios`;
+        // Limpiar búsqueda
+        document.getElementById('buscadorUsuarios').value = '';
+    }
+
+    // --- MODAL EDITAR ---
+    const BASE_EDITAR = "{% url 'admin_editar_usuario' 0 %}".replace('/0/', '/');
+    function abrirModalEditar(id, nombre, apellido, email, rol, ficha, programa) {
+        document.getElementById('editNombre').value = nombre;
+        document.getElementById('editApellido').value = apellido;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editFicha').value = ficha || 'Sin asignar';
+        document.getElementById('editPrograma').value = programa || 'Sin asignar';
+        document.getElementById('formEditarUsuario').action = BASE_EDITAR + id + '/';
+        new bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
+    }
+
+    // --- MODAL ROL ---
+    const BASE_ROL = "{% url 'cambiar_rol' 0 %}".replace('/0/', '/');
+    function abrirModalRol(id, nombre, rolActual) {
+        document.getElementById('labelNombreRol').textContent = nombre.replace(/\b\w/g, c => c.toUpperCase());
+        document.getElementById('formCambiarRol').action = BASE_ROL + id + '/';
+        // Marcar el radio del rol actual
+        const radios = document.querySelectorAll('input[name="rol"]');
+        radios.forEach(r => { r.checked = r.value === rolActual; });
+        new bootstrap.Modal(document.getElementById('modalCambiarRol')).show();
+    }
+</script>
+{% endblock %}

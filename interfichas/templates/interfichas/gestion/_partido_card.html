@@ -1,63 +1,176 @@
-<div class="contenedor-partidos-grupo d-flex flex-column gap-3">
-    {% for partido in g.partidos %}
-    <div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
-        <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
-        <div class="text-center" style="min-width:100px;">
-            {% if partido.jugado %}
-                {% if tipo_marcador == 'sets' %}
-                    <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                    {% if partido.sets_local %}
-                    <span class="parciales-sets">
-                        {% for i in partido.sets_local %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
-                        /
-                        {% for i in partido.sets_visitante %}{{ i }}{% if not forloop.last %}-{% endif %}{% endfor %}
-                    </span>
-                    {% endif %}
-                {% elif tipo_marcador == 'puntos' %}
-                    <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                    <span class="parciales-sets">pts</span>
-                {% else %}
-                    <span class="resultado-display">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                {% endif %}
-            {% else %}
-                <span class="vs-badge">VS</span>
-            {% endif %}
+{% load torneo_extras %}
+
+{# ============================================================
+   SECCIÓN: Todos los partidos — vista cronológica por día
+   Pegar este bloque dentro de gestionar_torneo.html,
+   después de la sección de grupos existente.
+   ============================================================ #}
+
+{% if grupos_con_tabla %}
+<div class="card border-secondary mt-4" style="background:#161b22;">
+  <div class="card-header d-flex align-items-center gap-2 border-secondary"
+       style="background:#1c2230;">
+    <i class="fas fa-calendar-alt text-info"></i>
+    <span class="fw-bold text-white">Todos los partidos</span>
+    <span class="ms-auto text-white-50 small">
+      {% for item in grupos_con_tabla %}
+        {% for p in item.partidos %}{% empty %}{% endfor %}
+      {% endfor %}
+      Vista cronológica por grupo
+    </span>
+  </div>
+
+  <div class="card-body p-0">
+
+    {% for item in grupos_con_tabla %}
+
+      {# ── Cabecera de grupo ── #}
+      <div class="d-flex align-items-center gap-2 px-3 py-2 border-bottom border-secondary"
+           style="background:rgba(43,125,233,0.08);">
+        <i class="fas fa-layer-group" style="color:#2b7de9;"></i>
+        <span class="fw-bold" style="color:#2b7de9; font-size:0.9rem; letter-spacing:0.03em;">
+          GRUPO {{ item.grupo.nombre_grupo }}
+        </span>
+        <span class="ms-auto badge"
+              style="background:rgba(43,125,233,0.15); color:#7ab8f5; font-size:0.72rem;">
+          {{ item.partidos|length }} partido{{ item.partidos|length|pluralize }}
+        </span>
+      </div>
+
+      {# ── Partidos del grupo agrupados por día ── #}
+      {% regroup item.partidos by fecha_partido as dias_grupo %}
+
+      {% for dia in dias_grupo %}
+
+        {# -- Cabecera de día -- #}
+        {% if dia.grouper %}
+        <div class="px-3 py-2 d-flex align-items-center gap-2 border-bottom border-secondary"
+             style="background:rgba(255,255,255,0.03);">
+          <i class="fas fa-calendar-day text-white-50" style="font-size:0.8rem;"></i>
+          <span class="text-white-50" style="font-size:0.8rem; font-weight:500; text-transform:capitalize;">
+            {{ dia.grouper|fecha_larga_es }}
+          </span>
         </div>
-        <div class="equipo-nombre flex-fill">{{ partido.equipo_visitante.nombre_equipo }}</div>
-        <div class="ms-auto d-flex gap-2 align-items-center flex-wrap">
-            {% if partido.fecha_partido %}
-            <small class="text-white-50"
-                   title="{{ partido.fecha_partido|date:'l j' }} de {{ partido.fecha_partido|date:'F' }}">
-                {{ partido.fecha_partido|date:"d/m" }}
-                {% if partido.hora_partido %} {{ partido.hora_partido|time:"H:i" }}{% endif %}
-            </small>
-            {% endif %}
-            <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
-                    onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}', '{{ partido.tarjetas_amarillas_local|default:0 }}', '{{ partido.tarjetas_amarillas_visitante|default:0 }}', '{{ partido.tarjetas_rojas_local|default:0 }}', '{{ partido.tarjetas_rojas_visitante|default:0 }}', '{{ partido.tarjetas_azules_local|default:0 }}', '{{ partido.tarjetas_azules_visitante|default:0 }}', '{{ partido.detalles_sanciones|escapejs }}')"
-                    title="{% if partido.jugado %}Editar resultado{% else %}Registrar resultado{% endif %}">
-                <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
-            </button>
-        </div>
-        
-        {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante or partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante or partido.tarjetas_azules_local or partido.tarjetas_azules_visitante or partido.detalles_sanciones %}
-        <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100" style="font-size:0.75rem; border-color: #21262d !important;">
-            <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
-            {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}
-                <span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ partido.tarjetas_amarillas_local }} - {{ partido.tarjetas_amarillas_visitante }}</span>
-            {% endif %}
-            {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}
-                <span class="badge bg-danger text-white px-2 ms-1">🟥 {{ partido.tarjetas_rojas_local }} - {{ partido.tarjetas_rojas_visitante }}</span>
-            {% endif %}
-            {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}
-                <span class="badge bg-primary text-white px-2 ms-1">🟦 {{ partido.tarjetas_azules_local }} - {{ partido.tarjetas_azules_visitante }}</span>
-            {% endif %}
-            {% if partido.detalles_sanciones %}
-                <span class="d-block text-white-50 italic mt-1 ms-1">"{{ partido.detalles_sanciones }}"</span>
-            {% endif %}
+        {% else %}
+        <div class="px-3 py-2 d-flex align-items-center gap-2 border-bottom border-secondary"
+             style="background:rgba(255,255,255,0.03);">
+          <i class="fas fa-clock text-white-50" style="font-size:0.8rem;"></i>
+          <span class="text-white-50" style="font-size:0.8rem; font-weight:500;">
+            Sin fecha asignada
+          </span>
         </div>
         {% endif %}
+
+        {# -- Lista de partidos del día -- #}
+        {% for partido in dia.list %}
+        <div class="border-bottom border-secondary px-3 py-2"
+             style="background:#161b22; transition: background 0.15s;"
+             onmouseover="this.style.background='#1c2230'"
+             onmouseout="this.style.background='#161b22'">
+
+          {# Fila principal: equipos y marcador #}
+          <div class="d-flex align-items-center gap-2">
+
+            {# Equipo local #}
+            <span class="flex-fill text-end fw-semibold text-white"
+                  style="font-size:0.875rem;">
+              {{ partido.equipo_local.nombre_equipo }}
+            </span>
+
+            {# Marcador o VS #}
+            {% if partido.jugado %}
+              <span class="px-2 py-1 rounded fw-bold text-center"
+                    style="min-width:60px; font-size:0.875rem;
+                           background:rgba(255,255,255,0.07); color:#e6edf3;">
+                {{ partido.goles_local }}–{{ partido.goles_visitante }}
+              </span>
+            {% else %}
+              <span class="px-2 py-1 rounded text-center"
+                    style="min-width:60px; font-size:0.8rem;
+                           background:rgba(255,255,255,0.04); color:#8b949e;
+                           border:0.5px solid rgba(255,255,255,0.1);">
+                VS
+              </span>
+            {% endif %}
+
+            {# Equipo visitante #}
+            <span class="flex-fill fw-semibold text-white"
+                  style="font-size:0.875rem;">
+              {{ partido.equipo_visitante.nombre_equipo }}
+            </span>
+
+            {# Hora #}
+            {% if partido.hora_partido %}
+            <span class="text-white-50" style="font-size:0.75rem; min-width:42px; text-align:right;">
+              {{ partido.hora_partido|time:"H:i" }}
+            </span>
+            {% endif %}
+
+          </div>
+
+          {# Fila secundaria: ficha local · grupo · ficha visitante #}
+          <div class="d-flex align-items-center gap-2 mt-1">
+
+            {# Ficha capitán local #}
+            <span class="flex-fill text-end" style="font-size:0.72rem; color:#8b949e;">
+              <i class="fas fa-id-card me-1" style="font-size:0.65rem;"></i>
+              {{ partido.equipo_local.ficha|default:"—" }}
+            </span>
+
+            {# Etiqueta del grupo — centro #}
+            <span class="px-2 rounded"
+                  style="min-width:60px; text-align:center; font-size:0.68rem;
+                         background:rgba(43,125,233,0.1); color:#7ab8f5;
+                         border:0.5px solid rgba(43,125,233,0.2);">
+              Grupo {{ item.grupo.nombre_grupo }}
+            </span>
+
+            {# Ficha capitán visitante #}
+            <span class="flex-fill" style="font-size:0.72rem; color:#8b949e;">
+              <i class="fas fa-id-card me-1" style="font-size:0.65rem;"></i>
+              {{ partido.equipo_visitante.ficha|default:"—" }}
+            </span>
+
+          </div>
+
+          {# Sanciones si las hay #}
+          {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante or partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante or partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}
+          <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+            <span style="font-size:0.68rem; color:#8b949e;">
+              <i class="fas fa-exclamation-triangle text-warning me-1" style="font-size:0.65rem;"></i>Sanciones:
+            </span>
+            {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}
+            <span class="badge" style="background:#856404; color:#fff799; font-size:0.65rem;">
+              🟨 {{ partido.tarjetas_amarillas_local }}–{{ partido.tarjetas_amarillas_visitante }}
+            </span>
+            {% endif %}
+            {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}
+            <span class="badge bg-danger" style="font-size:0.65rem;">
+              🟥 {{ partido.tarjetas_rojas_local }}–{{ partido.tarjetas_rojas_visitante }}
+            </span>
+            {% endif %}
+            {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}
+            <span class="badge bg-primary" style="font-size:0.65rem;">
+              🟦 {{ partido.tarjetas_azules_local }}–{{ partido.tarjetas_azules_visitante }}
+            </span>
+            {% endif %}
+          </div>
+          {% endif %}
+
+        </div>
+        {% endfor %} {# fin partidos del día #}
+
+      {% endfor %} {# fin dias_grupo #}
+
+    {% endfor %} {# fin grupos_con_tabla #}
+
+    {% if not grupos_con_tabla %}
+    <div class="text-center text-white-50 py-4">
+      <i class="fas fa-calendar-times fa-2x mb-2 d-block text-secondary"></i>
+      No hay partidos generados todavía.
     </div>
-    {% empty %}
-    <div class="text-center text-white-50 py-3">No hay partidos generados para este grupo.</div>
-    {% endfor %}
+    {% endif %}
+
+  </div>
 </div>
+{% endif %}

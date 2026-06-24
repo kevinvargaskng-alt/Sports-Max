@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_POST
 from .models import Reserva, GimnasioConfig, FechaIngreso
-from django.db.models import Q
 import json
 
 
@@ -40,7 +40,8 @@ def gimnasio_list(request):
 
         if accion == 'crear_reserva':
             if not esta_abierto:
-                messages.error(request, "Acceso denegado: El sistema está bloqueado.")
+                messages.error(
+                    request, "Acceso denegado: El sistema está bloqueado.")
                 return redirect('gimnasio')
 
             try:
@@ -54,13 +55,13 @@ def gimnasio_list(request):
                     fecha_salida=ahora.date(),
                     estado='Activa'
                 )
-                messages.success(request, f"¡Entrada registrada! Bienvenido(a).")
+                messages.success(request, "¡Entrada registrada! Bienvenido(a).")
             except Exception as e:
                 messages.error(request, f"Error técnico: {e}")
 
             return redirect('gimnasio')
 
-    return render(request, 'gimnasio/gimnasio.html', {
+    context = {
         'reservas': mis_reservas,
         'esta_abierto': esta_abierto,
         'ahora': ahora,
@@ -68,11 +69,13 @@ def gimnasio_list(request):
         'es_festivo': es_festivo,
         'config': config,
         'admin_reservas': Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
-    })
+    }
+    return render(request, 'gimnasio/gimnasio.html', context)
 
 
 # --- ELIMINAR REGISTRO ---
 @login_required
+@require_POST
 def eliminar_reserva(request, id):
     reserva = get_object_or_404(Reserva, codigo_registro=id)
     reserva.delete()
@@ -88,7 +91,8 @@ def editar_reserva(request, id):
         reserva.save()
         messages.info(request, "Información actualizada.")
         return redirect('gimnasio')
-    return render(request, 'gimnasio/editar.html', {'reserva': reserva})
+    context = {'reserva': reserva}
+    return render(request, 'gimnasio/editar.html', context)
 
 
 def es_admin(user):
@@ -102,7 +106,7 @@ def admin_disponibilidad(request):
     config = GimnasioConfig.get_config()
 
     if request.method == 'POST':
-        estado    = request.POST.get('estado', config.estado)
+        estado = request.POST.get('estado', config.estado)
         dias_json = request.POST.get('dias_json', '[]')
         try:
             dias = json.loads(dias_json)
@@ -110,15 +114,15 @@ def admin_disponibilidad(request):
             dias = []
 
         horario_apertura = request.POST.get('horario_apertura', '07:00')
-        horario_cierre   = request.POST.get('horario_cierre',   '17:00')
-        capacidad        = request.POST.get('capacidad_maxima', 40)
+        horario_cierre = request.POST.get('horario_cierre',   '17:00')
+        capacidad = request.POST.get('capacidad_maxima', 40)
 
-        config.estado           = estado
+        config.estado = estado
         config.dias_habilitados = dias
         config.horario_apertura = horario_apertura
-        config.horario_cierre   = horario_cierre
+        config.horario_cierre = horario_cierre
         config.capacidad_maxima = int(capacidad)
-        config.actualizado_por  = request.user
+        config.actualizado_por = request.user
         config.save()
 
         messages.success(request, 'Configuración actualizada correctamente.')
@@ -134,12 +138,13 @@ def admin_disponibilidad(request):
         {'codigo': 'dom', 'label': 'DOM'},
     ]
 
-    return render(request, 'gimnasio/disponibilidad.html', {
+    context = {
         'config':         config,
         'dias_semana':    dias_semana,
         'dias_activos':   config.dias_habilitados,
         'seccion_activa': 'disponibilidad',
-    })
+    }
+    return render(request, 'gimnasio/disponibilidad.html', context)
 
 
 # ── HORARIOS ────────────────────────────────────────────────
@@ -147,10 +152,11 @@ def admin_disponibilidad(request):
 @user_passes_test(es_admin)
 def admin_horarios(request):
     config = GimnasioConfig.get_config()
-    return render(request, 'gimnasio/admin_horarios.html', {
+    context = {
         'config':         config,
         'seccion_activa': 'horarios',
-    })
+    }
+    return render(request, 'gimnasio/admin_horarios.html', context)
 
 
 # ── FECHAS DE INGRESO ───────────────────────────────────────
@@ -161,9 +167,9 @@ def admin_fechas_ingreso(request):
     fechas = FechaIngreso.objects.filter(config=config)
 
     if request.method == 'POST':
-        fecha_str   = request.POST.get('fecha', '').strip()
+        fecha_str = request.POST.get('fecha', '').strip()
         descripcion = request.POST.get('descripcion', '').strip()
-        habilitada  = request.POST.get('habilitada') == 'on'
+        habilitada = request.POST.get('habilitada') == 'on'
 
         if fecha_str:
             FechaIngreso.objects.create(
@@ -178,10 +184,11 @@ def admin_fechas_ingreso(request):
 
         return redirect('admin_fechas_ingreso')
 
-    return render(request, 'gimnasio/admin_fechas_ingreso.html', {
+    context = {
         'fechas':         fechas,
         'seccion_activa': 'fechas_ingreso',
-    })
+    }
+    return render(request, 'gimnasio/admin_fechas_ingreso.html', context)
 
 
 # ── ELIMINAR FECHA ──────────────────────────────────────────
@@ -198,19 +205,19 @@ def admin_eliminar_fecha(request, pk):
 @user_passes_test(es_admin)
 def admin_configuracion(request):
     config = GimnasioConfig.get_config()
-    return render(request, 'gimnasio/admin_configuracion.html', {
+    context = {
         'config':         config,
         'seccion_activa': 'configuracion',
-    })
+    }
+    return render(request, 'gimnasio/admin_configuracion.html', context)
 
 
 # ── NUEVO REGISTRO ──────────────────────────────────────────
 @login_required
 @user_passes_test(es_admin)
 def admin_nuevo_registro(request):
-    return render(request, 'gimnasio/admin_nuevo_registro.html', {
-        'seccion_activa': 'nuevo_registro',
-    })
+    context = {'seccion_activa': 'nuevo_registro'}
+    return render(request, 'gimnasio/admin_nuevo_registro.html', context)
 
 
 # ── VER TODAS LAS RESERVAS ──────────────────────────────────
@@ -218,11 +225,12 @@ def admin_nuevo_registro(request):
 @user_passes_test(es_admin)
 def admin_reservas(request):
     reservas = Reserva.objects.all().order_by('-fecha_entrada', '-hora_entrada')
-    return render(request, 'gimnasio/gimnasio.html', {
+    context = {
         'admin_reservas': reservas,
         'seccion_activa': 'reservas',
         'config': GimnasioConfig.get_config(),
-    })
+    }
+    return render(request, 'gimnasio/gimnasio.html', context)
 
 
 # ── CANCELAR RESERVA ────────────────────────────────────────
@@ -265,6 +273,5 @@ def cerrar_gimnasio(request):
 @user_passes_test(es_admin)
 def admin_lista_anamnesis(request):
     # Reemplaza Anamnesis con tu modelo real cuando lo tengas
-    return render(request, 'gimnasio/admin_lista_anamnesis.html', {
-        'seccion_activa': 'anamnesis',
-    })
+    context = {'seccion_activa': 'anamnesis'}
+    return render(request, 'gimnasio/admin_lista_anamnesis.html', context)

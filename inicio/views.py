@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 def inicio(request):
     """Renderiza la página principal (Hero Section)"""
     context = {
