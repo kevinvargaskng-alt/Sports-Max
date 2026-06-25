@@ -1,8 +1,3 @@
-from habitos_saludables.models import PiramideNutricional, RutinaFisica, HabitoSaludable
-from interfichas.models import TorneoInterfichas, EquipoInterfichas, Disciplina
-from gimnasio.models import Reserva
-from inventario.models import ElementoDeportivo, Prestamo
-from usuarios.models import Usuario, Sugerencia
 import os
 import sys
 import django
@@ -10,12 +5,20 @@ import random
 from datetime import date, timedelta
 from django.utils import timezone
 
-# Add the project root to sys.path since this script will be in the 'scripts' folder
+# 1. CONFIGURACIÓN DEL ENTORNO (Debe ir arriba del todo)
+# Agrega la raíz del proyecto al sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Configurar el entorno de Django
+# Configurar el entorno de Django utilizando tu 'core.settings'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
+
+# 2. IMPORTS DE DJANGO (Ahora sí, Python ya sabe dónde encontrarlos)
+from habitos_saludables.models import PiramideNutricional, RutinaFisica, HabitoSaludable
+from interfichas.models import TorneoInterfichas, EquipoInterfichas, Disciplina
+from gimnasio.models import Reserva
+from inventario.models import ElementoDeportivo, Prestamo
+from usuarios.models import Usuario, Sugerencia
 
 
 def poblar_datos():
@@ -200,7 +203,6 @@ def poblar_datos():
                                           'categoria': "ejercicio", 'descripcion': "Realizar estiramientos.", 'consejos': "Estirar el cuello y los hombros\nCaminar 5 minutos", 'icono_css': "walking"})
 
     print("✅ Hábitos, Rutinas y Pirámide nutricional creados.")
-
     print("\n✨ ¡Base de datos poblada con éxito!")
 
 
