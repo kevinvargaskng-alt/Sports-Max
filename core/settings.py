@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = 'django-insecure--+k6(v(s%fu$4wf6!f_n(=1*5(^txum^g-@4p8sxybqvna6g4x'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fallback-key-for-dev-only')
 
 DEBUG = True
 
@@ -108,6 +108,13 @@ MESSAGE_TAGS = {
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 7200
+
+# ── Seguridad de cookies y cabeceras HTTP ─────────────────
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
 
 # ── Motor IA propio (sin API key externa) ────────────────
 IA_SERVER_URL = 'http://127.0.0.1:5001'
