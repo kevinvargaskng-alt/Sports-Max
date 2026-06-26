@@ -17,31 +17,7 @@ urlpatterns = [
     # Usuarios (login, logout, registro, perfil)
     path('', include('usuarios.urls')),      # /login/, /registro/, /perfil/
 
-    # --- FLUJO DE RECUPERACIÓN DE CONTRASEÑA ---
-    # 1. El usuario solicita el reset
-    path('reset_password/',
-         auth_views.PasswordResetView.as_view(
-             template_name="usuarios/registration/password_reset.html"),
-         name="password_reset"),
-
-    # 2. Confirmación de correo enviado
-    path('reset_password_sent/',
-         auth_views.PasswordResetDoneView.as_view(
-             template_name="usuarios/registration/password_reset_sent.html"),
-         name="password_reset_done"),
-
-    # 3. El enlace que llega al correo (ID de usuario + Token de seguridad)
-    path('reset/<uidb64>/<token>/',
-         auth_views.PasswordResetConfirmView.as_view(
-             template_name="usuarios/registration/password_reset_confirm.html"),
-         name="password_reset_confirm"),
-
-    # 4. Mensaje de éxito final
-    path('reset_password_complete/',
-         auth_views.PasswordResetCompleteView.as_view(
-             template_name="usuarios/registration/password_reset_complete.html"),
-         name="password_reset_complete"),
-    # --------------------------------------------------
+    # NOTA: El flujo de recuperación de contraseña está definido en usuarios/urls.py
 
     # Módulos deportivos
     path('interfichas/', include('interfichas.urls')),
