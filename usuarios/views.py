@@ -15,15 +15,50 @@ from interfichas.models import EquipoInterfichas, TorneoInterfichas
 
 
 def login_view(request):
-    """Procesa el inicio de sesión vía AJAX"""
+    """Procesa el inicio de sesión con bloqueo por intentos fallidos."""
     if request.method == 'POST':
         doc = request.POST.get('username')
         password = request.POST.get('password')
         next_url = request.POST.get(
             'next') or request.GET.get('next') or '/perfil/'
 
+        # Intentar obtener el usuario primero
+        from django.utils import timezone as _tz
+        import datetime as _dt
+
+        try:
+            usuario_obj = Usuario.objects.get(username=doc)
+        except Usuario.DoesNotExist:
+            usuario_obj = None
+
+        # Verificar si la cuenta está bloqueada
+        if usuario_obj and usuario_obj.bloqueado_hasta:
+            ahora = _tz.localtime(_tz.now())
+            if ahora < usuario_obj.bloqueado_hasta:
+                minutos_restantes = int(
+                    (usuario_obj.bloqueado_hasta - ahora).total_seconds() / 60) + 1
+                return JsonResponse({
+                    'status': 'blocked',
+                    'success': False,
+                    'bloqueado': True,
+                    'minutos': minutos_restantes,
+                    'message': (
+                        f'Cuenta bloqueada. Intente de nuevo en {minutos_restantes} minuto(s).'
+                    )
+                }, status=403)
+            else:
+                # Tiempo de bloqueo expirado — resetear
+                usuario_obj.intentos_fallidos = 0
+                usuario_obj.bloqueado_hasta = None
+                usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
+
         user = authenticate(request, username=doc, password=password)
         if user:
+            # Login exitoso: resetear intentos
+            if usuario_obj:
+                usuario_obj.intentos_fallidos = 0
+                usuario_obj.bloqueado_hasta = None
+                usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
             login(request, user)
             return JsonResponse({
                 'status': 'success',
@@ -32,14 +67,68 @@ def login_view(request):
                 'message': 'Bienvenido al sistema'
             })
 
+        # Fallo de autenticación
+        if usuario_obj:
+            usuario_obj.intentos_fallidos += 1
+            intentos = usuario_obj.intentos_fallidos
+
+            if intentos >= 6:
+                # Bloqueo de 24 horas
+                usuario_obj.bloqueado_hasta = _tz.now() + _dt.timedelta(hours=24)
+                usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
+                return JsonResponse({
+                    'status': 'blocked',
+                    'success': False,
+                    'bloqueado': True,
+                    'minutos': 1440,
+                    'message': 'Cuenta bloqueada por 24 horas por múltiples intentos fallidos.'
+                }, status=403)
+            elif intentos >= 3:
+                # Bloqueo de 5 minutos
+                usuario_obj.bloqueado_hasta = _tz.now() + _dt.timedelta(minutes=5)
+                usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
+                return JsonResponse({
+                    'status': 'blocked',
+                    'success': False,
+                    'bloqueado': True,
+                    'minutos': 5,
+                    'message': f'Cuenta bloqueada por 5 minutos. Intento {intentos}/6.'
+                }, status=403)
+            else:
+                usuario_obj.save(update_fields=['intentos_fallidos'])
+                restantes = 3 - intentos if intentos < 3 else 6 - intentos
+                return JsonResponse({
+                    'status': 'error',
+                    'success': False,
+                    'message': f'Documento o contraseña incorrectos. Intentos restantes: {restantes}.'
+                }, status=401)
+
         return JsonResponse({
             'status': 'error',
             'success': False,
-            'message': 'Documento o contraseña incorrectos'
+            'message': 'Documento o contraseña incorrectos.'
         }, status=401)
 
-    # Si es un GET, enviamos a la home o donde tengas el formulario
     return redirect('home')
+
+
+def desbloquear_cuenta_view(request):
+    """Permite desbloquear la cuenta ingresando datos personales de validación."""
+    if request.method == 'POST':
+        doc = request.POST.get('numero_documento', '').strip()
+        correo = request.POST.get('email', '').strip().lower()
+        telefono = request.POST.get('telefono', '').strip()
+
+        try:
+            u = Usuario.objects.get(username=doc, email__iexact=correo, telefono=telefono)
+            u.intentos_fallidos = 0
+            u.bloqueado_hasta = None
+            u.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
+            return JsonResponse({'status': 'success', 'message': 'Cuenta desbloqueada. Ya puedes iniciar sesión.'})
+        except Usuario.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Los datos no coinciden con ningún usuario registrado.'}, status=400)
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
 @login_required
@@ -87,13 +176,14 @@ def gimnasio_list(request):
                 return redirect('gimnasio')
 
             try:
+                from datetime import timedelta as _td
+                _hora_salida = (ahora + _td(hours=1)).time()
                 Reserva.objects.create(
                     usuario_solicitante=request.user,
                     fecha_entrada=ahora.date(),
                     hora_entrada=ahora.time(),
-                    hora_prestamo=ahora.time(),
-                    fecha_permanencia=ahora.date(),
-                    hora_salida=ahora.time(),
+                    tiempo_permanencia=60,
+                    hora_salida=_hora_salida,
                     fecha_salida=ahora.date(),
                     estado='Activa'
                 )
@@ -366,3 +456,26 @@ def gestionar_usuarios_view(request):
         'total_bloqueados': total_bloqueados,
     }
     return render(request, 'usuarios/gestionar_usuarios.html', contexto)
+
+
+@login_required
+def export_database_backup(request):
+    """Genera y descarga un respaldo completo de la base de datos en formato JSON."""
+    if not request.user.is_staff:
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("Acceso denegado: Se requieren privilegios de administrador.")
+
+    import io
+    from django.core import management
+    from django.http import HttpResponse
+
+    output = io.StringIO()
+    try:
+        management.call_command('dumpdata', stdout=output, indent=2, exclude=['contenttypes', 'auth.Permission'])
+        response = HttpResponse(output.getvalue(), content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="respaldo_base_datos.json"'
+        return response
+    except Exception as e:
+        messages.error(request, f"Error al generar el respaldo de la base de datos: {e}")
+        return redirect('perfil')
+

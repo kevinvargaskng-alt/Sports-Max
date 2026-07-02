@@ -7,9 +7,11 @@ urlpatterns = [
     path('registro/', views.registro_view, name='registro'),
     path('logout/',   views.logout_view,   name='logout'),
     path('perfil/',   views.perfil_view,   name='perfil'),
+    path('desbloquear/', views.desbloquear_cuenta_view, name='desbloquear_cuenta'),
 
     # ─── GESTIÓN DE USUARIOS (página propia, solo admin) ───────────────────────
     path('usuarios/', views.gestionar_usuarios_view, name='gestionar_usuarios'),
+    path('backup/', views.export_database_backup, name='database_backup'),
 
     # ─── ACCIONES DE USUARIO (llamadas desde gestionar_usuarios) ───────────────
     path('perfil/toggle/<int:user_id>/',

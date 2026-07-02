@@ -46,6 +46,9 @@ class Usuario(AbstractUser):
     fecha_registro = models.DateTimeField(auto_now_add=True)
     foto_perfil = models.ImageField(
         upload_to='perfiles/', blank=True, null=True)
+    # ── Seguridad: bloqueo por intentos fallidos ──────────────
+    intentos_fallidos = models.IntegerField(default=0)
+    bloqueado_hasta = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.numero_documento})"

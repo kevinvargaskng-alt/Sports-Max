@@ -14,6 +14,7 @@ class ElementoDeportivo(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     imagen = models.ImageField(
         upload_to='elementos_deportivos/', null=True, blank=True)
+    habilitado = models.BooleanField(default=True, verbose_name="Habilitado")
 
     # El campo que ajustamos para el MER:
     usuario_responsable = models.ForeignKey(

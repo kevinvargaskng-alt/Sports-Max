@@ -22,6 +22,239 @@
     --info: #2b7de9;
 }
 
+/* ── MODO CLARO (LIGHT THEME) ────────── */
+body.light-theme {
+    --primary-dark: #f8fafc;
+    --text-white: #0f172a;
+    --glass-bg: rgba(43, 125, 233, 0.05);
+    --neon-border: rgba(43, 125, 233, 0.4);
+    --card-bg: rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .sport-card, 
+body.light-theme .catalogo-card,
+body.light-theme .maquina-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-theme .text-white-50 {
+    color: #475569 !important;
+}
+
+body.light-theme .navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-theme .navbar-brand span, 
+body.light-theme .nav-link,
+body.light-theme .nav-link i {
+    color: #0f172a !important;
+}
+
+body.light-theme .nav-pill-center .nav-link.active {
+    background: rgba(43, 125, 233, 0.15) !important;
+    color: #2b7de9 !important;
+}
+
+/* Override Gym / Gimnasio page elements in Light Mode */
+body.light-theme .gym-clock-wrap {
+    background: rgba(43, 125, 233, 0.05) !important;
+    border-color: rgba(43, 125, 233, 0.2) !important;
+}
+body.light-theme .gym-clock {
+    color: #2b7de9 !important;
+}
+body.light-theme .gym-date {
+    color: #475569 !important;
+}
+body.light-theme .gym-nav-card {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+}
+body.light-theme .gym-nav-card .nav-label {
+    color: #0f172a !important;
+}
+body.light-theme .gym-nav-card .nav-sub {
+    color: #475569 !important;
+}
+body.light-theme .res-picker {
+    background: rgba(43, 125, 233, 0.03) !important;
+    border-color: rgba(43, 125, 233, 0.15) !important;
+}
+body.light-theme .res-picker .picker-label {
+    color: #2b7de9 !important;
+}
+body.light-theme .res-picker input[type=date],
+body.light-theme .res-picker input[type=time],
+body.light-theme .adm-input,
+body.light-theme .search-wrap input {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+body.light-theme .stat-mini {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+}
+body.light-theme .stat-mini .stat-lbl {
+    color: #475569 !important;
+}
+body.light-theme .btn-estado,
+body.light-theme .btn-dia {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+}
+body.light-theme .btn-estado.sel,
+body.light-theme .btn-dia.active {
+    background: rgba(43, 125, 233, 0.1) !important;
+    border-color: #2b7de9 !important;
+    color: #2b7de9 !important;
+}
+body.light-theme .btn-estado:hover,
+body.light-theme .btn-dia:hover {
+    border-color: #2b7de9 !important;
+    color: #2b7de9 !important;
+}
+body.light-theme .text-white {
+    color: #0f172a !important;
+}
+body.light-theme .text-white-50 {
+    color: #475569 !important;
+}
+body.light-theme h5.text-info,
+body.light-theme h5.text-success,
+body.light-theme h5.text-danger,
+body.light-theme h5.text-warning {
+    color: #2b7de9 !important;
+}
+body.light-theme .table {
+    --bs-table-bg: #ffffff !important;
+    --bs-table-hover-bg: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+body.light-theme .table-dark {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+body.light-theme th {
+    color: #475569 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+body.light-theme td {
+    color: #0f172a !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+body.light-theme .btn-trash {
+    color: #475569 !important;
+}
+body.light-theme .btn-trash:hover {
+    color: #ff4d4f !important;
+    background: rgba(255, 77, 79, 0.1) !important;
+}
+
+/* Light Theme overrides for Header and Main Home Page */
+body.light-theme .navbar .container-fluid {
+    background: #ffffff !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+body.light-theme .navbar-brand span {
+    color: #0f172a !important;
+}
+body.light-theme .navbar-brand span span {
+    color: #1a5fb4 !important;
+}
+body.light-theme .btn-profile {
+    color: #0f172a !important;
+}
+body.light-theme .hero-bg {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+}
+body.light-theme .hero-overlay {
+    background: linear-gradient(to top, #f8fafc 0%, rgba(248, 250, 252, 0.5) 50%, transparent 100%) !important;
+}
+body.light-theme .hero-title {
+    color: #0f172a !important;
+}
+body.light-theme .hero-title .outline {
+    -webkit-text-stroke: 2px rgba(15, 23, 42, 0.3) !important;
+}
+body.light-theme .hero-sub {
+    color: #475569 !important;
+}
+body.light-theme .countdown-strip {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.light-theme .countdown-title,
+body.light-theme .countdown-num {
+    color: #0f172a !important;
+}
+body.light-theme .countdown-unit {
+    color: #475569 !important;
+}
+body.light-theme .service-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.light-theme .service-title {
+    color: #0f172a !important;
+}
+body.light-theme .service-desc {
+    color: #475569 !important;
+}
+body.light-theme .match-feature {
+    background: rgba(43, 125, 233, 0.05) !important;
+    border-color: rgba(43, 125, 233, 0.2) !important;
+}
+body.light-theme .match-team,
+body.light-theme .match-date {
+    color: #0f172a !important;
+}
+body.light-theme .section-title,
+body.light-theme .section-sub {
+    color: #0f172a !important;
+}
+body.light-theme .btn-outline-sport {
+    border-color: rgba(15, 23, 42, 0.3) !important;
+    color: #0f172a !important;
+}
+body.light-theme .btn-outline-sport:hover {
+    border-color: #0f172a !important;
+    background: rgba(15, 23, 42, 0.05) !important;
+}
+body.light-theme .custom-modal {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.light-theme .custom-modal .modal-header,
+body.light-theme .custom-modal .modal-footer {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.light-theme .custom-modal .modal-title,
+body.light-theme .custom-modal p,
+body.light-theme .custom-modal label,
+body.light-theme .custom-modal select,
+body.light-theme .custom-modal input {
+    color: #0f172a !important;
+}
+body.light-theme .custom-input {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+body.light-theme .custom-modal .btn-close {
+    filter: invert(1) !important;
+}
+
+
+
+
 /* ============================================================
    CONFIGURACIÓN GLOBAL Y FONDO
    ============================================================ */

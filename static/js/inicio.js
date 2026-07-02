@@ -114,12 +114,34 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                if (loginAlert) {
-                    loginAlert.className = `alert alert-${data.status === 'success' ? 'success' : 'danger'}`;
-                    loginAlert.innerHTML = data.message;
-                }
                 if (data.status === 'success') {
-                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 1000);
+                    if (loginAlert) {
+                        loginAlert.className = 'alert alert-success';
+                        loginAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + data.message;
+                    }
+                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 900);
+                } else if (data.status === 'blocked' || data.bloqueado) {
+                    // Mostrar modal de cuenta bloqueada
+                    if (loginAlert) {
+                        loginAlert.className = 'alert alert-warning';
+                        loginAlert.innerHTML = '<i class="fas fa-lock me-2"></i>' + data.message;
+                    }
+                    const minutos = data.minutos || 5;
+                    const msg = minutos >= 1440
+                        ? 'Tu cuenta fue bloqueada por 24 horas por múltiples intentos fallidos.'
+                        : `Tu cuenta fue bloqueada por ${minutos} minuto(s) por intentos fallidos.`;
+                    // Mostrar modal de bloqueo
+                    const elModalBloqueo = document.getElementById('modalCuentaBloqueada');
+                    if (elModalBloqueo) {
+                        document.getElementById('msgBloqueo').textContent = msg;
+                        const bsModal = new bootstrap.Modal(elModalBloqueo);
+                        bsModal.show();
+                    }
+                } else {
+                    if (loginAlert) {
+                        loginAlert.className = 'alert alert-danger';
+                        loginAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i>' + data.message;
+                    }
                 }
             })
             .catch(error => {
@@ -443,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = new FormData(this);
             const reportAlert = document.getElementById('reportAlert');
 
-            fetch(window.location.pathname, {
+            fetch('/perfil/', {
                 method: 'POST',
                 body: formData,
                 headers: { 

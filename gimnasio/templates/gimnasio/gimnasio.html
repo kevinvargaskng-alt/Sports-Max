@@ -149,6 +149,14 @@
     }
     .btn-trash:hover { color: #f85149; background: rgba(248,81,73,.12); }
 
+    .btn-edit {
+        background: none; border: none;
+        color: #6b7a94; cursor: pointer;
+        padding: 4px 8px; border-radius: 6px;
+        transition: all .15s; font-size: 0.8rem;
+    }
+    .btn-edit:hover { color: #58a6ff; background: rgba(88,166,255,.12); }
+
     /* ══════════════════════════════════════════
        ADMIN — NAV + STATS
     ══════════════════════════════════════════ */
@@ -202,6 +210,8 @@
     }
     .adm-input:focus { border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,.2); }
 
+    textarea.adm-input { font-family: inherit; resize: vertical; min-height: 70px; }
+
     .dia-badge {
         border: 1.5px solid #58a6ff; color: #58a6ff;
         padding: 4px 11px; border-radius: 5px;
@@ -238,23 +248,103 @@
     }
 
     /* ══════════════════════════════════════════
+       MÁQUINAS Y EQUIPOS
+    ══════════════════════════════════════════ */
+    .maq-filtros {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .btn-filtro-maq {
+        background: #161b22; border: 1.5px solid #30363d;
+        color: #8b949e; font-size: 0.72rem; font-weight: 800;
+        letter-spacing: 1px; text-transform: uppercase;
+        padding: 8px 16px; border-radius: 30px; cursor: pointer; transition: all .15s;
+    }
+    .btn-filtro-maq:hover { border-color: #58a6ff; color: #f0f6fc; }
+    .btn-filtro-maq.activo { border-color: #58a6ff; background: rgba(88,166,255,.12); color: #58a6ff; }
+
+    .maquina-card {
+        background: rgba(255,255,255,.03);
+        border: 1px solid #30363d;
+        border-radius: 14px;
+        overflow: hidden;
+        height: 100%;
+        transition: transform .15s, border-color .15s;
+        position: relative;
+    }
+    .maquina-card:hover { transform: translateY(-3px); border-color: #58a6ff; }
+
+    .maquina-img-wrap {
+        height: 150px;
+        background: linear-gradient(135deg, rgba(88,166,255,.14), rgba(13,17,23,.5));
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden; position: relative;
+    }
+    .maquina-img-wrap img {
+        width: 100%; height: 100%; object-fit: cover;
+    }
+    .maquina-icon-fallback {
+        font-size: 2.6rem; color: #58a6ff; opacity: .55;
+    }
+
+    .maquina-body { padding: 14px 16px 16px; }
+    .maquina-cat {
+        display: inline-block; font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 1.2px; text-transform: uppercase;
+        padding: 3px 10px; border-radius: 20px; margin-bottom: 8px;
+    }
+    .cat-cardio     { background: rgba(46,160,67,.12);  color: #56d364; border: 1px solid rgba(46,160,67,.3); }
+    .cat-fuerza     { background: rgba(34,211,238,.12); color: #22d3ee; border: 1px solid rgba(34,211,238,.3); }
+    .cat-funcional  { background: rgba(227,179,65,.12); color: #e3b341; border: 1px solid rgba(227,179,65,.3); }
+
+    .maquina-nombre { font-weight: 800; font-size: 0.92rem; color: #f0f6fc; margin-bottom: 4px; }
+    .maquina-desc   { font-size: 0.78rem; color: #8b949e; line-height: 1.45; margin-bottom: 10px; }
+    .maquina-musculos { display: flex; flex-wrap: wrap; gap: 4px; }
+    .msc-tag {
+        font-size: 0.62rem; padding: 2px 9px; border-radius: 5px;
+        background: #161b22; border: 1px solid #30363d; color: #6b7a94;
+    }
+
+    .maquina-ribbon {
+        position: absolute; top: 10px; right: 10px; z-index: 2;
+        font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+        padding: 3px 9px; border-radius: 20px;
+    }
+    .ribbon-mantenimiento { background: rgba(227,179,65,.9); color: #1a1500; }
+    .ribbon-inactivo      { background: rgba(248,81,73,.9); color: #fff; }
+
+    /* Admin: tabla de máquinas */
+    .maq-thumb {
+        width: 44px; height: 44px; border-radius: 8px; object-fit: cover;
+        background: #161b22; border: 1px solid #30363d;
+    }
+    .btn-estado-toggle {
+        border: none; cursor: pointer; font-size: 0.65rem; font-weight: 800;
+        letter-spacing: .8px; text-transform: uppercase;
+        padding: 4px 10px; border-radius: 20px; transition: all .15s;
+    }
+    .estado-disponible    { background: rgba(46,160,67,.15);  color: #56d364; }
+    .estado-mantenimiento { background: rgba(227,179,65,.15); color: #e3b341; }
+    .estado-inactivo      { background: rgba(248,81,73,.15);  color: #f85149; }
+
+    /* ══════════════════════════════════════════
        RESPONSIVE
     ══════════════════════════════════════════ */
     @media (max-width: 768px) {
         .gym-clock { font-size: 1.5rem; }
         .estado-grid { grid-template-columns: 1fr 1fr; }
-        #tablaRegistros thead, #tablaHistorial thead { display: none; }
+        #tablaRegistros thead, #tablaHistorial thead, #tablaMaquinas thead { display: none; }
         #tablaRegistros, #tablaRegistros tbody, #tablaRegistros tr, #tablaRegistros td,
-        #tablaHistorial, #tablaHistorial tbody, #tablaHistorial tr, #tablaHistorial td { display: block; width: 100%; }
-        #tablaRegistros tr, #tablaHistorial tr {
+        #tablaHistorial, #tablaHistorial tbody, #tablaHistorial tr, #tablaHistorial td,
+        #tablaMaquinas, #tablaMaquinas tbody, #tablaMaquinas tr, #tablaMaquinas td { display: block; width: 100%; }
+        #tablaRegistros tr, #tablaHistorial tr, #tablaMaquinas tr {
             border: 1px solid #30363d; border-radius: 12px;
             background: #161b22; margin-bottom: 16px; padding: 10px 0;
         }
-        #tablaRegistros td, #tablaHistorial td {
+        #tablaRegistros td, #tablaHistorial td, #tablaMaquinas td {
             text-align: left !important; padding: 8px 18px !important;
             border: none !important; position: relative; padding-left: 46% !important;
         }
-        #tablaRegistros td::before, #tablaHistorial td::before {
+        #tablaRegistros td::before, #tablaHistorial td::before, #tablaMaquinas td::before {
             content: attr(data-label);
             position: absolute; left: 14px;
             font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
@@ -313,6 +403,12 @@
             </div>
         </div>
         <div class="col-6 col-md-2">
+            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('maquinas', this)">
+                <i class="fas fa-cogs fa-2x mb-2" style="color:#58a6ff;"></i>
+                <h6 class="fw-bold text-white small mb-0">MÁQUINAS</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
             <div class="sport-card text-center p-3" role="button"
                  onclick="window.location='{% url 'admin_lista_anamnesis' %}'">
                 <i class="fas fa-heartbeat fa-2x mb-2" style="color:#f85149;"></i>
@@ -329,7 +425,7 @@
 
     {% if messages %}
         {% for msg in messages %}
-        <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} small py-2 mb-4">
+        <div class="alert {% if msg.tags == 'success' %}alert-success{% elif msg.tags == 'warning' %}alert-warning{% elif msg.tags == 'info' %}alert-info{% else %}alert-danger{% endif %} small py-2 mb-4">
             {{ msg }}
         </div>
         {% endfor %}
@@ -438,6 +534,11 @@
                     {% endfor %}
                 </div>
             </div>
+            <div class="alert mt-4 small py-2 mb-0"
+                 style="background:rgba(88,166,255,.08); border:1px solid rgba(88,166,255,.3); color:#58a6ff;">
+                <i class="fas fa-info-circle me-2"></i>
+                Este resumen es de solo lectura. Para modificar el horario ve a <strong>DISPONIBILIDAD</strong>.
+            </div>
         </section>
     </div>
 
@@ -541,17 +642,32 @@
                     <tbody>
                     {% for r in todas_reservas %}
                     <tr>
-                        <td data-label="Aprendiz"><strong>{{ r.usuario.get_full_name|default:r.usuario.username }}</strong></td>
-                        <td data-label="Documento" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.usuario.numero_documento|default:"—" }}</td>
-                        <td data-label="Ficha" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.usuario.ficha|default:"—" }}</td>
+                        <td data-label="Aprendiz"><strong>{{ r.usuario_solicitante.get_full_name|default:r.usuario_solicitante.username }}</strong></td>
+                        <td data-label="Documento" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.usuario_solicitante.numero_documento|default:"—" }}</td>
+                        <td data-label="Ficha" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.usuario_solicitante.ficha|default:"—" }}</td>
                         <td data-label="Fecha" style="font-family:Consolas,monospace;font-size:.85rem;">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
                         <td data-label="Hora" class="text-info fw-bold" style="font-family:Consolas,monospace;">{{ r.hora_entrada|time:"H:i" }}</td>
-                        <td data-label="Estado"><span class="badge-status bg-success">Éxito</span></td>
+                        <td data-label="Estado">
+                            {% if r.estado == 'Cancelada' %}
+                                <span class="badge-status bg-danger">Cancelada</span>
+                            {% else %}
+                                <span class="badge-status bg-success">{{ r.estado|default:"Éxito" }}</span>
+                            {% endif %}
+                        </td>
                         <td data-label="Acción" class="text-center">
+                            {% if r.estado != 'Cancelada' %}
+                            <form method="post" action="{% url 'cancelar_reserva_admin' r.codigo_registro %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-edit" title="Cancelar"
+                                        onclick="return confirm('¿Cancelar el registro de {{ r.usuario_solicitante.get_full_name }}?')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </form>
+                            {% endif %}
                             <form method="post" action="{% url 'eliminar_reserva' r.codigo_registro %}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-trash"
-                                        onclick="return confirm('¿Eliminar registro de {{ r.usuario.get_full_name }}?')">
+                                <button type="submit" class="btn-trash" title="Eliminar"
+                                        onclick="return confirm('¿Eliminar registro de {{ r.usuario_solicitante.get_full_name }}?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
@@ -571,7 +687,192 @@
             <div class="alert mt-4 small py-2 mb-0"
                  style="background:rgba(227,179,65,.08); border:1px solid rgba(227,179,65,.3); color:#e3b341;">
                 <i class="fas fa-info-circle me-2"></i>
-                Panel de <strong>solo gestión</strong>. Los registros son creados por los aprendices.
+                Los registros de ingreso son creados por los aprendices; desde aquí puedes cancelarlos o eliminarlos.
+            </div>
+        </section>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         MÁQUINAS Y EQUIPOS (ADMIN)
+    ══════════════════════════════════════════ -->
+    <div id="adm-maquinas" class="adm-sec">
+        <section class="sport-card mb-4">
+            <h5 class="fw-bold mb-4"><i class="fas fa-cogs text-primary me-2" style="color:#58a6ff;"></i>Máquinas y Equipos</h5>
+
+            <div class="row g-3 mb-4">
+                <div class="col-4">
+                    <div class="stat-mini">
+                        <span class="stat-num">{{ total_maquinas|default:0 }}</span>
+                        <span class="stat-lbl">Total equipos</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="color:#56d364;">{{ maquinas|length }}</span>
+                        <span class="stat-lbl">Visibles</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-mini">
+                        <span class="stat-num" style="color:#22d3ee;">3</span>
+                        <span class="stat-lbl">Categorías</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM AGREGAR MÁQUINA -->
+            <div class="p-3 rounded mb-4" style="background:rgba(88,166,255,.04); border:1px solid rgba(88,166,255,.15);">
+                <h6 class="fw-bold text-white mb-3"><i class="fas fa-plus-circle me-2" style="color:#58a6ff;"></i>Agregar Nueva Máquina</h6>
+                <form method="post" action="{% url 'crear_maquina' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Nombre *</label>
+                            <input type="text" name="nombre" class="adm-input" placeholder="Ej: Press de Pierna" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Categoría</label>
+                            <select name="categoria" class="adm-input">
+                                <option value="cardio">Cardio</option>
+                                <option value="fuerza" selected>Fuerza</option>
+                                <option value="funcional">Funcional</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small">Foto (opcional)</label>
+                            <input type="file" name="imagen" class="adm-input" accept="image/*">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold small">Descripción</label>
+                            <textarea name="descripcion" class="adm-input" rows="2" placeholder="Para qué sirve y cómo se usa..."></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Músculos trabajados</label>
+                            <input type="text" name="musculos" class="adm-input" placeholder="Piernas, Glúteos (separado por comas)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2 mt-3">
+                        <i class="fas fa-save me-2"></i>AGREGAR MÁQUINA
+                    </button>
+                </form>
+            </div>
+
+            <!-- TABLA DE MÁQUINAS -->
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0" id="tablaMaquinas">
+                    <thead>
+                        <tr>
+                            <th>Foto</th><th>Nombre</th><th>Categoría</th><th>Músculos</th><th>Estado</th><th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for m in maquinas %}
+                    <tr>
+                        <td data-label="Foto">
+                            <img loading="lazy" src="{{ m.imagen_url }}" class="maq-thumb" alt="{{ m.nombre }}"
+                                 onerror="this.src=''; this.style.background='#161b22';">
+                        </td>
+                        <td data-label="Nombre"><strong>{{ m.nombre }}</strong></td>
+                        <td data-label="Categoría"><span class="maquina-cat cat-{{ m.categoria }}">{{ m.get_categoria_display }}</span></td>
+                        <td data-label="Músculos" class="text-white-50" style="font-size:0.8rem;">
+                            {% for msc in m.musculos %}{{ msc }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+                        </td>
+                        <td data-label="Estado">
+                            <form method="post" action="{% url 'toggle_estado_maquina' m.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-estado-toggle estado-{{ m.estado }}" title="Clic para cambiar de estado">
+                                    ● {{ m.get_estado_display }}
+                                </button>
+                            </form>
+                        </td>
+                        <td data-label="Acciones" class="text-center">
+                            <button type="button" class="btn-edit" title="Editar"
+                                    data-bs-toggle="modal" data-bs-target="#editMaquina{{ m.pk }}">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <form method="post" action="{% url 'eliminar_maquina' m.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-trash" title="Eliminar"
+                                        onclick="return confirm('¿Eliminar la máquina {{ m.nombre }}?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <!-- MODAL EDITAR -->
+                    <div class="modal fade" id="editMaquina{{ m.pk }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content" style="background:#161b22; border:1px solid #30363d; color:#f0f6fc;">
+                                <form method="post" action="{% url 'editar_maquina' m.pk %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="modal-header" style="border-color:#30363d;">
+                                        <h6 class="modal-title fw-bold"><i class="fas fa-pen me-2" style="color:#58a6ff;"></i>Editar {{ m.nombre }}</h6>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small">Nombre</label>
+                                            <input type="text" name="nombre" class="adm-input" value="{{ m.nombre }}" required>
+                                        </div>
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-6">
+                                                <label class="form-label fw-bold small">Categoría</label>
+                                                <select name="categoria" class="adm-input">
+                                                    <option value="cardio" {% if m.categoria == 'cardio' %}selected{% endif %}>Cardio</option>
+                                                    <option value="fuerza" {% if m.categoria == 'fuerza' %}selected{% endif %}>Fuerza</option>
+                                                    <option value="funcional" {% if m.categoria == 'funcional' %}selected{% endif %}>Funcional</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label fw-bold small">Estado</label>
+                                                <select name="estado" class="adm-input">
+                                                    <option value="disponible" {% if m.estado == 'disponible' %}selected{% endif %}>Disponible</option>
+                                                    <option value="mantenimiento" {% if m.estado == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                                                    <option value="inactivo" {% if m.estado == 'inactivo' %}selected{% endif %}>Fuera de Servicio</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small">Descripción</label>
+                                            <textarea name="descripcion" class="adm-input" rows="2">{{ m.descripcion }}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small">Músculos (separados por comas)</label>
+                                            <input type="text" name="musculos" class="adm-input"
+                                                   value="{% for msc in m.musculos %}{{ msc }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bold small">Reemplazar foto (opcional)</label>
+                                            <input type="file" name="imagen" class="adm-input" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer" style="border-color:#30363d;">
+                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary btn-sm fw-bold">
+                                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-white-50">
+                            <i class="fas fa-cogs fa-2x d-block mb-3 opacity-25"></i>
+                            No hay máquinas registradas todavía.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert mt-4 small py-2 mb-0"
+                 style="background:rgba(88,166,255,.08); border:1px solid rgba(88,166,255,.3); color:#58a6ff;">
+                <i class="fas fa-info-circle me-2"></i>
+                Haz clic en el estado de una máquina para alternar entre <strong>Disponible → Mantenimiento → Fuera de Servicio</strong>.
+                Las máquinas "Fuera de Servicio" no se muestran a los aprendices.
             </div>
         </section>
     </div>
@@ -617,6 +918,11 @@
                         <span class="stat-lbl">Horario</span>
                     </div>
                 </div>
+            </div>
+            <div class="alert mt-4 small py-2 mb-0"
+                 style="background:rgba(88,166,255,.08); border:1px solid rgba(88,166,255,.3); color:#58a6ff;">
+                <i class="fas fa-info-circle me-2"></i>
+                Este resumen es de solo lectura. Cambia el estado del gimnasio, horarios o capacidad desde <strong>DISPONIBILIDAD</strong>.
             </div>
         </section>
     </div>
@@ -678,22 +984,27 @@
         </div>
         <!-- Ficha de salud -->
         <div class="col-6 col-md-4">
-            <a href="{% url ' fa-heartbeat nav-icon" style="color:#f85149;"></i>
+            <a href="{% url 'habitos:dashboard' %}" class="gym-nav-card accent-red">
+                <i class="fas fa-heartbeat nav-icon" style="color:#f85149;"></i>
                 <span class="nav-label">Mi Ficha de Salud</span>
-                <span class="nav-sub">IMC · Historial</sp
+                <span class="nav-sub">IMC · Historial</span>
+            </a>
         </div>
         <!-- Tests físicos -->
         <div class="col-6 col-md-4">
             <a href="{% url 'habitos:registrar_seguimiento' %}" class="gym-nav-card accent-warn">
-                <i class="fas fa-rF
+                <i class="fas fa-ruler nav-icon" style="color:#e3b341;"></i>
+                <span class="nav-label">Tests Físicos</span>
                 <span class="nav-sub">Registrar Medidas</span>
             </a>
-        </div>a
+        </div>
+        <!-- Rutinas cardio -->
         <div class="col-6 col-md-6">
             <a href="{% url 'habitos:lista_rutinas' %}?objetivo=cardio" class="gym-nav-card accent-green">
                 <i class="fas fa-bicycle nav-icon" style="color:#56d364;"></i>
                 <span class="nav-label">Rutinas Cardio</span>
-                <span class="nav-s
+                <span class="nav-sub">Resistencia · Quema calórica</span>
+            </a>
         </div>
         <!-- Rutinas fuerza -->
         <div class="col-6 col-md-6">
@@ -702,7 +1013,64 @@
                 <span class="nav-label">Rutinas Fuerza</span>
                 <span class="nav-sub">Máquinas · Peso libre</span>
             </a>
+        </div>
     </nav>
+
+    <!-- MÁQUINAS Y EQUIPOS -->
+    <section class="sport-card mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold mb-0" style="color:#58a6ff;">
+                <i class="fas fa-cogs me-2"></i>Máquinas y Equipos Disponibles
+            </h5>
+            <span class="text-white-50 small">
+                {{ maquinas|length }} equipo{{ maquinas|length|pluralize }}
+            </span>
+        </div>
+        <p class="text-white-50 small mb-4">
+            Conoce el equipo de la sala antes de entrenar: para qué sirve cada máquina y qué grupo muscular trabaja.
+        </p>
+
+        <div class="maq-filtros">
+            <button type="button" class="btn-filtro-maq activo" data-filtro="todas" onclick="filtrarMaquinas(this)">Todas</button>
+            <button type="button" class="btn-filtro-maq" data-filtro="cardio" onclick="filtrarMaquinas(this)">Cardio</button>
+            <button type="button" class="btn-filtro-maq" data-filtro="fuerza" onclick="filtrarMaquinas(this)">Fuerza</button>
+            <button type="button" class="btn-filtro-maq" data-filtro="funcional" onclick="filtrarMaquinas(this)">Funcional</button>
+        </div>
+
+        <div class="row g-3" id="grid-maquinas">
+            {% for maquina in maquinas %}
+            <div class="col-6 col-md-4 col-lg-3 item-maquina" data-cat="{{ maquina.categoria }}">
+                <div class="maquina-card">
+                    {% if maquina.estado == 'mantenimiento' %}
+                        <span class="maquina-ribbon ribbon-mantenimiento">Mantenimiento</span>
+                    {% endif %}
+                    <div class="maquina-img-wrap">
+                        <img loading="lazy" src="{{ maquina.imagen_url }}" alt="{{ maquina.nombre }}"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <i class="fas fa-dumbbell maquina-icon-fallback" style="display:none;"></i>
+                    </div>
+                    <div class="maquina-body">
+                        <span class="maquina-cat cat-{{ maquina.categoria }}">{{ maquina.get_categoria_display|default:maquina.categoria }}</span>
+                        <div class="maquina-nombre">{{ maquina.nombre }}</div>
+                        <p class="maquina-desc">{{ maquina.descripcion }}</p>
+                        {% if maquina.musculos %}
+                        <div class="maquina-musculos">
+                            {% for m in maquina.musculos %}
+                            <span class="msc-tag">{{ m }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5 text-white-50">
+                <i class="fas fa-cogs fa-2x d-block mb-3 opacity-25"></i>
+                Aún no hay máquinas registradas. Pídele a tu administrador que las agregue.
+            </div>
+            {% endfor %}
+        </div>
+    </section>
 
     <!-- REGISTRO DE ENTRADA -->
     <section class="sport-card mb-4">
@@ -780,9 +1148,15 @@
                     <td data-label="Fecha" style="font-family:Consolas,monospace;">{{ r.fecha_entrada|date:"d/m/Y" }}</td>
                     <td data-label="Hora" class="text-info fw-bold" style="font-family:Consolas,monospace;">{{ r.hora_entrada|time:"H:i" }}</td>
                     <td data-label="Estado">
+                        {% if r.estado == 'Cancelada' %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3">
+                            Cancelada
+                        </span>
+                        {% else %}
                         <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3">
                             Éxito
                         </span>
+                        {% endif %}
                     </td>
                     <td data-label="Acción" class="text-center">
                         <form method="post" action="{% url 'eliminar_reserva' r.codigo_registro %}" style="display:inline;">
@@ -826,7 +1200,11 @@ if (clockEl) {
     tickClock();
 }
 
-/* Nav secciones admin */
+/**
+ * Cambia la sección activa del panel de administración del gimnasio.
+ * @param {string} id - El identificador de la sección (ej. 'disponibilidad', 'horarios').
+ * @param {HTMLElement} card - El elemento HTML de tipo card pulsado para navegación.
+ */
 function mostrarSec(id, card) {
     document.querySelectorAll('.adm-sec').forEach(s => s.classList.remove('activa'));
     document.querySelectorAll('nav .sport-card[role=button]').forEach(c => {
@@ -834,8 +1212,10 @@ function mostrarSec(id, card) {
         c.style.opacity = '.7';
     });
     document.getElementById('adm-' + id).classList.add('activa');
-    card.style.borderColor = '#58a6ff';
-    card.style.opacity = '1';
+    if (card) {
+        card.style.borderColor = '#58a6ff';
+        card.style.opacity = '1';
+    }
     document.getElementById('adm-' + id).scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -856,7 +1236,10 @@ if (seccionActiva) {
     });
 }
 
-/* Estado gimnasio (admin) */
+/**
+ * Selecciona y resalta visualmente el estado del gimnasio (abierto/cerrado) en el formulario de configuración.
+ * @param {HTMLElement} btn - El botón pulsado que representa el estado seleccionado.
+ */
 function selEstado(btn) {
     document.querySelectorAll('.btn-estado').forEach(b => b.classList.remove('sel'));
     btn.classList.add('sel');
@@ -865,6 +1248,10 @@ function selEstado(btn) {
 
 /* Días (admin) */
 const diasActivos = new Set({{ dias_activos|default:"[]"|safe }});
+/**
+ * Agrega o remueve un día de la semana del conjunto de días activos en que abre el gimnasio.
+ * @param {HTMLElement} btn - El botón del día pulsado.
+ */
 function toggleDia(btn) {
     const d = btn.dataset.dia;
     diasActivos.has(d) ? diasActivos.delete(d) : diasActivos.add(d);
@@ -877,11 +1264,27 @@ if (cfgForm) {
     });
 }
 
-/* Buscar en tabla admin */
+/**
+ * Filtra las filas de la tabla de registros en tiempo real según el texto ingresado.
+ * @param {string} q - El término de búsqueda/filtro ingresado por el usuario.
+ */
 function filtrarTabla(q) {
     q = q.toLowerCase();
     document.querySelectorAll('#tablaRegistros tbody tr').forEach(row => {
         row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+/**
+ * Filtra el catálogo de máquinas visibles según la categoría seleccionada (todas, cardio, fuerza, funcional).
+ * @param {HTMLElement} btn - El botón de categoría presionado.
+ */
+function filtrarMaquinas(btn) {
+    document.querySelectorAll('.btn-filtro-maq').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    const filtro = btn.dataset.filtro;
+    document.querySelectorAll('#grid-maquinas .item-maquina').forEach(item => {
+        item.style.display = (filtro === 'todas' || item.dataset.cat === filtro) ? '' : 'none';
     });
 }
 

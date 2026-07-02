@@ -258,7 +258,7 @@
             <div class="row g-3">
                 {% for e in elementos %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="catalogo-card position-relative">
+                    <div class="catalogo-card position-relative {% if not e.habilitado %}opacity-50 border-danger{% endif %}">
 
                         <!-- Imagen -->
                         {% if e.imagen %}
@@ -269,8 +269,12 @@
                             </div>
                         {% endif %}
 
-                        <!-- Badge stock -->
-                        {% if e.cantidad_total > 0 %}
+                        <!-- Badge stock / Habilitado status -->
+                        {% if not e.habilitado %}
+                            <span class="stock-badge bg-secondary text-white border border-danger">
+                                <i class="fas fa-eye-slash me-1"></i>Inhabilitado
+                            </span>
+                        {% elif e.cantidad_total > 0 %}
                             <span class="stock-badge bg-success text-white">
                                 <i class="fas fa-check me-1"></i>{{ e.cantidad_total }} disp.
                             </span>
@@ -312,6 +316,7 @@
                                         data-responsable-id="{{ e.usuario_responsable.pk|default:'' }}"
                                         data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
                                         data-descripcion="{{ e.descripcion|default:'' }}"
+                                        data-habilitado="{% if e.habilitado %}true{% else %}false{% endif %}"
                                         {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}
                                         data-bs-toggle="modal" data-bs-target="#modalElemento"
                                         style="font-size:0.75rem;">
@@ -382,7 +387,7 @@
                     </thead>
                     <tbody>
                         {% for e in elementos %}
-                        <tr class="main-row"
+                        <tr class="main-row {% if not e.habilitado %}opacity-50{% endif %}"
                             data-id="{{ e.id }}"
                             data-tipo="{{ e.tipo_maquina }}"
                             data-cantidad="{{ e.cantidad_total }}"
@@ -391,6 +396,7 @@
                             data-responsable-id="{{ e.usuario_responsable.pk|default:'' }}"
                             data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
                             data-descripcion="{{ e.descripcion|default:'' }}"
+                            data-habilitado="{% if e.habilitado %}true{% else %}false{% endif %}"
                             {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}>
 
                             <td data-label="Detalle">
@@ -409,7 +415,12 @@
                                 {% endif %}
                             </td>
 
-                            <td data-label="Elemento"><strong>{{ e.tipo_maquina }}</strong></td>
+                            <td data-label="Elemento">
+                                <strong>{{ e.tipo_maquina }}</strong>
+                                {% if not e.habilitado %}
+                                    <span class="badge bg-danger ms-1 text-white" style="font-size:0.65rem;"><i class="fas fa-eye-slash me-1"></i>Inhabilitado</span>
+                                {% endif %}
+                            </td>
 
                             <td data-label="Stock">
                                 <span class="badge bg-dark border border-secondary px-3">{{ e.cantidad_total }}</span>
@@ -429,12 +440,7 @@
                             <td data-label="Acciones" class="text-center">
                                 {% if user.is_staff %}
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button type="button"
-                                            class="btn btn-warning btn-icon btn-editar-elemento"
-                                            title="Editar"
-                                            data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <i class="fas fa-edit" style="font-size:0.7rem;"></i>
-                                    </button>
+                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top" style="font-size: 0.72rem; padding: 4px 8px;"><i class="fas fa-edit me-1" style="font-size:0.7rem;"></i>Editar</button>
                                     <a href="{% url 'eliminar_elemento' e.id %}"
                                        class="btn btn-danger btn-icon"
                                        title="Eliminar"
@@ -730,8 +736,11 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold small">Fecha Adquisición</label>
-                                <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion"
-                                       class="form-control custom-input">
+                                <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion" class="form-control custom-input">
+                            </div>
+                            <div class="form-check form-switch mb-3" id="containerHabilitado" style="display: none;">
+                                <input class="form-check-input" type="checkbox" id="inputHabilitado" name="habilitado" checked>
+                                <label class="form-check-label small fw-bold text-white-50" for="inputHabilitado">Producto Habilitado (disponible para préstamo)</label>
                             </div>
                         </div>
                     </div>
