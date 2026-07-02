@@ -1,23 +1,23 @@
 <!-- MODAL NOTIFICACIONES DEL SISTEMA -->
 <div class="modal fade" id="modalNotificacionesSistema" tabindex="-1" aria-labelledby="modalNotificacionesLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal text-white" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid var(--accent-blue); border-radius: 16px;">
+        <div class="modal-content custom-modal text-white notif-modal-content">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold text-cap" id="modalNotificacionesLabel">
-                    <i class="fas fa-bell text-warning me-2 animate-bounce"></i>Notificaciones de Mi Cuenta
+                     <i class="fas fa-bell text-warning me-2 animate-bounce"></i>Notificaciones de Mi Cuenta
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body py-4">
                 <div class="d-flex flex-column gap-3">
                     {% for notif in notificaciones_sistema %}
-                        <div class="p-3 rounded border" style="background: rgba(255, 255, 255, 0.02); border-color: {% if notif.tipo == 'warning' %}rgba(255, 193, 7, 0.25){% else %}rgba(43, 125, 233, 0.25){% endif %} !important;">
+                        <div class="p-3 rounded border notif-border-{% if notif.tipo == 'warning' %}warning{% else %}info{% endif %}">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div class="d-flex align-items-center gap-2">
                                     <i class="fas {{ notif.icono }} {% if notif.tipo == 'warning' %}text-warning{% else %}text-info{% endif %}"></i>
                                     <h6 class="mb-0 fw-bold text-white">{{ notif.titulo }}</h6>
                                 </div>
-                                <span class="badge {% if notif.tipo == 'warning' %}bg-warning text-dark{% else %}bg-info text-white{% endif %} font-monospace" style="font-size: 0.65rem;">
+                                <span class="badge {% if notif.tipo == 'warning' %}bg-warning text-dark{% else %}bg-info text-white{% endif %} font-monospace notif-badge-size">
                                     {{ notif.badge }}
                                 </span>
                             </div>

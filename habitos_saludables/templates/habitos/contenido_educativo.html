@@ -13,7 +13,7 @@
     <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
             <h1>{{ titulo_pagina }}</h1>
-            <div style="color: var(--muted); font-size: 0.88rem;">Módulo de Hábitos Saludables</div>
+            <div class="edu-u-1">Módulo de Hábitos Saludables</div>
         </div>
         <div>
             {% if vista == 'habitos' or vista == 'rutinas' or vista == 'nutricion' or vista == 'biblioteca' %}
@@ -28,7 +28,7 @@
 <div class="container pb-5">
 
     {% if vista == 'habitos' %}
-    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Explora nuestra colección de hábitos saludables para mejorar tu bienestar.</p>
+    <p class="edu-u-2">Explora nuestra colección de hábitos saludables para mejorar tu bienestar.</p>
     <div class="row mb-4 reveal">
         <div class="col-md-8">
             <div class="filter-btn-group">
@@ -47,13 +47,13 @@
         <div class="col-md-6 col-lg-4 habit-card reveal">
             <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="content-card">
                 <div class="icon-wrapper icon-green"><i class="fas fa-{{ habito.icono_css }}"></i></div>
-                <h5 style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem;">{{ habito.titulo }}</h5>
-                <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;">{{ habito.descripcion|truncatechars:100 }}</p>
+                <h5 class="edu-u-3">{{ habito.titulo }}</h5>
+                <p class="edu-u-4">{{ habito.descripcion|truncatechars:100 }}</p>
                 <div><span class="badge-cat badge-green">{{ habito.get_categoria_display }}</span></div>
             </a>
         </div>
         {% empty %}
-        <div class="col-12"><p style="color: var(--muted);">No hay hábitos disponibles en esta categoría.</p></div>
+        <div class="col-12"><p class="edu-u-5">No hay hábitos disponibles en esta categoría.</p></div>
         {% endfor %}
     </div>
 
@@ -61,19 +61,19 @@
     <div class="row g-4 reveal">
         <div class="col-lg-8">
             <div class="panel">
-                {% if habito.imagen %}<img loading="lazy" src="{{ habito.imagen.url }}" alt="{{ habito.titulo }}" style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border);">{% endif %}
+                {% if habito.imagen %}<img loading="lazy" src="{{ habito.imagen.url }}" alt="{{ habito.titulo }}" class="edu-u-6">{% endif %}
                 <span class="badge-cat badge-green mb-3">{{ habito.get_categoria_display }}</span>
-                <h2 style="font-family: var(--font-display); font-weight: 800; font-size: 2rem; margin-bottom: 1rem;">{{ habito.titulo }}</h2>
-                <p style="color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.7;">{{ habito.descripcion }}</p>
+                <h2 class="edu-u-7">{{ habito.titulo }}</h2>
+                <p class="edu-u-8">{{ habito.descripcion }}</p>
                 
                 {% if habito.get_consejos_lista %}
-                <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
-                    <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 1rem;"><i class="fas fa-lightbulb" style="color: #ffc107; margin-right: 8px;"></i>Consejos clave:</h4>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
+                <div class="mt-4 pt-4 edu-u-9">
+                    <h4 class="edu-u-10"><i class="fas fa-lightbulb edu-u-11"></i>Consejos clave:</h4>
+                    <ul class="edu-u-12">
                         {% for consejo in habito.get_consejos_lista %}
-                        <li style="display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start;">
-                            <i class="fas fa-check-circle" style="color: var(--teal); margin-top: 4px;"></i>
-                            <span style="color: rgba(255,255,255,0.75); line-height: 1.5;">{{ consejo }}</span>
+                        <li class="edu-u-13">
+                            <i class="fas fa-check-circle edu-u-14"></i>
+                            <span class="edu-u-15">{{ consejo }}</span>
                         </li>
                         {% endfor %}
                     </ul>
@@ -83,18 +83,18 @@
         </div>
         <div class="col-lg-4">
             <div class="panel">
-                <h4 style="font-weight: 700; font-size: 1.1rem; margin-bottom: 1.5rem;">Hábitos relacionados</h4>
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <h4 class="edu-u-16">Hábitos relacionados</h4>
+                <div class="edu-u-17">
                     {% for rel_habito in relacionados %}
-                    <a href="{% url 'habitos:detalle_habito' rel_habito.pk %}" style="text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; transition: background 0.2s;">
-                        <div class="icon-wrapper icon-blue" style="margin: 0; width: 40px; height: 40px; font-size: 1rem;"><i class="fas fa-{{ rel_habito.icono_css }}"></i></div>
+                    <a href="{% url 'habitos:detalle_habito' rel_habito.pk %}" class="edu-u-18">
+                        <div class="icon-wrapper icon-blue edu-u-19"><i class="fas fa-{{ rel_habito.icono_css }}"></i></div>
                         <div>
-                            <h6 style="color: white; font-weight: 700; margin: 0; font-size: 0.9rem;">{{ rel_habito.titulo }}</h6>
-                            <small style="color: var(--muted); font-size: 0.75rem;">{{ rel_habito.get_categoria_display }}</small>
+                            <h6 class="edu-u-20">{{ rel_habito.titulo }}</h6>
+                            <small class="edu-u-21">{{ rel_habito.get_categoria_display }}</small>
                         </div>
                     </a>
                     {% empty %}
-                    <p style="color: var(--muted); font-size: 0.85rem;">No hay hábitos relacionados.</p>
+                    <p class="edu-u-22">No hay hábitos relacionados.</p>
                     {% endfor %}
                 </div>
             </div>
@@ -102,7 +102,7 @@
     </div>
 
     {% elif vista == 'rutinas' %}
-    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Encuentra la rutina de ejercicio perfecta para ti.</p>
+    <p class="edu-u-23">Encuentra la rutina de ejercicio perfecta para ti.</p>
     <div class="row mb-4 reveal">
         <div class="col-lg-8">
             <div class="filter-btn-group">
@@ -119,18 +119,18 @@
     <div class="row g-4">
         {% for rutina in rutinas %}
         <div class="col-md-6 col-lg-4 routine-card reveal">
-            <a href="{% url 'habitos:detalle_rutina' rutina.pk %}" class="content-card" style="padding: 0; overflow: hidden;">
+            <a href="{% url 'habitos:detalle_rutina' rutina.pk %}" class="content-card edu-u-24">
                 {% if rutina.imagen %}
-                <img loading="lazy" src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" style="width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid var(--border);">
+                <img loading="lazy" src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" class="edu-u-25">
                 {% else %}
-                <div style="width: 100%; height: 160px; background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border);">
-                    <i class="fas fa-dumbbell" style="font-size: 3rem; opacity: 0.2;"></i>
+                <div class="edu-u-26">
+                    <i class="fas fa-dumbbell edu-u-27"></i>
                 </div>
                 {% endif %}
-                <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
-                    <h5 style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem;">{{ rutina.nombre }}</h5>
-                    <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;">{{ rutina.descripcion|truncatechars:90 }}</p>
-                    <div style="display: flex; gap: 8px;">
+                <div class="edu-u-28">
+                    <h5 class="edu-u-29">{{ rutina.nombre }}</h5>
+                    <p class="edu-u-30">{{ rutina.descripcion|truncatechars:90 }}</p>
+                    <div class="edu-u-31">
                         <span class="badge-cat badge-blue">{{ rutina.get_nivel_display }}</span>
                         <span class="badge-cat badge-yellow">{{ rutina.get_objetivo_display }}</span>
                     </div>
@@ -138,54 +138,59 @@
             </a>
         </div>
         {% empty %}
-        <div class="col-12"><p style="color: var(--muted);">No hay rutinas disponibles con estos filtros.</p></div>
+        <div class="col-12"><p class="edu-u-32">No hay rutinas disponibles con estos filtros.</p></div>
         {% endfor %}
     </div>
 
     {% elif vista == 'detalle_rutina' %}
     <div class="panel reveal">
-        {% if rutina.imagen %}<img loading="lazy" src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border);">{% endif %}
-        <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
+        {% if rutina.imagen %}<img loading="lazy" src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" class="edu-u-33">{% endif %}
+        <div class="edu-u-34">
             <span class="badge-cat badge-blue">{{ rutina.get_nivel_display }}</span>
             <span class="badge-cat badge-yellow">{{ rutina.get_objetivo_display }}</span>
         </div>
-        <h2 style="font-family: var(--font-display); font-weight: 800; font-size: 2rem; margin-bottom: 1rem;">{{ rutina.nombre }}</h2>
-        <p style="color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem;">{{ rutina.descripcion }}</p>
+        <h2 class="edu-u-35">{{ rutina.nombre }}</h2>
+        <p class="edu-u-36">{{ rutina.descripcion }}</p>
         
-        <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
-            <h4 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 1rem;"><i class="fas fa-list-ol" style="color: var(--teal); margin-right: 8px;"></i>Ejercicios:</h4>
-            <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+        <div class="edu-u-37">
+            <h4 class="edu-u-38"><i class="fas fa-list-ol edu-u-39"></i>Ejercicios:</h4>
+            <ul class="edu-u-40">
                 {% for ejercicio in rutina.get_ejercicios_lista %}
-                <li style="display: flex; gap: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 12px; border-radius: 10px; align-items: center;">
-                    <div style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255,193,7,0.1); color: #ffc107; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;"><i class="fas fa-dumbbell"></i></div>
-                    <span style="color: rgba(255,255,255,0.8); font-size: 0.95rem;">{{ ejercicio }}</span>
+                <li class="edu-u-41">
+                    <div class="edu-u-42"><i class="fas fa-dumbbell"></i></div>
+                    <span class="edu-u-43">{{ ejercicio }}</span>
                 </li>
                 {% endfor %}
             </ul>
         </div>
-        <div style="margin-top: 2rem; padding: 15px; background: rgba(92,158,255,0.05); border-left: 4px solid #5c9eff; border-radius: 0 8px 8px 0;">
-            <p style="margin: 0; color: rgba(255,255,255,0.8); font-weight: 600;"><i class="fas fa-stopwatch" style="color: #5c9eff; margin-right: 8px;"></i>Duración estimada: {{ rutina.duracion_minutos }} minutos</p>
+        <div class="edu-u-44">
+            <p class="edu-u-45"><i class="fas fa-stopwatch edu-u-46"></i>Duración estimada: {{ rutina.duracion_minutos }} minutos</p>
         </div>
     </div>
 
     {% elif vista == 'nutricion' %}
-    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Descubre los alimentos esenciales para una dieta equilibrada a través de la Pirámide Nutricional.</p>
+    <p class="edu-u-47">Descubre los alimentos esenciales para una dieta equilibrada a través de la Pirámide Nutricional.</p>
     
-    <div class="panel reveal" style="background: url('data:image/svg+xml;utf8,<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"rgba(255,255,255,0.03)\"/></svg>'); background-size: 20px 20px;">
+    <div class="panel reveal edu-u-48"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"rgba(255,255,255,0.03)\"/></svg>'); background-size: 20px 20px;">
         
         <div class="pyramid-container">
             {% for nivel, alimentos_nivel in por_nivel.items %}
-            <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--acid); margin-bottom: 0.5rem; font-weight: 700;">
+            <div class="edu-u-49">
+                <div class="edu-u-50">
                     Nivel {{ nivel }} - {{ alimentos_nivel.0.get_nivel_piramide_display }}
                 </div>
                 <div class="pyramid-level">
                     {% for alimento in alimentos_nivel %}
-                    <div class="pyramid-item" style="border-bottom: 3px solid {{ alimento.color_tarjeta|default:'var(--border)' }};">
+                    <style>
+                        #alimento-card-{{ alimento.id }} {
+                            border-bottom: 3px solid {{ alimento.color_tarjeta|default:'var(--border)' }};
+                        }
+                    </style>
+                    <div class="pyramid-item" id="alimento-card-{{ alimento.id }}">
                         {% if alimento.imagen %}
                         <img loading="lazy" src="{{ alimento.imagen.url }}" alt="{{ alimento.nombre }}">
                         {% else %}
-                        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; color: var(--muted); font-size: 1.5rem;"><i class="fas fa-utensils"></i></div>
+                        <div class="edu-u-51"><i class="fas fa-utensils"></i></div>
                         {% endif %}
                         <h6>{{ alimento.nombre }}</h6>
                         <small>{{ alimento.cantidad_recomendada }}</small>
@@ -194,20 +199,20 @@
                 </div>
             </div>
             {% empty %}
-            <p style="color: var(--muted);">No hay información nutricional disponible.</p>
+            <p class="edu-u-52">No hay información nutricional disponible.</p>
             {% endfor %}
         </div>
         
     </div>
 
     {% elif vista == 'biblioteca' %}
-    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem;">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
+    <p class="edu-u-53">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
     <div class="panel mb-4 reveal p-3">
-        <form method="get" style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <div style="flex-grow: 1;">{{ form.q }}</div>
-            <div style="width: 200px;">{{ form.tipo }}</div>
+        <form method="get" class="edu-u-54">
+            <div class="edu-u-55">{{ form.q }}</div>
+            <div class="edu-u-56">{{ form.tipo }}</div>
             <button type="submit" class="btn-acid"><i class="fas fa-search"></i> Buscar</button>
-            <a href="{% url 'habitos:biblioteca' %}" class="btn-outline-sm" style="border: 1px solid var(--border);"><i class="fas fa-redo"></i> Limpiar</a>
+            <a href="{% url 'habitos:biblioteca' %}" class="btn-outline-sm edu-u-57"><i class="fas fa-redo"></i> Limpiar</a>
         </form>
     </div>
     <div class="row g-4">
@@ -225,11 +230,11 @@
                 <h5>{{ material.titulo }}</h5>
                 <p>{{ material.descripcion|truncatechars:100 }}</p>
                 <div class="meta">
-                    <span style="display: block; margin-bottom: 3px;"><strong>Autor:</strong> {{ material.autor }}</span>
-                    <span style="display: block; margin-bottom: 3px;"><strong>Publicado:</strong> {{ material.fecha_publicacion|date:"d M Y" }}</span>
-                    <span style="display: block; color: var(--teal);"><strong>Descargas:</strong> {{ material.descargas }}</span>
+                    <span class="edu-u-58"><strong>Autor:</strong> {{ material.autor }}</span>
+                    <span class="edu-u-59"><strong>Publicado:</strong> {{ material.fecha_publicacion|date:"d M Y" }}</span>
+                    <span class="edu-u-60"><strong>Descargas:</strong> {{ material.descargas }}</span>
                 </div>
-                <a href="{% url 'habitos:descargar_material' material.pk %}" class="btn-outline-sm" style="margin-top: 1rem; width: 100%; justify-content: center; border-color: rgba(92,158,255,0.3); color: #5c9eff;">
+                <a href="{% url 'habitos:descargar_material' material.pk %}" class="btn-outline-sm edu-u-61">
                     {% if material.tipo_contenido == 'video' %}<i class="fas fa-external-link-alt"></i> Ver Video
                     {% else %}<i class="fas fa-download"></i> Descargar
                     {% endif %}
@@ -237,7 +242,7 @@
             </div>
         </div>
         {% empty %}
-        <div class="col-12"><p style="color: var(--muted);">No se encontraron materiales de apoyo.</p></div>
+        <div class="col-12"><p class="edu-u-62">No se encontraron materiales de apoyo.</p></div>
         {% endfor %}
     </div>
 

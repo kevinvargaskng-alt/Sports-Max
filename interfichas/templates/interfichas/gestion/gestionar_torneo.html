@@ -215,7 +215,7 @@
     <div class="torneo-hero">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
             <div>
-                <h2 class="text-white fw-bold mb-1" style="text-transform:capitalize;">
+                <h2 class="text-white fw-bold mb-1 torneo-u-1">
                     <i class="fas fa-trophy text-warning me-2"></i>{{ torneo.nombre_torneo }}
                 </h2>
                 <p class="text-white-50 mb-2 small">
@@ -257,7 +257,7 @@
     <!-- ══════════════════════════════════════════
          NAVEGACIÓN POR PESTAÑAS
          ══════════════════════════════════════════ -->
-    <ul class="nav nav-tabs mb-4 border-bottom border-secondary" id="torneoTabs" role="tablist" style="gap:0.25rem;">
+    <ul class="nav nav-tabs mb-4 border-bottom border-secondary" id="torneoTabs" role="tablist torneo-u-2">
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-bold px-4 py-2" id="tab-equipos" data-bs-toggle="tab" data-bs-target="#pane-equipos" type="button" role="tab">
                 <i class="fas fa-users me-2"></i>Equipos
@@ -299,33 +299,33 @@
             <div class="row g-3">
                 {% for eq in equipos_total %}
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-3 rounded border d-flex flex-column justify-content-between h-100 equipo-card-item" style="background:#0d1117; border-color: #21262d !important;">
+                    <div class="p-3 rounded border d-flex flex-column justify-content-between h-100 equipo-card-item torneo-u-3">
                         <div>
                             <div class="d-flex justify-content-between align-items-start mb-1">
-                                <h6 class="fw-bold mb-0 text-info" style="font-size:1.05rem;">{{ eq.nombre_equipo }}</h6>
-                                <span class="badge bg-secondary text-white-50" style="font-size:0.7rem;">Ficha: {{ eq.ficha }}</span>
+                                <h6 class="fw-bold mb-0 text-info torneo-u-4">{{ eq.nombre_equipo }}</h6>
+                                <span class="badge bg-secondary text-white-50 torneo-u-5">Ficha: {{ eq.ficha }}</span>
                             </div>
                             <!-- ★ Ficha debajo del nombre -->
                             <div class="mb-2">
                                 <span class="equipo-ficha-badge">
-                                    <i class="fas fa-id-card me-1" style="color:#58a6ff;"></i>Ficha: {{ eq.ficha }}
+                                    <i class="fas fa-id-card me-1 torneo-u-6"></i>Ficha: {{ eq.ficha }}
                                 </span>
                             </div>
-                            <p class="mb-1 text-white-50 small" style="font-size:0.8rem;">
+                            <p class="mb-1 text-white-50 small torneo-u-7">
                                 <i class="fas fa-user text-success me-1"></i>Capitán: <strong class="text-white">{{ eq.capitan }}</strong>
                             </p>
-                            <p class="mb-0 text-white-50 small" style="font-size:0.8rem;">
+                            <p class="mb-0 text-white-50 small torneo-u-8">
                                 <i class="fas fa-graduation-cap text-primary me-1"></i>{{ eq.programa }}
                             </p>
                         </div>
-                        <div class="d-flex gap-2 mt-3 pt-2 border-top" style="border-color: #21262d !important;">
-                            <button class="btn btn-sm btn-outline-info flex-fill fw-bold text-uppercase" style="font-size:0.75rem;"
+                        <div class="d-flex gap-2 mt-3 pt-2 border-top torneo-u-9">
+                            <button class="btn btn-sm btn-outline-info flex-fill fw-bold text-uppercase torneo-u-10"
                                     onclick="abrirEditarEquipo('{{ eq.pk }}', '{{ eq.nombre_equipo|escapejs }}', '{{ eq.capitan|escapejs }}', '{{ eq.ficha|escapejs }}', '{{ eq.programa|escapejs }}')">
                                 <i class="fas fa-edit me-1"></i>Editar
                             </button>
                             <form method="POST" action="{% url 'eliminar_equipo' equipo_id=eq.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar a {{ eq.nombre_equipo }}? Se eliminarán sus partidos asociados.')" class="flex-fill d-flex">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger flex-fill fw-bold text-uppercase" style="font-size:0.75rem;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger flex-fill fw-bold text-uppercase torneo-u-11">
                                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
@@ -365,12 +365,12 @@
                 <div class="row justify-content-center mb-4">
                     <div class="col-12 col-md-8 col-lg-6">
                         <div class="cfg-box">
-                            <p class="text-white-50 small fw-bold text-uppercase mb-3" style="letter-spacing:.6px; font-size:0.72rem;">
+                            <p class="text-white-50 small fw-bold text-uppercase mb-3 torneo-u-12">
                                 <i class="fas fa-sliders-h text-info me-1"></i>Configuración de grupos
                             </p>
                             <div class="row g-3 align-items-end">
                                 <div class="col-6">
-                                    <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="letter-spacing:.5px; font-size:0.72rem;">
+                                    <label class="form-label small text-white-50 fw-bold text-uppercase mb-1 torneo-u-13">
                                         <i class="fas fa-layer-group text-info me-1"></i>Nº de Grupos
                                     </label>
                                     <select id="cfg-num-grupos" class="form-select" onchange="actualizarConfiguracion()">
@@ -380,7 +380,7 @@
                                     </select>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="letter-spacing:.5px; font-size:0.72rem;">
+                                    <label class="form-label small text-white-50 fw-bold text-uppercase mb-1 torneo-u-14">
                                         <i class="fas fa-users text-success me-1"></i>Equipos por Grupo
                                     </label>
                                     <select id="cfg-eq-por-grupo" class="form-select" onchange="actualizarConfiguracion()">
@@ -392,7 +392,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div id="cfg-feedback" class="mt-3 text-center small" style="min-height:22px;"></div>
+                            <div id="cfg-feedback" class="mt-3 text-center small torneo-u-15"></div>
                         </div>
                     </div>
                 </div>
@@ -512,7 +512,7 @@
                             <div class="cfg-box">
                                 <div class="row g-3 align-items-end">
                                     <div class="col-6">
-                                        <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="font-size:0.72rem; letter-spacing:.5px;">
+                                        <label class="form-label small text-white-50 fw-bold text-uppercase mb-1 torneo-u-16">
                                             <i class="fas fa-layer-group text-info me-1"></i>Nº de Grupos
                                         </label>
                                         <select id="recfg-num-grupos" class="form-select" onchange="actualizarConfiguracionRemanual()">
@@ -522,7 +522,7 @@
                                         </select>
                                     </div>
                                     <div class="col-6">
-                                        <label class="form-label small text-white-50 fw-bold text-uppercase mb-1" style="font-size:0.72rem; letter-spacing:.5px;">
+                                        <label class="form-label small text-white-50 fw-bold text-uppercase mb-1 torneo-u-17">
                                             <i class="fas fa-users text-success me-1"></i>Equipos por Grupo
                                         </label>
                                         <select id="recfg-eq-por-grupo" class="form-select" onchange="actualizarConfiguracionRemanual()">
@@ -534,7 +534,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div id="recfg-feedback" class="mt-3 text-center small" style="min-height:22px;"></div>
+                                <div id="recfg-feedback" class="mt-3 text-center small torneo-u-18"></div>
                             </div>
                         </div>
                     </div>
@@ -597,8 +597,7 @@
                                     {% for fila in item.tabla %}
                                     <tr class="{% if forloop.counter == 1 %}clasificado-1{% elif forloop.counter == 2 %}clasificado-2{% endif %}">
                                         <td class="fw-bold text-white-50">{{ forloop.counter }}</td>
-                                        <td class="fw-bold text-white"
-                                            style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                                        <td class="fw-bold text-white torneo-u-19"
                                             title="{{ fila.equipo.nombre_equipo }}">{{ fila.equipo.nombre_equipo }}</td>
                                         <td>{{ fila.pj }}</td>
                                         <td class="text-success">{{ fila.pg }}</td>
@@ -614,9 +613,9 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <div class="mt-2 d-flex gap-3" style="font-size:0.72rem;color:#8b949e;">
-                                <span><span style="display:inline-block;width:10px;height:10px;background:#f0c040;border-radius:2px;margin-right:4px;"></span>1° Clasifica</span>
-                                <span><span style="display:inline-block;width:10px;height:10px;background:#58a6ff;border-radius:2px;margin-right:4px;"></span>2° Clasifica</span>
+                            <div class="mt-2 d-flex gap-3 torneo-u-20">
+                                <span><span class="torneo-u-21"></span>1° Clasifica</span>
+                                <span><span class="torneo-u-22"></span>2° Clasifica</span>
                             </div>
                         </div>
                     </div>
@@ -663,7 +662,7 @@
                                 {% ifchanged partido.fecha_partido %}
                                     {% if partido.fecha_partido %}
                                     <div class="fecha-divider">
-                                        <i class="fas fa-calendar-day" style="color:#58a6ff;"></i>
+                                        <i class="fas fa-calendar-day torneo-u-23"></i>
                                         <span class="fecha-dia">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
                                         {% if partido.hora_partido %}
                                         <span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>
@@ -677,7 +676,7 @@
                                 {% endifchanged %}
                                 <div class="partido-item {% if partido.jugado %}jugado{% else %}pendiente{% endif %}">
                                     <div class="equipo-nombre text-end flex-fill">{{ partido.equipo_local.nombre_equipo }}</div>
-                                    <div class="text-center" style="min-width:100px;">
+                                    <div class="text-center torneo-u-24">
                                         {% if partido.jugado %}
                                             {% if tipo_marcador == 'sets' %}
                                                 <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
@@ -703,7 +702,7 @@
                                         </button>
                                     </div>
                                     {% if partido.tarjetas_amarillas_local or partido.tarjetas_rojas_local or partido.tarjetas_azules_local or partido.detalles_sanciones %}
-                                    <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100" style="font-size:0.75rem; border-color:#21262d !important;">
+                                    <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100 torneo-u-25">
                                         <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
                                         {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}<span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ partido.tarjetas_amarillas_local }}-{{ partido.tarjetas_amarillas_visitante }}</span>{% endif %}
                                         {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}<span class="badge bg-danger text-white px-2 ms-1">🟥 {{ partido.tarjetas_rojas_local }}-{{ partido.tarjetas_rojas_visitante }}</span>{% endif %}
@@ -730,7 +729,7 @@
                 {% ifchanged partido.fecha_partido %}
                     {% if partido.fecha_partido %}
                     <div class="fecha-divider">
-                        <i class="fas fa-calendar-day" style="color:#58a6ff;"></i>
+                        <i class="fas fa-calendar-day torneo-u-26"></i>
                         <span class="fecha-dia">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
                         {% if partido.hora_partido %}<span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>{% endif %}
                     </div>
@@ -763,8 +762,8 @@
                 {% ifchanged partido.fecha_partido %}
                     {% if partido.fecha_partido %}
                     <div class="fecha-divider">
-                        <i class="fas fa-calendar-day" style="color:#f0c040;"></i>
-                        <span class="fecha-dia" style="color:#f0c040;">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
+                        <i class="fas fa-calendar-day torneo-u-27"></i>
+                        <span class="fecha-dia torneo-u-28">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
                         {% if partido.hora_partido %}<span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>{% endif %}
                     </div>
                     {% else %}
@@ -795,9 +794,9 @@
                 {% for partido in partidos_final %}
                 {% ifchanged partido.fecha_partido %}
                     {% if partido.fecha_partido %}
-                    <div class="fecha-divider" style="border-left-color:#ff6b6b;">
-                        <i class="fas fa-calendar-day" style="color:#ff6b6b;"></i>
-                        <span class="fecha-dia" style="color:#ff6b6b;">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
+                    <div class="fecha-divider torneo-u-29">
+                        <i class="fas fa-calendar-day torneo-u-30"></i>
+                        <span class="fecha-dia torneo-u-31">{{ partido.fecha_partido|date:"l, j" }} de {{ partido.fecha_partido|date:"F" }}</span>
                         {% if partido.hora_partido %}<span class="fecha-num">— {{ partido.hora_partido|time:"H:i" }}h</span>{% endif %}
                     </div>
                     {% else %}
@@ -873,20 +872,20 @@
                             Deja en blanco para guardar solo la fecha
                         </small>
                     </div>
-                    <div id="bloque-sets" style="display:none;">
+                    <div id="bloque-sets" class="torneo-u-32">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="text-white-50 small fw-bold text-uppercase" style="letter-spacing:.5px;">
+                            <div class="text-white-50 small fw-bold text-uppercase torneo-u-33">
                                 <i class="fas fa-table-tennis me-1 text-info"></i>Sets jugados
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-info border-0" onclick="agregarSet()">
                                 <i class="fas fa-plus me-1"></i>Set
                             </button>
                         </div>
-                        <div class="d-flex gap-2 mb-1 px-1" style="font-size:0.75rem;color:#8b949e;">
-                            <span style="min-width:52px;"></span>
-                            <span style="width:70px;text-align:center;" id="sets-label-local">Local</span>
-                            <span style="width:16px;"></span>
-                            <span style="width:70px;text-align:center;" id="sets-label-visitante">Visitante</span>
+                        <div class="d-flex gap-2 mb-1 px-1 torneo-u-34">
+                            <span class="torneo-u-35"></span>
+                            <span class="torneo-u-36" id="sets-label-local">Local</span>
+                            <span class="torneo-u-37"></span>
+                            <span class="torneo-u-38" id="sets-label-visitante">Visitante</span>
                         </div>
                         <div id="sets-container"></div>
                         <small class="text-white-50 d-block text-center mt-2">
@@ -895,57 +894,54 @@
                     </div>
                     <div class="row g-3 mt-1">
                         <div class="col-7">
-                            <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">
+                            <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-39">
                                 <i class="fas fa-calendar me-1"></i>Fecha
                             </label>
-                            <input type="date" name="fecha_partido" id="fecha-partido" class="form-control"
-                                   style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
+                            <input type="date" name="fecha_partido" id="fecha-partido" class="form-control torneo-u-40">
                         </div>
                         <div class="col-5">
-                            <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">
+                            <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-41">
                                 <i class="fas fa-clock me-1"></i>Hora
                             </label>
-                            <input type="time" name="hora_partido" id="hora-partido" class="form-control"
-                                   style="background:#161b22;border:1px solid #30363d;color:#fff;border-radius:8px;">
+                            <input type="time" name="hora_partido" id="hora-partido" class="form-control torneo-u-42">
                         </div>
                     </div>
-                    <div id="bloque-sanciones" class="mt-3 border-top border-secondary pt-3" style="display:none; border-color: #30363d !important;">
-                        <h6 class="text-white small fw-bold text-uppercase mb-3" style="letter-spacing:.5px;">
+                    <div id="bloque-sanciones" class="mt-3 border-top border-secondary pt-3 torneo-u-43">
+                        <h6 class="text-white small fw-bold text-uppercase mb-3 torneo-u-44">
                             <i class="fas fa-exclamation-triangle text-warning me-1"></i>Tarjetas y Sanciones Disciplinarias
                         </h6>
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <label class="form-label small text-white-50 mb-1" style="font-size:0.75rem;">🟨 Amarillas (Local / Visitante)</label>
+                                <label class="form-label small text-white-50 mb-1 torneo-u-45">🟨 Amarillas (Local / Visitante)</label>
                                 <div class="input-group input-group-sm">
-                                    <input type="number" name="amarillas_local" id="amarillas-local" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <input type="number" name="amarillas_local" id="amarillas-local" class="form-control bg-dark text-white border-secondary text-center torneo-u-46" placeholder="0" min="0">
                                     <span class="input-group-text bg-secondary text-white-50 border-secondary">—</span>
-                                    <input type="number" name="amarillas_visitante" id="amarillas-visitante" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <input type="number" name="amarillas_visitante" id="amarillas-visitante" class="form-control bg-dark text-white border-secondary text-center torneo-u-47" placeholder="0" min="0">
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label class="form-label small text-white-50 mb-1" style="font-size:0.75rem;">🟥 Rojas (Local / Visitante)</label>
+                                <label class="form-label small text-white-50 mb-1 torneo-u-48">🟥 Rojas (Local / Visitante)</label>
                                 <div class="input-group input-group-sm">
-                                    <input type="number" name="rojas_local" id="rojas-local" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <input type="number" name="rojas_local" id="rojas-local" class="form-control bg-dark text-white border-secondary text-center torneo-u-49" placeholder="0" min="0">
                                     <span class="input-group-text bg-secondary text-white-50 border-secondary">—</span>
-                                    <input type="number" name="rojas_visitante" id="rojas-visitante" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <input type="number" name="rojas_visitante" id="rojas-visitante" class="form-control bg-dark text-white border-secondary text-center torneo-u-50" placeholder="0" min="0">
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2 mb-3" id="bloque-azules" style="display:none;">
+                        <div class="row g-2 mb-3" id="bloque-azules torneo-u-51">
                             <div class="col-12">
-                                <label class="form-label small text-white-50 mb-1" style="font-size:0.75rem;">🟦 Tarjetas Azules (Local / Visitante)</label>
+                                <label class="form-label small text-white-50 mb-1 torneo-u-52">🟦 Tarjetas Azules (Local / Visitante)</label>
                                 <div class="input-group input-group-sm">
-                                    <input type="number" name="azules_local" id="azules-local" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <input type="number" name="azules_local" id="azules-local" class="form-control bg-dark text-white border-secondary text-center torneo-u-53" placeholder="0" min="0">
                                     <span class="input-group-text bg-secondary text-white-50 border-secondary">—</span>
-                                    <input type="number" name="azules_visitante" id="azules-visitante" class="form-control bg-dark text-white border-secondary text-center" style="background:#161b22 !important; border-color:#30363d !important;" placeholder="0" min="0">
+                                    <input type="number" name="azules_visitante" id="azules-visitante" class="form-control bg-dark text-white border-secondary text-center torneo-u-54" placeholder="0" min="0">
                                 </div>
                             </div>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small text-white-50 mb-1">Detalle de Sanciones / Observaciones</label>
                             <textarea name="detalles_sanciones" id="detalles-sanciones" rows="2"
-                                      class="form-control bg-dark text-white border-secondary small"
-                                      style="background:#161b22 !important; border-color:#30363d !important;"
+                                      class="form-control bg-dark text-white border-secondary small torneo-u-55"
                                       placeholder="Ej. Expulsión del capitán visitante..."></textarea>
                         </div>
                     </div>
@@ -966,7 +962,7 @@
      ══════════════════════════════════════════════════════ -->
 <div class="modal fade" id="modalEditarEquipo" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border-secondary text-white" style="background:#0d1117; border: 1px solid #30363d; border-radius:16px;">
+        <div class="modal-content bg-dark border-secondary text-white torneo-u-56">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold text-white"><i class="fas fa-edit text-info me-2"></i>Editar Datos del Equipo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -975,10 +971,10 @@
                 {% csrf_token %}
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Nombre del Equipo</label>
+                        <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-57">Nombre del Equipo</label>
                         {% if tipo_marcador == 'goles' %}
                         <div class="mb-2">
-                            <select id="edit-equipo-pais-selector" class="form-select form-control" style="background:#1a2236 !important; border:1px solid #30363d !important; color:#79c0ff;">
+                            <select id="edit-equipo-pais-selector" class="form-select form-control torneo-u-58">
                                 <option value="">— Seleccionar país 🌍 —</option>
                                 {% for p in PAISES_TORNEO %}
                                 <option value="{{ p }}">{{ p }}</option>
@@ -987,20 +983,20 @@
                             </select>
                         </div>
                         {% endif %}
-                        <input type="text" name="nombre_equipo" id="edit-equipo-nombre" class="form-control bg-dark text-white border-secondary" style="background:#161b22 !important; border-color:#30363d !important;" required placeholder="Nombre del equipo">
+                        <input type="text" name="nombre_equipo" id="edit-equipo-nombre" class="form-control bg-dark text-white border-secondary torneo-u-59" required placeholder="Nombre del equipo">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Capitán</label>
-                        <input type="text" name="capitan" id="edit-equipo-capitan" class="form-control bg-dark text-white border-secondary" style="background:#161b22 !important; border-color:#30363d !important;" required>
+                        <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-60">Capitán</label>
+                        <input type="text" name="capitan" id="edit-equipo-capitan" class="form-control bg-dark text-white border-secondary torneo-u-61" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Ficha del Capitán</label>
-                        <input type="text" name="ficha" id="edit-equipo-ficha" class="form-control bg-dark text-white border-secondary" style="background:#161b22 !important; border-color:#30363d !important;" required>
+                        <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-62">Ficha del Capitán</label>
+                        <input type="text" name="ficha" id="edit-equipo-ficha" class="form-control bg-dark text-white border-secondary torneo-u-63" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small text-white-50 fw-bold text-uppercase" style="letter-spacing:.5px;">Programa</label>
+                        <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-64">Programa</label>
                         <!-- ✅ FIX: value="{{ p }}" agregado para que el JS pueda seleccionar el programa correcto al editar -->
-                        <select name="programa" id="edit-equipo-programa" class="form-control bg-dark text-white border-secondary form-select" style="background:#161b22 !important; border-color:#30363d !important;" required>
+                        <select name="programa" id="edit-equipo-programa" class="form-control bg-dark text-white border-secondary form-select torneo-u-65" required>
                             <option value="">— Selecciona —</option>
                             {% for p in PROGRAMAS_GLOBALES %}
                             <option value="{{ p }}">{{ p }}</option>
@@ -1068,7 +1064,7 @@ function _mostrarFeedback(feedbackId, btnId, numGrupos, eqPorGrupo) {
     } else {
         const sobrantes = TOTAL_EQUIPOS - necesarios;
         fb.innerHTML = `<span class="cfg-feedback-ok"><i class="fas fa-check-circle me-1"></i><strong>${necesarios}</strong> equipos en juego`
-            + (sobrantes > 0 ? ` &nbsp;·&nbsp; <span style="color:#f0c040;">${sobrantes} sin grupo</span>` : '')
+            + (sobrantes > 0 ? ` &nbsp;·&nbsp; <span class="torneo-u-66">${sobrantes} sin grupo</span>` : '')
             + `</span>`;
         if (btn) btn.disabled = false;
     }
@@ -1111,8 +1107,7 @@ function construirGrilla(containerId, formId, numGrupos, eqPorGrupo, prefix) {
             slotsHtml += `
             <div class="mb-2">
                 <select name="grupo_${letra}[]"
-                        class="form-select form-control grupo-${prefix}-select-${letra}"
-                        style="background:#161b22 !important; border-color:#30363d !important; color:#e6edf3;"
+                        class="form-select form-control grupo-${prefix}-select-${letra} torneo-u-67"
                         onchange="actualizarContadorGrilla('${prefix}', '${letra}', ${eqPorGrupo})">
                     ${options}
                 </select>
@@ -1241,7 +1236,7 @@ function agregarSet() {
     const row = document.createElement('div');
     row.className = 'd-flex align-items-center gap-2 mb-2';
     row.innerHTML = `
-        <small class="text-white-50" style="min-width:52px;">Set ${numSets}</small>
+        <small class="text-white-50 torneo-u-68">Set ${numSets}</small>
         <input type="number" name="sets_local[]"     min="0" max="50" placeholder="0"
                class="set-input form-control form-control-sm">
         <span class="text-white-50 fw-bold">–</span>

@@ -255,9 +255,9 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 
   {% if not tiene_consent %}
   <div class="consent-banner">
-    <p><i class="fas fa-shield-alt me-2" style="color:#ffc107;"></i>
+    <p><i class="fas fa-shield-alt me-2 hab-ini-u-1"></i>
     Para acceder a <strong>Mi Salud y seguimientos</strong>, necesitas aceptar el tratamiento de datos personales (Habeas Data).</p>
-    <a href="{% url 'habitos:habeas_data' %}" class="btn-primary-acid" style="font-size:0.8rem; padding:9px 18px;">
+    <a href="{% url 'habitos:habeas_data' %}" class="btn-primary-acid hab-ini-u-2">
       <i class="fas fa-check-circle"></i> Aceptar Habeas Data
     </a>
   </div>
@@ -341,33 +341,33 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
           <i class="fas fa-heartbeat tc-icon"></i>
           <div>
             <h5>Último Seguimiento</h5>
-            <small style="color:var(--muted);">{{ ultimo_seguimiento.fecha_evaluacion|date:"d M Y" }}</small>
+            <small class="hab-ini-u-3">{{ ultimo_seguimiento.fecha_evaluacion|date:"d M Y" }}</small>
           </div>
         </div>
         <div class="tc-stats">
           <div class="tc-stat">
             <div class="ts-label">Peso</div>
-            <div class="ts-val">{{ ultimo_seguimiento.peso_kg }}<small style="font-size:0.8rem;color:var(--muted);"> kg</small></div>
+            <div class="ts-val">{{ ultimo_seguimiento.peso_kg }}<small class="hab-ini-u-4"> kg</small></div>
           </div>
           <div class="tc-stat">
             <div class="ts-label">IMC</div>
             <div class="ts-val">{{ ultimo_seguimiento.imc|default:"—" }}</div>
           </div>
-          <div class="tc-stat" style="grid-column: span 2;">
+          <div class="tc-stat hab-ini-u-5">
             <div class="ts-label">Categoría</div>
-            <div style="font-size:0.9rem; font-weight:600; margin-top:2px;">{{ ultimo_seguimiento.get_categoria_imc }}</div>
+            <div class="hab-ini-u-6">{{ ultimo_seguimiento.get_categoria_imc }}</div>
           </div>
         </div>
-        <small style="color:var(--muted); font-size:0.77rem;"><i class="fas fa-arrow-right me-1"></i>Ver historial completo</small>
+        <small class="hab-ini-u-7"><i class="fas fa-arrow-right me-1"></i>Ver historial completo</small>
       </a>
       {% else %}
       <a href="{% url 'habitos:registrar_seguimiento' %}" class="no-tracking-card">
-        <i class="fas fa-notes-medical" style="font-size:3rem; color:var(--muted);"></i>
+        <i class="fas fa-notes-medical hab-ini-u-8"></i>
         <div>
-          <h5 style="font-weight:700; margin:0 0 6px;">Registra tu primera medición</h5>
-          <p style="color:var(--muted); font-size:0.85rem; margin:0;">Comienza a monitorear tu bienestar. ¡Es rápido!</p>
+          <h5 class="hab-ini-u-9">Registra tu primera medición</h5>
+          <p class="hab-ini-u-10">Comienza a monitorear tu bienestar. ¡Es rápido!</p>
         </div>
-        <span class="btn-primary-acid" style="font-size:0.8rem; padding:9px 18px;">
+        <span class="btn-primary-acid hab-ini-u-11">
           <i class="fas fa-plus-circle"></i> Empezar ahora
         </span>
       </a>
@@ -375,15 +375,15 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
     </div>
 
     <div class="col-lg-6">
-      <div class="library-banner h-100" style="margin-top:0;">
+      <div class="library-banner h-100 hab-ini-u-12">
         <div class="lb-left">
           <div class="lb-icon"><i class="fas fa-file-pdf"></i></div>
           <div>
-            <h5 style="font-weight:700; margin:0 0 4px; font-size:1rem;">Biblioteca de Materiales</h5>
-            <p style="color:var(--muted); font-size:0.82rem; margin:0;">Descarga infografías, documentos y guías en PDF.</p>
+            <h5 class="hab-ini-u-13">Biblioteca de Materiales</h5>
+            <p class="hab-ini-u-14">Descarga infografías, documentos y guías en PDF.</p>
           </div>
         </div>
-        <a href="{% url 'habitos:biblioteca' %}" class="btn-ghost" style="font-size:0.82rem;">
+        <a href="{% url 'habitos:biblioteca' %}" class="btn-ghost hab-ini-u-15">
           Explorar <i class="fas fa-arrow-right ms-1"></i>
         </a>
       </div>
@@ -399,27 +399,27 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
     </div>
     <div class="admin-actions-grid">
       <a href="{% url 'admin:habitos_saludables_habitosaludable_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-apple-alt" style="color:var(--teal);"></i>
+        <i class="fas fa-apple-alt hab-ini-u-16"></i>
         Gestionar Hábitos
       </a>
       <a href="{% url 'admin:habitos_saludables_habitosaludable_add' %}" class="admin-action-btn">
-        <i class="fas fa-plus-circle" style="color:var(--acid);"></i>
+        <i class="fas fa-plus-circle hab-ini-u-17"></i>
         Nuevo Hábito
       </a>
       <a href="{% url 'admin:habitos_saludables_rutinafisica_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-dumbbell" style="color:#ffc107;"></i>
+        <i class="fas fa-dumbbell hab-ini-u-18"></i>
         Gestionar Rutinas
       </a>
       <a href="{% url 'admin:habitos_saludables_piramidenutricional_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-utensils" style="color:#dc3545;"></i>
+        <i class="fas fa-utensils hab-ini-u-19"></i>
         Gestionar Nutrición
       </a>
       <a href="{% url 'admin:habitos_saludables_materialapoyo_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-file-pdf" style="color:#5c9eff;"></i>
+        <i class="fas fa-file-pdf hab-ini-u-20"></i>
         Materiales de Apoyo
       </a>
       <a href="{% url 'admin:habitos_saludables_seguimientosalud_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-notes-medical" style="color:#a78bfa;"></i>
+        <i class="fas fa-notes-medical hab-ini-u-21"></i>
         Ver Seguimientos
       </a>
     </div>

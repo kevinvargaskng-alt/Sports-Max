@@ -88,7 +88,7 @@
 
 {% block content %}
 <div class="main-container py-4">
-    <div class="container-fluid" style="max-width: 1300px;">
+    <div class="container-fluid gest-u-1">
 
         <!-- ENCABEZADO -->
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
@@ -103,15 +103,15 @@
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
                 <span class="stat-pill"><i class="fas fa-users me-1"></i>{{ total_usuarios }} usuarios</span>
-                <span class="stat-pill" style="color: #22c55e; border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.1);"><i class="fas fa-check-circle me-1"></i>{{ total_activos }} activos</span>
-                <span class="stat-pill" style="color: #ef4444; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1);"><i class="fas fa-ban me-1"></i>{{ total_bloqueados }} bloqueados</span>
+                <span class="stat-pill gest-u-2"><i class="fas fa-check-circle me-1"></i>{{ total_activos }} activos</span>
+                <span class="stat-pill gest-u-3"><i class="fas fa-ban me-1"></i>{{ total_bloqueados }} bloqueados</span>
             </div>
         </div>
 
         <!-- MENSAJES -->
         {% if messages %}
         {% for msg in messages %}
-        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show mb-3" role="alert" style="background: rgba(74,158,255,0.1); border: 1px solid rgba(74,158,255,0.2); color: #fff;">
+        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show mb-3" role="alert gest-u-4">
             <i class="fas fa-info-circle me-2 text-info"></i>{{ msg }}
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
         </div>
@@ -123,12 +123,12 @@
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
                     <div class="input-group">
-                        <span class="input-group-text" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5);">
+                        <span class="input-group-text gest-u-5">
                             <i class="fas fa-search"></i>
                         </span>
                         <input type="text" id="buscadorUsuarios" class="form-control search-box border-start-0" 
                                placeholder="Buscar por nombre, documento o correo..." 
-                               style="border-left: none !important;"
+                               class="gest-u-6"
                                oninput="filtrarTabla()">
                     </div>
                 </div>
@@ -168,14 +168,14 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="avatar-sm">
                                         {% if u.foto_perfil %}
-                                            <img src="{{ u.foto_perfil.url }}" class="rounded-circle" style="width:42px;height:42px;object-fit:cover;">
+                                            <img src="{{ u.foto_perfil.url }}" class="rounded-circle gest-u-7">
                                         {% else %}
                                             {{ u.first_name|first|upper }}
                                         {% endif %}
                                     </div>
                                     <div>
-                                        <div class="text-white fw-bold small" style="text-transform: capitalize;">{{ u.get_full_name|lower }}</div>
-                                        <div class="text-white-50" style="font-size: 0.72rem;">Desde {{ u.fecha_registro|date:"d/m/Y" }}</div>
+                                        <div class="text-white fw-bold small gest-u-8">{{ u.get_full_name|lower }}</div>
+                                        <div class="text-white-50 gest-u-9">Desde {{ u.fecha_registro|date:"d/m/Y" }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -189,7 +189,7 @@
                             </td>
                             <!-- PROGRAMA -->
                             <td class="py-3">
-                                <div class="small text-white-50" style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <div class="small text-white-50 gest-u-10">
                                     {{ u.get_programa_formacion_display|default:"-" }}
                                 </div>
                                 {% if u.ficha %}<span class="badge bg-dark border border-secondary text-white-50 small">Ficha: {{ u.ficha }}</span>{% endif %}
@@ -209,9 +209,9 @@
                             <!-- ESTADO -->
                             <td class="py-3">
                                 {% if u.is_active %}
-                                    <span class="small" style="color: #22c55e;"><i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>Activo</span>
+                                    <span class="small gest-u-11"><i class="fas fa-circle me-1 gest-u-12"></i>Activo</span>
                                 {% else %}
-                                    <span class="small text-danger"><i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>Bloqueado</span>
+                                    <span class="small text-danger"><i class="fas fa-circle me-1 gest-u-13"></i>Bloqueado</span>
                                 {% endif %}
                             </td>
                             <!-- ACCIONES -->
@@ -233,7 +233,7 @@
                                     </button>
 
                                     <!-- Bloquear / activar -->
-                                    <form action="{% url 'toggle_usuario' u.id %}" method="POST" style="display:inline;">
+                                    <form action="{% url 'toggle_usuario' u.id %}" method="POST" class="gest-u-14">
                                         {% csrf_token %}
                                         <button type="submit" 
                                                 class="btn btn-sm action-btn {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}"
@@ -278,7 +278,7 @@
      ============================================================ -->
 <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid rgba(74,158,255,0.3); border-radius: 16px;">
+        <div class="modal-content text-white gest-u-15">
             <div class="modal-header border-0 pb-2">
                 <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2 text-info"></i>Editar Usuario</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -301,14 +301,14 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-white-50">Ficha (solo lectura)</label>
-                            <input type="text" id="editFicha" class="form-control" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #aaa;" disabled>
+                            <input type="text" id="editFicha" class="form-control gest-u-16" disabled>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-white-50">Programa</label>
-                            <input type="text" id="editPrograma" class="form-control" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #aaa;" disabled>
+                            <input type="text" id="editPrograma" class="form-control gest-u-17" disabled>
                         </div>
                     </div>
-                    <div class="alert border-0 mt-4 small" style="background: rgba(74,158,255,0.08); color: rgba(255,255,255,0.5);">
+                    <div class="alert border-0 mt-4 small gest-u-18">
                         <i class="fas fa-info-circle me-2 text-info"></i>El documento, ficha y programa son datos institucionales. Solo se puede editar nombre, apellido y correo.
                     </div>
                 </div>
@@ -328,7 +328,7 @@
      ============================================================ -->
 <div class="modal fade" id="modalCambiarRol" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid rgba(234,179,8,0.3); border-radius: 16px;">
+        <div class="modal-content text-white gest-u-19">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-user-tag me-2 text-warning"></i>Cambiar Rol de Usuario</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -338,24 +338,21 @@
                 <div class="modal-body">
                     <p class="text-white-50 mb-3">Cambiando rol de: <strong class="text-white" id="labelNombreRol"></strong></p>
                     <div class="d-flex flex-column gap-3">
-                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer" 
-                               style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer gest-u-20">
                             <input type="radio" name="rol" value="aprendiz" class="form-check-input mt-0" id="rolAprendiz">
                             <div>
                                 <div class="fw-bold text-white"><i class="fas fa-user-graduate me-2 text-info"></i>Aprendiz</div>
                                 <div class="text-white-50 small">Acceso estándar al sistema deportivo</div>
                             </div>
                         </label>
-                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer"
-                               style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer gest-u-21">
                             <input type="radio" name="rol" value="instructor" class="form-check-input mt-0" id="rolInstructor">
                             <div>
                                 <div class="fw-bold text-white"><i class="fas fa-chalkboard-teacher me-2 text-info"></i>Instructor</div>
                                 <div class="text-white-50 small">Puede consultar y supervisar actividades</div>
                             </div>
                         </label>
-                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer"
-                               style="background: rgba(255,255,255,0.04); border: 1px solid rgba(234,179,8,0.2);">
+                        <label class="d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer gest-u-22">
                             <input type="radio" name="rol" value="admin" class="form-check-input mt-0" id="rolAdmin">
                             <div>
                                 <div class="fw-bold text-warning"><i class="fas fa-user-shield me-2"></i>Administrador</div>

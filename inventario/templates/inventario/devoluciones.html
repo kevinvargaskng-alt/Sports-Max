@@ -88,9 +88,7 @@
                     </select>
                 </div>
 
-                <div id="infoPrestamo" class="alert small py-2 mb-3 border-0"
-                     style="display:none; background: rgba(88,166,255,0.08);
-                            border: 1px solid rgba(88,166,255,0.2) !important; border-radius: 10px;">
+                <div id="infoPrestamo" class="alert small py-2 mb-3 border-0 dev-u-1">
                     <i class="fas fa-info-circle text-info me-2"></i>
                     {% if user.is_staff %}<span>Usuario: <strong id="infoUsuario"></strong> · </span>{% endif %}
                     Elemento: <strong id="infoElemento"></strong> ·
@@ -121,9 +119,7 @@
                     </label>
                 </div>
 
-                <div id="panelNovedad" class="p-3 mb-3"
-                     style="background: rgba(255,85,85,0.07);
-                            border: 1px solid rgba(255,85,85,0.25); border-radius: 12px;">
+                <div id="panelNovedad" class="p-3 mb-3 dev-u-2">
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-white-50">Tipo de Novedad</label>
                         <select name="tipo_novedad_devolucion" class="form-select custom-input">
@@ -152,8 +148,7 @@
             </form>
         </section>
         {% else %}
-        <div class="alert text-center py-5 mb-5"
-             style="background: rgba(46,160,67,0.08); border: 1px solid rgba(46,160,67,0.2); border-radius: 16px;">
+        <div class="alert text-center py-5 mb-5 dev-u-3">
             <i class="fas fa-check-circle fa-3x text-success mb-3 d-block"></i>
             <h5 class="text-white fw-bold">¡Sin préstamos activos!</h5>
             <p class="text-white-50 mb-0">

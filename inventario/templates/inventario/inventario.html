@@ -177,7 +177,7 @@
                         <!-- Contenido -->
                         <div class="p-3">
                             <h6 class="fw-bold text-white mb-1 text-truncate">{{ e.tipo_maquina }}</h6>
-                            <p class="text-white-50 small mb-2" style="font-size:0.75rem; min-height:36px;">
+                            <p class="text-white-50 small mb-2 inv-u-1">
                                 {{ e.descripcion|default:"Sin descripción."|truncatechars:70 }}
                             </p>
                             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -185,7 +185,7 @@
                                     {% if e.estado_general == 'Bueno' %}bg-success
                                     {% elif e.estado_general == 'Regular' %}bg-warning text-dark
                                     {% else %}bg-danger{% endif %}"
-                                    style="font-size:0.65rem; padding:4px 10px;">
+                                    class="inv-u-2">
                                     {{ e.estado_general }}
                                 </span>
                                 <span class="text-white-50 small">
@@ -209,13 +209,13 @@
                                         data-habilitado="{% if e.habilitado %}true{% else %}false{% endif %}"
                                         {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}
                                         data-bs-toggle="modal" data-bs-target="#modalElemento"
-                                        style="font-size:0.75rem;">
+                                        class="inv-u-3">
                                     <i class="fas fa-edit me-1"></i>Editar
                                 </button>
                                 <a href="{% url 'eliminar_elemento' e.id %}"
                                    class="btn btn-outline-danger btn-sm fw-bold"
                                    onclick="return confirm('¿Eliminar «{{ e.tipo_maquina }}»?')"
-                                   style="font-size:0.75rem;">
+                                   class="inv-u-4">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -225,11 +225,11 @@
                                         class="btn btn-info btn-sm w-100 fw-bold text-dark"
                                         onclick="prestamoRapido('{{ e.id }}')"
                                         {% if sanciones %}disabled title="Tienes sanciones activas"{% endif %}
-                                        style="font-size:0.8rem;">
+                                        class="inv-u-5">
                                     <i class="fas fa-hand-holding me-1"></i>Solicitar Préstamo
                                 </button>
                                 {% else %}
-                                <button class="btn btn-secondary btn-sm w-100 fw-bold" disabled style="font-size:0.8rem;">
+                                <button class="btn btn-secondary btn-sm w-100 fw-bold" disabled class="inv-u-6">
                                     <i class="fas fa-times me-1"></i>Sin Disponibilidad
                                 </button>
                                 {% endif %}
@@ -258,7 +258,7 @@
         <!-- ══════════════════════════════════════════
              SECCIÓN 2 — TABLA INVENTARIO (admin + usuarios)
         ══════════════════════════════════════════ -->
-        <section id="secTabla" class="seccion-tab mb-4" style="display:none;">
+        <section id="secTabla" class="seccion-tab mb-4 inv-u-7">
             <h5 class="fw-bold mb-4">
                 <i class="fas fa-list text-warning me-2"></i>Existencias en Inventario
             </h5>
@@ -291,7 +291,7 @@
 
                             <td data-label="Detalle">
                                 <button class="btn btn-expand btn-icon border border-info text-info" title="Ver detalle">
-                                    <i class="fas fa-plus" style="font-size:0.7rem;"></i>
+                                    <i class="fas fa-plus inv-u-8"></i>
                                 </button>
                             </td>
 
@@ -308,7 +308,7 @@
                             <td data-label="Elemento">
                                 <strong>{{ e.tipo_maquina }}</strong>
                                 {% if not e.habilitado %}
-                                    <span class="badge bg-danger ms-1 text-white" style="font-size:0.65rem;"><i class="fas fa-eye-slash me-1"></i>Inhabilitado</span>
+                                    <span class="badge bg-danger ms-1 text-white inv-u-9"><i class="fas fa-eye-slash me-1"></i>Inhabilitado</span>
                                 {% endif %}
                             </td>
 
@@ -330,13 +330,13 @@
                             <td data-label="Acciones" class="text-center">
                                 {% if user.is_staff %}
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top" style="font-size: 0.72rem; padding: 4px 8px;"><i class="fas fa-edit me-1" style="font-size:0.7rem;"></i>Editar</button>
+                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top inv-u-10"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
                                     <a href="{% url 'eliminar_elemento' e.id %}"
                                        class="btn btn-danger btn-icon"
                                        title="Eliminar"
                                        data-bs-toggle="tooltip" data-bs-placement="top"
                                        onclick="return confirm('¿Eliminar este elemento del inventario?')">
-                                        <i class="fas fa-trash" style="font-size:0.7rem;"></i>
+                                        <i class="fas fa-trash inv-u-12"></i>
                                     </a>
                                 </div>
                                 {% else %}
@@ -347,17 +347,17 @@
                                             title="Solicitar Préstamo"
                                             {% if sanciones %}disabled{% endif %}
                                             data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <i class="fas fa-hand-pointer" style="font-size:0.7rem;"></i>
+                                        <i class="fas fa-hand-pointer inv-u-13"></i>
                                     </button>
                                     {% else %}
-                                    <span class="badge bg-secondary" style="font-size:0.65rem;">Sin stock</span>
+                                    <span class="badge bg-secondary inv-u-14">Sin stock</span>
                                     {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
 
                         <!-- Fila expandida -->
-                        <tr class="expansion-row" style="display:none;">
+                        <tr class="expansion-row inv-u-15">
                             <td colspan="7">
                                 <div class="detail-panel">
                                     {% if e.imagen %}
@@ -369,7 +369,7 @@
                                     {% endif %}
                                     <div class="flex-grow-1">
                                         <h6 class="text-info fw-bold text-uppercase mb-2">{{ e.tipo_maquina }}</h6>
-                                        <p class="text-white-50 small mb-3" style="line-height:1.6;">
+                                        <p class="text-white-50 small mb-3 inv-u-16">
                                             {{ e.descripcion|default:"Sin descripción disponible." }}
                                         </p>
                                         <div class="d-flex flex-wrap gap-4 small text-white-50 mb-3">
@@ -387,14 +387,14 @@
                                                     class="btn btn-warning btn-icon btn-editar-elemento"
                                                     title="Editar Elemento"
                                                     data-bs-toggle="tooltip" data-bs-placement="top">
-                                                <i class="fas fa-edit" style="font-size:0.7rem;"></i>
+                                                <i class="fas fa-edit inv-u-17"></i>
                                             </button>
                                             <a href="{% url 'eliminar_elemento' e.id %}"
                                                class="btn btn-danger btn-icon"
                                                title="Eliminar"
                                                data-bs-toggle="tooltip" data-bs-placement="top"
                                                onclick="return confirm('¿Eliminar este elemento del inventario?')">
-                                                <i class="fas fa-trash" style="font-size:0.7rem;"></i>
+                                                <i class="fas fa-trash inv-u-18"></i>
                                             </a>
                                             {% else %}
                                             {% if e.cantidad_total > 0 %}
@@ -404,10 +404,10 @@
                                                     title="Solicitar Préstamo"
                                                     {% if sanciones %}disabled{% endif %}
                                                     data-bs-toggle="tooltip" data-bs-placement="top">
-                                                <i class="fas fa-hand-pointer" style="font-size:0.7rem;"></i>
+                                                <i class="fas fa-hand-pointer inv-u-19"></i>
                                             </button>
                                             {% else %}
-                                            <span class="badge bg-secondary px-3 py-2" style="font-size:0.65rem;">Sin stock</span>
+                                            <span class="badge bg-secondary px-3 py-2 inv-u-20">Sin stock</span>
                                             {% endif %}
                                             {% endif %}
                                         </div>
@@ -432,7 +432,7 @@
              SECCIÓN 3A — MIS PRÉSTAMOS (usuarios normales)
         ══════════════════════════════════════════ -->
         {% if not user.is_staff %}
-        <section id="secMisPrestamos" class="seccion-tab mb-4" style="display:none;">
+        <section id="secMisPrestamos" class="seccion-tab mb-4 inv-u-21">
             <h5 class="fw-bold mb-4 text-info">
                 <i class="fas fa-history me-2"></i>Mis Préstamos en Curso
             </h5>
@@ -494,7 +494,7 @@
              SECCIÓN 3B — RESUMEN PRÉSTAMOS (solo admin)
         ══════════════════════════════════════════ -->
         {% if user.is_staff %}
-        <section id="secPrestamos" class="seccion-tab mb-4" style="display:none;">
+        <section id="secPrestamos" class="seccion-tab mb-4 inv-u-22">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h5 class="fw-bold mb-0 text-warning">
                     <i class="fas fa-chart-bar me-2"></i>Resumen General de Préstamos
@@ -542,7 +542,7 @@
                             <td class="text-center">
                                 {% if p.estado_prestamo == 'Activo' %}
                                 <a href="{% url 'devoluciones' %}?prestamo={{ p.codigo_prestamo }}"
-                                   class="btn btn-outline-success btn-sm fw-bold" style="font-size:0.75rem;">
+                                   class="btn btn-outline-success btn-sm fw-bold inv-u-23">
                                     <i class="fas fa-undo me-1"></i>Devolver
                                 </a>
                                 {% else %}
@@ -589,11 +589,8 @@
                         <!-- Imagen -->
                         <div class="col-md-4 text-center mb-3">
                             <img id="previewImagen" src=""
-                                 style="display:none; width:120px; height:120px; object-fit:cover;
-                                        border-radius:12px; margin:0 auto 10px; border:2px solid #58a6ff;">
-                            <div id="placeholderImagen" class="mx-auto mb-2 d-flex align-items-center justify-content-center"
-                                 style="width:120px; height:120px; border-radius:12px;
-                                        border:2px dashed #30363d; background:#0d1117;">
+                                 class="inv-u-24">
+                            <div id="placeholderImagen" class="mx-auto mb-2 d-flex align-items-center justify-content-center inv-u-25">
                                 <i class="fas fa-camera fa-2x text-muted"></i>
                             </div>
                             <label class="form-label fw-bold small d-block text-white-50">Imagen (Opcional)</label>
@@ -628,7 +625,7 @@
                                 <label class="form-label fw-bold small">Fecha Adquisición</label>
                                 <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion" class="form-control custom-input">
                             </div>
-                            <div class="form-check form-switch mb-3" id="containerHabilitado" style="display: none;">
+                            <div class="form-check form-switch mb-3" id="containerHabilitado inv-u-26">
                                 <input class="form-check-input" type="checkbox" id="inputHabilitado" name="habilitado" checked>
                                 <label class="form-check-label small fw-bold text-white-50" for="inputHabilitado">Producto Habilitado (disponible para préstamo)</label>
                             </div>
@@ -682,8 +679,7 @@
             <div class="modal-body text-start">
 
                 <!-- Datos del solicitante -->
-                <div class="mb-4 p-3 rounded"
-                     style="background:rgba(88,166,255,0.05); border:1px solid rgba(88,166,255,0.2);">
+                <div class="mb-4 p-3 rounded inv-u-27">
                     <h6 class="text-info fw-bold small text-uppercase mb-2">
                         <i class="fas fa-user me-2"></i>Datos del Solicitante
                     </h6>
@@ -754,8 +750,7 @@
                         </div>
                     </div>
 
-                    <div id="infoFecha" class="alert small py-2 mb-4 text-center border-0"
-                         style="display:none; background:rgba(0,210,255,0.1); border-radius:10px;">
+                    <div id="infoFecha" class="alert small py-2 mb-4 text-center border-0 inv-u-28">
                         <i class="fas fa-calendar-alt me-2 text-info"></i>
                         Fecha de devolución: <strong id="spanFecha" class="text-warning"></strong>
                     </div>

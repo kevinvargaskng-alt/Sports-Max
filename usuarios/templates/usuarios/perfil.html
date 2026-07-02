@@ -17,10 +17,10 @@
             <div class="row align-items-center p-2">
 
                 <!-- COLUMNA IZQUIERDA: FOTO Y NOMBRE -->
-                <div class="col-md-4 text-center border-md-end" style="border-color: rgba(255,255,255,0.1) !important;">
+                <div class="col-md-4 text-center border-md-end prf-u-1">
                     <div class="mb-3 position-relative d-inline-block">
                         {% if usuario.foto_perfil %}
-                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue);">
+                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow prf-u-2">
                         {% else %}
                             <div class="rounded-circle shadow initial-avatar mx-auto">
                                 {{ usuario.first_name|first|upper }}
@@ -293,7 +293,7 @@
                                     <td>
                                         <div class="d-flex gap-2">
                                             {% if u.id != usuario.id %}
-                                            <form action="{% url 'toggle_usuario' u.id %}" method="POST" style="display:inline;">
+                                            <form action="{% url 'toggle_usuario' u.id %}" method="POST" class="prf-u-3">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-info{% endif %}" title="Cambiar estado">
                                                     <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
@@ -319,7 +319,7 @@
                 <div class="sport-card text-start">
                     <h5 class="fw-bold mb-4 text-warning text-cap"><i class="fas fa-clipboard-list me-2"></i>Administración Global de Reportes</h5>
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle" style="border-collapse: separate; border-spacing: 0 8px;">
+                        <table class="table table-dark table-hover align-middle prf-u-4">
                             <thead>
                                 <tr class="text-cap">
                                     <th>Usuario</th>
@@ -332,13 +332,13 @@
                             </thead>
                             <tbody>
                                 {% for s in reportes_todos %}
-                                <tr style="background: rgba(255,255,255,0.02);">
+                                <tr class="prf-u-5">
                                     <td class="text-info fw-bold">{{ s.usuario.get_full_name|lower }}</td>
-                                    <td><div class="small text-white-50 text-truncate" style="max-width: 250px;">{{ s.comentario }}</div></td>
+                                    <td><div class="small text-white-50 text-truncate prf-u-6">{{ s.comentario }}</div></td>
                                     <td>
                                         {% if s.imagen %}
                                             <a href="{{ s.imagen.url }}" target="_blank">
-                                                <img src="{{ s.imagen.url }}" alt="Evidencia" class="rounded" style="width: 40px; height: 40px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                                                <img src="{{ s.imagen.url }}" alt="Evidencia" class="rounded prf-u-7">
                                             </a>
                                         {% else %}
                                             <span class="text-white-50 small">Sin imagen</span>
@@ -391,12 +391,12 @@
                     <div class="text-center mb-4 mt-2">
                         <div class="position-relative d-inline-block">
                             {% if usuario.foto_perfil %}
-                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
+                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow prf-u-8">
                             {% else %}
                                 <div id="initialPreview" class="rounded-circle shadow initial-avatar initial-avatar-sm mx-auto">
                                     {{ usuario.first_name|first|upper }}
                                 </div>
-                                <img id="imgPreviewPerfil" src="" class="rounded-circle shadow d-none" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
+                                <img id="imgPreviewPerfil" src="" class="rounded-circle shadow d-none prf-u-9">
                             {% endif %}
                             <label for="inputFotoPerfil" class="btn-camera" title="Cambiar foto">
                                 <i class="fas fa-camera"></i>
@@ -449,7 +449,7 @@
 <!-- MODAL TEST DE RENDIMIENTO INICIAL -->
 <div class="modal fade" id="modalTestRendimiento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid var(--accent-blue); border-radius: 20px;">
+        <div class="modal-content text-white prf-u-10">
             <div class="modal-header border-0 pb-0">
                 <h4 class="modal-title fw-bold"><i class="fas fa-chart-line text-info me-3"></i>Test de Rendimiento Inicial</h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -459,7 +459,7 @@
                     <div class="row g-4">
                         <!-- Bloque 1: Biometría -->
                         <div class="col-md-6">
-                            <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="p-3 rounded-4 prf-u-11">
                                 <h6 class="text-info fw-bold mb-3 small text-uppercase"><i class="fas fa-weight me-2"></i>Biometría</h6>
                                 <div class="mb-3">
                                     <label class="form-label small text-white-50">Peso (kg)</label>
@@ -469,7 +469,7 @@
                                     <label class="form-label small text-white-50">Estatura (cm)</label>
                                     <input type="number" id="inputAltura" class="form-control bg-dark text-white border-secondary" placeholder="170">
                                 </div>
-                                <div class="mt-4 p-3 rounded text-center" style="background: rgba(74, 158, 255, 0.1);">
+                                <div class="mt-4 p-3 rounded text-center prf-u-12">
                                     <span class="d-block small text-white-50">Tu IMC Estimado</span>
                                     <h3 id="valorIMC" class="fw-bold text-info mb-1">--.-</h3>
                                     <span id="estadoIMC" class="badge bg-secondary">Sin datos</span>
@@ -479,7 +479,7 @@
 
                         <!-- Bloque 2: Pruebas Físicas -->
                         <div class="col-md-6">
-                            <div class="p-3 rounded-4 h-100" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="p-3 rounded-4 h-100 prf-u-13">
                                 <h6 class="text-warning fw-bold mb-3 small text-uppercase"><i class="fas fa-heartbeat me-2"></i>Capacidad Física</h6>
                                 <div class="mb-3">
                                     <label class="form-label small text-white-50">Pulsaciones (Reposo)</label>
@@ -524,7 +524,7 @@
 <!-- MODAL ESTÉTICO DE CONFIRMACIÓN PARA ELIMINAR -->
 <div class="modal fade" id="modalConfirmarEliminarReporte" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #dc3545; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="modal-content text-white prf-u-14">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-shield-alt me-2 text-danger"></i>Seguridad de Datos</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -549,7 +549,7 @@
 </div>
 
 <!-- FORMULARIO OCULTO PARA BORRAR -->
-<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" style="display:none;">
+<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" class="prf-u-15">
     {% csrf_token %}
     <input type="hidden" name="tipo" value="borrar_reporte">
     <input type="hidden" name="reporte_id" id="inputDeleteId">
@@ -558,7 +558,7 @@
 <!-- MODAL PARA QUE EL ADMIN RESPONDA -->
 <div class="modal fade" id="modalResponderReporte" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid var(--accent-blue); border-radius: 12px;">
+        <div class="modal-content text-white prf-u-16">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-reply me-2 text-info"></i>Responder al Aprendiz</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -570,12 +570,12 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-white-50">Reporte original:</label>
-                        <div id="textoReporteOriginal" class="p-3 rounded bg-dark small text-white-50" style="border: 1px solid rgba(255,255,255,0.1);"></div>
+                        <div id="textoReporteOriginal" class="p-3 rounded bg-dark small text-white-50 prf-u-17"></div>
                         <div id="contenedorImagenReporte" class="mt-2 d-none"></div>
                     </div>
                     <div class="mb-3 text-start">
                         <label class="form-label small fw-bold text-info">Tu Respuesta / Solución</label>
-                        <textarea name="respuesta" id="inputRespuestaAdmin" rows="5" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required placeholder="Escribe aquí la solución o respuesta para el aprendiz..."></textarea>
+                        <textarea name="respuesta" id="inputRespuestaAdmin" rows="5" class="form-control prf-u-18" required placeholder="Escribe aquí la solución o respuesta para el aprendiz..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -613,8 +613,8 @@
         const contenedorImagen = document.getElementById('contenedorImagenReporte');
         if (urlImagen && urlImagen !== '') {
             contenedorImagen.innerHTML = `<label class="form-label small fw-bold text-white-50 d-block mt-2">Evidencia adjunta:</label>
-                                          <img src="${urlImagen}" class="img-fluid rounded border border-secondary" style="max-height: 180px; cursor: pointer;" onclick="window.open('${urlImagen}', '_blank')">
-                                          <p class="small text-info mt-1" style="font-size: 0.7rem;"><i class="fas fa-search-plus me-1"></i>Haz clic en la imagen para ampliar</p>`;
+                                          <img src="${urlImagen}" class="img-fluid rounded border border-secondary prf-u-19" onclick="window.open('${urlImagen}', '_blank')">
+                                          <p class="small text-info mt-1 prf-u-20"><i class="fas fa-search-plus me-1"></i>Haz clic en la imagen para ampliar</p>`;
             contenedorImagen.classList.remove('d-none');
         } else {
             contenedorImagen.innerHTML = '';

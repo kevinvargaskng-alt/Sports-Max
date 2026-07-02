@@ -1,6 +1,6 @@
 <div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(74, 158, 255, 0.2); border-radius: 16px;">
+        <div class="modal-content text-white sug-modal-content">
             <div class="modal-header border-0 pb-1">
                 <h4 class="modal-title fw-bold">
                     <i class="fas fa-bug text-info me-3"></i>Buzón de Reportes y Fallos
@@ -37,7 +37,7 @@
 
                             <div class="mt-3">
                                 <label class="form-label fw-bold text-white-50 small d-block">Captura de pantalla del error</label>
-                                <label for="imagen_error" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" style="background: #161b22; border: 1px solid #30363d;">
+                                <label for="imagen_error" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center sug-u-1">
                                     <span id="fileName" class="text-white-50 small">Seleccionar imagen desde su equipo...</span>
                                     <i class="fas fa-upload"></i>
                                 </label>
@@ -57,8 +57,7 @@
                         
                         {% if sugerencias_usuario %}
                             {% for s in sugerencias_usuario %}
-                            <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-{{ s.id }}"
-                                 style="border-left: 5px solid {% if s.respuesta %}var(--accent-blue){% else %}#eab308{% endif %}; bg-color: rgba(255,255,255,0.02)">
+                            <div class="sugerencia-card p-4 mb-3 rounded-3 sugerencia-border-{% if s.respuesta %}answered{% else %}pending{% endif %}" id="sugerencia-{{ s.id }}">
                                 <div class="d-flex justify-content-between mb-3">
                                     <div>
                                         <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
@@ -82,7 +81,7 @@
                                 {% if s.imagen %}
                                     <div class="mb-3">
                                         <a href="{{ s.imagen.url }}" target="_blank">
-                                            <img src="{{ s.imagen.url }}" alt="Evidencia" class="img-fluid rounded border border-secondary" style="max-height: 150px; cursor: pointer;">
+                                            <img src="{{ s.imagen.url }}" alt="Evidencia" class="img-fluid rounded border border-secondary sug-u-2">
                                         </a>
                                     </div>
                                 {% endif %}
@@ -116,7 +115,7 @@
 <!-- MODAL EDITAR REPORTE -->
 <div class="modal fade" id="modalEditarReporte" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #ff4d4d; border-radius: 12px;">
+        <div class="modal-content text-white sug-u-3">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2 text-warning"></i>Editar Reporte</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -128,7 +127,7 @@
                 <div class="modal-body">
                     <div class="mb-3 text-start">
                         <label class="form-label small fw-bold text-white-50">Nuevo comentario</label>
-                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required></textarea>
+                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control sug-u-4" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -144,7 +143,7 @@
 <!-- MODAL CONFIRMAR ELIMINAR REPORTE -->
 <div class="modal fade" id="modalConfirmarEliminarReporte" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #f85149; border-radius: 12px;">
+        <div class="modal-content text-white sug-u-5">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle text-danger me-2"></i>¿Eliminar Reporte?</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -161,7 +160,7 @@
 </div>
 
 <!-- FORMULARIO OCULTO PARA ELIMINAR REPORTE -->
-<form id="formBorrarReporte" method="POST" action="/perfil/" style="display:none;">
+<form id="formBorrarReporte" method="POST" action="/perfil/" class="sug-u-6">
     {% csrf_token %}
     <input type="hidden" name="tipo" value="borrar_reporte">
     <input type="hidden" name="reporte_id" id="inputDeleteId">
