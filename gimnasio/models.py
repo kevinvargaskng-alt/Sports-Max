@@ -2,7 +2,7 @@ from django.db import models
 from usuarios.models import Usuario
 from django.conf import settings
 
-# Se eliminó la clase Entrenamiento
+
 
 
 class Reserva(models.Model):

@@ -61,11 +61,25 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(26,95,180,0.25) 0%, transparent 65%),
-      radial-gradient(ellipse 50% 80% at 0% 100%, rgba(26,95,180,0.15) 0%, transparent 60%),
-      url('https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=1600&q=80') center/cover no-repeat;
-    filter: brightness(0.4);
+      radial-gradient(ellipse 90% 70% at 75% 35%, rgba(26,95,180,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 90% at 5% 95%, rgba(26,95,180,0.20) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(8,20,60,0.8) 0%, transparent 100%),
+      linear-gradient(135deg, #020a1a 0%, #050f2a 40%, #040818 70%, #010510 100%);
     z-index: 0;
+  }
+  /* Partículas decorativas en el hero */
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle 1px at 20% 30%, rgba(255,255,255,0.15) 1px, transparent 0),
+      radial-gradient(circle 1px at 55% 15%, rgba(255,255,255,0.1) 1px, transparent 0),
+      radial-gradient(circle 1.5px at 80% 60%, rgba(26,95,180,0.4) 1.5px, transparent 0),
+      radial-gradient(circle 1px at 10% 75%, rgba(255,255,255,0.08) 1px, transparent 0),
+      radial-gradient(circle 1px at 90% 25%, rgba(255,255,255,0.12) 1px, transparent 0),
+      radial-gradient(circle 2px at 40% 80%, rgba(26,95,180,0.3) 2px, transparent 0),
+      radial-gradient(circle 1px at 65% 90%, rgba(255,255,255,0.07) 1px, transparent 0);
   }
   .hero-overlay {
     position: absolute;
@@ -722,6 +736,17 @@
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ANIMACIONES DE ENTRADA (scroll) ── */
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.6s ease var(--delay, 0s), transform 0.6s ease var(--delay, 0s);
+  }
+  .fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 </style>
 {% endblock %}
 
@@ -829,7 +854,7 @@
 
   <div class="sports-grid">
     <div class="sport-card">
-      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80');"></div>
+      <div class="sport-card-bg" style="background: linear-gradient(135deg, #0a1628 0%, #1a3a6b 100%);"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">01</div>
       <div class="sport-card-content">
@@ -840,7 +865,7 @@
       </div>
     </div>
     <div class="sport-card">
-      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80');"></div>
+      <div class="sport-card-bg" style="background: linear-gradient(135deg, #0d1a10 0%, #1a4a26 100%);"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">02</div>
       <div class="sport-card-content">
@@ -851,7 +876,7 @@
       </div>
     </div>
     <div class="sport-card">
-      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80');"></div>
+      <div class="sport-card-bg" style="background: linear-gradient(135deg, #1a0d28 0%, #4a1a6b 100%);"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">03</div>
       <div class="sport-card-content">
@@ -895,6 +920,61 @@
       <p class="service-desc">Recibe alertas de tus próximos partidos, cambios de horario y resultados en tiempo real.</p>
       <a href="#" class="service-link">Activar alertas <i class="fas fa-arrow-right"></i></a>
     </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section style="background: rgba(255,255,255,0.015); border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05);">
+  <div class="section-tag">Simple y rápido</div>
+  <h2 class="section-title">¿Cómo<br>funciona?</h2>
+  <p class="section-sub">En tres pasos estás dentro del sistema y aprovechando todos los recursos deportivos del SENA.</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:32px; margin-top:8px;">
+
+    <div class="how-step fade-in-up" style="--delay:0s">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div style="min-width:56px; height:56px; background:rgba(26,95,180,0.12); border:1px solid rgba(26,95,180,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; color:#1a5fb4;">01</span>
+        </div>
+        <div style="height:1px; flex:1; background:linear-gradient(to right, rgba(26,95,180,0.4), transparent);"></div>
+      </div>
+      <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; text-transform:uppercase; margin-bottom:10px;">Créate una cuenta</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.45); line-height:1.65;">Regístrate con tu número de documento y datos SENA. Puedes escanear tu carnet para llenar el formulario automáticamente.</p>
+    </div>
+
+    <div class="how-step fade-in-up" style="--delay:0.15s">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div style="min-width:56px; height:56px; background:rgba(26,95,180,0.12); border:1px solid rgba(26,95,180,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; color:#1a5fb4;">02</span>
+        </div>
+        <div style="height:1px; flex:1; background:linear-gradient(to right, rgba(26,95,180,0.4), transparent);"></div>
+      </div>
+      <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; text-transform:uppercase; margin-bottom:10px;">Accede a tu módulo</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.45); line-height:1.65;">Desde tu perfil accede al gimnasio, inventario de implementos, torneos inter-fichas o las competencias inter-centros.</p>
+    </div>
+
+    <div class="how-step fade-in-up" style="--delay:0.3s">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div style="min-width:56px; height:56px; background:rgba(26,95,180,0.12); border:1px solid rgba(26,95,180,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; color:#1a5fb4;">03</span>
+        </div>
+        <div style="height:1px; flex:1; background:linear-gradient(to right, rgba(26,95,180,0.4), transparent);"></div>
+      </div>
+      <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; text-transform:uppercase; margin-bottom:10px;">Participa y compite</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.45); line-height:1.65;">Inscribe tu equipo, reserva el gimnasio, solicita implementos y sigue tu historial deportivo en tiempo real.</p>
+    </div>
+
+    <div class="how-step fade-in-up" style="--delay:0.45s">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div style="min-width:56px; height:56px; background:rgba(255,190,0,0.1); border:1px solid rgba(255,190,0,0.25); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          <i class="fas fa-robot" style="font-size:22px; color:#ffc107;"></i>
+        </div>
+        <div style="height:1px; flex:1; background:linear-gradient(to right, rgba(255,190,0,0.3), transparent);"></div>
+      </div>
+      <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; text-transform:uppercase; margin-bottom:10px;">Pregúntale a Tux</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.45); line-height:1.65;">Nuestro asistente IA responde tus preguntas sobre horarios, disponibilidad y torneos sin depender de internet externo.</p>
+    </div>
+
   </div>
 </section>
 
@@ -1427,6 +1507,18 @@ document.addEventListener('DOMContentLoaded', function () {
   if (new URLSearchParams(window.location.search).get('login') === '1') {
     new bootstrap.Modal(document.getElementById('modalForm')).show();
   }
+
+  /* ── Intersection Observer para animaciones de entrada ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
 });
 </script>
 {% endblock %}
