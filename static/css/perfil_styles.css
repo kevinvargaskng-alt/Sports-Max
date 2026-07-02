@@ -1,0 +1,132 @@
+/* 3. ESTILOS DE LA FOTO Y CÁMARA */
+    .btn-camera {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--accent-blue);
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid #050814;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    .btn-camera:hover {
+        background: var(--accent-hover);
+        transform: scale(1.1);
+    }
+
+    /* 4. NAVEGACIÓN POR TABS */
+    .nav-tabs .nav-link {
+        color: rgba(255,255,255,0.6);
+        border: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+        text-transform: capitalize !important;
+        font-weight: 500;
+        padding: 10px 20px;
+    }
+    .nav-tabs .nav-link.active {
+        background: transparent !important;
+        color: var(--accent-blue) !important;
+        border-bottom: 2px solid var(--accent-blue);
+    }
+
+    /* 5. DISEÑO DE NOVEDADES */
+    .news-item {
+        border-left: 3px solid var(--accent-blue);
+        background: rgba(255, 255, 255, 0.03);
+        transition: transform 0.2s;
+    }
+    .news-item:hover {
+        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* 6. INPUTS DESHABILITADOS */
+    .custom-input:disabled {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        opacity: 0.8;
+        color: #aaa !important;
+    }
+
+    /* 7. RESPONSIVE */
+    @media (max-width: 768px) {
+        .border-md-end {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+        }
+    }
+
+    /* ESTILOS DEL BUZÓN */
+    #modalBuzonSugerencias .form-select,
+    #modalBuzonSugerencias .form-control {
+        background: #1e2937 !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+    }
+    /* AJUSTE DE COLOR PARA LAS PESTAÑAS DENTRO DEL MODAL DE ERROR */
+    #modalBuzonSugerencias .nav-tabs .nav-link {
+        color: rgba(255,255,255,0.5) !important;
+        border: none !important;
+    }
+    #modalBuzonSugerencias .nav-tabs .nav-link.active {
+        color: var(--accent-blue) !important;
+        border-bottom: 3px solid var(--accent-blue) !important;
+        background: transparent !important;
+    }
+    
+    /* Estilo de alerta armonizado con el sistema */
+    #reportAlert {
+        background-color: rgba(74, 158, 255, 0.1) !important;
+        color: #fff !important;
+        border: 1px solid rgba(74, 158, 255, 0.2) !important;
+        border-left: 5px solid var(--accent-blue) !important;
+    }
+    
+    /* Eliminar cualquier rastro de azul en los botones del modal de error */
+    #modalBuzonSugerencias .btn-enviar-reporte {
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover)) !important;
+        border: none !important;
+        color: #050814 !important;
+    }
+    
+    /* Estilo para la inicial si no hay foto */
+    .initial-avatar {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover));
+        color: #050814;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4.5rem;
+        font-weight: bold;
+        border: 3px solid var(--accent-blue);
+        box-shadow: 0 0 20px rgba(74, 158, 255, 0.2);
+    }
+    .initial-avatar-sm {
+        width: 120px;
+        height: 120px;
+        font-size: 3.5rem;
+    }
+
+    /* Eliminar el resplandor azul de los campos de texto al hacer clic */
+
+
+
+    .sugerencia-card {
+        background: rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+    }
+    .sugerencia-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255,255,255,0.08);
+    }
