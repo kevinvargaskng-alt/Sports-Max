@@ -95,6 +95,9 @@
                     <i class="fas fa-heartbeat me-1"></i>
                     Hábitos Saludables
                 </a>
+                <a class="nav-link {% if url_name == 'ayuda' %}active{% endif %}" href="{% url 'ayuda' %}">
+                    <i class="fas fa-question-circle me-1"></i> Ayuda
+                </a>
             </div>
 
             <ul class="navbar-nav d-lg-none mt-3">
@@ -102,18 +105,39 @@
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'interfichas' %}">Inter-Fichas</a></li>
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'gimnasio' %}">Gimnasio</a></li>
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'inventario' %}">Inventario</a></li>
-                <li class="nav-item">
+                <li class="nav-item border-bottom border-secondary">
                     <a class="nav-link py-3 px-2" href="{% url 'habitos:inicio' %}">
                         <i class="fas fa-heartbeat me-1"></i>
                         Hábitos Saludables
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link py-3 px-2" href="{% url 'ayuda' %}">
+                        <i class="fas fa-question-circle me-1"></i> Ayuda
                     </a>
                 </li>
             </ul>
             {% endwith %}
         </div>
 
-        <div class="ms-auto ps-3 d-flex align-items-center">
+        <div class="ms-auto ps-3 d-flex align-items-center gap-2">
+            <!-- SWITCH MODO CLARO / OSCURO -->
+            <button id="themeToggleBtn" title="Cambiar tema claro/oscuro"
+                    style="background:transparent;border:none;color:var(--text-secondary);font-size:1.1rem;padding:6px 8px;border-radius:50%;transition:all 0.25s;cursor:pointer;">
+                <i class="fas fa-sun" id="themeIcon"></i>
+            </button>
             {% if user.is_authenticated %}
+            <!-- CAMPANITA DE NOTIFICACIONES -->
+            <button class="btn-campanita" id="btnCampanita"
+                    data-bs-toggle="modal" data-bs-target="#modalNotificacionesSistema"
+                    title="Notificaciones del sistema"
+                    aria-label="Notificaciones del sistema"
+                    style="position:relative;background:transparent;border:none;color:var(--text-secondary);font-size:1.2rem;padding:6px 8px;border-radius:50%;transition:all 0.25s;cursor:pointer;">
+                <i class="fas fa-bell"></i>
+                {% if notificaciones_count > 0 %}
+                <span id="puntoCampanita" style="position:absolute;top:4px;right:4px;width:16px;height:16px;background:var(--danger, #ff4d4f);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:0.6rem;font-weight:bold;">{{ notificaciones_count }}</span>
+                {% endif %}
+            </button>
             <div class="dropdown">
                 <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
                     {% if user.foto_perfil %}

@@ -13,7 +13,11 @@ from usuarios.models import Usuario
 
 @login_required
 def inventario_list(request):
-    elementos = ElementoDeportivo.objects.all()
+    if request.user.is_staff:
+        elementos = ElementoDeportivo.objects.all().order_by('tipo_maquina')
+    else:
+        elementos = ElementoDeportivo.objects.filter(habilitado=True).order_by('tipo_maquina')
+
     usuarios_staff = Usuario.objects.filter(
         is_staff=True, is_active=True).order_by('first_name')
 
@@ -44,15 +48,15 @@ def inventario_list(request):
                 id=responsable_id) if responsable_id else None
 
             ElementoDeportivo.objects.create(
-                # el form manda nombre_elemento
                 tipo_maquina=request.POST.get('nombre_elemento'),
                 cantidad_total=request.POST.get('cantidad_total'),
-                estado_general=request.POST.get('estado_general'),
+                estado_general=request.POST.get('estado_general') or 'Bueno',
                 fecha_adquisicion=request.POST.get(
                     'fecha_adquisicion') or None,
                 descripcion=request.POST.get('descripcion', ''),
                 imagen=request.FILES.get('imagen'),
                 usuario_responsable=responsable,
+                habilitado=request.POST.get('habilitado') == 'on' if 'habilitado' in request.POST else True,
             )
             messages.success(request, "Elemento creado exitosamente.")
             return redirect('inventario')
@@ -82,11 +86,27 @@ def inventario_list(request):
                 elemento.fecha_adquisicion = request.POST.get(
                     'fecha_adquisicion') or None
                 elemento.descripcion = request.POST.get('descripcion', '')
+                elemento.habilitado = request.POST.get('habilitado') == 'on'
                 if 'imagen' in request.FILES:
                     elemento.imagen = request.FILES['imagen']
                 elemento.save()
                 messages.success(
                     request, "Elemento actualizado correctamente.")
+            return redirect('inventario')
+
+        # ─── 2B. TOGGLE HABILITADO ELEMENTO — solo admin ──────────
+        elif accion == 'toggle_habilitado':
+            if not request.user.is_staff:
+                messages.error(request, "No tienes permisos.")
+                return redirect('inventario')
+
+            codigo = request.POST.get('codigo_elemento')
+            if codigo:
+                elemento = get_object_or_404(ElementoDeportivo, id=codigo)
+                elemento.habilitado = not elemento.habilitado
+                elemento.save()
+                estado_str = "habilitado" if elemento.habilitado else "inhabilitado"
+                messages.info(request, f"El producto {elemento.tipo_maquina} ha sido {estado_str}.")
             return redirect('inventario')
 
         # ─── 3. CREAR PRÉSTAMO — solo usuarios normales ───────────

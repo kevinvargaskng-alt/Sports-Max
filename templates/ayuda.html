@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Centro de Ayuda y Manual de Usuario{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-white">
+    <!-- Encabezado Principal -->
+    <div class="text-center mb-5 fade-in-up">
+        <i class="fas fa-question-circle fa-4x text-info mb-3"></i>
+        <h1 class="fw-bold text-cap">Centro de Ayuda y Soporte</h1>
+        <p class="text-white-50 max-width-600 mx-auto">Encuentra guías de usuario, respuestas a preguntas frecuentes y aprende a utilizar todos los módulos de la plataforma de Gestión Deportiva.</p>
+        <div class="mt-4">
+            <a href="https://github.com/kevinvargaskng-alt/Sports-Max/raw/main/docs/manual_usuario.pdf" target="_blank" class="btn btn-warning btn-lg fw-bold px-4 shadow">
+                <i class="fas fa-file-pdf me-2"></i>Descargar Manual de Usuario (PDF)
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulos de Ayuda -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="sport-card h-100 p-4" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(88,166,255,0.1); border-radius: 16px;">
+                <i class="fas fa-home fa-2x text-info mb-3"></i>
+                <h5 class="fw-bold mb-2">Módulo de Inicio</h5>
+                <p class="text-white-50 small mb-0">Aprende a registrar tu carnet SENA mediante código QR, consultar notificaciones generales y personalizar tus datos de perfil.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="sport-card h-100 p-4" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(88,166,255,0.1); border-radius: 16px;">
+                <i class="fas fa-dumbbell fa-2x text-success mb-3"></i>
+                <h5 class="fw-bold mb-2">Módulo Gimnasio</h5>
+                <p class="text-white-50 small mb-0">Cómo reservar tu ingreso al gimnasio, consultar horarios de apertura/cierre y revisar tus asistencias anteriores.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="sport-card h-100 p-4" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(88,166,255,0.1); border-radius: 16px;">
+                <i class="fas fa-box fa-2x text-warning mb-3"></i>
+                <h5 class="fw-bold mb-2">Módulo de Inventario</h5>
+                <p class="text-white-50 small mb-0">Guía para solicitar préstamos de balones, mancuernas y aros, consultar stock disponible y realizar devoluciones a tiempo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preguntas Frecuentes (FAQ) -->
+    <div class="sport-card p-4 mb-5" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;">
+        <h3 class="fw-bold mb-4 text-warning"><i class="fas fa-question me-2"></i>Preguntas Frecuentes</h3>
+        <div class="accordion accordion-dark" id="faqAccordion">
+            <div class="accordion-item bg-transparent border-secondary text-white mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        ¿Qué hago si mi cuenta se encuentra bloqueada?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-50">
+                        Si tu cuenta se bloquea tras múltiples intentos fallidos, el bloqueo durará 5 minutos (primer nivel) o 24 horas (segundo nivel). Puedes desbloquearla inmediatamente usando la opción de "Desbloqueo Urgente" en el formulario de inicio de sesión ingresando tu documento, correo y teléfono registrados.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item bg-transparent border-secondary text-white mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        ¿Cómo puedo reportar un fallo en el sistema?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-50">
+                        En la parte superior derecha de tu pantalla verás una campana de notificaciones. Haz clic en ella y selecciona "Enviar Reporte" para detallar cualquier error que encuentres. También puedes adjuntar una captura de pantalla.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item bg-transparent border-secondary text-white">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        ¿Por qué no puedo solicitar un préstamo de implementos?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-50">
+                        Esto puede ocurrir por dos razones principales: no hay suficiente stock del elemento seleccionado, o tienes una sanción activa en el sistema debido a una devolución tardía anterior. Puedes verificar tu estado en el apartado de Sanciones de tu Perfil.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

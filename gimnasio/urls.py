@@ -23,4 +23,14 @@ urlpatterns = [
     path('gimnasio/admin/cerrar/', views.cerrar_gimnasio, name='cerrar_gimnasio'),
     path('gimnasio/admin/anamnesis/', views.admin_lista_anamnesis,
          name='admin_lista_anamnesis'),
+
+    # ── Máquinas y equipos ──
+    path('gimnasio/admin/maquinas/crear/',
+         views.crear_maquina, name='crear_maquina'),
+    path('gimnasio/admin/maquinas/editar/<int:pk>/',
+         views.editar_maquina, name='editar_maquina'),
+    path('gimnasio/admin/maquinas/eliminar/<int:pk>/',
+         views.eliminar_maquina, name='eliminar_maquina'),
+    path('gimnasio/admin/maquinas/estado/<int:pk>/',
+         views.toggle_estado_maquina, name='toggle_estado_maquina'),
 ]

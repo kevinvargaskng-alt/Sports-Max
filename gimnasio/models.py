@@ -67,3 +67,48 @@ class FechaIngreso(models.Model):
 
     def __str__(self):
         return str(self.fecha)
+
+
+class Maquina(models.Model):
+    CATEGORIAS = [
+        ('cardio', 'Cardio'),
+        ('fuerza', 'Fuerza'),
+        ('funcional', 'Funcional'),
+    ]
+    ESTADOS = [
+        ('disponible', 'Disponible'),
+        ('mantenimiento', 'Mantenimiento'),
+        ('inactivo', 'Fuera de Servicio'),
+    ]
+    nombre = models.CharField(max_length=100)
+    categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='fuerza')
+    descripcion = models.TextField(blank=True)
+    musculos = models.JSONField(default=list, blank=True)
+    imagen = models.ImageField(upload_to='maquinas/', null=True, blank=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='disponible')
+
+    class Meta:
+        ordering = ['categoria', 'nombre']
+        verbose_name = 'Máquina'
+        verbose_name_plural = 'Máquinas'
+
+    def __str__(self):
+        return self.nombre
+
+    @property
+    def imagen_url(self):
+        if self.imagen:
+            return self.imagen.url
+        # Mapea nombres de máquinas por defecto a sus respectivas imágenes estáticas
+        mapping = {
+            'caminadora': 'caminadora.jpg',
+            'bicicleta estática': 'bicicleta.jpg',
+            'elíptica': 'eliptica.jpg',
+            'press de banca': 'press_banca.jpg',
+            'multiestación': 'multifuerza.jpg',
+            'rack de sentadillas': 'rack_sentadillas.jpg',
+            'remo': 'remo.jpg',
+            'zona trx / colchonetas': 'trx_colchonetas.jpg'
+        }
+        filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
+        return f"/static/img/maquinas/{filename}"
