@@ -343,3 +343,68 @@
             color: #58a6ff; letter-spacing: 1px;
         }
     }
+
+/* ── Extracted Inline Styles ── */
+.gym-u-1 { color:#58a6ff; }
+.gym-u-2 { color:#f85149; }
+.gym-u-3 { letter-spacing:1.5px; }
+.gym-u-4 { letter-spacing:1.5px; }
+.gym-u-5 { color:#56d364; }
+.gym-u-6 { color:#f85149; }
+.gym-u-7 { letter-spacing:1.5px; }
+.gym-u-8 { background:rgba(88,166,255,.08); border:1px solid rgba(88,166,255,.3); color:#58a6ff; }
+.gym-u-9 { accent-color:#58a6ff; width:16px; height:16px; }
+.gym-u-10 { cursor:pointer; }
+.gym-u-11 { font-family:Consolas,monospace; }
+.gym-u-12 { display:inline; }
+.gym-u-13 { color:#56d364; }
+.gym-u-14 { color:#e3b341; }
+.gym-u-15 { max-width:380px; }
+.gym-u-16 { font-family:Consolas,monospace;font-size:.85rem; }
+.gym-u-17 { font-family:Consolas,monospace;font-size:.85rem; }
+.gym-u-18 { font-family:Consolas,monospace;font-size:.85rem; }
+.gym-u-19 { font-family:Consolas,monospace; }
+.gym-u-20 { display:inline; }
+.gym-u-21 { display:inline; }
+.gym-u-22 { background:rgba(227,179,65,.08); border:1px solid rgba(227,179,65,.3); color:#e3b341; }
+.gym-u-23 { color:#58a6ff; }
+.gym-u-24 { color:#56d364; }
+.gym-u-25 { color:#22d3ee; }
+.gym-u-26 { background:rgba(88,166,255,.04); border:1px solid rgba(88,166,255,.15); }
+.gym-u-27 { color:#58a6ff; }
+.gym-u-28 { font-size:0.8rem; }
+.gym-u-29 { display:inline; }
+.gym-u-30 { display:inline; }
+.gym-u-31 { background:#161b22; border:1px solid #30363d; color:#f0f6fc; }
+.gym-u-32 { border-color:#30363d; }
+.gym-u-33 { color:#58a6ff; }
+.gym-u-34 { border-color:#30363d; }
+.gym-u-35 { background:rgba(88,166,255,.08); border:1px solid rgba(88,166,255,.3); color:#58a6ff; }
+.gym-u-36 { background:rgba(88,166,255,.04); border:1px solid rgba(88,166,255,.15); }
+.gym-u-37 { letter-spacing:1.5px; display:block; }
+.gym-u-38 { font-family:Consolas,monospace; font-size:0.95rem; }
+.gym-u-39 { font-size:1.1rem; padding-top:8px; color:#58a6ff; }
+.gym-u-40 { background:rgba(88,166,255,.08); border:1px solid rgba(88,166,255,.3); color:#58a6ff; }
+.gym-u-41 { color:#58a6ff; }
+.gym-u-42 { font-size:0.82rem; }
+.gym-u-43 { border-color:#58a6ff; background:rgba(88,166,255,.08); }
+.gym-u-44 { color:#58a6ff; }
+.gym-u-45 { color:#58a6ff; }
+.gym-u-46 { color:#f85149; }
+.gym-u-47 { color:#e3b341; }
+.gym-u-48 { color:#56d364; }
+.gym-u-49 { color:#22d3ee; }
+.gym-u-50 { color:#58a6ff; }
+.gym-u-51 { display:none; }
+.gym-u-52 { color:#58a6ff; }
+.gym-u-53 { color:#58a6ff; }
+.gym-u-54 { font-family:Consolas,monospace; }
+.gym-u-55 { font-family:Consolas,monospace; }
+.gym-u-56 { display:inline; }
+
+.gym-estado-val { font-size: 1.1rem; padding-top: 8px; }
+.gym-estado-val-lg { font-size: 1.2rem; padding-top: 6px; }
+.gym-estado-abierta { color: #56d364; }
+.gym-estado-cerrada { color: #f85149; }
+.gym-estado-mantenimiento { color: #e3b341; }
+

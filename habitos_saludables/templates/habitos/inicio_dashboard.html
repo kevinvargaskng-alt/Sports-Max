@@ -179,14 +179,14 @@ canvas { width: 100% !important; max-height: 220px !important; }
   <div class="container">
     <div class="ph-inner">
       <div>
-        <h1><i class="fas fa-chart-line me-2" style="color:var(--acid);font-size:1.5rem;"></i>
+        <h1><i class="fas fa-chart-line me-2 hab-dash-u-1"></i>
           {% if user.is_staff %}Panel de Control{% else %}Mi Dashboard de Salud{% endif %}
         </h1>
         <div class="subtitle">
           {% if user.is_staff %}Gestión completa del módulo Hábitos Saludables{% else %}Bienvenido, {{ user.get_full_name|default:user.username }}{% endif %}
         </div>
       </div>
-      <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+      <div class="hab-dash-u-2">
         {% if not user.is_staff %}
         <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid">
           <i class="fas fa-plus-circle"></i> Nuevo Seguimiento
@@ -204,9 +204,9 @@ canvas { width: 100% !important; max-height: 220px !important; }
 
   {% if not tiene_consent and not user.is_staff %}
   <div class="alert-habeas">
-    <i class="fas fa-exclamation-triangle" style="color:#ffc107;font-size:1.1rem;"></i>
-    <p style="margin:0;font-size:0.9rem;color:rgba(255,255,255,0.8);">Necesitas aceptar el <strong style="color:#ffc107;">Habeas Data</strong> para registrar seguimientos de salud.</p>
-    <a href="{% url 'habitos:habeas_data' %}" class="btn-acid" style="font-size:0.8rem;padding:8px 16px;">Aceptar ahora</a>
+    <i class="fas fa-exclamation-triangle hab-dash-u-3"></i>
+    <p class="hab-dash-u-4">Necesitas aceptar el <strong class="hab-dash-u-5">Habeas Data</strong> para registrar seguimientos de salud.</p>
+    <a href="{% url 'habitos:habeas_data' %}" class="btn-acid hab-dash-u-6">Aceptar ahora</a>
   </div>
   {% endif %}
 
@@ -270,13 +270,13 @@ canvas { width: 100% !important; max-height: 220px !important; }
     <div class="col-lg-8">
       <div class="panel">
         <div class="panel-title"><i class="fas fa-chart-line"></i> Evolución Global (Todos los usuarios)</div>
-        <canvas id="chartPeso" style="height:220px;"></canvas>
+        <canvas id="chartPeso" class="hab-dash-u-7"></canvas>
       </div>
     </div>
     <div class="col-lg-4">
       <div class="panel">
         <div class="panel-title"><i class="fas fa-chart-bar"></i> IMC Global</div>
-        <canvas id="chartIMC" style="height:220px;"></canvas>
+        <canvas id="chartIMC" class="hab-dash-u-8"></canvas>
       </div>
     </div>
   </div>
@@ -328,7 +328,7 @@ canvas { width: 100% !important; max-height: 220px !important; }
       </div>
     </div>
     <div class="col-lg-4">
-      <div class="panel reveal" style="transition-delay:.08s">
+      <div class="panel reveal hab-dash-u-9">
         <div class="panel-title"><i class="fas fa-heartbeat"></i> IMC en el Tiempo</div>
         <canvas id="chartIMC"></canvas>
       </div>
@@ -337,7 +337,7 @@ canvas { width: 100% !important; max-height: 220px !important; }
 
   <div class="row g-3">
     <div class="col-lg-6">
-      <div class="panel reveal" style="transition-delay:.12s">
+      <div class="panel reveal hab-dash-u-10">
         <div class="panel-title"><i class="fas fa-clipboard-list"></i> Últimas Mediciones</div>
         {% for s in seguimientos|slice:":1" %}
         <div class="detail-grid">
@@ -345,12 +345,12 @@ canvas { width: 100% !important; max-height: 220px !important; }
           <div class="detail-item"><div class="di-label">Presión Diastólica</div><div class="di-value">{{ s.presion_diastolica|default:"—" }} mmHg</div></div>
           <div class="detail-item"><div class="di-label">Horas de Sueño</div><div class="di-value">{{ s.horas_sueno|default:"—" }} hrs</div></div>
           <div class="detail-item"><div class="di-label">Vasos de Agua</div><div class="di-value">{{ s.vasos_agua|default:"—" }}/día</div></div>
-          <div class="detail-item"><div class="di-label">Actividad</div><div class="di-value" style="font-size:0.82rem;">{{ s.get_nivel_actividad_display }}</div></div>
+          <div class="detail-item"><div class="di-label">Actividad</div><div class="di-value hab-dash-u-11">{{ s.get_nivel_actividad_display }}</div></div>
           <div class="detail-item"><div class="di-label">Estatura</div><div class="di-value">{{ s.estatura_cm }} cm</div></div>
         </div>
         {% endfor %}
-        <div style="margin-top:1rem;">
-          <a href="{% url 'habitos:historial_salud' %}" class="btn-outline-sm" style="width:100%; justify-content:center;">
+        <div class="hab-dash-u-12">
+          <a href="{% url 'habitos:historial_salud' %}" class="btn-outline-sm hab-dash-u-13">
             <i class="fas fa-history"></i> Ver historial completo
           </a>
         </div>
@@ -358,46 +358,46 @@ canvas { width: 100% !important; max-height: 220px !important; }
     </div>
 
     <div class="col-lg-3">
-      <div class="panel reveal" style="transition-delay:.16s">
+      <div class="panel reveal hab-dash-u-14">
         <div class="panel-title"><i class="fas fa-bolt"></i> Acciones Rápidas</div>
-        <div style="display:flex; flex-direction:column; gap:0.6rem;">
+        <div class="hab-dash-u-15">
           <a href="{% url 'habitos:registrar_seguimiento' %}" class="quick-btn">
-            <i class="fas fa-plus-circle" style="color:var(--acid);"></i> Nuevo seguimiento
+            <i class="fas fa-plus-circle hab-dash-u-16"></i> Nuevo seguimiento
           </a>
           <a href="{% url 'habitos:historial_salud' %}" class="quick-btn">
-            <i class="fas fa-history" style="color:#5c9eff;"></i> Ver historial
+            <i class="fas fa-history hab-dash-u-17"></i> Ver historial
           </a>
           <a href="{% url 'habitos:lista_habitos' %}" class="quick-btn">
-            <i class="fas fa-apple-alt" style="color:var(--teal);"></i> Guía hábitos
+            <i class="fas fa-apple-alt hab-dash-u-18"></i> Guía hábitos
           </a>
           <a href="{% url 'habitos:lista_rutinas' %}" class="quick-btn">
-            <i class="fas fa-dumbbell" style="color:#ffc107;"></i> Ver rutinas
+            <i class="fas fa-dumbbell hab-dash-u-19"></i> Ver rutinas
           </a>
           <a href="{% url 'habitos:nutricion' %}" class="quick-btn">
-            <i class="fas fa-utensils" style="color:#dc3545;"></i> Nutrición
+            <i class="fas fa-utensils hab-dash-u-20"></i> Nutrición
           </a>
           <a href="{% url 'habitos:biblioteca' %}" class="quick-btn">
-            <i class="fas fa-book-open" style="color:#a78bfa;"></i> Biblioteca
+            <i class="fas fa-book-open hab-dash-u-21"></i> Biblioteca
           </a>
         </div>
       </div>
     </div>
 
     <div class="col-lg-3">
-      <div class="panel reveal" style="transition-delay:.2s">
+      <div class="panel reveal hab-dash-u-22">
         <div class="panel-title"><i class="fas fa-chart-pie"></i> Promedio Personal</div>
-        <div style="display:flex; flex-direction:column; gap:0.6rem;">
+        <div class="hab-dash-u-23">
           <div class="detail-item">
             <div class="di-label">Peso Promedio</div>
-            <div class="di-value" style="font-size:1.4rem; font-family:var(--font-display); color:var(--acid);">{{ promedios.avg_peso|floatformat:1|default:"—" }} <small style="font-size:0.8rem;color:var(--muted);">kg</small></div>
+            <div class="di-value hab-dash-u-24">{{ promedios.avg_peso|floatformat:1|default:"—" }} <small class="hab-dash-u-25">kg</small></div>
           </div>
           <div class="detail-item">
             <div class="di-label">IMC Promedio</div>
-            <div class="di-value" style="font-size:1.4rem; font-family:var(--font-display); color:#5c9eff;">{{ promedios.avg_imc|floatformat:1|default:"—" }}</div>
+            <div class="di-value hab-dash-u-26">{{ promedios.avg_imc|floatformat:1|default:"—" }}</div>
           </div>
           <div class="detail-item">
             <div class="di-label">FC Promedio</div>
-            <div class="di-value" style="font-size:1.4rem; font-family:var(--font-display); color:#f87171;">{{ promedios.avg_fc|floatformat:0|default:"—" }} <small style="font-size:0.8rem;color:var(--muted);">lpm</small></div>
+            <div class="di-value hab-dash-u-27">{{ promedios.avg_fc|floatformat:0|default:"—" }} <small class="hab-dash-u-28">lpm</small></div>
           </div>
         </div>
       </div>

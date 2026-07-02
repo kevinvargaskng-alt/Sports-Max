@@ -146,7 +146,7 @@
                             <td data-label="Estado">
                                 <span class="badge-status {% if s.estado_sancion == 'Activa' %}bg-danger{% else %}bg-success{% endif %}">
                                     {% if s.estado_sancion == 'Activa' %}
-                                        <i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>
+                                        <i class="fas fa-circle me-1 sanc-u-1"></i>
                                     {% else %}
                                         <i class="fas fa-check me-1"></i>
                                     {% endif %}
@@ -156,7 +156,7 @@
                             {% if user.is_staff %}
                             <td data-label="Acción" class="text-center">
                                 {% if s.estado_sancion == 'Activa' %}
-                                <form method="POST" style="display:inline;"
+                                <form method="POST" class="sanc-u-2"
                                       onsubmit="return confirm('¿Cerrar esta sanción?')">
                                     {% csrf_token %}
                                     <input type="hidden" name="accion"        value="cerrar_sancion">
@@ -172,7 +172,7 @@
                             {% endif %}
                         </tr>
                         {% if s.descripcion_sancion and s.descripcion_sancion|length > 80 %}
-                        <tr style="background: #0d1117;">
+                        <tr class="sanc-u-3">
                             <td colspan="{% if user.is_staff %}8{% else %}6{% endif %}" class="text-white-50 small py-2 px-4">
                                 <i class="fas fa-comment-dots text-info me-2"></i>{{ s.descripcion_sancion }}
                             </td>
