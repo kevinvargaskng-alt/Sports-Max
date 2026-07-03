@@ -1,0 +1,6 @@
+{% comment %}Reusable back button partial
+Usage: {% include 'partials/back_button.html' with back_url='perfil' back_label='Volver al Perfil' %}
+{% endcomment %}
+<a href="{% url back_url %}" class="btn btn-sm btn-outline-light">
+    <i class="fas fa-arrow-left me-2"></i>{{ back_label }}
+</a>

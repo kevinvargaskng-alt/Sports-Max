@@ -9,24 +9,26 @@ Ejecutar:
     python ia_trainer.py
 """
 
-from ia_engine import MotorIA
-from interfichas.models import TorneoInterfichas, EquipoInterfichas, PartidoInterfichas
-from inventario.models import ElementoDeportivo, Prestamo
-from gimnasio.models import Reserva, GimnasioConfig
-import django
 import os
 import sys
 import logging
 
 # ── Configurar Django ─────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJ_DIR = os.path.dirname(BASE_DIR)
+sys.path.insert(0, PROJ_DIR)
 sys.path.insert(0, BASE_DIR)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
+import django
 django.setup()
 
-# ── Importar modelos Django ───────────────────────────────
-# ── Importar motor IA directamente ───────────────────────
+# ── Importaciones del proyecto ────────────────────────────
+from ia_engine import MotorIA
+from interfichas.models import TorneoInterfichas, EquipoInterfichas, PartidoInterfichas
+from inventario.models import ElementoDeportivo, Prestamo
+from gimnasio.models import Reserva, GimnasioConfig
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
@@ -43,7 +45,7 @@ def recopilar_datos() -> dict:
             "nombre": str(e.tipo_maquina),
             "cantidad": int(e.cantidad_total),
             "estado": str(e.estado_general),
-            "responsable": str(e.docente_responsable),
+            "responsable": str(e.usuario_responsable.get_full_name() if e.usuario_responsable else "No asignado"),
         }
         for e in elementos
     ]
@@ -87,6 +89,42 @@ def recopilar_datos() -> dict:
     datos["equipos_interfichas"] = EquipoInterfichas.objects.count()
     datos["partidos_jugados"] = PartidoInterfichas.objects.filter(
         jugado=True).count()
+
+    # Hábitos saludables, rutinas y materiales
+    from habitos_saludables.models import HabitoSaludable, RutinaFisica, MaterialApoyo
+    habitos = HabitoSaludable.objects.filter(activo=True)
+    datos["habitos_saludables"] = [
+        {
+            "titulo": str(h.titulo),
+            "categoria": str(h.categoria),
+            "descripcion": str(h.descripcion),
+            "consejos": h.get_consejos_lista()
+        }
+        for h in habitos
+    ]
+    
+    rutinas = RutinaFisica.objects.filter(activo=True)
+    datos["rutinas_fisicas"] = [
+        {
+            "nombre": str(r.nombre),
+            "nivel": str(r.nivel),
+            "objetivo": str(r.objetivo),
+            "descripcion": str(r.descripcion),
+            "duracion_minutos": int(r.duracion_minutos),
+            "ejercicios": r.get_ejercicios_lista()
+        }
+        for r in rutinas
+    ]
+    
+    materiales = MaterialApoyo.objects.filter(activo=True)
+    datos["materiales_apoyo"] = [
+        {
+            "titulo": str(m.titulo),
+            "tipo_contenido": str(m.tipo_contenido),
+            "descripcion": str(m.descripcion)
+        }
+        for m in materiales
+    ]
 
     return datos
 

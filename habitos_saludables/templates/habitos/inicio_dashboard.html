@@ -192,6 +192,9 @@ canvas { width: 100% !important; max-height: 220px !important; }
           <i class="fas fa-plus-circle"></i> Nuevo Seguimiento
         </a>
         {% endif %}
+        <a href="{% url 'perfil' %}" class="btn-outline-sm">
+          <i class="fas fa-arrow-left"></i> Volver al Perfil
+        </a>
         <a href="{% url 'habitos:inicio' %}" class="btn-outline-sm">
           <i class="fas fa-home"></i> Inicio
         </a>
@@ -432,24 +435,25 @@ canvas { width: 100% !important; max-height: 220px !important; }
   const pesos  = {{ pesos_json|safe }};
   const imcs   = {{ imcs_json|safe }};
 
-  Chart.defaults.color = 'rgba(255,255,255,0.4)';
+  const isLightTheme = document.body.classList.contains('light-theme');
+  Chart.defaults.color = isLightTheme ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)';
   Chart.defaults.font.family = "'DM Sans', sans-serif";
   Chart.defaults.font.size = 11;
 
-  const gridCol = 'rgba(255,255,255,0.04)';
+  const gridCol = isLightTheme ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.04)';
   const baseOpts = {
     responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#1A1D21', borderColor: 'rgba(255,255,255,0.1)',
-        borderWidth: 1, titleColor: '#fff', bodyColor: 'rgba(255,255,255,0.6)',
+        backgroundColor: isLightTheme ? '#ffffff' : '#1A1D21', borderColor: isLightTheme ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)',
+        borderWidth: 1, titleColor: isLightTheme ? '#000000' : '#fff', bodyColor: isLightTheme ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.6)',
         padding: 12, cornerRadius: 10,
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)', font:{size:10} } },
-      y: { grid: { color: gridCol }, ticks: { color: 'rgba(255,255,255,0.3)', font:{size:10} } }
+      x: { grid: { display: false }, ticks: { color: isLightTheme ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.3)', font:{size:10} } },
+      y: { grid: { color: gridCol }, ticks: { color: isLightTheme ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.3)', font:{size:10} } }
     }
   };
 
@@ -498,7 +502,7 @@ canvas { width: 100% !important; max-height: 220px !important; }
       },
       options: {
         ...baseOpts,
-        plugins: { ...baseOpts.plugins, legend: { display:true, labels:{ boxWidth:10, color:'rgba(255,255,255,0.4)', font:{size:10} } } }
+        plugins: { ...baseOpts.plugins, legend: { display:true, labels:{ boxWidth:10, color: isLightTheme ? '#000' : 'rgba(255,255,255,0.4)', font:{size:10} } } }
       }
     });
   }

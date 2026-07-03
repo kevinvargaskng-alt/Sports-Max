@@ -64,13 +64,13 @@
                                             {{ s.tipo|upper }}
                                         </span>
                                         {% if not s.respuesta %}
-                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte" 
+                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte text-decoration-none" 
                                                 data-id="{{ s.id }}" data-comentario="{{ s.comentario }}" title="Editar reporte">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit me-1"></i>Editar
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte" 
+                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte text-decoration-none" 
                                                 data-id="{{ s.id }}" title="Eliminar reporte">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash me-1"></i>Eliminar
                                         </button>
                                         {% endif %}
                                     </div>

@@ -11,6 +11,11 @@
 
 {% block content %}
 <div class="container-fluid px-3 px-md-4 py-4 int-u-1">
+  <div class="mb-3">
+    <a href="{% url 'perfil' %}" class="btn btn-sm btn-outline-light">
+      <i class="fas fa-arrow-left me-1"></i> Volver al Perfil
+    </a>
+  </div>
 
 
   {% if es_admin %}
@@ -132,24 +137,24 @@
                   <i class="fas fa-sitemap"></i> Gestionar
                 </a>
                 <a href="{% url 'reporte_torneo' torneo_id=t.pk %}" class="btn-accion btn-success-a" target="_blank" title="Reporte">
-                  <i class="fas fa-file-alt"></i>
+                   <i class="fas fa-file-alt me-1"></i>Reporte
                 </a>
                 <button class="btn-accion btn-info-a"
                         onclick="abrirEditar('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}','{{ t.lugar|escapejs }}','{{ t.fecha_torneo_fichas|date:'Y-m-d' }}','{{ t.disciplina_id|default:'' }}')"
                         title="Editar">
-                  <i class="fas fa-edit"></i>
+                  <i class="fas fa-edit me-1"></i>Editar
                 </button>
                 {% if t.estado != 'cerrado' %}
                 <button class="btn-accion btn-warn-a"
                         onclick="abrirCierre('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}')"
                         title="Cerrar torneo">
-                  <i class="fas fa-flag-checkered"></i>
+                  <i class="fas fa-flag-checkered me-1"></i>Cerrar
                 </button>
                 {% endif %}
                 <button class="btn-accion btn-danger-a"
                         onclick="confirmarEliminar('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}')"
                         title="Eliminar">
-                  <i class="fas fa-trash-alt"></i>
+                  <i class="fas fa-trash-alt me-1"></i>Eliminar
                 </button>
               </div>
             </td>

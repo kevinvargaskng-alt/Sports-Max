@@ -36,6 +36,9 @@
     <!-- Botón de Accesibilidad -->
     {% include "partials/accesibilidad.html" %}
 
+    <!-- Botón de Ayuda Flotante -->
+    {% include "partials/boton_ayuda.html" %}
+
     <!-- ══════════════════════════════════════════════
          ASISTENTE IA DEPORTIVO (NUEVO)
          ══════════════════════════════════════════════ -->
@@ -71,6 +74,18 @@
             }
         });
     }
+    </script>
+    
+    <script>
+    // Enforce min attribute on date inputs globally (prevent past dates, except for acquisition dates)
+    document.addEventListener('DOMContentLoaded', () => {
+        const todayStr = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            if (input.name !== 'fecha_adquisicion' && input.id !== 'inputFechaAdquisicion') {
+                input.min = todayStr;
+            }
+        });
+    });
     </script>
     
     {% block extra_js %}{% endblock %}

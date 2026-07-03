@@ -21,7 +21,7 @@
 
 <!-- HERO -->
 <header class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" style="background-image: url('{% static 'img/hero_bg.png' %}'); background-size: cover; background-position: center; opacity: 0.25;"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">
@@ -114,7 +114,7 @@
 
   <div class="sports-grid">
     <div class="sport-card">
-      <div class="sport-card-bg ini-u-3"></div>
+      <div class="sport-card-bg ini-u-3" style="background-image: url('{% static 'img/sports_soccer.png' %}');"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">01</div>
       <div class="sport-card-content">
@@ -125,7 +125,7 @@
       </div>
     </div>
     <div class="sport-card">
-      <div class="sport-card-bg ini-u-4"></div>
+      <div class="sport-card-bg ini-u-4" style="background-image: url('{% static 'img/sports_basketball.png' %}');"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">02</div>
       <div class="sport-card-content">
@@ -136,7 +136,7 @@
       </div>
     </div>
     <div class="sport-card">
-      <div class="sport-card-bg ini-u-5"></div>
+      <div class="sport-card-bg ini-u-5" style="background-image: url('{% static 'img/sports_volleyball.png' %}');"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">03</div>
       <div class="sport-card-content">
@@ -373,11 +373,11 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-60">Género <span class="text-muted fw-normal text-lowercase">(Opcional)</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-60">Género <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-61"><i class="fas fa-venus-mars text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="genero ini-u-62">
-                      <option value="">-- Seleccionar (Opcional) --</option>
+                    <select class="form-select custom-input border-start-0 ps-0" name="genero" id="id_genero" required>
+                      <option value="" selected disabled>-- Selecciona --</option>
                       <option value="M">Masculino</option>
                       <option value="F">Femenino</option>
                       <option value="O">Otro</option>
@@ -425,7 +425,12 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-75">Contraseña <span class="text-danger">*</span></label>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label fw-semibold text-white small text-uppercase ini-u-75 mb-0">Contraseña <span class="text-danger">*</span></label>
+                    <button type="button" class="btn btn-link text-decoration-none btn-sm p-0 mb-0" id="btnSugerirClave" style="font-size: 0.72rem; color: #1a5fb4; font-weight: 700;">
+                      <i class="fas fa-magic"></i> Sugerir clave
+                    </button>
+                  </div>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-76"><i class="fas fa-lock text-white-50"></i></span>
                     <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password ini-u-77">
