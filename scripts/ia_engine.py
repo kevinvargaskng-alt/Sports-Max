@@ -331,6 +331,7 @@ class MotorIA:
         self._agregar_docs_gimnasio(datos_bd)
         self._agregar_docs_interfichas(datos_bd)
         self._agregar_docs_intercentros(datos_bd)
+        self._agregar_docs_habitos(datos_bd)
 
         # Corpus = pregunta + respuesta (más contexto semántico)
         corpus = [
@@ -460,6 +461,59 @@ class MotorIA:
             ),
             "modulo": "intercentros",
         })
+
+    def _agregar_docs_habitos(self, datos_bd):
+        habitos = datos_bd.get("habitos_saludables", [])
+        rutinas = datos_bd.get("rutinas_fisicas", [])
+        materiales = datos_bd.get("materiales_apoyo", [])
+
+        if habitos:
+            lista_hab = ", ".join(h["titulo"] for h in habitos)
+            self.conocimiento.append({
+                "pregunta": "qué hábitos saludables hay consejos de salud lista de habitos recomendados",
+                "respuesta": f"🍏 **Hábitos saludables recomendados en el sistema:**\n{lista_hab}.\n\nPregúntame por alguno de ellos para darte detalles y consejos.",
+                "modulo": "habitos"
+            })
+            for h in habitos:
+                consejos_str = "\n".join(f"• {c}" for c in h.get("consejos", []))
+                self.conocimiento.append({
+                    "pregunta": f"consejo habito {h['titulo'].lower()} recomendaciones tips salud categoria {h['categoria']}",
+                    "respuesta": (
+                        f"🍏 **Hábito Saludable: {h['titulo']}** ({h['categoria'].capitalize()})\n\n"
+                        f"{h['descripcion']}\n\n"
+                        f"💡 **Recomendaciones prácticas:**\n{consejos_str}"
+                    ),
+                    "modulo": "habitos"
+                })
+
+        if rutinas:
+            lista_rut = ", ".join(f"{r['nombre']} ({r['nivel']})" for r in rutinas)
+            self.conocimiento.append({
+                "pregunta": "qué rutinas de ejercicio físico actividad entrenamiento entrenar hay listas nivel objetivo",
+                "respuesta": f"🏋️ **Rutinas físicas sugeridas en el sistema:**\n{lista_rut}.\n\nPregúntame por alguna de ellas para darte los ejercicios detallados.",
+                "modulo": "habitos"
+            })
+            for r in rutinas:
+                ejercicios_str = "\n".join(f"• {e}" for e in r.get("ejercicios", []))
+                self.conocimiento.append({
+                    "pregunta": f"rutina {r['nombre'].lower()} ejercicios objetivo {r['objetivo']} nivel {r['nivel']} duracion minutos",
+                    "respuesta": (
+                        f"🏋️ **Rutina: {r['nombre']}**\n"
+                        f"• Objetivo: {r['objetivo'].capitalize()}\n"
+                        f"• Nivel: {r['nivel'].capitalize()}\n"
+                        f"• Duración: {r['duracion_minutos']} minutos\n\n"
+                        f"📋 **Ejercicios a realizar:**\n{ejercicios_str}"
+                    ),
+                    "modulo": "habitos"
+                })
+
+        if materiales:
+            lista_mat = ", ".join(m["titulo"] for m in materiales)
+            self.conocimiento.append({
+                "pregunta": "qué material de apoyo guías manuales documentos biblioteca pdf infografía hay descargar",
+                "respuesta": f"📚 **Material de apoyo y guías disponibles en la biblioteca:**\n{lista_mat}.\n\nPuedes descargarlos desde la sección Biblioteca en el módulo de Hábitos Saludables.",
+                "modulo": "habitos"
+            })
 
     # ── INFERENCIA ───────────────────────────────────────────
     def responder(self, pregunta: str, historial: list = None) -> dict:

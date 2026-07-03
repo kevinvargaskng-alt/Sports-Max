@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import IntegrityError
@@ -217,6 +218,12 @@ def gimnasio_list(request):
 
 def registro_view(request):
     """Procesa el registro con validaciones de seguridad"""
+    CLAVES_COMUNES = [
+        '12345678', '123456789', '1234567890', 'password', 'contrasena',
+        'contraseña', 'qwerty', 'abcdefgh', '11111111', '00000000',
+        'admin123', 'password1', '12341234', 'abc12345',
+    ]
+
     if request.method == 'POST':
         numero_documento = request.POST.get('numero_documento', '').strip()
         nombres = request.POST.get('nombres', '').strip()
@@ -227,6 +234,20 @@ def registro_view(request):
         telefono = request.POST.get('telefono', '').strip()
         ficha = request.POST.get('ficha', '').strip()
         programa = request.POST.get('programa_formacion', '').strip()
+        genero = request.POST.get('genero', '').strip()
+
+        if not genero:
+            return JsonResponse({'status': 'error', 'message': 'El campo género es obligatorio.'}, status=400)
+
+        # ── Validación de contraseña débil ──
+        if len(contrasena) < 8:
+            return JsonResponse({'status': 'error', 'message': 'La contraseña debe tener al menos 8 caracteres.'}, status=400)
+        if contrasena.isdigit():
+            return JsonResponse({'status': 'error', 'message': 'La contraseña no puede ser solo números. Incluye letras y/o símbolos.'}, status=400)
+        if contrasena.lower() in CLAVES_COMUNES:
+            return JsonResponse({'status': 'error', 'message': 'Esa contraseña es demasiado común. Elige una más segura.'}, status=400)
+        if contrasena.lower() == numero_documento.lower():
+            return JsonResponse({'status': 'error', 'message': 'La contraseña no puede ser igual a tu número de documento.'}, status=400)
 
         if Usuario.objects.filter(numero_documento=numero_documento).exists():
             return JsonResponse({'status': 'error', 'message': 'El documento ya existe'}, status=400)
@@ -240,6 +261,7 @@ def registro_view(request):
                 numero_documento=numero_documento,
                 tipo_documento=tipo_doc,
                 telefono=telefono,
+                genero=genero,
                 ficha=ficha,
                 programa_formacion=programa,
                 rol='aprendiz'
@@ -332,12 +354,23 @@ def perfil_view(request):
 
         email = request.POST.get('email')
         celular = request.POST.get('celular')
+        eliminar_foto = request.POST.get('eliminar_foto') == 'true'
+        foto_posicion = request.POST.get('foto_posicion')
+
         if email:
             usuario.email = email
         if celular:
             usuario.telefono = celular
-        if 'imagen' in request.FILES:
+        
+        if eliminar_foto:
+            usuario.foto_perfil = None
+            usuario.foto_posicion = '50% 50%'
+        elif 'imagen' in request.FILES:
             usuario.foto_perfil = request.FILES.get('imagen')
+            
+        if foto_posicion:
+            usuario.foto_posicion = foto_posicion
+
         usuario.save()
         messages.success(request, '¡Perfil actualizado!')
         return redirect('perfil')
@@ -391,48 +424,49 @@ def perfil_view(request):
 
 
 @login_required(login_url='home')
+@require_POST
 def toggle_usuario_estado(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
-    if request.method == 'POST':
-        # Seguridad: evitar que un admin se bloquee a sí mismo
-        if int(user_id) == request.user.id:
-            messages.error(
-                request, "Acceso denegado: No puedes bloquear tu propia cuenta de administrador.")
-            return redirect('perfil')
+    # Seguridad: evitar que un admin se bloquee a sí mismo
+    if int(user_id) == request.user.id:
+        messages.error(
+            request, "Acceso denegado: No puedes bloquear tu propia cuenta de administrador.")
+        return redirect('gestionar_usuarios')
 
-        u = get_object_or_404(Usuario, pk=user_id)
-        u.is_active = not u.is_active
-        u.estado = 'activo' if u.is_active else 'inactivo'
-        u.save()
-    return redirect('perfil')
+    u = get_object_or_404(Usuario, pk=user_id)
+    u.is_active = not u.is_active
+    u.estado = 'activo' if u.is_active else 'inactivo'
+    u.save()
+    return redirect('gestionar_usuarios')
 
 
 @login_required(login_url='home')
+@require_POST
 def cambiar_rol_usuario(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
-    if request.method == 'POST':
-        u = get_object_or_404(Usuario, pk=user_id)
-        nuevo_rol = request.POST.get('rol')
-        if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-            u.rol = nuevo_rol
-            u.is_staff = (nuevo_rol == 'admin')
-            u.save()
-    return redirect('perfil')
+    u = get_object_or_404(Usuario, pk=user_id)
+    nuevo_rol = request.POST.get('rol')
+    if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
+        u.rol = nuevo_rol
+        u.is_staff = (nuevo_rol == 'admin')
+        u.save()
+    return redirect('gestionar_usuarios')
 
 
 @login_required(login_url='home')
+@require_POST
 def admin_editar_usuario(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
-    if request.method == 'POST':
-        u = get_object_or_404(Usuario, pk=user_id)
-        u.first_name = request.POST.get('first_name', u.first_name).strip()
-        u.last_name = request.POST.get('last_name', u.last_name).strip()
-        u.email = request.POST.get('email', u.email).strip()
-        u.save()
-    return redirect('perfil')
+    u = get_object_or_404(Usuario, pk=user_id)
+    u.first_name = request.POST.get('first_name', u.first_name).strip()
+    u.last_name = request.POST.get('last_name', u.last_name).strip()
+    u.email = request.POST.get('email', u.email).strip()
+    u.save()
+    messages.success(request, f'Datos de {u.get_full_name()} actualizados correctamente.')
+    return redirect('gestionar_usuarios')
 
 
 @login_required(login_url='home')

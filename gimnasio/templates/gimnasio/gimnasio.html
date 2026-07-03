@@ -11,6 +11,11 @@
 {% block content %}
 <div class="main-container py-4">
 <div class="container text-start">
+    <div class="mb-4">
+        <a href="{% url 'perfil' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i> Volver al Perfil
+        </a>
+    </div>
 
 <!-- ════════════════════════════════════════════
      RAMA ADMIN
@@ -239,7 +244,7 @@
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
                                         onclick="return confirm('¿Eliminar esta fecha?')">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash me-1"></i>Eliminar
                                 </button>
                             </form>
                         </td>
@@ -312,7 +317,7 @@
                                 {% csrf_token %}
                                 <button type="submit" class="btn-edit" title="Cancelar"
                                         onclick="return confirm('¿Cancelar el registro de {{ r.usuario_solicitante.get_full_name }}?')">
-                                    <i class="fas fa-ban"></i>
+                                    <i class="fas fa-ban me-1"></i>Cancelar
                                 </button>
                             </form>
                             {% endif %}
@@ -320,7 +325,7 @@
                                 {% csrf_token %}
                                 <button type="submit" class="btn-trash" title="Eliminar"
                                         onclick="return confirm('¿Eliminar registro de {{ r.usuario_solicitante.get_full_name }}?')">
-                                    <i class="fas fa-trash-alt"></i>
+                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
                         </td>
@@ -439,13 +444,13 @@
                         <td data-label="Acciones" class="text-center">
                             <button type="button" class="btn-edit" title="Editar"
                                     data-bs-toggle="modal" data-bs-target="#editMaquina{{ m.pk }}">
-                                <i class="fas fa-pen"></i>
+                                <i class="fas fa-pen me-1"></i>Editar
                             </button>
                             <form method="post" action="{% url 'eliminar_maquina' m.pk %}" class="gym-u-30">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-trash" title="Eliminar"
                                         onclick="return confirm('¿Eliminar la máquina {{ m.nombre }}?')">
-                                    <i class="fas fa-trash-alt"></i>
+                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
                         </td>
@@ -811,7 +816,7 @@
                             {% csrf_token %}
                             <button type="submit" class="btn-trash"
                                     onclick="return confirm('¿Borrar este registro?')">
-                                <i class="fas fa-trash-alt"></i>
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar
                             </button>
                         </form>
                     </td>

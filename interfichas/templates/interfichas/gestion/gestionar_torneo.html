@@ -698,7 +698,8 @@
                                         {% endif %}
                                         <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
                                                 onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}', '{{ partido.tarjetas_amarillas_local|default:0 }}', '{{ partido.tarjetas_amarillas_visitante|default:0 }}', '{{ partido.tarjetas_rojas_local|default:0 }}', '{{ partido.tarjetas_rojas_visitante|default:0 }}', '{{ partido.tarjetas_azules_local|default:0 }}', '{{ partido.tarjetas_azules_visitante|default:0 }}', '{{ partido.detalles_sanciones|escapejs }}')">
-                                            <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %}"></i>
+                                            <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %} me-1"></i>
+                                            {% if partido.jugado %}Editar{% else %}Registrar{% endif %}
                                         </button>
                                     </div>
                                     {% if partido.tarjetas_amarillas_local or partido.tarjetas_rojas_local or partido.tarjetas_azules_local or partido.detalles_sanciones %}

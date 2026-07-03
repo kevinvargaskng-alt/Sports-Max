@@ -46,7 +46,7 @@
         <!-- Nav rápida -->
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm fw-bold">
-                <i class="fas fa-arrow-left me-1"></i>Volver al Inventario
+{% include 'partials/back_button.html' with back_url='inventario' back_label='Volver al Inventario' %}
             </a>
             <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm fw-bold">
                 <i class="fas fa-undo me-1"></i>Ir a Devoluciones

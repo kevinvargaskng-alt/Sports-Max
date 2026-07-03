@@ -184,9 +184,25 @@ def interfichas_list(request):
                 messages.error(request, "Disciplina inválida.")
                 return redirect('interfichas')
 
+            fecha_str = request.POST.get('fecha')
+            if fecha_str:
+                from datetime import datetime as dt_class
+                from django.utils import timezone as django_timezone
+                try:
+                    fecha_val = dt_class.strptime(fecha_str, '%Y-%m-%d').date()
+                    if fecha_val < django_timezone.localdate():
+                        messages.error(request, "La fecha del torneo no puede ser de días anteriores.")
+                        return redirect('interfichas')
+                except Exception:
+                    messages.error(request, "Fecha de torneo inválida.")
+                    return redirect('interfichas')
+            else:
+                messages.error(request, "La fecha del torneo es obligatoria.")
+                return redirect('interfichas')
+
             TorneoInterfichas.objects.create(
                 nombre_torneo=request.POST.get('nombre'),
-                fecha_torneo_fichas=request.POST.get('fecha'),
+                fecha_torneo_fichas=fecha_val,
                 lugar=request.POST.get('lugar'),
                 disciplina=disc_obj
             )
@@ -319,8 +335,21 @@ def editar_torneo(request, id):
         torneo.nombre_torneo = request.POST.get(
             'nombre', torneo.nombre_torneo).strip()
         torneo.lugar = request.POST.get('lugar',  torneo.lugar).strip()
-        torneo.fecha_torneo_fichas = request.POST.get(
-            'fecha',  torneo.fecha_torneo_fichas)
+        
+        fecha_str = request.POST.get('fecha')
+        if fecha_str:
+            from datetime import datetime as dt_class
+            from django.utils import timezone as django_timezone
+            try:
+                fecha_val = dt_class.strptime(fecha_str, '%Y-%m-%d').date()
+                if fecha_val < django_timezone.localdate():
+                    messages.error(request, "La fecha del torneo no puede ser de días anteriores.")
+                    return redirect('interfichas')
+                torneo.fecha_torneo_fichas = fecha_val
+            except Exception:
+                messages.error(request, "Fecha de torneo inválida.")
+                return redirect('interfichas')
+
         id_disc = request.POST.get('disciplina_id', '').strip()
         if id_disc:
             try:
@@ -719,7 +748,19 @@ def generar_siguiente_fase(request, torneo_id):
 @require_POST
 def asignar_fecha_partido(request, partido_id):
     partido = get_object_or_404(PartidoInterfichas, pk=partido_id)
-    partido.fecha_partido = request.POST.get('fecha_partido')
+    fecha_str = request.POST.get('fecha_partido')
+    if fecha_str:
+        from datetime import datetime as dt_class
+        from django.utils import timezone as django_timezone
+        try:
+            fecha_val = dt_class.strptime(fecha_str, '%Y-%m-%d').date()
+            if fecha_val < django_timezone.localdate():
+                messages.error(request, "La fecha del partido no puede ser de días anteriores.")
+                return redirect('gestionar_torneo', torneo_id=partido.torneo.pk)
+            partido.fecha_partido = fecha_val
+        except Exception:
+            messages.error(request, "Fecha de partido inválida.")
+            return redirect('gestionar_torneo', torneo_id=partido.torneo.pk)
     partido.hora_partido = request.POST.get('hora_partido')
     partido.save()
     messages.success(request, "Fecha y hora actualizadas.")

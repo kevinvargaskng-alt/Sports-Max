@@ -50,7 +50,7 @@ def inventario_list(request):
             ElementoDeportivo.objects.create(
                 tipo_maquina=request.POST.get('nombre_elemento'),
                 cantidad_total=request.POST.get('cantidad_total'),
-                estado_general=request.POST.get('estado_general') or 'Bueno',
+                estado_general='Bueno',
                 fecha_adquisicion=request.POST.get(
                     'fecha_adquisicion') or None,
                 descripcion=request.POST.get('descripcion', ''),
@@ -318,11 +318,32 @@ def sanciones_list(request):
         accion = request.POST.get('accion')
 
         if accion == 'crear_sancion':
+            from datetime import datetime as dt_class
+            from django.utils import timezone as django_timezone
+            
+            inicio_str = request.POST.get('fecha_inicio_sancion')
+            fin_str = request.POST.get('fecha_fin_sancion')
+            
+            try:
+                inicio_val = dt_class.strptime(inicio_str, '%Y-%m-%d').date()
+                fin_val = dt_class.strptime(fin_str, '%Y-%m-%d').date()
+                
+                if inicio_val < django_timezone.localdate():
+                    messages.error(request, "La fecha de inicio de la sanción no puede ser de días anteriores.")
+                    return redirect('sanciones')
+                
+                if fin_val < inicio_val:
+                    messages.error(request, "La fecha de fin de la sanción debe ser posterior a la fecha de inicio.")
+                    return redirect('sanciones')
+            except Exception:
+                messages.error(request, "Formato de fechas inválido.")
+                return redirect('sanciones')
+
             Sancion.objects.create(
                 usuario_id=request.POST.get('usuario_id'),
                 tipo_sancion=request.POST.get('tipo_sancion'),
-                fecha_inicio_sancion=request.POST.get('fecha_inicio_sancion'),
-                fecha_fin_sancion=request.POST.get('fecha_fin_sancion'),
+                fecha_inicio_sancion=inicio_val,
+                fecha_fin_sancion=fin_val,
                 estado_sancion='Activa',
                 descripcion_sancion=request.POST.get(
                     'descripcion_sancion', ''),
