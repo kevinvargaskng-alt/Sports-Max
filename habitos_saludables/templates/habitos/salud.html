@@ -81,8 +81,9 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
         </div>
         {% if vista != 'habeas_data' %}
         <div class="d-flex gap-2">
-            <a href="{% url 'perfil' %}" class="btn-outline-sm"><i class="fas fa-arrow-left"></i> Volver al Perfil</a>
-            <a href="{% url 'habitos:dashboard' %}" class="btn-outline-sm"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+            <a href="#" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { window.history.back(); } else { window.location.href = '{% url 'habitos:dashboard' %}'; } return false;" class="btn-regresar">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
         </div>
         {% endif %}
     </div>
@@ -264,7 +265,7 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
                     </div>
                     {% endif %}
                 </div>
-                <a href="{% url 'habitos:historial_salud' %}" class="btn-outline-sm mt-4"><i class="fas fa-arrow-left"></i> Volver al Historial</a>
+                <a href="{% url 'habitos:historial_salud' %}" class="btn-regresar mt-4"><i class="fas fa-arrow-left"></i> Volver al Historial</a>
             </div>
         </div>
     </div>

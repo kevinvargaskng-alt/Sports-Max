@@ -1191,3 +1191,72 @@ body.light-theme .hdr-u-4:hover, body.light-theme .hdr-u-5:hover { background: r
     background: rgba(255, 255, 255, 0.05);
 }
 
+
+/* ============================================================
+   BOTÓN DE REGRESAR UNIFICADO Y ADAPTATIVO
+   ============================================================ */
+.btn-regresar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+    border: 1px solid rgba(43, 125, 233, 0.35) !important;
+    border-radius: 30px; /* Cápsula moderna */
+    text-decoration: none !important;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+.btn-regresar i {
+    font-size: 0.85rem;
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.btn-regresar:hover {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #2b7de9 0%, #1f64c8 100%) !important;
+    border-color: #58a6ff !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(43, 125, 233, 0.45);
+}
+.btn-regresar:hover i {
+    transform: translateX(-4px);
+}
+.btn-regresar:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(43, 125, 233, 0.3);
+}
+
+/* Adaptación a Modo Claro (Light Theme) */
+body.light-theme .btn-regresar {
+    color: #1e293b !important;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.01) 100%) !important;
+    border: 1px solid rgba(15, 23, 42, 0.15) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+body.light-theme .btn-regresar:hover {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #2b7de9 0%, #1f64c8 100%) !important;
+    border-color: #2b7de9 !important;
+    box-shadow: 0 8px 20px rgba(43, 125, 233, 0.35);
+}
+
+
+/* Corregir botón outline pequeño de hábitos en modo claro */
+body.light-theme .btn-outline-sm {
+    color: #475569 !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+body.light-theme .btn-outline-sm:hover, 
+body.light-theme .btn-outline-sm.active {
+    border-color: #2b7de9 !important;
+    background: rgba(43, 125, 233, 0.08) !important;
+    color: #2b7de9 !important;
+}

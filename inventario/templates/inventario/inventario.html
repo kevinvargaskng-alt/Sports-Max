@@ -11,8 +11,9 @@
 {% block content %}
 <div class="main-container py-4">
     <div class="container text-start">
-
-        {% include 'partials/back_button.html' with back_url='perfil' back_label='Volver al Perfil' %}
+        <div class="mb-4">
+            {% include 'partials/back_button.html' with back_url='home' back_label='Volver' %}
+        </div>
 
         <!-- HEADER -->
         <header class="modulo-header text-center mb-5">

@@ -1,4 +1,49 @@
 {% load static %}
-<footer class="bg-dark text-white-50 text-center py-2 border-top border-secondary mt-auto">
-    <small>&copy; 2026 Gestión Deportiva SENA. Todos los derechos reservados.</small>
+<footer class="bg-dark text-white-50 text-center py-3 border-top border-secondary mt-auto">
+    <div class="container d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+        <small class="mb-0">&copy; 2026 Gestión Deportiva SENA. Todos los derechos reservados.</small>
+        <small class="mb-0">
+            <a href="#" class="text-white-50 text-decoration-underline" data-bs-toggle="modal" data-bs-target="#modalCreditosReferencias" title="Ver referencias y créditos de recursos audiovisuales">
+                <i class="fas fa-info-circle me-1"></i>Créditos y Referencias
+            </a>
+        </small>
+    </div>
 </footer>
+
+<!-- MODAL CRÉDITOS Y REFERENCIAS -->
+<div class="modal fade" id="modalCreditosReferencias" tabindex="-1" aria-labelledby="labelCreditos" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title fw-bold" id="labelCreditos">
+                    <i class="fas fa-images text-warning me-2"></i>Créditos y Referencias
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-white-50 mb-3">En cumplimiento con las normas de propiedad intelectual, se listan las referencias y autorías de los recursos audiovisuales y tipográficos utilizados en esta aplicación:</p>
+                <div class="d-flex flex-column gap-3">
+                    <div class="p-2 rounded bg-secondary bg-opacity-10 border border-secondary">
+                        <h6 class="fw-bold mb-1 text-info"><i class="fas fa-font me-2"></i>Tipografías</h6>
+                        <p class="small text-white-50 mb-0">Fuentes <strong>Poppins</strong>, <strong>Barlow</strong> y <strong>Syne</strong> provistas por Google Fonts bajo la licencia SIL Open Font License (OFL).</p>
+                    </div>
+                    <div class="p-2 rounded bg-secondary bg-opacity-10 border border-secondary">
+                        <h6 class="fw-bold mb-1 text-info"><i class="fas fa-icons me-2"></i>Iconografía</h6>
+                        <p class="small text-white-50 mb-0">Iconos vectoriales provistos por <strong>Font Awesome 6</strong> bajo la licencia libre Font Awesome Free License (CC BY 4.0).</p>
+                    </div>
+                    <div class="p-2 rounded bg-secondary bg-opacity-10 border border-secondary">
+                        <h6 class="fw-bold mb-1 text-info"><i class="fas fa-image me-2"></i>Imágenes y Fondos</h6>
+                        <p class="small text-white-50 mb-0">Fondos de pantalla e ilustraciones provistos por <strong>Unsplash</strong> y <strong>Freepik</strong> bajo licencia de uso gratuito para fines educativos e institucionales (Publicado: 2026).</p>
+                    </div>
+                    <div class="p-2 rounded bg-secondary bg-opacity-10 border border-secondary">
+                        <h6 class="fw-bold mb-1 text-info"><i class="fas fa-landmark me-2"></i>Identidad Institucional</h6>
+                        <p class="small text-white-50 mb-0">Logotipo y fotografías del Centro Minero provistos por el <strong>Servicio Nacional de Aprendizaje (SENA)</strong>, utilizados con fines académicos y de identidad corporativa.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-secondary">
+                <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-4" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>

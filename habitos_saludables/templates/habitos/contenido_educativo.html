@@ -16,12 +16,9 @@
             <div class="edu-u-1">Módulo de Hábitos Saludables</div>
         </div>
         <div class="d-flex gap-2">
-            <a href="{% url 'perfil' %}" class="btn-outline-sm"><i class="fas fa-arrow-left"></i> Volver al Perfil</a>
-            {% if vista == 'habitos' or vista == 'rutinas' or vista == 'nutricion' or vista == 'biblioteca' %}
-            <a href="{% url 'habitos:dashboard' %}" class="btn-outline-sm"><i class="fas fa-chart-line"></i> Dashboard</a>
-            {% else %}
-            <button onclick="history.back()" class="btn-outline-sm"><i class="fas fa-arrow-left"></i> Volver</button>
-            {% endif %}
+            <a href="#" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { window.history.back(); } else { window.location.href = '{% url 'habitos:dashboard' %}'; } return false;" class="btn-regresar">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
         </div>
     </div>
 </div>

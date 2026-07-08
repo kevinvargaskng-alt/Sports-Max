@@ -93,9 +93,7 @@
         <!-- ENCABEZADO -->
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
-                <a href="{% url 'perfil' %}" class="btn btn-sm btn-outline-secondary">
-{% include 'partials/back_button.html' with back_url='perfil' back_label='Volver' %}
-                </a>
+                {% include 'partials/back_button.html' with back_url='perfil' back_label='Volver' %}
                 <div>
                     <h4 class="text-white fw-bold mb-0"><i class="fas fa-users-cog me-2 text-info"></i>Gestión de Usuarios</h4>
                     <p class="text-white-50 small mb-0">Administra roles, estados y datos de todos los registrados</p>
@@ -369,11 +367,39 @@
                     </button>
                 </div>
             </form>
+        <!-- RESPALDO Y RESTAURACIÓN DE BASE DE DATOS (ADMIN ONLY) -->
+        <div class="sport-card mt-5 p-4">
+            <h4 class="text-white fw-bold mb-3"><i class="fas fa-database text-warning me-2"></i>Copia de Seguridad y Restauración</h4>
+            <p class="text-white-50 small mb-4">Exporta un respaldo completo de la base de datos en formato JSON o carga un respaldo anterior para restaurar el sistema.</p>
+            <div class="row g-4">
+                <div class="col-md-6 border-end border-secondary border-opacity-25 pe-md-4">
+                    <h5 class="text-info fw-bold mb-3"><i class="fas fa-download me-2"></i>Generar Copia de Seguridad</h5>
+                    <p class="text-white-50 small mb-4">Haz clic para exportar toda la información de la base de datos (usuarios, disciplinas, torneos, reservas, inventario e historial de salud) a un archivo de respaldo estructurado.</p>
+                    <a href="{% url 'database_backup' %}" class="btn btn-warning btn-sm text-dark fw-bold px-4 py-2">
+                        <i class="fas fa-file-download me-2"></i>Descargar Respaldo JSON
+                    </a>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <h5 class="text-danger fw-bold mb-3"><i class="fas fa-upload me-2"></i>Restaurar Base de Datos</h5>
+                    <p class="text-white-50 small mb-3">Sube un archivo de respaldo JSON generado anteriormente por este sistema para cargar los datos en el aplicativo.</p>
+                    <form action="{% url 'database_restore' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="file" name="backup_file" accept=".json" class="form-control btn btn-dark text-start" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 py-2" onclick="return confirm('¿Estás seguro de que deseas restaurar la base de datos? Esto sobrescribirá y actualizará los registros del sistema.')">
+                            <i class="fas fa-file-upload me-2"></i>Subir y Restaurar JSON
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
