@@ -13,6 +13,7 @@ urlpatterns = [
     # ─── GESTIÓN DE USUARIOS (página propia, solo admin) ───────────────────────
     path('usuarios/', views.gestionar_usuarios_view, name='gestionar_usuarios'),
     path('backup/', views.export_database_backup, name='database_backup'),
+    path('backup/restore/', views.restore_database_backup, name='database_restore'),
 
     # ─── ACCIONES DE USUARIO (llamadas desde gestionar_usuarios) ───────────────
     path('perfil/toggle/<int:user_id>/',

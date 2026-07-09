@@ -12,8 +12,8 @@
 <div class="main-container py-4">
 <div class="container text-start">
     <div class="mb-4">
-        <a href="{% url 'perfil' %}" class="btn btn-sm btn-outline-light">
-            <i class="fas fa-arrow-left me-1"></i> Volver al Perfil
+        <a href="#" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { window.history.back(); } else { window.location.href = '{% url 'home' %}'; } return false;" class="btn-regresar">
+            <i class="fas fa-arrow-left"></i> Volver
         </a>
     </div>
 

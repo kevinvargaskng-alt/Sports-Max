@@ -1,6 +1,6 @@
 {% comment %}Reusable back button partial
-Usage: {% include 'partials/back_button.html' with back_url='perfil' back_label='Volver al Perfil' %}
+Usage: {% include 'partials/back_button.html' with back_url='home' back_label='Volver' %}
 {% endcomment %}
-<a href="{% url back_url %}" class="btn btn-sm btn-outline-light">
-    <i class="fas fa-arrow-left me-2"></i>{{ back_label }}
+<a href="#" class="btn-regresar" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { window.history.back(); } else { window.location.href = '{% if back_url %}{% url back_url %}{% else %}{% url 'home' %}{% endif %}'; } return false;">
+    <i class="fas fa-arrow-left me-2"></i>{{ back_label|default:"Volver" }}
 </a>

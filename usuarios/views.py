@@ -513,3 +513,42 @@ def export_database_backup(request):
         messages.error(request, f"Error al generar el respaldo de la base de datos: {e}")
         return redirect('perfil')
 
+
+@login_required
+def restore_database_backup(request):
+    """Restaura la base de datos a partir de un archivo JSON subido."""
+    if not request.user.is_staff:
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("Acceso denegado: Se requieren privilegios de administrador.")
+
+    if request.method == 'POST' and request.FILES.get('backup_file'):
+        backup_file = request.FILES['backup_file']
+        if not backup_file.name.endswith('.json'):
+            messages.error(request, "Formato de archivo inválido. Debe ser un archivo .json")
+            return redirect('gestionar_usuarios')
+
+        import tempfile
+        import os
+        from django.core import management
+
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.json') as temp_file:
+                for chunk in backup_file.chunks():
+                    temp_file.write(chunk)
+                temp_path = temp_file.name
+
+            # Cargar los datos a la base de datos
+            management.call_command('loaddata', temp_path)
+            messages.success(request, "Base de datos restaurada exitosamente desde el respaldo JSON.")
+        except Exception as e:
+            messages.error(request, f"Error al restaurar la base de datos: {e}")
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                os.unlink(temp_path)
+    else:
+        messages.error(request, "No se ha proporcionado ningún archivo para restaurar.")
+
+    return redirect('gestionar_usuarios')
+
+

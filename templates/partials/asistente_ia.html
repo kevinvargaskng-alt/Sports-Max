@@ -395,90 +395,132 @@ function getCookie(name) {
 // ══════════════════════════════════════════════
 let history = [];
 let isListening = false;
-let recognition = null;
 let currentUtterance = null;
 let ttsEnabled = true;  // Síntesis de voz activada por defecto
 
 // ══════════════════════════════════════════════
-//  SPEECH RECOGNITION (STT) — Web Speech API
+//  SPEECH RECOGNITION (STT) — MediaRecorder + Gemini API
 // ══════════════════════════════════════════════
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const voiceBadge = document.getElementById('voiceBadge');
 const voicePill = document.getElementById('voicePill');
+let mediaRecorder = null;
+let audioChunks = [];
+let voiceStream = null;
 
-if (SpeechRecognition) {
-    voiceBadge.style.display = 'inline-flex';
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (voiceBadge) voiceBadge.style.display = 'inline-flex';
+}
 
-    recognition = new SpeechRecognition();
-    recognition.lang = 'es-CO';         // Español Colombia
-    recognition.interimResults = true;  // Mostrar texto mientras habla
-    recognition.continuous = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-        isListening = true;
-        document.getElementById('micBtn').classList.add('active');
-        document.getElementById('inputWrap').classList.add('listening');
-        voicePill.classList.add('visible');
-        document.getElementById('chatIn').placeholder = '🎙️ Te estoy escuchando...';
-        showListenBubble();
-    };
-
-    recognition.onresult = (event) => {
-        let interim = '';
-        let final = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            const t = event.results[i][0].transcript;
-            if (event.results[i].isFinal) final += t;
-            else interim += t;
+async function startRecording() {
+    audioChunks = [];
+    try {
+        voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        let options = {};
+        if (MediaRecorder.isTypeSupported('audio/webm')) {
+            options = { mimeType: 'audio/webm' };
+        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+            options = { mimeType: 'audio/ogg' };
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+            options = { mimeType: 'audio/mp4' };
         }
-        // Mostrar en input lo que dice
-        document.getElementById('chatIn').value = final || interim;
-        updateListenBubble(final || interim);
-    };
-
-    recognition.onend = () => {
+        
+        mediaRecorder = new MediaRecorder(voiceStream, options);
+        
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstart = () => {
+            isListening = true;
+            document.getElementById('micBtn').classList.add('active');
+            document.getElementById('inputWrap').classList.add('listening');
+            voicePill.classList.add('visible');
+            document.getElementById('chatIn').placeholder = '🎙️ Escuchando... Habla ahora';
+            showListenBubble();
+        };
+        
+        mediaRecorder.onstop = async () => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('active');
+            document.getElementById('inputWrap').classList.remove('listening');
+            voicePill.classList.remove('visible');
+            document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
+            removeListenBubble();
+            
+            if (voiceStream) {
+                voiceStream.getTracks().forEach(track => track.stop());
+            }
+            
+            const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+            if (audioBlob.size > 1000) {
+                await transcribeAudio(audioBlob);
+            } else {
+                addMsg('🎙️ Audio demasiado corto o vacío.', 'bot', now());
+            }
+        };
+        
+        mediaRecorder.start();
+    } catch (err) {
+        console.error("Error al acceder al micrófono:", err);
+        addMsg('⚠️ No se pudo acceder al micrófono. Por favor permite los accesos.', 'bot', now());
         isListening = false;
         document.getElementById('micBtn').classList.remove('active');
         document.getElementById('inputWrap').classList.remove('listening');
         voicePill.classList.remove('visible');
-        document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
-        removeListenBubble();
+    }
+}
 
-        // Si hay texto en el input, enviarlo automáticamente
-        const texto = document.getElementById('chatIn').value.trim();
-        if (texto) {
-            setTimeout(() => send(), 100);
-        }
-    };
-
-    recognition.onerror = (event) => {
-        isListening = false;
-        document.getElementById('micBtn').classList.remove('active');
-        document.getElementById('inputWrap').classList.remove('listening');
-        voicePill.classList.remove('visible');
-        removeListenBubble();
-        document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
-
-        if (event.error === 'not-allowed') {
-            addMsg('🎙️ Permiso de micrófono denegado. Actívalo en la configuración del navegador.', 'bot', now());
-        } else if (event.error !== 'no-speech') {
-            addMsg(`⚠️ Error de voz: ${event.error}`, 'bot', now());
-        }
-    };
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+    }
 }
 
 function toggleMic() {
-    if (!SpeechRecognition) {
-        addMsg('⚠️ Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.', 'bot', now());
-        return;
-    }
+    stopSpeaking();
     if (isListening) {
-        recognition.stop();
+        stopRecording();
     } else {
-        // Parar TTS si está hablando
-        stopSpeaking();
-        recognition.start();
+        startRecording();
+    }
+}
+
+async function transcribeAudio(blob) {
+    addTyping();
+    const formData = new FormData();
+    formData.append('audio', blob, 'recording.webm');
+    
+    try {
+        const res = await fetch('/api/transcribe-voice/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        });
+        
+        const data = await res.json();
+        removeTyping();
+        
+        if (data.error) {
+            addMsg(`⚠️ Error de voz: ${data.error}`, 'bot', now());
+            return;
+        }
+        
+        const transcripcion = (data.text || '').trim();
+        if (transcripcion) {
+            document.getElementById('chatIn').value = transcripcion;
+            await send();
+        } else {
+            addMsg('🤔 No logré escuchar ningún mensaje claro. Por favor intenta de nuevo.', 'bot', now());
+        }
+    } catch (err) {
+        removeTyping();
+        console.error("Error al enviar el audio:", err);
+        addMsg('🔌 Error al procesar tu voz en el servidor de IA.', 'bot', now());
     }
 }
 

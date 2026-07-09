@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # --- IMPORTACIÓN DE LA VISTA DEL AGENTE IA (NUEVO) ---
-from core.views import chat_tux_api
+from core.views import chat_tux_api, transcribe_voice_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +27,7 @@ urlpatterns = [
 
     # --- RUTA DEL AGENTE INTELIGENTE TUX (NUEVO) ---
     path('api/chat-tux/', chat_tux_api, name='chat_tux_api'),
+    path('api/transcribe-voice/', transcribe_voice_api, name='transcribe_voice_api'),
 
 ]
 
