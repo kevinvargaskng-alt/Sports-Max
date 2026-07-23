@@ -110,14 +110,6 @@ def login_view(request):
             'success': False,
             'message': 'Documento o contraseña incorrectos.'
         }, status=401)
-<<<<<<< HEAD
-
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
-
-
-def registro_view(request):
-    """Registro de usuarios"""
-=======
 
     return redirect('home')
 
@@ -232,7 +224,6 @@ def registro_view(request):
         'contraseña', 'qwerty', 'abcdefgh', '11111111', '00000000',
         'admin123', 'password1', '12341234', 'abc12345',
     ]
->>>>>>> main
 
     if request.method == 'POST':
 
@@ -416,23 +407,6 @@ def perfil_view(request):
 
         email = request.POST.get('email')
         celular = request.POST.get('celular')
-<<<<<<< HEAD
-
-        # Lógica para eliminar la foto de perfil si el usuario lo solicitó
-        if request.POST.get('borrar_imagen') == '1':
-            if usuario.foto_perfil:
-                usuario.foto_perfil.delete(save=False)  # Borra el archivo del servidor
-            usuario.foto_perfil = None  # Limpia el campo en la base de datos
-
-        if email:
-            usuario.email = email
-
-        if celular:
-            usuario.telefono = celular
-
-        if 'imagen' in request.FILES:
-            usuario.foto_perfil = request.FILES.get('imagen')
-=======
         eliminar_foto = request.POST.get('eliminar_foto') == 'true'
         foto_posicion = request.POST.get('foto_posicion')
 
@@ -449,7 +423,6 @@ def perfil_view(request):
             
         if foto_posicion:
             usuario.foto_posicion = foto_posicion
->>>>>>> main
 
         usuario.save()
 
@@ -458,71 +431,6 @@ def perfil_view(request):
         return redirect('perfil')
 
     # Reportes propios para cualquier usuario (Mis Reportes)
-<<<<<<< HEAD
-    mis_sugerencias = Sugerencia.objects.filter(usuario=usuario).order_by('-fecha')
-    reportes_todos = Sugerencia.objects.all().order_by('-fecha') if usuario.is_staff else None
-
-    if usuario.is_staff:
-
-        # Usuarios
-        todos_usuarios = Usuario.objects.all().order_by('-fecha_registro')
-
-        ultimos_usuarios = todos_usuarios[:6]
-
-        total_usuarios = todos_usuarios.count()
-
-        usuarios_activos = todos_usuarios.filter(
-            estado='activo'
-        ).count()
-
-        nuevos_mes = todos_usuarios.filter(
-            fecha_registro__gte=hace_30_dias
-        ).count()
-
-        # Prestamos
-        todos_prestamos = (
-            Prestamo.objects
-            .select_related('usuario')
-            .prefetch_related('detalles__elemento')
-            .order_by('-fecha_prestamo')
-        )
-
-        prestamos_recientes = todos_prestamos.filter(
-            fecha_prestamo__gte=hace_30_dias
-        )
-
-        total_prestamos_recientes = prestamos_recientes.count()
-
-        prestamo_mas_reciente = todos_prestamos.first()
-
-        # Gimnasio
-        todas_reservas = (
-            Reserva.objects
-            .select_related('usuario_solicitante')
-            .order_by('-fecha_entrada', '-hora_entrada')
-        )
-
-        total_ingresos_gimnasio = todas_reservas.filter(
-            fecha_entrada__gte=hace_30_dias.date()
-        ).count()
-
-        # Interfichas
-        todos_equipos_interfichas = (
-            EquipoInterfichas.objects
-            .select_related('torneo', 'disciplina')
-            .order_by('-torneo__fecha_torneo_fichas')
-        )
-
-        torneos_interfichas_activos = (
-            TorneoInterfichas.objects
-            .exclude(estado='cerrado')
-            .count()
-        )
-
-        total_torneos_activos = (
-            torneos_interfichas_activos
-        )
-=======
     mis_sugerencias = Sugerencia.objects.filter(
         usuario=usuario).order_by('-fecha')
 
@@ -536,7 +444,6 @@ def perfil_view(request):
             '-fecha_entrada', '-hora_entrada')
         # Sugerencias Admin
         todas_sugerencias = Sugerencia.objects.all().order_by('-fecha')
->>>>>>> main
 
         contexto = {
 
@@ -564,28 +471,6 @@ def perfil_view(request):
     # APRENDIZ
     # ─────────────────────────────────────────────
     else:
-<<<<<<< HEAD
-
-        prestamos = (
-            Prestamo.objects
-            .filter(usuario=usuario)
-            .prefetch_related('detalles__elemento')
-            .order_by('-fecha_prestamo')
-        )
-
-        # Reservas gimnasio
-        reservas_gimnasio = (
-            Reserva.objects
-            .filter(usuario_solicitante=usuario)
-            .order_by('-fecha_entrada', '-hora_entrada')
-        )
-
-        equipos_interfichas = (
-            EquipoInterfichas.objects
-            .filter(usuario_registra=usuario)
-            .select_related('torneo', 'disciplina')
-        )
-=======
         # APRENDIZ: Filtrado por OBJETO de usuario (ForeignKey)
         prestamos = Prestamo.objects.filter(usuario=usuario).prefetch_related(
             'detalles__elemento').order_by('-fecha_prestamo')
@@ -593,7 +478,6 @@ def perfil_view(request):
         # CORRECCIÓN CLAVE: Se filtra por el objeto 'usuario', NO por el string del nombre
         reservas_gimnasio = Reserva.objects.filter(
             usuario_solicitante=usuario).order_by('-fecha_entrada', '-hora_entrada')
->>>>>>> main
 
         contexto = {
 
@@ -611,53 +495,12 @@ def perfil_view(request):
     )
 
 
-<<<<<<< HEAD
-=======
 # --- Las demás funciones (toggle, cambiar_rol, editar) se mantienen igual ---
 
 
->>>>>>> main
 @login_required(login_url='home')
 @require_POST
 def toggle_usuario_estado(request, user_id):
-<<<<<<< HEAD
-
-    if not request.user.is_staff:
-        messages.error(request, 'No tienes permisos.')
-        return redirect('perfil')
-
-    if request.method == 'POST':
-        # Seguridad: evitar que un admin se bloquee a sí mismo
-        if int(user_id) == request.user.id:
-            messages.error(request, "Acceso denegado: No puedes bloquear tu propia cuenta de administrador.")
-            return redirect('perfil')
-            
-        u = get_object_or_404(Usuario, pk=user_id)
-
-        if u.estado == 'activo':
-
-            u.estado = 'inactivo'
-            u.is_active = False
-
-            messages.warning(
-                request,
-                f'{u.get_full_name()} desactivado.'
-            )
-
-        else:
-
-            u.estado = 'activo'
-            u.is_active = True
-
-            messages.success(
-                request,
-                f'{u.get_full_name()} activado.'
-            )
-
-        u.save()
-
-    return redirect('perfil')
-=======
     if not request.user.is_staff:
         return redirect('perfil')
     # Seguridad: evitar que un admin se bloquee a sí mismo
@@ -672,38 +515,11 @@ def toggle_usuario_estado(request, user_id):
     u.save()
     return redirect('gestionar_usuarios')
 
->>>>>>> main
 
 
 @login_required(login_url='home')
 @require_POST
 def cambiar_rol_usuario(request, user_id):
-<<<<<<< HEAD
-
-    if not request.user.is_staff:
-        messages.error(request, 'No tienes permisos.')
-        return redirect('perfil')
-
-    if request.method == 'POST':
-
-        u = get_object_or_404(Usuario, pk=user_id)
-
-        nuevo_rol = request.POST.get('rol')
-
-        if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-
-            u.rol = nuevo_rol
-            u.is_staff = (nuevo_rol == 'admin')
-
-            u.save()
-
-            messages.success(
-                request,
-                f'Rol cambiado correctamente.'
-            )
-
-    return redirect('perfil')
-=======
     if not request.user.is_staff:
         return redirect('perfil')
     u = get_object_or_404(Usuario, pk=user_id)
@@ -714,87 +530,11 @@ def cambiar_rol_usuario(request, user_id):
         u.save()
     return redirect('gestionar_usuarios')
 
->>>>>>> main
 
 
 @login_required(login_url='home')
 @require_POST
 def admin_editar_usuario(request, user_id):
-<<<<<<< HEAD
-
-    if not request.user.is_staff:
-        messages.error(request, 'Acceso denegado.')
-        return redirect('perfil')
-
-    if request.method == 'POST':
-
-        u = get_object_or_404(Usuario, pk=user_id)
-
-        u.first_name = request.POST.get(
-            'first_name',
-            u.first_name
-        ).strip()
-
-        u.last_name = request.POST.get(
-            'last_name',
-            u.last_name
-        ).strip()
-
-        u.numero_documento = request.POST.get(
-            'numero_documento',
-            u.numero_documento
-        ).strip()
-
-        u.ficha = request.POST.get(
-            'ficha',
-            u.ficha or ''
-        ).strip()
-
-        u.email = request.POST.get(
-            'email',
-            u.email
-        ).strip()
-
-        u.telefono = request.POST.get(
-            'telefono',
-            u.telefono or ''
-        ).strip()
-
-        u.username = u.numero_documento
-
-        nuevo_rol = request.POST.get('rol', u.rol)
-
-        if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-            u.rol = nuevo_rol
-            u.is_staff = (nuevo_rol == 'admin')
-
-        nuevo_estado = request.POST.get(
-            'estado',
-            u.estado
-        )
-
-        if nuevo_estado in ['activo', 'inactivo']:
-            u.estado = nuevo_estado
-            u.is_active = (nuevo_estado == 'activo')
-
-        try:
-
-            u.save()
-
-            messages.success(
-                request,
-                f'Datos actualizados correctamente.'
-            )
-
-        except IntegrityError:
-
-            messages.error(
-                request,
-                'Ya existe un usuario con ese documento o correo.'
-            )
-
-    return redirect('perfil')
-=======
     if not request.user.is_staff:
         return redirect('perfil')
     u = get_object_or_404(Usuario, pk=user_id)
@@ -889,4 +629,3 @@ def restore_database_backup(request):
     return redirect('gestionar_usuarios')
 
 
->>>>>>> main
