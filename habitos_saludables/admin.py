@@ -12,9 +12,11 @@ from .models import (
 
 @admin.register(HabeasDataConsent)
 class HabeasDataConsentAdmin(admin.ModelAdmin):
-    list_display = ['usuario', 'acepta_badge', 'fecha_aceptacion', 'direccion_ip', 'version_politica']
+    list_display = ['usuario', 'acepta_badge',
+                    'fecha_aceptacion', 'direccion_ip', 'version_politica']
     list_filter = ['acepta', 'version_politica']
-    search_fields = ['usuario__username', 'usuario__first_name', 'usuario__last_name']
+    search_fields = ['usuario__username',
+                     'usuario__first_name', 'usuario__last_name']
     readonly_fields = ['fecha_aceptacion', 'direccion_ip']
     ordering = ['-fecha_aceptacion']
 
@@ -36,7 +38,8 @@ class HabitoSaludableAdmin(admin.ModelAdmin):
 
 @admin.register(RutinaFisica)
 class RutinaFisicaAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'nivel', 'objetivo', 'duracion_minutos', 'activo']
+    list_display = ['nombre', 'nivel',
+                    'objetivo', 'duracion_minutos', 'activo']
     list_filter = ['nivel', 'objetivo', 'activo']
     search_fields = ['nombre', 'descripcion']
     ordering = ['nivel', 'objetivo']
@@ -45,7 +48,8 @@ class RutinaFisicaAdmin(admin.ModelAdmin):
 
 @admin.register(PiramideNutricional)
 class PiramideNutricionalAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'categoria', 'nivel_piramide', 'cantidad_recomendada', 'activo']
+    list_display = ['nombre', 'categoria',
+                    'nivel_piramide', 'cantidad_recomendada', 'activo']
     list_filter = ['categoria', 'nivel_piramide', 'activo']
     search_fields = ['nombre', 'beneficios', 'ejemplos']
     ordering = ['nivel_piramide', 'categoria']
@@ -54,7 +58,8 @@ class PiramideNutricionalAdmin(admin.ModelAdmin):
 
 @admin.register(MaterialApoyo)
 class MaterialApoyoAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'tipo_contenido', 'autor', 'fecha_publicacion', 'descargas', 'activo']
+    list_display = ['titulo', 'tipo_contenido', 'autor',
+                    'fecha_publicacion', 'descargas', 'activo']
     list_filter = ['tipo_contenido', 'activo', 'fecha_publicacion']
     search_fields = ['titulo', 'descripcion', 'autor']
     ordering = ['-fecha_publicacion']
@@ -69,7 +74,8 @@ class SeguimientoSaludAdmin(admin.ModelAdmin):
         'estatura_cm', 'imc_badge', 'nivel_actividad'
     ]
     list_filter = ['nivel_actividad', 'fecha_evaluacion']
-    search_fields = ['usuario__username', 'usuario__first_name', 'observaciones']
+    search_fields = ['usuario__username',
+                     'usuario__first_name', 'observaciones']
     ordering = ['-fecha_evaluacion']
     readonly_fields = ['imc']
 

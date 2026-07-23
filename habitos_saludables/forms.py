@@ -102,6 +102,21 @@ class SeguimientoSaludForm(forms.ModelForm):
             'presion_diastolica': 'Número más bajo al medir la presión',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from django.utils import timezone
+        hoy = timezone.localdate().strftime('%Y-%m-%d')
+        self.fields['fecha_evaluacion'].widget.attrs['min'] = hoy
+
+    def clean_fecha_evaluacion(self):
+        fecha = self.cleaned_data.get('fecha_evaluacion')
+        from django.utils import timezone
+        if fecha and fecha < timezone.localdate():
+            raise ValidationError(
+                "La fecha de evaluación no puede ser de días anteriores."
+            )
+        return fecha
+
     def clean(self):
         cleaned = super().clean()
         sistolica = cleaned.get('presion_sistolica')
@@ -134,7 +149,7 @@ class MaterialApoyoForm(forms.ModelForm):
                                                'placeholder': 'https://youtube.com/...'}),
             'autor': forms.TextInput(attrs={'class': 'form-control'}),
             'fecha_publicacion': forms.DateInput(attrs={'type': 'date',
-                                                         'class': 'form-control'}),
+                                                        'class': 'form-control'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

@@ -6,300 +6,16 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>
-<style>
-  :root {
-    --bg-deep:    #0d1117;
-    --bg-card:    #161b22;
-    --bg-input:   #1c2230;
-    --border:     #30363d;
-    --accent:     #238636;
-    --accent-alt: #1f6feb;
-    --danger:     #da3633;
-    --warn:       #d29922;
-    --text:       #ffffff; /* Blanco puro para el texto principal */
-    --muted:      #abb5c0; /* Gris mucho más claro e iluminado */
-    --radius:     10px;
-  }
-
-  body { background: var(--bg-deep); color: var(--text); font-family: 'Segoe UI', sans-serif; }
-
-  /* FUERZA a que todo el texto secundario use el gris iluminado */
-  .text-muted {
-    color: var(--muted) !important;
-  }
-  .rol-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700;
-    letter-spacing: .5px; text-transform: uppercase;
-  }
-  .rol-admin   { background: rgba(31,111,235,.18); color: #79c0ff; border: 1px solid rgba(31,111,235,.35); }
-  .rol-usuario { background: rgba(35,134,54,.18);  color: #56d364; border: 1px solid rgba(35,134,54,.35); }
-
-  .main-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-  }
-  .section-header {
-    background: linear-gradient(135deg, #161b22 0%, #1c2230 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 24px;
-  }
-
-  .table-torneos { width: 100%; border-collapse: collapse; }
-  .table-torneos thead th {
-    background: #0d1117; color: var(--muted); font-size: .7rem;
-    text-transform: uppercase; letter-spacing: .8px;
-    padding: 10px 16px; border-bottom: 1px solid var(--border);
-  }
-  .table-torneos tbody tr {
-    border-bottom: 1px solid rgba(48,54,61,.5);
-    transition: background .15s;
-  }
-  .table-torneos tbody tr:hover { background: rgba(255,255,255,.03); }
-  .table-torneos td { padding: 12px 16px; vertical-align: middle; }
-
-  .badge-disc {
-    display: inline-block; padding: 3px 10px; border-radius: 20px;
-    font-size: .7rem; font-weight: 700; letter-spacing: .4px;
-  }
-  .badge-goles  { background: rgba(218,54,51,.15); color: #ff7b72; border: 1px solid rgba(218,54,51,.3); }
-  .badge-puntos { background: rgba(121,192,255,.12); color: #79c0ff; border: 1px solid rgba(121,192,255,.3); }
-  .badge-sets   { background: rgba(210,153,34,.12); color: #f0b429; border: 1px solid rgba(210,153,34,.3); }
-  .badge-abierto { background: rgba(35,134,54,.15); color: #56d364; border: 1px solid rgba(35,134,54,.3); padding: 2px 8px; border-radius: 20px; font-size:.7rem; font-weight:700; }
-  .badge-cerrado { background: rgba(48,54,61,.6); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; font-size:.7rem; font-weight:700; }
-
-  .btn-accion {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 11px; border-radius: 6px; font-size: .78rem;
-    font-weight: 600; border: 1px solid transparent;
-    cursor: pointer; transition: all .15s; text-decoration: none;
-  }
-  .btn-primary-a  { background: rgba(31,111,235,.2);  color: #79c0ff; border-color: rgba(31,111,235,.4); }
-  .btn-primary-a:hover { background: rgba(31,111,235,.35); color:#fff; }
-  .btn-success-a  { background: rgba(35,134,54,.2);   color: #56d364; border-color: rgba(35,134,54,.4); }
-  .btn-success-a:hover { background: rgba(35,134,54,.35); color:#fff; }
-  .btn-warn-a     { background: rgba(210,153,34,.15); color: #f0b429; border-color: rgba(210,153,34,.35); }
-  .btn-warn-a:hover { background: rgba(210,153,34,.3); color:#fff; }
-  .btn-danger-a   { background: rgba(218,54,51,.15);  color: #ff7b72; border-color: rgba(218,54,51,.3); }
-  .btn-danger-a:hover { background: rgba(218,54,51,.3); color:#fff; }
-  .btn-info-a     { background: rgba(121,192,255,.1); color: #79c0ff; border-color: rgba(121,192,255,.25); }
-  .btn-info-a:hover { background: rgba(121,192,255,.25); color:#fff; }
-
-  .hero-aprendiz {
-    position: relative; overflow: hidden;
-    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d2137 100%);
-    border: 1px solid var(--border); border-radius: 16px;
-    padding: 36px 32px; margin-bottom: 32px;
-  }
-  .hero-aprendiz::before {
-    content: '';
-    position: absolute; top: -60px; right: -60px;
-    width: 260px; height: 260px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(35,134,54,.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-aprendiz::after {
-    content: '';
-    position: absolute; bottom: -40px; left: 40%;
-    width: 180px; height: 180px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(31,111,235,.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-title {
-    font-size: 2rem; font-weight: 800; line-height: 1.15;
-    background: linear-gradient(135deg, #e6edf3 0%, #56d364 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 6px;
-  }
-  .hero-sub { color: var(--muted); font-size: .9rem; margin: 0; }
-  .hero-stats {
-    display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap;
-  }
-  .hero-stat {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
-    border-radius: 10px; padding: 10px 16px;
-  }
-  .hero-stat-num { font-size: 1.4rem; font-weight: 800; color: #56d364; line-height: 1; }
-  .hero-stat-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-top: 2px; }
-
-  .section-label {
-    font-size: .7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1.2px; color: var(--muted);
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 16px;
-  }
-  .section-label::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
-
-  .torneo-card-user {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 14px; overflow: hidden;
-    transition: border-color .2s, transform .2s, box-shadow .2s;
-    display: flex; flex-direction: column;
-  }
-  .torneo-card-user:hover {
-    border-color: rgba(35,134,54,.6);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(35,134,54,.15);
-  }
-  .torneo-card-header {
-    padding: 20px 20px 14px;
-    background: linear-gradient(135deg, rgba(35,134,54,.08) 0%, transparent 60%);
-    border-bottom: 1px solid rgba(255,255,255,.04);
-  }
-  .torneo-card-body { padding: 16px 20px; flex: 1; }
-  .torneo-card-footer { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.04); }
-
-  .torneo-name {
-    font-size: 1.05rem; font-weight: 700; color: var(--text);
-    line-height: 1.3; margin-bottom: 6px;
-  }
-  .torneo-info-row {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .82rem; color: var(--muted); padding: 4px 0;
-  }
-  .torneo-info-row i { width: 16px; text-align: center; flex-shrink: 0; }
-
-  .disc-pill {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border-radius: 20px;
-    font-size: .7rem; font-weight: 700; letter-spacing: .4px;
-  }
-
-  .btn-inscribir {
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    width: 100%; padding: 11px 16px; border-radius: 9px;
-    background: linear-gradient(135deg, #238636, #196c2e);
-    color: #fff; font-weight: 700; font-size: .88rem;
-    border: none; cursor: pointer; transition: all .2s;
-    box-shadow: 0 2px 10px rgba(35,134,54,.3);
-    letter-spacing: .3px;
-  }
-  .btn-inscribir:hover {
-    background: linear-gradient(135deg, #2ea043, #238636);
-    box-shadow: 0 5px 18px rgba(35,134,54,.5);
-    transform: translateY(-1px);
-  }
-  .btn-inscribir:active { transform: translateY(0); }
-
-  .estado-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #56d364; box-shadow: 0 0 6px #56d364;
-    display: inline-block; flex-shrink: 0;
-  }
-  .estado-label {
-    font-size: .7rem; font-weight: 700; color: #56d364;
-    text-transform: uppercase; letter-spacing: .5px;
-  }
-
-  .custom-modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
-  .custom-input {
-    background: var(--bg-input) !important; border: 1px solid var(--border) !important;
-    color: var(--text) !important; border-radius: 8px !important;
-  }
-  .custom-input:focus {
-    border-color: var(--accent-alt) !important;
-    box-shadow: 0 0 0 3px rgba(31,111,235,.15) !important;
-    outline: none;
-  }
-  .custom-input option { background: var(--bg-card); }
-
-  .jugador-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .jugador-row input { flex: 1; }
-  .jugador-row button { flex-shrink: 0; padding: 0 10px; border-radius: 8px; }
-
-  .alert-ficha {
-    background: rgba(218,54,51,.12); border: 1px solid rgba(218,54,51,.4);
-    border-radius: 8px; padding: 10px 14px; font-size: .82rem; color: #ff7b72;
-    display: none; align-items: center; gap: 8px; margin-top: 6px;
-  }
-  .alert-ficha.show { display: flex; }
-
-  .stat-mini {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 18px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .stat-mini .icon { width: 36px; height: 36px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-
-  .empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
-  .empty-state i { font-size: 2.5rem; margin-bottom: 12px; opacity: .4; }
-
-  /* ── Mi equipo (aprendiz) ── */
-  .mi-equipo-card {
-    background: linear-gradient(135deg, rgba(35,134,54,.08) 0%, rgba(31,111,235,.06) 100%);
-    border: 1px solid rgba(35,134,54,.35);
-    border-radius: 14px; padding: 24px; margin-bottom: 28px;
-  }
-  .mi-equipo-titulo {
-    font-size: .7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1px; color: #56d364;
-    display: flex; align-items: center; gap: 6px; margin-bottom: 16px;
-  }
-  .equipo-nombre-grande {
-    font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 4px;
-  }
-  .equipo-meta {
-    font-size: .82rem; color: var(--muted);
-    display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px;
-  }
-  .equipo-meta span { display: flex; align-items: center; gap: 5px; }
-
-  /* ── Tabla de partidos (aprendiz) ── */
-  .partidos-aprendiz { margin-bottom: 32px; }
-  .partido-row {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 18px; margin-bottom: 8px;
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    transition: border-color .15s;
-  }
-  .partido-row.jugado   { border-color: rgba(35,134,54,.4); }
-  .partido-row.pendiente { border-color: var(--border); }
-  .partido-row:hover { border-color: rgba(121,192,255,.3); }
-
-  .p-equipo { font-weight: 700; font-size: .9rem; flex: 1; min-width: 100px; }
-  .p-equipo.local { text-align: right; }
-  .p-vs {
-    font-size: .7rem; font-weight: 900; color: var(--muted); letter-spacing: 1px;
-    padding: 3px 10px; background: rgba(255,255,255,.04); border-radius: 5px;
-    flex-shrink: 0; text-align: center; min-width: 70px;
-  }
-  .p-resultado {
-    font-size: 1.1rem; font-weight: 900; color: #f0b429;
-    text-align: center; min-width: 70px;
-  }
-  .p-meta { font-size: .75rem; color: var(--muted); }
-  .p-fase-badge {
-    font-size: .65rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .5px; padding: 2px 8px; border-radius: 20px;
-  }
-  .p-fase-grupos    { background: rgba(31,111,235,.15); color: #79c0ff; border: 1px solid rgba(31,111,235,.3); }
-  .p-fase-cuartos   { background: rgba(121,192,255,.12); color: #79c0ff; border: 1px solid rgba(121,192,255,.3); }
-  .p-fase-semifinal { background: rgba(210,153,34,.12); color: #f0b429; border: 1px solid rgba(210,153,34,.3); }
-  .p-fase-final     { background: rgba(218,54,51,.12); color: #ff7b72; border: 1px solid rgba(218,54,51,.3); }
-
-  .mi-resultado-win  { color: #56d364; }
-  .mi-resultado-loss { color: #ff7b72; }
-  .mi-resultado-pen  { color: var(--muted); font-style: italic; }
-
-  @media (max-width: 768px) {
-    .table-torneos thead { display: none; }
-    .table-torneos td { display: block; padding: 6px 14px; }
-    .table-torneos td:first-child { padding-top: 14px; }
-    .table-torneos td:last-child  { padding-bottom: 14px; }
-    .p-equipo.local { text-align: left; }
-    .partido-row { flex-direction: column; align-items: flex-start; }
-  }
-</style>
+<link rel="stylesheet" href="{% static 'css/interfichas_styles.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3 px-md-4 py-4" style="max-width: 1200px; margin: 0 auto;">
+<div class="container-fluid px-3 px-md-4 py-4 int-u-1">
+  <div class="mb-3">
+    <a href="#" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { window.history.back(); } else { window.location.href = '{% url 'home' %}'; } return false;" class="btn-regresar">
+      <i class="fas fa-arrow-left"></i> Volver
+    </a>
+  </div>
 
 
   {% if es_admin %}
@@ -309,7 +25,7 @@
       <div class="d-flex align-items-center gap-2 mb-1">
         <span class="rol-badge rol-admin"><i class="fas fa-shield-alt"></i> Administrador</span>
       </div>
-      <h2 class="fw-bold mb-0" style="font-size:1.6rem;">Panel de Torneos</h2>
+      <h2 class="fw-bold mb-0 int-u-2">Panel de Torneos</h2>
       <p class="text-muted small mb-0">Gestión completa — disciplinas, torneos y equipos.</p>
     </div>
     <div class="d-flex gap-2 flex-wrap">
@@ -328,37 +44,37 @@
   <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
       <div class="stat-mini">
-        <div class="icon" style="background:rgba(31,111,235,.15);color:#79c0ff;"><i class="fas fa-trophy"></i></div>
+        <div class="icon int-u-3"><i class="fas fa-trophy"></i></div>
         <div>
-          <div class="fw-bold" style="font-size:1.3rem;">{{ torneos|length }}</div>
-          <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;">Torneos</div>
+          <div class="fw-bold int-u-4">{{ torneos|length }}</div>
+          <div class="text-muted int-u-5">Torneos</div>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="stat-mini">
-        <div class="icon" style="background:rgba(35,134,54,.15);color:#56d364;"><i class="fas fa-users"></i></div>
+        <div class="icon int-u-6"><i class="fas fa-users"></i></div>
         <div>
-          <div class="fw-bold" style="font-size:1.3rem;">{{ equipos|length }}</div>
-          <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;">Equipos</div>
+          <div class="fw-bold int-u-7">{{ equipos|length }}</div>
+          <div class="text-muted int-u-8">Equipos</div>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="stat-mini">
-        <div class="icon" style="background:rgba(210,153,34,.15);color:#f0b429;"><i class="fas fa-tag"></i></div>
+        <div class="icon int-u-9"><i class="fas fa-tag"></i></div>
         <div>
-          <div class="fw-bold" style="font-size:1.3rem;">{{ disciplinas|length }}</div>
-          <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;">Disciplinas</div>
+          <div class="fw-bold int-u-10">{{ disciplinas|length }}</div>
+          <div class="text-muted int-u-11">Disciplinas</div>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="stat-mini">
-        <div class="icon" style="background:rgba(218,54,51,.15);color:#ff7b72;"><i class="fas fa-flag-checkered"></i></div>
+        <div class="icon int-u-12"><i class="fas fa-flag-checkered"></i></div>
         <div>
-          <div class="fw-bold" style="font-size:1.3rem;">{{ torneos|dictsort:"estado"|length }}</div>
-          <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;">Activos</div>
+          <div class="fw-bold int-u-13">{{ torneos|dictsort:"estado"|length }}</div>
+          <div class="text-muted int-u-14">Activos</div>
         </div>
       </div>
     </div>
@@ -389,7 +105,7 @@
           <tr>
             <td class="ps-4">
               <div class="fw-bold">{{ t.nombre_torneo }}</div>
-              <div class="text-muted" style="font-size:.72rem;">{{ t.codigo_torneo_fichas }}</div>
+              <div class="text-muted int-u-15">{{ t.codigo_torneo_fichas }}</div>
             </td>
             <td>
               {% if t.disciplina %}
@@ -421,24 +137,24 @@
                   <i class="fas fa-sitemap"></i> Gestionar
                 </a>
                 <a href="{% url 'reporte_torneo' torneo_id=t.pk %}" class="btn-accion btn-success-a" target="_blank" title="Reporte">
-                  <i class="fas fa-file-alt"></i>
+                   <i class="fas fa-file-alt me-1"></i>Reporte
                 </a>
                 <button class="btn-accion btn-info-a"
                         onclick="abrirEditar('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}','{{ t.lugar|escapejs }}','{{ t.fecha_torneo_fichas|date:'Y-m-d' }}','{{ t.disciplina_id|default:'' }}')"
                         title="Editar">
-                  <i class="fas fa-edit"></i>
+                  <i class="fas fa-edit me-1"></i>Editar
                 </button>
                 {% if t.estado != 'cerrado' %}
                 <button class="btn-accion btn-warn-a"
                         onclick="abrirCierre('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}')"
                         title="Cerrar torneo">
-                  <i class="fas fa-flag-checkered"></i>
+                  <i class="fas fa-flag-checkered me-1"></i>Cerrar
                 </button>
                 {% endif %}
                 <button class="btn-accion btn-danger-a"
                         onclick="confirmarEliminar('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}')"
                         title="Eliminar">
-                  <i class="fas fa-trash-alt"></i>
+                  <i class="fas fa-trash-alt me-1"></i>Eliminar
                 </button>
               </div>
             </td>
@@ -479,10 +195,10 @@
             <td class="ps-4 fw-bold">{{ eq.nombre_equipo }}</td>
             <td>
               <div>{{ eq.capitan }}</div>
-              <div class="text-muted" style="font-size:.75rem;">Ficha: <span class="text-warning fw-bold">{{ eq.ficha }}</span></div>
+              <div class="text-muted int-u-16">Ficha: <span class="text-warning fw-bold">{{ eq.ficha }}</span></div>
             </td>
-            <td class="text-muted" style="font-size:.82rem;">{{ eq.programa|truncatechars:40 }}</td>
-            <td class="text-info fw-bold" style="font-size:.82rem;">{{ eq.torneo.nombre_torneo }}</td>
+            <td class="text-muted int-u-17">{{ eq.programa|truncatechars:40 }}</td>
+            <td class="text-info fw-bold int-u-18">{{ eq.torneo.nombre_torneo }}</td>
             <td>
               {% if eq.disciplina %}
                 <span class="badge-disc badge-{{ eq.disciplina.tipo_marcador }}">{{ eq.disciplina.nombre_disciplina }}</span>
@@ -504,7 +220,7 @@
   <div class="hero-aprendiz">
     <div class="d-flex align-items-center gap-3 mb-3">
       <span class="rol-badge rol-usuario"><i class="fas fa-user-graduate"></i> Aprendiz</span>
-      <span class="text-muted" style="font-size:.85rem;">
+      <span class="text-muted int-u-19">
         Bienvenido, <strong class="text-white">{{ request.user.get_full_name|default:request.user.username }}</strong>
       </span>
     </div>
@@ -519,7 +235,7 @@
       </div>
       <div class="hero-stat">
         <div>
-          <div class="hero-stat-num" style="color:#79c0ff;">
+          <div class="hero-stat-num int-u-20">
             {% with total=0 %}
               {% for t in torneos %}{{ t.equipos.count }}{% if not forloop.last %}+{% endif %}{% endfor %}
             {% endwith %}
@@ -539,26 +255,26 @@
     <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
       <div>
         <div class="equipo-nombre-grande">{{ mi_eq.nombre_equipo }}</div>
-        <div style="font-size:.8rem;color:var(--muted);">{{ mi_eq.torneo.nombre_torneo }}
+        <div class="int-u-21">{{ mi_eq.torneo.nombre_torneo }}
           {% if mi_eq.torneo.disciplina %}
             · <span class="badge-disc badge-{{ mi_eq.torneo.disciplina.tipo_marcador }} ms-1">{{ mi_eq.torneo.disciplina.nombre_disciplina }}</span>
           {% endif %}
         </div>
         <div class="equipo-meta">
-          <span><i class="fas fa-user" style="color:#56d364;"></i> Capitán: <strong class="text-white">{{ mi_eq.capitan }}</strong></span>
-          <span><i class="fas fa-id-card" style="color:#f0b429;"></i> Ficha: <strong class="text-warning">{{ mi_eq.ficha }}</strong></span>
-          <span><i class="fas fa-graduation-cap" style="color:#79c0ff;"></i> {{ mi_eq.programa }}</span>
+          <span><i class="fas fa-user int-u-22"></i> Capitán: <strong class="text-white">{{ mi_eq.capitan }}</strong></span>
+          <span><i class="fas fa-id-card int-u-23"></i> Ficha: <strong class="text-warning">{{ mi_eq.ficha }}</strong></span>
+          <span><i class="fas fa-graduation-cap int-u-24"></i> {{ mi_eq.programa }}</span>
           {% if mi_eq.jugadores_list %}
-          <span><i class="fas fa-users" style="color:var(--muted);"></i> {{ mi_eq.jugadores_list|length }} jugador{{ mi_eq.jugadores_list|length|pluralize }}</span>
+          <span><i class="fas fa-users int-u-25"></i> {{ mi_eq.jugadores_list|length }} jugador{{ mi_eq.jugadores_list|length|pluralize }}</span>
           {% endif %}
         </div>
       </div>
       <div class="text-end">
-        <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Grupo</div>
+        <div class="int-u-26">Grupo</div>
         {% if mi_eq.mi_grupo %}
-          <div style="font-size:1.8rem;font-weight:900;color:#79c0ff;">{{ mi_eq.mi_grupo.nombre_grupo }}</div>
+          <div class="int-u-27">{{ mi_eq.mi_grupo.nombre_grupo }}</div>
         {% else %}
-          <div style="font-size:.85rem;color:var(--muted);font-style:italic;">Por definir</div>
+          <div class="int-u-28">Por definir</div>
         {% endif %}
       </div>
     </div>
@@ -567,10 +283,24 @@
   {% if mis_partidos %}
   <div class="partidos-aprendiz">
     <div class="section-label">
-      <i class="fas fa-calendar-alt" style="color:#79c0ff;"></i>Mis partidos — {{ mi_eq.torneo.nombre_torneo }}
+      <i class="fas fa-calendar-alt int-u-29"></i>Mis partidos — {{ mi_eq.torneo.nombre_torneo }}
     </div>
     {% for p in mis_partidos %}
     {% if p.equipo_local.id == mi_eq.id or p.equipo_visitante.id == mi_eq.id %}
+
+    {% ifchanged p.fecha_partido %}
+      {% if p.fecha_partido %}
+        <div class="fecha-divider">
+          <i class="fas fa-calendar-day int-u-30"></i>
+          <span class="fecha-dia">{{ p.fecha_partido|date:"l, j \de F" }}</span>
+        </div>
+      {% else %}
+        <div class="fecha-divider-sin-fecha">
+          <i class="fas fa-clock-rotate-left"></i> Sin fecha programada aún
+        </div>
+      {% endif %}
+    {% endifchanged %}
+
     <div class="partido-row {% if p.jugado %}jugado{% else %}pendiente{% endif %}">
 
       <span class="p-fase-badge
@@ -626,16 +356,35 @@
         {% endif %}
       </div>
 
+      <!-- Sanciones/Tarjetas en el card del Aprendiz -->
+      {% if p.tarjetas_amarillas_local or p.tarjetas_amarillas_visitante or p.tarjetas_rojas_local or p.tarjetas_rojas_visitante or p.tarjetas_azules_local or p.tarjetas_azules_visitante or p.detalles_sanciones %}
+      <div class="mt-2 small text-muted border-top border-secondary pt-1 w-100 int-u-31">
+          <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
+          {% if p.tarjetas_amarillas_local or p.tarjetas_amarillas_visitante %}
+              <span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ p.tarjetas_amarillas_local }} - {{ p.tarjetas_amarillas_visitante }}</span>
+          {% endif %}
+          {% if p.tarjetas_rojas_local or p.tarjetas_rojas_visitante %}
+              <span class="badge bg-danger text-white px-2 ms-1">🟥 {{ p.tarjetas_rojas_local }} - {{ p.tarjetas_rojas_visitante }}</span>
+          {% endif %}
+          {% if p.tarjetas_azules_local or p.tarjetas_azules_visitante %}
+              <span class="badge bg-primary text-white px-2 ms-1">🟦 {{ p.tarjetas_azules_local }} - {{ p.tarjetas_azules_visitante }}</span>
+          {% endif %}
+          {% if p.detalles_sanciones %}
+              <span class="d-block text-white-50 italic mt-1 ms-1">“{{ p.detalles_sanciones }}”</span>
+          {% endif %}
+      </div>
+      {% endif %}
+
     </div>
     {% endif %}
     {% endfor %}
   </div>
   {% else %}
-  <div class="main-card mb-4" style="border-radius:12px;">
-    <div class="empty-state" style="padding:36px 20px;">
-      <i class="fas fa-calendar-alt d-block" style="color:rgba(121,192,255,.3);"></i>
+  <div class="main-card mb-4 int-u-32">
+    <div class="empty-state int-u-33">
+      <i class="fas fa-calendar-alt d-block int-u-34"></i>
       <div class="fw-bold mb-1">Los partidos aún no han sido programados.</div>
-      <div style="font-size:.82rem;">Cuando el administrador genere los grupos y programe las fechas, aparecerán aquí automáticamente.</div>
+      <div class="int-u-35">Cuando el administrador genere los grupos y programe las fechas, aparecerán aquí automáticamente.</div>
     </div>
   </div>
   {% endif %}
@@ -645,7 +394,7 @@
 
   {% if torneos_disponibles %}
   <div class="section-label">
-    <i class="fas fa-trophy" style="color:#f0b429;"></i>Torneos disponibles para inscribirse
+    <i class="fas fa-trophy int-u-36"></i>Torneos disponibles para inscribirse
   </div>
   <div class="row g-3">
     {% for t in torneos_disponibles %}
@@ -670,15 +419,15 @@
         </div>
         <div class="torneo-card-body">
           <div class="torneo-info-row">
-            <i class="fas fa-map-marker-alt" style="color:#56d364;"></i>
+            <i class="fas fa-map-marker-alt int-u-37"></i>
             <span>{{ t.lugar }}</span>
           </div>
           <div class="torneo-info-row">
-            <i class="fas fa-calendar-alt" style="color:#f0b429;"></i>
+            <i class="fas fa-calendar-alt int-u-38"></i>
             <span>{{ t.fecha_torneo_fichas|date:"d \d\e F \d\e Y" }}</span>
           </div>
           <div class="torneo-info-row">
-            <i class="fas fa-users" style="color:#79c0ff;"></i>
+            <i class="fas fa-users int-u-39"></i>
             <span>
               <strong class="text-white">{{ t.equipos.count }}</strong>
               equipo{{ t.equipos.count|pluralize }} inscrito{{ t.equipos.count|pluralize }}
@@ -698,11 +447,11 @@
     {% endfor %}
   </div>
   {% elif not mis_equipos %}
-  <div class="main-card" style="border-radius:14px;">
-    <div class="empty-state" style="padding: 80px 20px;">
-      <i class="fas fa-trophy d-block" style="font-size:3rem; color:rgba(240,180,41,.3); margin-bottom:16px;"></i>
-      <div class="fw-bold mb-2" style="font-size:1.1rem;">No hay torneos disponibles.</div>
-      <div class="text-muted" style="font-size:.88rem;">El administrador publicará nuevos torneos próximamente.</div>
+  <div class="main-card int-u-40">
+    <div class="empty-state int-u-41">
+      <i class="fas fa-trophy d-block int-u-42"></i>
+      <div class="fw-bold mb-2 int-u-43">No hay torneos disponibles.</div>
+      <div class="text-muted int-u-44">El administrador publicará nuevos torneos próximamente.</div>
     </div>
   </div>
   {% endif %}
@@ -725,20 +474,19 @@
         <input type="hidden" name="accion_tipo" value="crear_disciplina_unica">
         <div class="modal-body p-4">
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Nombre</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-45">Nombre</label>
             <input type="text" name="nombre_disciplina" class="custom-input form-control"
                    placeholder="Ej. Fútbol 5, Baloncesto 3x3…" required>
           </div>
           <div class="mb-4">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Tipo de marcador</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-46">Tipo de marcador</label>
             <select name="tipo_marcador" class="custom-input form-control form-select" required>
               <option value="goles">⚽ Goles (Fútbol, etc.)</option>
               <option value="puntos">🏀 Puntos (Baloncesto)</option>
               <option value="sets">🏐 Sets (Voleibol, Pimpón)</option>
             </select>
           </div>
-          <button type="submit" class="btn w-100 fw-bold py-2"
-                  style="background:linear-gradient(135deg,#d29922,#c27b00);color:#fff;border-radius:8px;">
+          <button type="submit" class="btn w-100 fw-bold py-2 int-u-47">
             <i class="fas fa-save me-2"></i>Crear disciplina
           </button>
         </div>
@@ -759,23 +507,23 @@
         <input type="hidden" name="accion_tipo" value="crear_torneo">
         <div class="modal-body p-4">
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Nombre del torneo</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-48">Nombre del torneo</label>
             <input type="text" name="nombre" class="custom-input form-control"
                    placeholder="Ej. Copa SENA 2025" required>
           </div>
           <div class="row g-3 mb-3">
             <div class="col-7">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Fecha</label>
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-49">Fecha</label>
               <input type="date" name="fecha" class="custom-input form-control" required>
             </div>
             <div class="col-5">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Lugar</label>
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-50">Lugar</label>
               <input type="text" name="lugar" class="custom-input form-control"
                      placeholder="Cancha A" required>
             </div>
           </div>
           <div class="mb-4">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Disciplina</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-51">Disciplina</label>
             <select name="disciplina_id" class="custom-input form-control form-select" required>
               <option value="">— Selecciona —</option>
               {% for d in disciplinas %}
@@ -783,8 +531,7 @@
               {% endfor %}
             </select>
           </div>
-          <button type="submit" class="btn w-100 fw-bold py-2"
-                  style="background:linear-gradient(135deg,#1f6feb,#1158c7);color:#fff;border-radius:8px;">
+          <button type="submit" class="btn w-100 fw-bold py-2 int-u-52">
             <i class="fas fa-plus me-2"></i>Crear torneo
           </button>
         </div>
@@ -804,29 +551,28 @@
         {% csrf_token %}
         <div class="modal-body p-4">
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Nombre</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-53">Nombre</label>
             <input type="text" name="nombre" id="edit-nombre" class="custom-input form-control" required>
           </div>
           <div class="row g-3 mb-3">
             <div class="col-7">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Fecha</label>
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-54">Fecha</label>
               <input type="date" name="fecha" id="edit-fecha" class="custom-input form-control" required>
             </div>
             <div class="col-5">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Lugar</label>
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-55">Lugar</label>
               <input type="text" name="lugar" id="edit-lugar" class="custom-input form-control" required>
             </div>
           </div>
           <div class="mb-4">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Disciplina</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-56">Disciplina</label>
             <select name="disciplina_id" id="edit-disciplina" class="custom-input form-control form-select" required>
               {% for d in disciplinas %}
               <option value="{{ d.pk }}">{{ d.nombre_disciplina }} ({{ d.get_tipo_marcador_display }})</option>
               {% endfor %}
             </select>
           </div>
-          <button type="submit" class="btn w-100 fw-bold py-2"
-                  style="background:linear-gradient(135deg,#1f6feb,#1158c7);color:#fff;border-radius:8px;">
+          <button type="submit" class="btn w-100 fw-bold py-2 int-u-57">
             <i class="fas fa-save me-2"></i>Guardar cambios
           </button>
         </div>
@@ -847,7 +593,7 @@
         <div class="modal-body p-4">
           <p class="text-muted small mb-3">Selecciona el equipo ganador de <strong id="cierre-nombre" class="text-white"></strong>.</p>
           <div class="mb-4">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Equipo ganador</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-58">Equipo ganador</label>
             <select name="ganador_id" id="cierre-equipos" class="custom-input form-control form-select" required>
               <option value="">— Selecciona —</option>
               {% for eq in equipos %}
@@ -857,13 +603,11 @@
           </div>
           <div class="d-flex gap-2">
             <button type="submit" name="accion" value="declarar"
-                    class="btn fw-bold flex-fill py-2"
-                    style="background:rgba(210,153,34,.2);color:#f0b429;border:1px solid rgba(210,153,34,.4);border-radius:8px;">
+                    class="btn fw-bold flex-fill py-2 int-u-59">
               <i class="fas fa-crown me-2"></i>Solo declarar ganador
             </button>
             <button type="submit" name="accion" value="archivar"
-                    class="btn fw-bold flex-fill py-2"
-                    style="background:rgba(218,54,51,.2);color:#ff7b72;border:1px solid rgba(218,54,51,.4);border-radius:8px;">
+                    class="btn fw-bold flex-fill py-2 int-u-60">
               <i class="fas fa-archive me-2"></i>Cerrar y archivar
             </button>
           </div>
@@ -873,7 +617,7 @@
   </div>
 </div>
 
-<form id="formEliminar" method="POST" style="display:none;">{% csrf_token %}</form>
+<form id="formEliminar" method="POST" class="int-u-61">{% csrf_token %}</form>
 
 {% endif %}
 
@@ -896,7 +640,7 @@
 
           {% if es_admin %}
           <div class="mb-3" id="bloque-selector-torneo">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Torneo</label>
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-62">Torneo</label>
             <select name="torneo_id_sel" id="torneo-selector" class="custom-input form-control form-select">
               <option value="">— Selecciona torneo —</option>
               {% for t in torneos %}
@@ -910,21 +654,19 @@
           {% endif %}
 
           <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Nombre del equipo</label>
-              <input type="text" name="nombre_equipo" class="custom-input form-control"
-                     placeholder="Los Campeones…" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Capitán</label>
+            <div class="col-md-12">
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-63">Capitán del equipo</label>
               <input type="text" name="capitan" class="custom-input form-control"
-                     placeholder="Nombre completo" required>
+                     placeholder="Nombre completo del capitán" required>
+              <small class="text-white-50 mt-1 d-block int-u-64">
+                <i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.
+              </small>
             </div>
           </div>
 
           <div class="row g-3 mb-3">
             <div class="col-md-5">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-65">
                 Ficha del capitán
               </label>
               <input type="text" name="ficha" id="campo-ficha" class="custom-input form-control"
@@ -936,7 +678,7 @@
               </div>
             </div>
             <div class="col-md-7">
-              <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">Programa</label>
+              <label class="form-label small fw-bold text-muted text-uppercase int-u-66">Programa</label>
               <select name="programa" class="custom-input form-control form-select" required>
                 <option value="">— Selecciona —</option>
                 {% for p in PROGRAMAS_GLOBALES %}
@@ -947,7 +689,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted text-uppercase" style="letter-spacing:.5px;">
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-67">
               Jugadores <span class="text-muted fw-normal">(opcional)</span>
             </label>
             <div id="jugadores-container">
@@ -966,8 +708,7 @@
           </div>
 
           <button type="submit" id="btn-submit-equipo"
-                  class="btn w-100 fw-bold py-2 mt-2"
-                  style="background:linear-gradient(135deg,#238636,#196c2e);color:#fff;border-radius:8px;">
+                  class="btn w-100 fw-bold py-2 mt-2 int-u-68">
             <i class="fas fa-check-circle me-2"></i>Inscribir equipo
           </button>
         </div>

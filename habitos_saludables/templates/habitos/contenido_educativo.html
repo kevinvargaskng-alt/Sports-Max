@@ -4,292 +4,218 @@
 {% block title %}{{ titulo_pagina }} | Hábitos Saludables{% endblock %}
 
 {% block extra_css %}
-<style>
-    .glass-card {
-        background: rgba(30, 35, 41, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .glass-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        border-color: var(--sena-green); /* Resalta con el color principal */
-    }
-    .icon-wrapper {
-        width: 50px; height: 50px; border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.3rem; margin-bottom: 1rem;
-    }
-    .icon-green { background: rgba(32, 201, 151, 0.1); color: #20c997; }
-    .icon-blue { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
-    .icon-purple { background: rgba(111, 66, 193, 0.1); color: #6f42c1; } /* Nuevo color para algunos iconos */
-    .icon-warning { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
-    .icon-danger { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
-
-    /* Estilos específicos para la pirámide nutricional */
-    .pyramid-level {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-    }
-    .pyramid-item {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem;
-        text-align: center;
-        flex: 1 1 150px; /* Permite que los ítems se ajusten */
-        max-width: 200px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        transition: transform 0.2s ease;
-    }
-    .pyramid-item h6 {
-        color: white;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    .pyramid-item small {
-        color: rgba(255, 255, 255, 0.7);
-    }
-    .pyramid-item img {
-        background-color: rgba(255,255,255,0.05);
-        border-radius: 50%;
-        padding: 5px;
-        max-width: 80px;
-        height: auto;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Estilos para la biblioteca */
-    .material-card {
-        background: rgba(30, 35, 41, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    .material-card .icon {
-        font-size: 2.5rem;
-        color: var(--sena-green);
-        margin-bottom: 1rem;
-    }
-    .material-card h5 {
-        font-weight: bold;
-        color: white;
-        margin-bottom: 0.5rem;
-    }
-    .material-card p {
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.9rem;
-        flex-grow: 1; /* Para que la descripción ocupe espacio */
-    }
-    .material-card .meta {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.5);
-        margin-top: 1rem;
-    }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/contenido_educativo_styles.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1 class="mb-4 text-white fw-bold">{{ titulo_pagina }}</h1>
-    <hr class="border-secondary mb-4">
+<div class="page-header">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h1>{{ titulo_pagina }}</h1>
+            <div class="edu-u-1">Módulo de Hábitos Saludables</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="#" onclick="if (document.referrer && document.referrer.includes(window.location.host)) { window.history.back(); } else { window.location.href = '{% url 'habitos:dashboard' %}'; } return false;" class="btn-regresar">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
 
     {% if vista == 'habitos' %}
-    <p class="lead text-white-50 mb-4">Explora nuestra colección de hábitos saludables para mejorar tu bienestar.</p>
-    <div class="row mb-4">
+    <p class="edu-u-2">Explora nuestra colección de hábitos saludables para mejorar tu bienestar.</p>
+    <div class="row mb-4 reveal">
         <div class="col-md-8">
-            <div class="btn-group" role="group" aria-label="Filtro de categorías">
-                <a href="{% url 'habitos:lista_habitos' %}" class="btn btn-outline-primary {% if not categoria_activa %}active{% endif %}">Todas</a>
+            <div class="filter-btn-group">
+                <a href="{% url 'habitos:lista_habitos' %}" class="btn-outline-sm {% if not categoria_activa %}active{% endif %}">Todas</a>
                 {% for key, value in categorias %}
-                <a href="{% url 'habitos:lista_habitos' %}?categoria={{ key }}" class="btn btn-outline-primary {% if categoria_activa == key %}active{% endif %}">{{ value }}</a>
+                <a href="{% url 'habitos:lista_habitos' %}?categoria={{ key }}" class="btn-outline-sm {% if categoria_activa == key %}active{% endif %}">{{ value }}</a>
                 {% endfor %}
             </div>
         </div>
         <div class="col-md-4">
-            <div class="input-group">
-                <span class="input-group-text bg-transparent border-secondary text-white-50"><i class="fas fa-search"></i></span>
-                <input type="text" id="habitsSearch" class="form-control bg-transparent border-secondary text-white" placeholder="Buscar hábito...">
-            </div>
+            <input type="text" id="habitsSearch" class="search-input" placeholder="Buscar hábito...">
         </div>
     </div>
     <div class="row g-4">
         {% for habito in habitos %}
-        <div class="col-md-4 habit-card">
-            <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="text-decoration-none">
-                <div class="glass-card p-4 h-100">
-                    <div class="icon-wrapper icon-green"><i class="fas fa-{{ habito.icono_css }}"></i></div>
-                    <h5 class="text-white fw-bold mb-2">{{ habito.titulo }}</h5>
-                    <p class="text-white-50 small">{{ habito.descripcion|truncatechars:100 }}</p>
-                </div>
+        <div class="col-md-6 col-lg-4 habit-card reveal">
+            <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="content-card">
+                <div class="icon-wrapper icon-green"><i class="fas fa-{{ habito.icono_css }}"></i></div>
+                <h5 class="edu-u-3">{{ habito.titulo }}</h5>
+                <p class="edu-u-4">{{ habito.descripcion|truncatechars:100 }}</p>
+                <div><span class="badge-cat badge-green">{{ habito.get_categoria_display }}</span></div>
             </a>
         </div>
         {% empty %}
-        <div class="col-12"><p class="text-white-50">No hay hábitos disponibles en esta categoría.</p></div>
+        <div class="col-12"><p class="edu-u-5">No hay hábitos disponibles en esta categoría.</p></div>
         {% endfor %}
     </div>
 
     {% elif vista == 'detalle_habito' %}
-    <button onclick="history.back()" class="btn btn-outline-light mb-4"><i class="fas fa-arrow-left me-2"></i>Volver</button>
-    <div class="row">
+    <div class="row g-4 reveal">
         <div class="col-lg-8">
-            <div class="glass-card p-5 mb-4">
-                {% if habito.imagen %}<img src="{{ habito.imagen.url }}" alt="{{ habito.titulo }}" class="img-fluid rounded-3 mb-4 shadow-lg" style="max-height: 300px; object-fit: cover; width: 100%;">{% endif %}
-                <h2 class="text-white fw-bold mb-3">{{ habito.titulo }}</h2>
-                <span class="badge bg-success mb-3">{{ habito.get_categoria_display }}</span>
-                <p class="lead text-white-75">{{ habito.descripcion }}</p>
+            <div class="panel">
+                {% if habito.imagen %}<img loading="lazy" src="{{ habito.imagen.url }}" alt="{{ habito.titulo }}" class="edu-u-6">{% endif %}
+                <span class="badge-cat badge-green mb-3">{{ habito.get_categoria_display }}</span>
+                <h2 class="edu-u-7">{{ habito.titulo }}</h2>
+                <p class="edu-u-8">{{ habito.descripcion }}</p>
+                
                 {% if habito.get_consejos_lista %}
-                <h4 class="text-white mt-4">Consejos clave:</h4>
-                <ul class="list-group list-group-flush mt-3">
-                    {% for consejo in habito.get_consejos_lista %}
-                    <li class="list-group-item d-flex align-items-center" style="background: transparent; border-color: rgba(255,255,255,0.1);">
-                        <i class="fas fa-check-circle text-success me-3"></i><span class="text-white-75">{{ consejo }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <div class="mt-4 pt-4 edu-u-9">
+                    <h4 class="edu-u-10"><i class="fas fa-lightbulb edu-u-11"></i>Consejos clave:</h4>
+                    <ul class="edu-u-12">
+                        {% for consejo in habito.get_consejos_lista %}
+                        <li class="edu-u-13">
+                            <i class="fas fa-check-circle edu-u-14"></i>
+                            <span class="edu-u-15">{{ consejo }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
                 {% endif %}
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="glass-card p-4 h-100">
-                <h4 class="text-white mb-3">Hábitos relacionados</h4>
-                {% for rel_habito in relacionados %}
-                <a href="{% url 'habitos:detalle_habito' rel_habito.pk %}" class="text-decoration-none d-block mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-wrapper icon-blue me-3"><i class="fas fa-{{ rel_habito.icono_css }}"></i></div>
+            <div class="panel">
+                <h4 class="edu-u-16">Hábitos relacionados</h4>
+                <div class="edu-u-17">
+                    {% for rel_habito in relacionados %}
+                    <a href="{% url 'habitos:detalle_habito' rel_habito.pk %}" class="edu-u-18">
+                        <div class="icon-wrapper icon-blue edu-u-19"><i class="fas fa-{{ rel_habito.icono_css }}"></i></div>
                         <div>
-                            <h6 class="text-white fw-bold mb-0">{{ rel_habito.titulo }}</h6>
-                            <small class="text-white-50">{{ rel_habito.get_categoria_display }}</small>
+                            <h6 class="edu-u-20">{{ rel_habito.titulo }}</h6>
+                            <small class="edu-u-21">{{ rel_habito.get_categoria_display }}</small>
                         </div>
-                    </div>
-                </a>
-                {% empty %}
-                <p class="text-white-50">No hay hábitos relacionados.</p>
-                {% endfor %}
+                    </a>
+                    {% empty %}
+                    <p class="edu-u-22">No hay hábitos relacionados.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 
     {% elif vista == 'rutinas' %}
-    <button onclick="history.back()" class="btn btn-outline-light mb-4"><i class="fas fa-arrow-left me-2"></i>Volver</button>
-    <p class="lead text-white-50 mb-4">Encuentra la rutina de ejercicio perfecta para ti.</p>
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="btn-group" role="group" aria-label="Filtro de nivel">
-                <a href="{% url 'habitos:lista_rutinas' %}" class="btn btn-outline-primary {% if not nivel_activo %}active{% endif %}">Todos los niveles</a>
+    <p class="edu-u-23">Encuentra la rutina de ejercicio perfecta para ti.</p>
+    <div class="row mb-4 reveal">
+        <div class="col-lg-8">
+            <div class="filter-btn-group">
+                <a href="{% url 'habitos:lista_rutinas' %}" class="btn-outline-sm {% if not nivel_activo and not objetivo_activo %}active{% endif %}">Todas</a>
                 {% for key, value in niveles %}
-                <a href="{% url 'habitos:lista_rutinas' %}?nivel={{ key }}" class="btn btn-outline-primary {% if nivel_activo == key %}active{% endif %}">{{ value }}</a>
+                <a href="{% url 'habitos:lista_rutinas' %}?nivel={{ key }}" class="btn-outline-sm {% if nivel_activo == key %}active{% endif %}">{{ value }}</a>
                 {% endfor %}
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="input-group">
-                <span class="input-group-text bg-transparent border-secondary text-white-50"><i class="fas fa-search"></i></span>
-                <input type="text" id="routinesSearch" class="form-control bg-transparent border-secondary text-white" placeholder="Buscar rutina...">
-            </div>
-        </div>
-        <div class="col-md-4 text-end">
-            <div class="btn-group" role="group" aria-label="Filtro de objetivo">
-                <a href="{% url 'habitos:lista_rutinas' %}" class="btn btn-outline-info {% if not objetivo_activo %}active{% endif %}">Todos los objetivos</a>
-                {% for key, value in objetivos %}
-                <a href="{% url 'habitos:lista_rutinas' %}?objetivo={{ key }}" class="btn btn-outline-info {% if objetivo_activo == key %}active{% endif %}">{{ value }}</a>
-                {% endfor %}
-            </div>
+        <div class="col-lg-4">
+            <input type="text" id="routinesSearch" class="search-input" placeholder="Buscar rutina...">
         </div>
     </div>
     <div class="row g-4">
         {% for rutina in rutinas %}
-        <div class="col-md-6 col-lg-4 routine-card">
-            <a href="{% url 'habitos:detalle_rutina' rutina.pk %}" class="text-decoration-none">
-                <div class="glass-card p-4 h-100">
-                    {% if rutina.imagen %}<img src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" class="img-fluid rounded-3 mb-3 shadow-sm" style="max-height: 180px; object-fit: cover; width: 100%;">{% endif %}
-                    <h5 class="text-white fw-bold">{{ rutina.nombre }}</h5>
-                    <p class="text-white-50 small mb-2">{{ rutina.descripcion|truncatechars:100 }}</p>
-                    <span class="badge bg-primary me-2">{{ rutina.get_nivel_display }}</span>
-                    <span class="badge bg-info">{{ rutina.get_objetivo_display }}</span>
+        <div class="col-md-6 col-lg-4 routine-card reveal">
+            <a href="{% url 'habitos:detalle_rutina' rutina.pk %}" class="content-card edu-u-24">
+                {% if rutina.imagen %}
+                <img loading="lazy" src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" class="edu-u-25">
+                {% else %}
+                <div class="edu-u-26">
+                    <i class="fas fa-dumbbell edu-u-27"></i>
+                </div>
+                {% endif %}
+                <div class="edu-u-28">
+                    <h5 class="edu-u-29">{{ rutina.nombre }}</h5>
+                    <p class="edu-u-30">{{ rutina.descripcion|truncatechars:90 }}</p>
+                    <div class="edu-u-31">
+                        <span class="badge-cat badge-blue">{{ rutina.get_nivel_display }}</span>
+                        <span class="badge-cat badge-yellow">{{ rutina.get_objetivo_display }}</span>
+                    </div>
                 </div>
             </a>
         </div>
         {% empty %}
-        <div class="col-12"><p class="text-white-50">No hay rutinas disponibles con estos filtros.</p></div>
+        <div class="col-12"><p class="edu-u-32">No hay rutinas disponibles con estos filtros.</p></div>
         {% endfor %}
     </div>
 
     {% elif vista == 'detalle_rutina' %}
-    <button onclick="history.back()" class="btn btn-outline-light mb-4"><i class="fas fa-arrow-left me-2"></i>Volver</button>
-    <div class="glass-card p-5 mb-4">
-        {% if rutina.imagen %}<img src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" class="img-fluid rounded-3 mb-4 shadow-lg" style="max-height: 300px; object-fit: cover; width: 100%;">{% endif %}
-        <h2 class="text-white fw-bold mb-3">{{ rutina.nombre }}</h2>
-        <span class="badge bg-primary me-2">{{ rutina.get_nivel_display }}</span>
-        <span class="badge bg-info">{{ rutina.get_objetivo_display }}</span>
-        <p class="lead text-white-75 mt-4">{{ rutina.descripcion }}</p>
-        <h4 class="text-white mt-4">Ejercicios:</h4>
-        <ul class="list-group list-group-flush mt-3">
-            {% for ejercicio in rutina.get_ejercicios_lista %}
-            <li class="list-group-item d-flex align-items-center" style="background: transparent; border-color: rgba(255,255,255,0.1);">
-                <div class="icon-wrapper icon-warning me-3" style="width: 35px; height: 35px; font-size: 1rem;">
-                    <i class="fas fa-dumbbell"></i></div><span class="text-white-75">{{ ejercicio }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-        <p class="text-white-50 mt-4">Duración estimada: {{ rutina.duracion_minutos }} minutos.</p>
+    <div class="panel reveal">
+        {% if rutina.imagen %}<img loading="lazy" src="{{ rutina.imagen.url }}" alt="{{ rutina.nombre }}" class="edu-u-33">{% endif %}
+        <div class="edu-u-34">
+            <span class="badge-cat badge-blue">{{ rutina.get_nivel_display }}</span>
+            <span class="badge-cat badge-yellow">{{ rutina.get_objetivo_display }}</span>
+        </div>
+        <h2 class="edu-u-35">{{ rutina.nombre }}</h2>
+        <p class="edu-u-36">{{ rutina.descripcion }}</p>
+        
+        <div class="edu-u-37">
+            <h4 class="edu-u-38"><i class="fas fa-list-ol edu-u-39"></i>Ejercicios:</h4>
+            <ul class="edu-u-40">
+                {% for ejercicio in rutina.get_ejercicios_lista %}
+                <li class="edu-u-41">
+                    <div class="edu-u-42"><i class="fas fa-dumbbell"></i></div>
+                    <span class="edu-u-43">{{ ejercicio }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="edu-u-44">
+            <p class="edu-u-45"><i class="fas fa-stopwatch edu-u-46"></i>Duración estimada: {{ rutina.duracion_minutos }} minutos</p>
+        </div>
     </div>
 
     {% elif vista == 'nutricion' %}
-    <button onclick="history.back()" class="btn btn-outline-light mb-4"><i class="fas fa-arrow-left me-2"></i>Volver</button>
-    <p class="lead text-white-50 mb-4">Descubre los alimentos esenciales para una dieta equilibrada.</p>
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="btn-group" role="group" aria-label="Filtro de categorías">
-                <a href="{% url 'habitos:nutricion' %}" class="btn btn-outline-primary {% if not categoria_activa %}active{% endif %}">Todas</a>
-                {% for key, value in categorias %}
-                <a href="{% url 'habitos:nutricion' %}?categoria={{ key }}" class="btn btn-outline-primary {% if categoria_activa == key %}active{% endif %}">{{ value }}</a>
-                {% endfor %}
+    <p class="edu-u-47">Descubre los alimentos esenciales para una dieta equilibrada a través de la Pirámide Nutricional.</p>
+    
+    <div class="panel reveal edu-u-48"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"rgba(255,255,255,0.03)\"/></svg>'); background-size: 20px 20px;">
+        
+        <div class="pyramid-container">
+            {% for nivel, alimentos_nivel in por_nivel.items %}
+            <div class="edu-u-49">
+                <div class="edu-u-50">
+                    Nivel {{ nivel }} - {{ alimentos_nivel.0.get_nivel_piramide_display }}
+                </div>
+                <div class="pyramid-level">
+                    {% for alimento in alimentos_nivel %}
+                    <style>
+                        #alimento-card-{{ alimento.id }} {
+                            border-bottom: 3px solid {{ alimento.color_tarjeta|default:'var(--border)' }};
+                        }
+                    </style>
+                    <div class="pyramid-item" id="alimento-card-{{ alimento.id }}">
+                        {% if alimento.imagen %}
+                        <img loading="lazy" src="{{ alimento.imagen.url }}" alt="{{ alimento.nombre }}">
+                        {% else %}
+                        <div class="edu-u-51"><i class="fas fa-utensils"></i></div>
+                        {% endif %}
+                        <h6>{{ alimento.nombre }}</h6>
+                        <small>{{ alimento.cantidad_recomendada }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    </div>
-    {% for nivel, alimentos_nivel in por_nivel.items %}
-    <div class="glass-card p-4 mb-4">
-        <h4 class="text-white fw-bold mb-3"><i class="fas fa-layer-group me-2 text-info"></i>Nivel {{ nivel }} - {{ alimentos_nivel.0.get_nivel_piramide_display }}</h4>
-        <div class="pyramid-level">
-            {% for alimento in alimentos_nivel %}
-            <div class="pyramid-item" style="background-color: {{ alimento.color_tarjeta|default:'rgba(255,255,255,0.05)' }};">
-                {% if alimento.imagen %}<img src="{{ alimento.imagen.url }}" alt="{{ alimento.nombre }}">{% endif %}
-                <h6>{{ alimento.nombre }}</h6>
-                <small>{{ alimento.cantidad_recomendada }}</small>
-            </div>
+            {% empty %}
+            <p class="edu-u-52">No hay información nutricional disponible.</p>
             {% endfor %}
         </div>
+        
     </div>
-    {% empty %}
-    <p class="text-white-50">No hay información nutricional disponible.</p>
-    {% endfor %}
 
     {% elif vista == 'biblioteca' %}
-    <button onclick="history.back()" class="btn btn-outline-light mb-4"><i class="fas fa-arrow-left me-2"></i>Volver</button>
-    <p class="lead text-white-50 mb-4">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <form method="get" class="d-flex gap-2">
-                {{ form.q }}
-                {{ form.tipo }}
-                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
-                <a href="{% url 'habitos:biblioteca' %}" class="btn btn-outline-secondary"><i class="fas fa-redo"></i> Limpiar</a>
-            </form>
-        </div>
+    <p class="edu-u-53">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
+    <div class="panel mb-4 reveal p-3">
+        <form method="get" class="edu-u-54">
+            <div class="edu-u-55">{{ form.q }}</div>
+            <div class="edu-u-56">{{ form.tipo }}</div>
+            <button type="submit" class="btn-acid"><i class="fas fa-search"></i> Buscar</button>
+            <a href="{% url 'habitos:biblioteca' %}" class="btn-outline-sm edu-u-57"><i class="fas fa-redo"></i> Limpiar</a>
+        </form>
     </div>
     <div class="row g-4">
         {% for material in materiales %}
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 reveal">
             <div class="material-card">
                 <div class="icon">
                     {% if material.tipo_contenido == 'pdf' %}<i class="fas fa-file-pdf"></i>
@@ -300,21 +226,21 @@
                     {% else %}<i class="fas fa-file"></i>{% endif %}
                 </div>
                 <h5>{{ material.titulo }}</h5>
-                <p>{{ material.descripcion|truncatechars:150 }}</p>
+                <p>{{ material.descripcion|truncatechars:100 }}</p>
                 <div class="meta">
-                    <span>Autor: {{ material.autor }}</span> |
-                    <span>Publicado: {{ material.fecha_publicacion|date:"d M Y" }}</span> |
-                    <span>Descargas: {{ material.descargas }}</span>
+                    <span class="edu-u-58"><strong>Autor:</strong> {{ material.autor }}</span>
+                    <span class="edu-u-59"><strong>Publicado:</strong> {{ material.fecha_publicacion|date:"d M Y" }}</span>
+                    <span class="edu-u-60"><strong>Descargas:</strong> {{ material.descargas }}</span>
                 </div>
-                <a href="{% url 'habitos:descargar_material' material.pk %}" class="btn btn-sm btn-outline-success mt-3">
-                    {% if material.tipo_contenido == 'video' %}<i class="fas fa-external-link-alt me-2"></i>Ver Video
-                    {% else %}<i class="fas fa-download me-2"></i>Descargar
+                <a href="{% url 'habitos:descargar_material' material.pk %}" class="btn-outline-sm edu-u-61">
+                    {% if material.tipo_contenido == 'video' %}<i class="fas fa-external-link-alt"></i> Ver Video
+                    {% else %}<i class="fas fa-download"></i> Descargar
                     {% endif %}
                 </a>
             </div>
         </div>
         {% empty %}
-        <div class="col-12"><p class="text-white-50">No se encontraron materiales de apoyo.</p></div>
+        <div class="col-12"><p class="edu-u-62">No se encontraron materiales de apoyo.</p></div>
         {% endfor %}
     </div>
 
@@ -325,6 +251,15 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const io = new IntersectionObserver(entries => {
+        entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+                setTimeout(() => { e.target.classList.add('visible'); io.unobserve(e.target); }, i * 60);
+            }
+        });
+    }, { threshold: 0.05 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
     // Buscador de Hábitos
     const habitsSearch = document.getElementById('habitsSearch');
     if (habitsSearch) {

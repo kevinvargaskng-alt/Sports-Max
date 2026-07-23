@@ -5,6 +5,7 @@ views.py - Vistas del módulo Hábitos Saludables SENA
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.http import FileResponse, Http404, JsonResponse
 from django.db.models import Q, Avg
@@ -82,7 +83,7 @@ def inicio(request):
         'ultimo_seguimiento': ultimo_seguimiento,
         'tiene_consent': tiene_consent,
         'titulo_pagina': 'Inicio — Hábitos Saludables',
-        'vista': 'inicio', # Aunque no se usa en inicio.html, es buena práctica
+        'vista': 'inicio',  # Aunque no se usa en inicio.html, es buena práctica
     }
     return render(request, 'habitos/inicio.html', ctx)
 
@@ -142,17 +143,19 @@ def habeas_data(request):
     try:
         consent = request.user.habeas_data
         if consent.acepta:
-            return render(request, 'habitos/habeas_data_ok.html', {
+            context = {
                 'consent': consent,
                 'titulo_pagina': 'Habeas Data — Aceptado'
-            })
+            }
+            return render(request, 'habitos/habeas_data_ok.html', context)
     except HabeasDataConsent.DoesNotExist:
         consent = None
 
     if request.method == 'POST':
         form = HabeasDataForm(request.POST)
         if form.is_valid():
-            obj, _ = HabeasDataConsent.objects.get_or_create(usuario=request.user)
+            obj, _ = HabeasDataConsent.objects.get_or_create(
+                usuario=request.user)
             obj.acepta = True
             obj.direccion_ip = get_client_ip(request)
             obj.save()
@@ -165,11 +168,12 @@ def habeas_data(request):
     else:
         form = HabeasDataForm()
 
-    return render(request, 'habitos/salud.html', {
+    context = {
         'form': form,
         'titulo_pagina': 'Autorización Habeas Data',
         'vista': 'habeas_data',
-    })
+    }
+    return render(request, 'habitos/salud.html', context)
 
 
 # ─────────────────────────────────────────────
@@ -204,12 +208,13 @@ def detalle_habito(request, pk):
         categoria=habito.categoria, activo=True
     ).exclude(pk=pk)[:3]
 
-    return render(request, 'habitos/contenido_educativo.html', {
+    context = {
         'habito': habito,
         'relacionados': relacionados,
         'titulo_pagina': habito.titulo,
         'vista': 'detalle_habito',
-    })
+    }
+    return render(request, 'habitos/contenido_educativo.html', context)
 
 
 # ─────────────────────────────────────────────
@@ -243,11 +248,12 @@ def lista_rutinas(request):
 def detalle_rutina(request, pk):
     """Detalle de una rutina física."""
     rutina = get_object_or_404(RutinaFisica, pk=pk, activo=True)
-    return render(request, 'habitos/contenido_educativo.html', {
+    context = {
         'rutina': rutina,
         'titulo_pagina': rutina.nombre,
         'vista': 'detalle_rutina',
-    })
+    }
+    return render(request, 'habitos/contenido_educativo.html', context)
 
 
 # ─────────────────────────────────────────────
@@ -361,13 +367,15 @@ def registrar_seguimiento(request):
             )
             return redirect('habitos:historial_salud')
     else:
-        form = SeguimientoSaludForm(initial={'fecha_evaluacion': timezone.now().date()})
+        form = SeguimientoSaludForm(
+            initial={'fecha_evaluacion': timezone.now().date()})
 
-    return render(request, 'habitos/salud.html', {
+    context = {
         'form': form,
         'titulo_pagina': 'Registrar Seguimiento de Salud',
         'vista': 'registrar',
-    })
+    }
+    return render(request, 'habitos/salud.html', context)
 
 
 @login_required
@@ -415,16 +423,18 @@ def detalle_seguimiento(request, pk):
     )
     categoria, color = seguimiento.get_categoria_imc()
 
-    return render(request, 'habitos/salud.html', {
+    context = {
         'seg': seguimiento,
         'categoria_imc': categoria,
         'color_imc': color,
         'titulo_pagina': f'Seguimiento — {seguimiento.fecha_evaluacion}',
         'vista': 'detalle',
-    })
+    }
+    return render(request, 'habitos/salud.html', context)
 
 
 @login_required
+@require_POST
 def eliminar_seguimiento(request, pk):
     """Elimina un registro de seguimiento (solo el propio usuario)."""
     seguimiento = get_object_or_404(

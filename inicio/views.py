@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 def inicio(request):
     """Renderiza la página principal (Hero Section)"""
     context = {
@@ -8,3 +9,9 @@ def inicio(request):
         'nombre_usuario': request.user.get_full_name() if request.user.is_authenticated else ''
     }
     return render(request, 'inicio.html', context)
+
+
+def ayuda(request):
+    """Renderiza el centro de ayuda e instructivo de usuario."""
+    return render(request, 'ayuda.html')
+
