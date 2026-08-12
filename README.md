@@ -1,6 +1,5 @@
 MER grupo 7 SPORT-MAX
-![Uploading MER_SPORTMAX.drawio.png…]()
-
+<img width="9200" height="7176" alt="image" src="https://github.com/user-attachments/assets/5c06c953-f5b7-4aeb-b996-e9d092635786" />
 
 
 
