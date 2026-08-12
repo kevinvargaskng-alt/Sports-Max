@@ -1,5 +1,6 @@
 MER grupo 7 SPORT-MAX
-![Uploading Mermaid Flow Flow-2026-06-18-130130.png…]()
+![Uploading MER_SPORTMAX.drawio.png…]()
+
 
 
 
