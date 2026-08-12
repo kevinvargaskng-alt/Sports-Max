@@ -445,6 +445,21 @@ def perfil_view(request):
         # Sugerencias Admin
         todas_sugerencias = Sugerencia.objects.all().order_by('-fecha')
 
+        # Variables necesarias para el contexto de administrador
+        from datetime import timedelta
+        hace_30_dias = timezone.now() - timedelta(days=30)
+        
+        reportes_todos = todas_sugerencias
+        todos_equipos_interfichas = EquipoInterfichas.objects.select_related('torneo', 'disciplina').order_by('-torneo__fecha_torneo_fichas')
+        ultimos_usuarios = todos_usuarios[:6]
+        total_usuarios = todos_usuarios.count()
+        usuarios_activos = todos_usuarios.filter(is_active=True).count()
+        total_prestamos_recientes = todos_prestamos.filter(fecha_prestamo__gte=hace_30_dias).count()
+        prestamo_mas_reciente = todos_prestamos.first()
+        total_ingresos_gimnasio = todas_reservas.filter(fecha_entrada__gte=hace_30_dias.date()).count()
+        total_torneos_activos = TorneoInterfichas.objects.exclude(estado='cerrado').count()
+        nuevos_mes = todos_usuarios.filter(fecha_registro__gte=hace_30_dias).count()
+
         contexto = {
 
             'usuario': usuario,
@@ -478,6 +493,8 @@ def perfil_view(request):
         # CORRECCIÓN CLAVE: Se filtra por el objeto 'usuario', NO por el string del nombre
         reservas_gimnasio = Reserva.objects.filter(
             usuario_solicitante=usuario).order_by('-fecha_entrada', '-hora_entrada')
+
+        equipos_interfichas = EquipoInterfichas.objects.filter(usuario_registra=usuario).select_related('torneo', 'disciplina')
 
         contexto = {
 

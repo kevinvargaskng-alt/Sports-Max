@@ -22,7 +22,7 @@ from usuarios.models import Usuario, Sugerencia
 
 
 def poblar_datos():
-    print("🚀 Iniciando la población de la base de datos...")
+    print("[INFO] Iniciando la poblacion de la base de datos...")
 
     # 1. Crear Usuarios (Admins, Instructores, Aprendices)
     programas = [
@@ -77,7 +77,7 @@ def poblar_datos():
             user.set_password('Sena1234')
             user.save()
         usuarios_creados.append(user)
-    print(f"✅ {len(usuarios_creados)} Usuarios listos.")
+    print(f"[OK] {len(usuarios_creados)} Usuarios listos.")
 
     # 2. Disciplinas
     nombres_disciplinas = ["Fútbol", "Baloncesto", "Voleibol", "Tenis de Mesa",
@@ -86,7 +86,7 @@ def poblar_datos():
     for nombre in nombres_disciplinas:
         d, _ = Disciplina.objects.get_or_create(nombre_disciplina=nombre)
         disciplinas_objs.append(d)
-    print("✅ Disciplinas creadas.")
+    print("[OK] Disciplinas creadas.")
 
     # 3. Elementos Deportivos (Inventario)
     elementos_nombres = ["Balón de Fútbol", "Mesa de Ping Pong", "Mesa de Billar", "Pesa 10kg",
@@ -105,7 +105,7 @@ def poblar_datos():
             }
         )
         elementos_objs.append(e)
-    print("✅ Inventario poblado.")
+    print("[OK] Inventario poblado.")
 
     # 4. Torneos Interfichas
     for i in range(1, 11):
@@ -131,7 +131,7 @@ def poblar_datos():
                     'usuario_registra': random.choice(usuarios_creados)
                 }
             )
-    print("✅ Torneos Interfichas y Equipos creados.")
+    print("[OK] Torneos Interfichas y Equipos creados.")
 
     from inventario.models import DetallePrestamo
     # 6. Préstamos
@@ -147,7 +147,7 @@ def poblar_datos():
             fecha_devolucion_prevista=date.today() + timedelta(days=2),
             estado='Pendiente'
         )
-    print("✅ Préstamos registrados.")
+    print("[OK] Prestamos registrados.")
 
     # 7. Reservas Gimnasio
     from datetime import time
@@ -165,7 +165,7 @@ def poblar_datos():
                 'estado': 'Pendiente'
             }
         )
-    print("✅ Reservas de gimnasio creadas.")
+    print("[OK] Reservas de gimnasio creadas.")
 
     # 8. Sugerencias
     tipos_sug = ['Mejora', 'Queja', 'Felicitación']
@@ -178,7 +178,7 @@ def poblar_datos():
             anonimo=anon,
             fecha=timezone.now()
         )
-    print("✅ Sugerencias creadas.")
+    print("[OK] Sugerencias creadas.")
 
     # 9. Hábitos Saludables
     PiramideNutricional.objects.get_or_create(nombre="Agua", defaults={'categoria': "agua", 'nivel_piramide': 1, 'beneficios': "Hidratación esencial para el cuerpo",
@@ -202,8 +202,8 @@ def poblar_datos():
     HabitoSaludable.objects.get_or_create(titulo="Pausas Activas", defaults={
                                           'categoria': "ejercicio", 'descripcion': "Realizar estiramientos.", 'consejos': "Estirar el cuello y los hombros\nCaminar 5 minutos", 'icono_css': "walking"})
 
-    print("✅ Hábitos, Rutinas y Pirámide nutricional creados.")
-    print("\n✨ ¡Base de datos poblada con éxito!")
+    print("[OK] Habitos, Rutinas y Piramide nutricional creados.")
+    print("\n[SUCCESS] Base de datos poblada con exito!")
 
 
 if __name__ == '__main__':

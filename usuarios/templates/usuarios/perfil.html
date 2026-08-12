@@ -20,19 +20,18 @@
                 <div class="col-md-4 text-center border-md-end prf-u-1">
                     <div class="mb-3 position-relative d-inline-block">
                         {% if usuario.foto_perfil %}
-                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow prf-u-2" data-bs-toggle="modal" data-bs-target="#modalFotoGrande" style="cursor: pointer; object-fit: cover; object-position: {{ usuario.foto_posicion }};">
-                        {% else %}
-                            <div class="rounded-circle shadow initial-avatar mx-auto">
+                            <img id="mainProfileImg" src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow prf-u-2" data-bs-toggle="modal" data-bs-target="#modalFotoGrande" style="cursor: pointer; object-fit: cover; object-position: {{ usuario.foto_posicion }};">
+                            <div id="mainProfileInitials" class="rounded-circle shadow initial-avatar mx-auto d-none">
                                 {{ usuario.iniciales }}
                             </div>
                         {% else %}
                             <div id="mainProfileInitials" class="rounded-circle shadow initial-avatar mx-auto">
-                                {{ usuario.first_name|first|upper }}{{ usuario.last_name|first|upper }}
+                                {{ usuario.iniciales }}
                             </div>
-                            <img id="mainProfileImg" src="" alt="Perfil" class="rounded-circle shadow d-none" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue);">
+                            <img id="mainProfileImg" src="" alt="Perfil" class="rounded-circle shadow d-none" data-bs-toggle="modal" data-bs-target="#modalFotoGrande" style="cursor: pointer; width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue); object-position: {{ usuario.foto_posicion }};">
                         {% endif %}
                     </div>
-                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
+                    <h2 class="text-white fw-bold mb-1">{{ usuario.get_full_name|title }}</h2>
                     <span class="badge {% if usuario.is_staff or usuario.rol == 'admin' %}bg-warning{% elif usuario.rol == 'instructor' %}bg-info{% else %}bg-info{% endif %} text-dark px-3 py-1 mb-3">
                         <i class="fas {% if usuario.is_staff or usuario.rol == 'admin' %}fa-user-shield{% elif usuario.rol == 'instructor' %}fa-chalkboard-teacher{% else %}fa-user-graduate{% endif %} me-1"></i>
                         {% if usuario.is_staff or usuario.rol == 'admin' %}Administrador{% elif usuario.rol == 'instructor' %}Instructor{% else %}Aprendiz sena{% endif %}
@@ -250,7 +249,7 @@
                             <tbody>
                                 {% for s in reportes_todos %}
                                 <tr class="prf-u-5">
-                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|lower }}</td>
+                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|title }}</td>
                                     <td><div class="small text-white-50 text-truncate prf-u-6">{{ s.comentario }}</div></td>
                                     <td>
                                         {% if s.imagen %}
@@ -344,7 +343,7 @@
                     <div class="row g-3">
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Nombre completo</label>
-                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|lower }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.get_full_name|title }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Tipo de identificación</label>

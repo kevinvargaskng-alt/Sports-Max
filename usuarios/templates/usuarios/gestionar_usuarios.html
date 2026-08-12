@@ -172,7 +172,7 @@
                                         {% endif %}
                                     </div>
                                     <div>
-                                        <div class="text-white fw-bold small gest-u-8">{{ u.get_full_name|lower }}</div>
+                                        <div class="text-white fw-bold small gest-u-8">{{ u.get_full_name|title }}</div>
                                         <div class="text-white-50 gest-u-9">Desde {{ u.fecha_registro|date:"d/m/Y" }}</div>
                                     </div>
                                 </div>
@@ -225,7 +225,7 @@
                                     <!-- Cambiar rol -->
                                     {% if u.id != usuario.id %}
                                     <button class="btn btn-sm btn-outline-warning action-btn"
-                                            onclick="abrirModalRol('{{ u.id }}','{{ u.get_full_name|lower|escapejs }}','{{ u.rol }}')"
+                                            onclick="abrirModalRol('{{ u.id }}','{{ u.get_full_name|title|escapejs }}','{{ u.rol }}')"
                                             title="Cambiar rol">
                                         <i class="fas fa-user-tag me-1"></i>Rol
                                     </button>
