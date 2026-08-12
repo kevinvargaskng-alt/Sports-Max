@@ -585,7 +585,13 @@
     }
     
     function eliminarFotoPerfil() {
-        if (confirm('¿Estás seguro de eliminar tu foto de perfil actual?')) {
+        smaxDialog.confirm('¿Estás seguro de eliminar tu foto de perfil actual?', {
+            title: 'Eliminar foto de perfil',
+            icon: 'danger',
+            confirmText: 'Eliminar',
+            confirmClass: 'danger'
+        }).then(function(ok) {
+            if (!ok) return;
             document.getElementById('eliminar_foto_input').value = 'true';
             
             imgElement.classList.add('d-none');
@@ -610,7 +616,7 @@
             
             controlsDiv.classList.add('d-none');
             cropperActive = false;
-        }
+        });
     }
     
     imgElement.addEventListener('mousedown', function(e) {

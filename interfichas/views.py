@@ -242,15 +242,24 @@ def interfichas_list(request):
                 )
                 return redirect('interfichas')
 
-            nombres_existentes = set(
-                torneo_obj.equipos.values_list('nombre_equipo', flat=True))
-            nombre_equipo = ""
-            for pais in PAISES_TORNEO:
-                if pais not in nombres_existentes:
-                    nombre_equipo = pais
-                    break
-            if not nombre_equipo:
-                nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
+            # Determinar si la disciplina es Fútbol o Fútsal (formato mundial)
+            disc_nombre = torneo_obj.disciplina.nombre_disciplina.lower() if torneo_obj.disciplina else ""
+            es_mundial = "fútbol" in disc_nombre or "futbol" in disc_nombre or "futsal" in disc_nombre
+
+            if es_mundial:
+                nombres_existentes = set(
+                    torneo_obj.equipos.values_list('nombre_equipo', flat=True))
+                nombre_equipo = ""
+                for pais in PAISES_TORNEO:
+                    if pais not in nombres_existentes:
+                        nombre_equipo = pais
+                        break
+                if not nombre_equipo:
+                    nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
+            else:
+                nombre_equipo = request.POST.get('nombre_equipo', '').strip()
+                if not nombre_equipo:
+                    nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
 
             nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,

@@ -202,16 +202,19 @@
   .countdown-label {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 13px;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
+    line-height: 1.4;
     text-transform: uppercase;
     color: var(--sena-green);
     font-weight: 700;
+    margin-bottom: 4px;
   }
   .countdown-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 20px;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    letter-spacing: 0.5px;
+    line-height: 1.35;
   }
   .countdown-units {
     display: flex;
@@ -279,7 +282,8 @@
   }
 
   /* ── SECTION SHARED ── */
-  section { padding: 80px 5vw; }
+  section { padding: 40px 5vw; }
+  @media (max-width: 768px) { section { padding: 28px 4vw; } }
   .section-tag {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 12px;
@@ -287,23 +291,24 @@
     text-transform: uppercase;
     color: var(--sena-green);
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .section-title {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: clamp(36px, 5vw, 64px);
+    font-size: clamp(32px, 4.5vw, 56px);
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: -1px;
     line-height: 0.95;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    color: #ffffff;
   }
   .section-sub {
-    color: rgba(255,255,255,0.5);
-    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
     max-width: 480px;
-    line-height: 1.6;
-    margin-bottom: 52px;
+    line-height: 1.5;
+    margin-bottom: 28px;
   }
 
   /* ── SPORTS CARDS ── */
@@ -468,7 +473,7 @@
     justify-content: space-between;
     gap: 24px;
     flex-wrap: wrap;
-    margin-bottom: 80px;
+    margin-bottom: 32px;
   }
   .match-team {
     font-family: 'Barlow Condensed', sans-serif;
@@ -501,12 +506,41 @@
     text-transform: uppercase;
   }
 
-  /* ── MODAL ── */
+  /* ── MODAL DE AUTENTICACIÓN Y REGISTRO COMPACTO ── */
   .custom-modal {
     background: var(--primary-dark);
     border: 1px solid var(--neon-border);
-    border-radius: 8px;
+    border-radius: 16px;
     color: #fff;
+  }
+  #modalForm .modal-dialog {
+    max-width: 440px;
+    margin: 1.75rem auto;
+    transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #modalForm:has(#registerPanel.active) .modal-dialog,
+  #modalForm.modal-register-active .modal-dialog {
+    max-width: 680px;
+  }
+  #modalForm .form-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.6px;
+    margin-bottom: 0.35rem;
+  }
+  #modalForm .form-control, 
+  #modalForm .form-select {
+    font-size: 0.88rem;
+    padding: 0.48rem 0.75rem;
+  }
+  #modalForm .input-group-text {
+    padding: 0.48rem;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    border-radius: 8px !important;
   }
   .custom-input {
     background: rgba(255,255,255,0.05) !important;
@@ -678,25 +712,27 @@
     border-color: rgba(26,95,180,0.8) !important;
   }
 
-  /* Botón cerrar escáner */
-  #btnCerrarScanner {
+  /* Botón cerrar y cambiar cámara escáner */
+  #btnCerrarScanner, #btnCambiarCamara {
     position: absolute;
-    top: 8px; right: 8px;
+    top: 8px;
     background: rgba(0,0,0,0.6);
     border: none;
-    border-radius: 50%;
-    width: 36px; height: 36px;
     color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
     z-index: 10;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    transition: background 0.2s;
   }
-  #btnCerrarScanner:hover, #btnCerrarScanner:active { background: rgba(200,50,50,0.8); }
+  #btnCerrarScanner { right: 8px; }
+  #btnCambiarCamara { left: 8px; }
+  #btnCerrarScanner:hover, #btnCambiarCamara:hover {
+    background: rgba(26,95,180,0.8);
+  }
 
   /* Spinner de carga cámara */
   #scannerLoader {
@@ -831,3 +867,305 @@
 .ini-u-90 { background:linear-gradient(145deg,#0f1a2e,#1a2d4a);border:1px solid var(--sena-green);border-radius:16px; }
 .ini-u-91 { color:var(--sena-green); }
 .ini-u-92 { background:var(--sena-green);letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;font-size:16px; }
+
+/* ════════════════════════════════════════════════════
+   MODO CLARO — Override total para inicio_styles.css
+   Convierte CADA sección oscura a fondo claro
+════════════════════════════════════════════════════ */
+
+/* Raíz: variables CSS del sistema de diseño en modo claro */
+html.acc-claro,
+body.light-theme {
+    --sena-dark: #f8fafc;
+    --sena-card: rgba(0,0,0,0.03);
+    --sena-border: rgba(0,0,0,0.1);
+    --primary-dark: #f8fafc;
+    --card-bg: rgba(0,0,0,0.03);
+    --neon-border: rgba(0,0,0,0.1);
+    --text-white: #0f172a;
+}
+
+/* Body y contenedor global */
+html.acc-claro body,
+body.light-theme {
+    background: #f0f4f8 !important;
+    color: #0f172a !important;
+}
+html.acc-claro main,
+body.light-theme main,
+html.acc-claro .container-fluid,
+body.light-theme .container-fluid,
+html.acc-claro #main-wrapper,
+body.light-theme #main-wrapper {
+    background: #f0f4f8 !important;
+}
+
+/* ── Secciones <section> con fondo oscuro ── */
+html.acc-claro section,
+body.light-theme section,
+html.acc-claro section.ini-u-6,
+body.light-theme section.ini-u-6,
+html.acc-claro .ini-u-6,
+body.light-theme .ini-u-6 {
+    background: #e8edf3 !important;
+    border-top: 1px solid #d1dae6 !important;
+    border-bottom: 1px solid #d1dae6 !important;
+}
+
+/* ── Hero ── */
+html.acc-claro .hero,
+body.light-theme .hero {
+    background: #1a3a6b !important;
+}
+html.acc-claro .hero-title,
+body.light-theme .hero-title,
+html.acc-claro .hero-title .accent,
+body.light-theme .hero-title .accent,
+html.acc-claro .hero-title .outline,
+body.light-theme .hero-title .outline {
+    color: #ffffff !important;
+    -webkit-text-stroke-color: #ffffff !important;
+}
+html.acc-claro .hero-sub,
+body.light-theme .hero-sub,
+html.acc-claro .hero-eyebrow,
+body.light-theme .hero-eyebrow { color: rgba(255,255,255,0.85) !important; }
+
+/* ── Ticker ── */
+html.acc-claro .ticker-bar,
+body.light-theme .ticker-bar { background: #1a3a6b !important; color: #fff !important; }
+
+/* ── Countdown strip ── */
+html.acc-claro .countdown-strip,
+body.light-theme .countdown-strip {
+    background: #dde4ef !important;
+    border-color: #b0bfd4 !important;
+}
+html.acc-claro .countdown-title,
+body.light-theme .countdown-title,
+html.acc-claro .countdown-num,
+body.light-theme .countdown-num,
+html.acc-claro .countdown-unit,
+body.light-theme .countdown-unit,
+html.acc-claro .countdown-sep,
+body.light-theme .countdown-sep { color: #0f172a !important; }
+html.acc-claro .countdown-label,
+body.light-theme .countdown-label { color: #1a5fb4 !important; }
+html.acc-claro .countdown-box,
+body.light-theme .countdown-box { background: #f0f4f8 !important; border-color: #b0bfd4 !important; }
+
+/* ── Stats bar ── */
+html.acc-claro .stats-bar,
+body.light-theme .stats-bar {
+    background: #dde4ef !important;
+    border-color: #b0bfd4 !important;
+}
+html.acc-claro .stat-num,
+body.light-theme .stat-num { color: #1a5fb4 !important; }
+html.acc-claro .stat-label,
+body.light-theme .stat-label { color: #475569 !important; }
+html.acc-claro .stat-sep,
+body.light-theme .stat-sep { background: #b0bfd4 !important; }
+
+/* ── Títulos de sección ── */
+html.acc-claro .section-title,
+body.light-theme .section-title { color: #1a3a6b !important; }
+html.acc-claro .section-sub,
+body.light-theme .section-sub { color: #475569 !important; }
+
+/* ── Pasos How-Step ── */
+html.acc-claro .how-step,
+body.light-theme .how-step,
+html.acc-claro [class*="ini-u-8"],
+body.light-theme [class*="ini-u-8"],
+html.acc-claro [class*="ini-u-15"],
+body.light-theme [class*="ini-u-15"],
+html.acc-claro [class*="ini-u-22"],
+body.light-theme [class*="ini-u-22"],
+html.acc-claro [class*="ini-u-29"],
+body.light-theme [class*="ini-u-29"] {
+    background: #ffffff !important;
+    border-color: #c7d5e8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07) !important;
+}
+html.acc-claro .ini-u-10,
+body.light-theme .ini-u-10,
+html.acc-claro .ini-u-17,
+body.light-theme .ini-u-17,
+html.acc-claro .ini-u-24,
+body.light-theme .ini-u-24,
+html.acc-claro .ini-u-31,
+body.light-theme .ini-u-31 {
+    background: rgba(26,95,180,0.12) !important;
+    border-color: rgba(26,95,180,0.3) !important;
+}
+html.acc-claro .ini-u-12,
+body.light-theme .ini-u-12,
+html.acc-claro .ini-u-19,
+body.light-theme .ini-u-19,
+html.acc-claro .ini-u-26,
+body.light-theme .ini-u-26,
+html.acc-claro .ini-u-33,
+body.light-theme .ini-u-33 {
+    background: linear-gradient(to right, rgba(26,95,180,0.3), transparent) !important;
+}
+
+/* ── Servicios grid ── */
+html.acc-claro .services-grid,
+body.light-theme .services-grid { background: transparent !important; }
+html.acc-claro .service-card,
+body.light-theme .service-card,
+html.acc-claro .mi-equipo-card,
+body.light-theme .mi-equipo-card,
+html.acc-claro .jira-card,
+body.light-theme .jira-card {
+    background: #ffffff !important;
+    border-color: #d1dae6 !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07) !important;
+}
+html.acc-claro .service-title,
+body.light-theme .service-title { color: #1a3a6b !important; }
+html.acc-claro .service-desc,
+body.light-theme .service-desc { color: #475569 !important; }
+
+/* ── Tarjetas de deporte/imagen ── */
+html.acc-claro .sport-card,
+body.light-theme .sport-card { background: #ffffff !important; border-color: #d1dae6 !important; }
+html.acc-claro .sport-card-content,
+body.light-theme .sport-card-content { background: linear-gradient(to top, rgba(26,58,107,0.92), transparent) !important; }
+html.acc-claro .sport-card-title,
+body.light-theme .sport-card-title { color: #ffffff !important; }
+html.acc-claro .sport-card-desc,
+body.light-theme .sport-card-desc { color: rgba(255,255,255,0.85) !important; }
+
+/* ── Hero aprendiz / Perfil en inicio ── */
+html.acc-claro .hero-aprendiz,
+body.light-theme .hero-aprendiz { background: #dde4ef !important; border-color: #b0bfd4 !important; }
+html.acc-claro .ini-u-86,
+body.light-theme .ini-u-86 { background: #fff0f0 !important; border-color: #f85149 !important; }
+html.acc-claro .ini-u-87,
+body.light-theme .ini-u-87 { color: #c0392b !important; }
+html.acc-claro .ini-u-88,
+body.light-theme .ini-u-88 { color: #475569 !important; }
+html.acc-claro .ini-u-90,
+body.light-theme .ini-u-90 { background: #edf4ff !important; border-color: #1a5fb4 !important; }
+html.acc-claro .ini-u-91,
+body.light-theme .ini-u-91 { color: #1a5fb4 !important; }
+html.acc-claro .ini-u-79,
+body.light-theme .ini-u-79 { background: rgba(0,0,0,0.1) !important; }
+
+/* ── Botones ── */
+html.acc-claro .btn-outline-sport,
+body.light-theme .btn-outline-sport {
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.7) !important;
+}
+html.acc-claro .btn-outline-sport:hover,
+body.light-theme .btn-outline-sport:hover { border-color: #ffffff !important; color: #ffffff !important; background: rgba(255,255,255,0.15) !important; }
+html.acc-claro .btn-primary-sport,
+body.light-theme .btn-primary-sport { background: #1a5fb4 !important; color: #fff !important; }
+
+/* ── Textos genéricos claros en todo el inicio ── */
+html.acc-claro body p,
+body.light-theme p,
+html.acc-claro body span:not(.countdown-num):not(.stat-num):not(.hero-title *):not(.sport-card *),
+body.light-theme span:not(.countdown-num):not(.stat-num):not(.hero-title *):not(.sport-card *),
+html.acc-claro body small,
+body.light-theme small,
+html.acc-claro body label,
+body.light-theme label,
+html.acc-claro body li,
+body.light-theme li { color: #1e293b !important; }
+
+html.acc-claro body h1:not(.hero-title),
+body.light-theme h1:not(.hero-title),
+html.acc-claro body h2,
+body.light-theme h2,
+html.acc-claro body h3,
+body.light-theme h3,
+html.acc-claro body h4,
+body.light-theme h4,
+html.acc-claro body h5,
+body.light-theme h5,
+html.acc-claro body h6,
+body.light-theme h6 { color: #1a3a6b !important; }
+
+/* ── Modal ── */
+html.acc-claro .modal-content,
+body.light-theme .modal-content { background: #ffffff !important; color: #0f172a !important; }
+html.acc-claro .modal-header,
+body.light-theme .modal-header { background: #f0f4f8 !important; border-color: #d1dae6 !important; }
+html.acc-claro .modal-title,
+body.light-theme .modal-title { color: #1a3a6b !important; }
+html.acc-claro .nav-tabs .nav-link,
+body.light-theme .nav-tabs .nav-link { color: #475569 !important; }
+html.acc-claro .nav-tabs .nav-link.active,
+body.light-theme .nav-tabs .nav-link.active { color: #1a5fb4 !important; border-color: #1a5fb4 #1a5fb4 #ffffff !important; }
+html.acc-claro .form-control,
+body.light-theme .form-control,
+html.acc-claro .form-select,
+body.light-theme .form-select,
+html.acc-claro .input-group-text,
+body.light-theme .input-group-text {
+    background: #ffffff !important;
+    border-color: #b0bfd4 !important;
+    color: #0f172a !important;
+}
+html.acc-claro .form-control::placeholder,
+body.light-theme .form-control::placeholder { color: #94a3b8 !important; }
+
+/* ── Navbar en modo claro ── */
+html.acc-claro .navbar,
+body.light-theme .navbar { background: #1a3a6b !important; }
+html.acc-claro .navbar .nav-link,
+body.light-theme .navbar .nav-link,
+html.acc-claro .navbar .navbar-brand,
+body.light-theme .navbar .navbar-brand,
+html.acc-claro .navbar .navbar-brand span,
+body.light-theme .navbar .navbar-brand span { color: #ffffff !important; }
+html.acc-claro .navbar .nav-link:hover,
+body.light-theme .navbar .nav-link:hover { color: rgba(255,255,255,0.75) !important; }
+html.acc-claro .dropdown-menu,
+body.light-theme .dropdown-menu { background: #ffffff !important; border-color: #d1dae6 !important; }
+html.acc-claro .dropdown-item,
+body.light-theme .dropdown-item { color: #1e293b !important; }
+html.acc-claro .dropdown-item:hover,
+body.light-theme .dropdown-item:hover { background: #f0f4f8 !important; }
+
+/* ── Footer ── */
+html.acc-claro footer,
+body.light-theme footer,
+html.acc-claro .footer,
+body.light-theme .footer {
+    background: #1a3a6b !important;
+    color: #ffffff !important;
+}
+html.acc-claro footer p,
+body.light-theme footer p,
+html.acc-claro footer span,
+body.light-theme footer span,
+html.acc-claro footer a,
+body.light-theme footer a,
+html.acc-claro .footer p,
+body.light-theme .footer p,
+html.acc-claro .footer span,
+body.light-theme .footer span,
+html.acc-claro .footer a,
+body.light-theme .footer a { color: rgba(255,255,255,0.8) !important; }
+
+/* Todos los [class*="ini-u-"] con fondo oscuro → blanco en claro */
+html.acc-claro div[class*="ini-u-"],
+body.light-theme div[class*="ini-u-"] { color: #0f172a; }
+
+html.acc-claro .ini-u-28,
+body.light-theme .ini-u-28,
+html.acc-claro .ini-u-35,
+body.light-theme .ini-u-35,
+html.acc-claro .ini-u-88,
+body.light-theme .ini-u-88 {
+    color: #475569 !important;
+}
+
+

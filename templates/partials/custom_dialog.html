@@ -1,0 +1,419 @@
+{% comment %}
+═══════════════════════════════════════════════════════
+  CUSTOM DIALOG — Reemplazo de alert() y confirm()
+  Acorde al diseño Glassmorphism & Neon del sistema
+═══════════════════════════════════════════════════════
+{% endcomment %}
+
+<style>
+/* ═══ CUSTOM DIALOG OVERLAY ═══ */
+.smax-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 8, 20, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.smax-dialog-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ═══ DIALOG BOX ═══ */
+.smax-dialog {
+    width: 94%;
+    max-width: 440px;
+    background: linear-gradient(145deg, rgba(11, 14, 20, 0.98), rgba(15, 26, 46, 0.96));
+    border: 1px solid rgba(43, 125, 233, 0.25);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(43, 125, 233, 0.08);
+    padding: 0;
+    overflow: hidden;
+    transform: scale(0.88) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+}
+.smax-dialog-overlay.open .smax-dialog {
+    transform: scale(1) translateY(0);
+}
+
+/* ═══ ICON HEADER ═══ */
+.smax-dialog-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 24px 12px;
+}
+.smax-dialog-icon .icon-circle {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    animation: smax-icon-pop 0.4s 0.15s both;
+}
+@keyframes smax-icon-pop {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Variantes de color */
+.smax-dialog-icon .icon-circle.info {
+    background: rgba(43, 125, 233, 0.15);
+    color: #5ba3f5;
+    border: 1px solid rgba(43, 125, 233, 0.3);
+}
+.smax-dialog-icon .icon-circle.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+.smax-dialog-icon .icon-circle.warning {
+    background: rgba(251, 191, 36, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+}
+.smax-dialog-icon .icon-circle.danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* ═══ BODY ═══ */
+.smax-dialog-body {
+    padding: 8px 28px 8px;
+    text-align: center;
+}
+.smax-dialog-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 8px;
+    line-height: 1.35;
+}
+.smax-dialog-message {
+    font-size: 0.88rem;
+    color: rgba(226, 232, 240, 0.65);
+    line-height: 1.55;
+    margin: 0;
+    word-break: break-word;
+}
+.smax-dialog-message .smax-highlight {
+    display: block;
+    margin: 12px auto 8px;
+    padding: 10px 16px;
+    background: rgba(43, 125, 233, 0.08);
+    border: 1px solid rgba(43, 125, 233, 0.2);
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #5ba3f5;
+    letter-spacing: 1px;
+    user-select: all;
+    cursor: pointer;
+}
+
+/* ═══ ACTIONS ═══ */
+.smax-dialog-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px 28px 24px;
+    justify-content: center;
+}
+.smax-dialog-btn {
+    flex: 1;
+    max-width: 180px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    font-family: inherit;
+}
+.smax-dialog-btn:active {
+    transform: scale(0.96);
+}
+
+/* Primary */
+.smax-dialog-btn.primary {
+    background: linear-gradient(135deg, #2b7de9, #1f64c8);
+    color: #fff;
+    border-color: rgba(43, 125, 233, 0.5);
+}
+.smax-dialog-btn.primary:hover {
+    background: linear-gradient(135deg, #3d8ef5, #2b7de9);
+    box-shadow: 0 4px 20px rgba(43, 125, 233, 0.35);
+}
+
+/* Danger */
+.smax-dialog-btn.danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    border-color: rgba(239, 68, 68, 0.5);
+}
+.smax-dialog-btn.danger:hover {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
+}
+
+/* Secondary / Cancel */
+.smax-dialog-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(226, 232, 240, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.smax-dialog-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+</style>
+
+<!-- Overlay del Dialog -->
+<div id="smaxDialogOverlay" class="smax-dialog-overlay">
+    <div class="smax-dialog" role="alertdialog" aria-modal="true" aria-labelledby="smaxDialogTitle" aria-describedby="smaxDialogMsg">
+        <div class="smax-dialog-icon">
+            <div id="smaxDialogIconCircle" class="icon-circle info">
+                <i id="smaxDialogIcon" class="fas fa-info-circle"></i>
+            </div>
+        </div>
+        <div class="smax-dialog-body">
+            <h5 id="smaxDialogTitle" class="smax-dialog-title"></h5>
+            <div id="smaxDialogMsg" class="smax-dialog-message"></div>
+        </div>
+        <div class="smax-dialog-actions" id="smaxDialogActions"></div>
+    </div>
+</div>
+
+<script>
+/**
+ * smaxDialog — Sistema global de diálogos personalizados
+ * Reemplaza alert() y confirm() con modales acordes al diseño.
+ *
+ * Uso:
+ *   smaxDialog.alert('Mensaje')
+ *   smaxDialog.alert('Mensaje', { title: 'Título', icon: 'success' })
+ *   smaxDialog.confirm('¿Seguro?').then(ok => { if(ok) ... })
+ *   smaxDialog.confirm('¿Eliminar?', { icon: 'danger', confirmText: 'Eliminar', confirmClass: 'danger' })
+ */
+window.smaxDialog = (function () {
+    'use strict';
+
+    var overlay    = document.getElementById('smaxDialogOverlay');
+    var iconCircle = document.getElementById('smaxDialogIconCircle');
+    var iconEl     = document.getElementById('smaxDialogIcon');
+    var titleEl    = document.getElementById('smaxDialogTitle');
+    var msgEl      = document.getElementById('smaxDialogMsg');
+    var actionsEl  = document.getElementById('smaxDialogActions');
+    var _resolve   = null;
+
+    var ICONS = {
+        info:    'fas fa-info-circle',
+        success: 'fas fa-check-circle',
+        warning: 'fas fa-exclamation-triangle',
+        danger:  'fas fa-trash-alt',
+        key:     'fas fa-key',
+        shield:  'fas fa-shield-alt',
+        question:'fas fa-question-circle'
+    };
+
+    function open(opts) {
+        var icon = opts.icon || 'info';
+        iconCircle.className = 'icon-circle ' + icon;
+        iconEl.className = ICONS[icon] || ICONS.info;
+
+        titleEl.textContent = opts.title || '';
+        titleEl.style.display = opts.title ? '' : 'none';
+
+        if (opts.html) {
+            msgEl.innerHTML = opts.html;
+        } else {
+            msgEl.textContent = opts.message || '';
+        }
+
+        actionsEl.innerHTML = '';
+
+        if (opts.buttons) {
+            opts.buttons.forEach(function (btn) {
+                var b = document.createElement('button');
+                b.className = 'smax-dialog-btn ' + (btn.cls || 'primary');
+                b.textContent = btn.text;
+                b.addEventListener('click', function () {
+                    close();
+                    if (btn.action) btn.action();
+                });
+                actionsEl.appendChild(b);
+            });
+        }
+
+        overlay.classList.add('open');
+
+        // Focus trap
+        setTimeout(function () {
+            var firstBtn = actionsEl.querySelector('button');
+            if (firstBtn) firstBtn.focus();
+        }, 100);
+    }
+
+    function close() {
+        overlay.classList.remove('open');
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) {
+            close();
+            if (_resolve) { _resolve(false); _resolve = null; }
+        }
+    });
+
+    // Close on overlay click (outside dialog)
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+            close();
+            if (_resolve) { _resolve(false); _resolve = null; }
+        }
+    });
+
+    return {
+        /**
+         * Alert dialog (solo informativo)
+         * @param {string} message
+         * @param {Object} opts  { title, icon, buttonText, html }
+         */
+        alert: function (message, opts) {
+            opts = opts || {};
+            return new Promise(function (resolve) {
+                open({
+                    title: opts.title || '',
+                    message: message,
+                    html: opts.html || null,
+                    icon: opts.icon || 'info',
+                    buttons: [{
+                        text: opts.buttonText || 'Aceptar',
+                        cls: 'primary',
+                        action: function () { resolve(true); }
+                    }]
+                });
+                _resolve = resolve;
+            });
+        },
+
+        /**
+         * Confirm dialog (Aceptar / Cancelar)
+         * @param {string} message
+         * @param {Object} opts  { title, icon, confirmText, cancelText, confirmClass, html }
+         * @returns {Promise<boolean>}
+         */
+        confirm: function (message, opts) {
+            opts = opts || {};
+            return new Promise(function (resolve) {
+                _resolve = resolve;
+                open({
+                    title: opts.title || 'Confirmar acción',
+                    message: message,
+                    html: opts.html || null,
+                    icon: opts.icon || 'warning',
+                    buttons: [
+                        {
+                            text: opts.cancelText || 'Cancelar',
+                            cls: 'secondary',
+                            action: function () { resolve(false); }
+                        },
+                        {
+                            text: opts.confirmText || 'Aceptar',
+                            cls: opts.confirmClass || 'primary',
+                            action: function () { resolve(true); }
+                        }
+                    ]
+                });
+            });
+        }
+    };
+})();
+
+// Sobrescribir window.alert globalmente para capturar cualquier alerta restante
+window.alert = function (msg) {
+    if (window.smaxDialog) {
+        window.smaxDialog.alert(msg, { title: 'Notificación del Sistema', icon: 'info' });
+    }
+};
+
+/**
+ * Auto-binding para elementos con atributo data-confirm
+ * Intercepta formularios y botones con data-confirm para usar smaxDialog
+ * 
+ * Uso en HTML:
+ *   <form data-confirm="¿Estás seguro?" data-confirm-title="Confirmar" data-confirm-icon="danger">
+ *   <button data-confirm="¿Eliminar?" data-confirm-icon="danger" data-confirm-text="Eliminar">
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    document.body.addEventListener('click', function (e) {
+        var el = e.target.closest('[data-confirm]');
+        if (!el) return;
+
+        var msg   = el.getAttribute('data-confirm');
+        var title = el.getAttribute('data-confirm-title') || 'Confirmar acción';
+        var icon  = el.getAttribute('data-confirm-icon') || 'warning';
+        var cText = el.getAttribute('data-confirm-text') || 'Aceptar';
+        var cCls  = el.getAttribute('data-confirm-class') || (icon === 'danger' ? 'danger' : 'primary');
+
+        // Prevent the default action
+        e.preventDefault();
+        e.stopPropagation();
+
+        smaxDialog.confirm(msg, {
+            title: title,
+            icon: icon,
+            confirmText: cText,
+            confirmClass: cCls
+        }).then(function (ok) {
+            if (!ok) return;
+
+            // If it's a submit button inside a form, submit the form
+            var form = el.closest('form');
+            if (el.type === 'submit' && form) {
+                // Temporarily remove data-confirm to avoid re-triggering
+                el.removeAttribute('data-confirm');
+                form.requestSubmit(el);
+                el.setAttribute('data-confirm', msg);
+                return;
+            }
+
+            // If it's a form with onsubmit
+            if (el.tagName === 'FORM') {
+                el.removeAttribute('data-confirm');
+                el.requestSubmit();
+                el.setAttribute('data-confirm', msg);
+                return;
+            }
+
+            // If it's a link
+            if (el.tagName === 'A' && el.href) {
+                window.location.href = el.href;
+                return;
+            }
+
+            // Otherwise trigger click
+            el.removeAttribute('data-confirm');
+            el.click();
+            el.setAttribute('data-confirm', msg);
+        });
+    });
+});
+</script>

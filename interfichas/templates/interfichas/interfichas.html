@@ -436,7 +436,7 @@
         </div>
         <div class="torneo-card-footer">
           <button class="btn-inscribir"
-                  onclick="abrirInscripcion('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}')">
+                  onclick="abrirInscripcion('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}','{{ t.disciplina.nombre_disciplina|default:''|escapejs }}')">
             <i class="fas fa-plus-circle"></i>
             Inscribir mi equipo
           </button>
@@ -645,7 +645,7 @@
               <option value="">— Selecciona torneo —</option>
               {% for t in torneos %}
                 {% if t.estado != 'cerrado' %}
-                <option value="{{ t.pk }}">{{ t.nombre_torneo }}</option>
+                <option value="{{ t.pk }}" data-disciplina="{{ t.disciplina.nombre_disciplina|default:'' }}">{{ t.nombre_torneo }}</option>
                 {% endif %}
               {% endfor %}
             </select>
@@ -658,7 +658,12 @@
               <label class="form-label small fw-bold text-muted text-uppercase int-u-63">Capitán del equipo</label>
               <input type="text" name="capitan" class="custom-input form-control"
                      placeholder="Nombre completo del capitán" required>
-              <small class="text-white-50 mt-1 d-block int-u-64">
+              <div id="bloque-nombre-equipo" class="mt-3" style="display: none;">
+                <label class="form-label small fw-bold text-muted text-uppercase">Nombre del equipo</label>
+                <input type="text" name="nombre_equipo" id="campo-nombre-equipo" class="custom-input form-control"
+                       placeholder="Ej. Los Halcones, Ficha 250...">
+              </div>
+              <small class="text-white-50 mt-2 d-block" id="ayuda-nombre-equipo">
                 <i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.
               </small>
             </div>
@@ -739,11 +744,17 @@
   }
 
   function confirmarEliminar(id, nombre) {
-    if (confirm(`¿Eliminar el torneo "${nombre}"?\nEsta acción no se puede deshacer.`)) {
+    smaxDialog.confirm('¿Eliminar el torneo "' + nombre + '"?\nEsta acción no se puede deshacer.', {
+      title: 'Eliminar Torneo',
+      icon: 'danger',
+      confirmText: 'Eliminar',
+      confirmClass: 'danger'
+    }).then(function(ok) {
+      if (!ok) return;
       const f = document.getElementById('formEliminar');
       f.action = `/interfichas/torneo/${id}/eliminar/`;
       f.submit();
-    }
+    });
   }
 
   function abrirCierre(torneoId, nombre) {
@@ -758,12 +769,13 @@
     new bootstrap.Modal(document.getElementById('modalCierre')).show();
   }
 
-  function abrirInscripcion(torneoId, nombre) {
+  function abrirInscripcion(torneoId, nombre, disciplina) {
     torneoActivoId = String(torneoId);
     document.getElementById('equipo-torneo-id').value = torneoActivoId;
     const nomEl = document.getElementById('equipo-torneo-nombre');
     if (nomEl) nomEl.textContent = "Torneo: " + nombre;
     ocultarAlertaFicha();
+    actualizarCamposPorDisciplina(disciplina);
     new bootstrap.Modal(document.getElementById('modalEquipo')).show();
   }
 
@@ -774,7 +786,37 @@
       document.getElementById('equipo-torneo-id').value = torneoActivoId;
       ocultarAlertaFicha();
       validarFicha(document.getElementById('campo-ficha'));
+      const opt = this.options[this.selectedIndex];
+      const disc = opt ? opt.dataset.disciplina : '';
+      actualizarCamposPorDisciplina(disc);
     });
+  }
+
+  function actualizarCamposPorDisciplina(disciplina) {
+    const discLower = (disciplina || '').toLowerCase();
+    const esMundial = discLower.includes('fútbol') || discLower.includes('futbol') || discLower.includes('futsal');
+    const bloqueNombre = document.getElementById('bloque-nombre-equipo');
+    const campoNombre = document.getElementById('campo-nombre-equipo');
+    const ayudaNombre = document.getElementById('ayuda-nombre-equipo');
+
+    if (esMundial) {
+      if (bloqueNombre) bloqueNombre.style.display = 'none';
+      if (campoNombre) {
+        campoNombre.required = false;
+        campoNombre.value = '';
+      }
+      if (ayudaNombre) {
+        ayudaNombre.innerHTML = `<i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.`;
+      }
+    } else {
+      if (bloqueNombre) bloqueNombre.style.display = 'block';
+      if (campoNombre) {
+        campoNombre.required = true;
+      }
+      if (ayudaNombre) {
+        ayudaNombre.innerHTML = `<i class="fas fa-info-circle text-info me-1"></i> Define un nombre representativo para tu equipo (ej. "Los Halcones").`;
+      }
+    }
   }
 
   function validarFicha(input) {
@@ -823,6 +865,20 @@
     torneoActivoId = "";
     document.getElementById('equipo-torneo-id').value = "";
     ocultarAlertaFicha();
+    
+    // Resetear campo de nombre de equipo
+    const bloqueNombre = document.getElementById('bloque-nombre-equipo');
+    const campoNombre = document.getElementById('campo-nombre-equipo');
+    if (bloqueNombre) bloqueNombre.style.display = 'none';
+    if (campoNombre) {
+      campoNombre.required = false;
+      campoNombre.value = '';
+    }
+    const ayudaNombre = document.getElementById('ayuda-nombre-equipo');
+    if (ayudaNombre) {
+      ayudaNombre.innerHTML = `<i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.`;
+    }
+    
     jugNum = 1;
     document.getElementById('jugadores-container').innerHTML = `
       <div class="jugador-row">

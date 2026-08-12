@@ -32,12 +32,23 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. SISTEMA DE SEGURIDAD (LOGIN, REGISTRO & VALIDACIÓN)
     // ============================================================
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('login') === '1' || urlParams.has('next')) {
-        const modalAuth = document.getElementById('modalForm');
-        if (modalAuth) {
-            var myModal = new bootstrap.Modal(modalAuth);
+    const modalAuthEl = document.getElementById('modalForm');
+    const loginTabEl = document.getElementById('login-tab');
+    const registerTabEl = document.getElementById('register-tab');
+
+    if (modalAuthEl) {
+        if (urlParams.get('login') === '1' || urlParams.has('next')) {
+            var myModal = new bootstrap.Modal(modalAuthEl);
             myModal.show();
+        }
+
+        if (loginTabEl && registerTabEl) {
+            loginTabEl.addEventListener('shown.bs.tab', function () {
+                modalAuthEl.classList.remove('modal-register-active');
+            });
+            registerTabEl.addEventListener('shown.bs.tab', function () {
+                modalAuthEl.classList.add('modal-register-active');
+            });
         }
     }
 
@@ -142,7 +153,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Disparar evento input para actualizar medidor de fuerza
                 contrasena.dispatchEvent(new Event('input'));
                 
-                alert('Se ha sugerido la siguiente contraseña fuerte:\n\n' + pass + '\n\nPor favor, cópiala y guárdala en un lugar seguro.');
+                smaxDialog.alert('', {
+                    title: 'Contraseña Sugerida',
+                    icon: 'key',
+                    html: 'Se ha generado una contraseña fuerte:<span class="smax-highlight">' + pass + '</span>Por favor, cópiala y guárdala en un lugar seguro.',
+                    buttonText: 'Entendido'
+                });
             }
         });
     }

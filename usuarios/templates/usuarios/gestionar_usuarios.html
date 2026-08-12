@@ -62,6 +62,17 @@
         border-radius: 8px;
         font-size: 0.78rem;
         padding: 5px 12px;
+        transition: all 0.3s ease;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(43, 125, 233, 0.25);
+    }
+    .filter-btn {
+        transition: all 0.3s ease;
+    }
+    .filter-btn:hover {
+        transform: translateY(-1px);
     }
     .table-user thead th {
         font-size: 0.72rem;
@@ -73,15 +84,47 @@
     }
     .table-user tbody tr {
         border-bottom: 1px solid rgba(255,255,255,0.05);
-        transition: background 0.15s;
+        transition: all 0.3s ease;
     }
     .table-user tbody tr:hover {
-        background: rgba(74,158,255,0.05);
+        background: rgba(74,158,255,0.08);
+        transform: scale(1.002);
     }
     .empty-state {
         padding: 60px 20px;
         text-align: center;
         color: rgba(255,255,255,0.3);
+    }
+
+    /* ── RESPONSIVIDAD MÓVIL ── */
+    @media (max-width: 768px) {
+        #tablaUsuarios thead { display: none; }
+        #tablaUsuarios, #tablaUsuarios tbody, #tablaUsuarios tr, #tablaUsuarios td { display: block; width: 100%; }
+        #tablaUsuarios tbody tr {
+            margin-bottom: 16px !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.02);
+            padding: 12px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        #tablaUsuarios td {
+            text-align: left !important;
+            padding: 8px 18px !important;
+            border: none !important;
+            position: relative;
+            padding-top: 30px !important;
+        }
+        #tablaUsuarios td::before {
+            content: attr(data-label);
+            position: absolute; top: 8px; left: 18px;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            color: var(--accent-blue, #2b7de9); letter-spacing: 1px;
+        }
+        #tablaUsuarios td[data-label="Usuario"] { padding-top: 12px !important; }
+        #tablaUsuarios td[data-label="Usuario"]::before { display: none; }
+        #tablaUsuarios td[data-label="Acciones"] { padding-top: 12px !important; text-align: center !important; }
+        #tablaUsuarios td[data-label="Acciones"]::before { display: none; }
     }
 </style>
 {% endblock %}
@@ -162,7 +205,7 @@
                         <tr data-rol="{{ u.rol }}" data-activo="{{ u.is_active|yesno:'si,no' }}"
                             data-buscar="{{ u.get_full_name|lower }} {{ u.numero_documento }} {{ u.email|lower }}">
                             <!-- USUARIO -->
-                            <td class="ps-4 py-3">
+                            <td class="ps-4 py-3" data-label="Usuario">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="avatar-sm">
                                         {% if u.foto_perfil %}
@@ -178,22 +221,22 @@
                                 </div>
                             </td>
                             <!-- DOCUMENTO -->
-                            <td class="py-3">
+                            <td class="py-3" data-label="Documento">
                                 <span class="text-info fw-bold small">{{ u.tipo_documento }} {{ u.numero_documento }}</span>
                             </td>
                             <!-- CORREO -->
-                            <td class="py-3">
+                            <td class="py-3" data-label="Correo">
                                 <span class="text-white-50 small">{{ u.email }}</span>
                             </td>
                             <!-- PROGRAMA -->
-                            <td class="py-3">
+                            <td class="py-3" data-label="Programa / Ficha">
                                 <div class="small text-white-50 gest-u-10">
                                     {{ u.get_programa_formacion_display|default:"-" }}
                                 </div>
                                 {% if u.ficha %}<span class="badge bg-dark border border-secondary text-white-50 small">Ficha: {{ u.ficha }}</span>{% endif %}
                             </td>
                             <!-- ROL -->
-                            <td class="py-3">
+                            <td class="py-3" data-label="Rol">
                                 <span class="badge badge-rol 
                                     {% if u.is_staff or u.rol == 'admin' %}bg-warning text-dark
                                     {% elif u.rol == 'instructor' %}bg-info text-dark
@@ -205,7 +248,7 @@
                                 </span>
                             </td>
                             <!-- ESTADO -->
-                            <td class="py-3">
+                            <td class="py-3" data-label="Estado">
                                 {% if u.is_active %}
                                     <span class="small gest-u-11"><i class="fas fa-circle me-1 gest-u-12"></i>Activo</span>
                                 {% else %}
@@ -213,7 +256,7 @@
                                 {% endif %}
                             </td>
                             <!-- ACCIONES -->
-                            <td class="py-3 pe-4 text-center">
+                            <td class="py-3 pe-4 text-center" data-label="Acciones">
                                 <div class="d-flex gap-2 justify-content-center">
                                     <!-- Botón editar -->
                                     <button class="btn btn-sm btn-outline-info action-btn"
@@ -387,7 +430,7 @@
                         <div class="mb-3">
                             <input type="file" name="backup_file" accept=".json" class="form-control btn btn-dark text-start" required>
                         </div>
-                        <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 py-2" onclick="return confirm('¿Estás seguro de que deseas restaurar la base de datos? Esto sobrescribirá y actualizará los registros del sistema.')">
+                        <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 py-2" data-confirm="¿Estás seguro de que deseas restaurar la base de datos? Esto sobrescribirá y actualizará los registros del sistema." data-confirm-title="Restaurar Base de Datos" data-confirm-icon="danger" data-confirm-text="Restaurar">
                             <i class="fas fa-file-upload me-2"></i>Subir y Restaurar JSON
                         </button>
                     </form>

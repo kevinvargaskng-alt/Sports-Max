@@ -20,10 +20,19 @@
     --success: #2b7de9;
     --warning: #ffc107;
     --info: #2b7de9;
+    --font-display: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Ocultar icono de ojo nativo de Edge/IE para evitar el bug del doble ojo */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none !important;
 }
 
 /* ── MODO CLARO (LIGHT THEME) ────────── */
-body.light-theme {
+body.light-theme,
+html.acc-claro,
+html.acc-claro body {
     --primary-dark: #f8fafc;
     --text-white: #0f172a;
     --glass-bg: rgba(43, 125, 233, 0.05);
@@ -171,11 +180,17 @@ body.light-theme .navbar-brand span span {
 body.light-theme .btn-profile {
     color: #0f172a !important;
 }
+body.light-theme .hero {
+    background: #f8fafc !important;
+}
 body.light-theme .hero-bg {
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    background-image: url('../img/hero_bg.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    opacity: 0.45 !important;
 }
 body.light-theme .hero-overlay {
-    background: linear-gradient(to top, #f8fafc 0%, rgba(248, 250, 252, 0.5) 50%, transparent 100%) !important;
+    background: linear-gradient(to top, #f8fafc 0%, rgba(248, 250, 252, 0.25) 50%, transparent 100%) !important;
 }
 body.light-theme .hero-title {
     color: #0f172a !important;
@@ -185,6 +200,29 @@ body.light-theme .hero-title .outline {
 }
 body.light-theme .hero-sub {
     color: #475569 !important;
+}
+body.light-theme .btn-outline-sport {
+    color: #0f172a !important;
+    border-color: rgba(15, 23, 42, 0.3) !important;
+}
+body.light-theme .btn-outline-sport:hover {
+    background: rgba(15, 23, 42, 0.05) !important;
+    color: #000 !important;
+}
+body.light-theme .scanner-btn {
+    background: rgba(26, 95, 180, 0.08) !important;
+    border-color: rgba(26, 95, 180, 0.5) !important;
+    color: #1a5fb4 !important;
+}
+body.light-theme .scanner-btn:hover,
+body.light-theme .scanner-btn:active {
+    background: rgba(26, 95, 180, 0.16) !important;
+    color: #0d3875 !important;
+}
+body.light-theme .sena-verified-badge {
+    background: rgba(26, 95, 180, 0.08) !important;
+    border-color: rgba(26, 95, 180, 0.3) !important;
+    color: #1a5fb4 !important;
 }
 body.light-theme .countdown-strip {
     background: #ffffff !important;
@@ -380,6 +418,24 @@ body::before {
     padding: 30px;
     margin-bottom: 30px;
     transition: var(--transition);
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.sport-card h1, .sport-card h2, .sport-card h3, .sport-card h4, .sport-card h5, .sport-card h6,
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
+.sport-card p, .card p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+@media (max-width: 1200px) {
+    .sport-card h6.small,
+    .sport-card h6 {
+        font-size: clamp(0.68rem, 0.75vw + 0.35rem, 0.85rem) !important;
+        letter-spacing: -0.2px;
+    }
 }
 
 .main-card {
@@ -633,6 +689,74 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 /* ============================================================
+   ESPACIADO Y SEPARACIÓN DE EMOJIS / ICONOS EN FORMULARIOS
+   ============================================================ */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px !important;
+}
+
+.input-group > .input-group-text {
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--neon-border);
+    color: var(--accent-blue);
+    padding: 0.5rem;
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-right: 2px;
+}
+
+.input-group > .form-control,
+.input-group > .form-select,
+.modal .form-control,
+.modal .form-select,
+.modal textarea {
+    border-radius: 10px !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+}
+
+.form-label i,
+.form-label svg,
+.form-label .emoji,
+.input-group-text i,
+.input-group-text svg,
+.input-group-text .emoji,
+.input-icon i,
+.input-icon svg,
+.input-icon .emoji {
+    margin-right: 8px !important;
+    display: inline-block;
+}
+
+/* Iconos solos dentro de containers o addons (ej. input-group-text, input-icon): centrado perfecto con el mismo espacio a cada lado */
+.input-group-text i:only-child,
+.input-group-text svg:only-child,
+.input-group-text .emoji:only-child,
+.input-group-text > i:last-child:first-child,
+.input-group-text > svg:last-child:first-child,
+.input-icon i:only-child,
+.input-icon svg:only-child,
+.input-icon .emoji:only-child,
+.input-icon > i:last-child:first-child,
+.input-icon > svg:last-child:first-child {
+    margin: 0 !important;
+}
+
+.form-group label i,
+.form-group label span,
+.mb-3 label i,
+.mb-3 label span {
+    margin-right: 6px !important;
+}
+
+/* ============================================================
    TABS Y TOOLTIPS
    ============================================================ */
 .nav-tabs {
@@ -725,11 +849,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 .modulo-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
     margin-bottom: 25px;
     border-bottom: 2px solid var(--glass-bg);
     padding-bottom: 15px;
+    width: 100%;
 }
 
 .modulo-header i {
