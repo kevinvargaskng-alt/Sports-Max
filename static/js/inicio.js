@@ -32,12 +32,23 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. SISTEMA DE SEGURIDAD (LOGIN, REGISTRO & VALIDACIÓN)
     // ============================================================
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('login') === '1' || urlParams.has('next')) {
-        const modalAuth = document.getElementById('modalForm');
-        if (modalAuth) {
-            var myModal = new bootstrap.Modal(modalAuth);
+    const modalAuthEl = document.getElementById('modalForm');
+    const loginTabEl = document.getElementById('login-tab');
+    const registerTabEl = document.getElementById('register-tab');
+
+    if (modalAuthEl) {
+        if (urlParams.get('login') === '1' || urlParams.has('next')) {
+            var myModal = new bootstrap.Modal(modalAuthEl);
             myModal.show();
+        }
+
+        if (loginTabEl && registerTabEl) {
+            loginTabEl.addEventListener('shown.bs.tab', function () {
+                modalAuthEl.classList.remove('modal-register-active');
+            });
+            registerTabEl.addEventListener('shown.bs.tab', function () {
+                modalAuthEl.classList.add('modal-register-active');
+            });
         }
     }
 
@@ -80,13 +91,75 @@ document.addEventListener('DOMContentLoaded', function () {
                 { pct: '0%', color: '', label: '' },
                 { pct: '25%', color: '#dc3545', label: '🔴 Muy débil' },
                 { pct: '50%', color: '#fd7e14', label: '🟠 Débil' },
-                { pct: '75%', color: '#ffc107', label: '🟡 Aceptable' },
-                { pct: '100%', color: '#198754', label: '🟢 Fuerte' },
+                { pct: '75%', color: '#ffc107', label: '🟡 Bueno' },
+                { pct: '100%', color: '#198754', label: '🟢 Excelente' },
             ];
             const lvl = levels[score] || levels[0];
             strengthBar.style.width = lvl.pct;
             strengthBar.style.backgroundColor = lvl.color;
             strengthText.textContent = lvl.label;
+        });
+    }
+
+    // Sugerir contraseña
+    const btnSugerir = document.getElementById('btnSugerirClave');
+    if (btnSugerir) {
+        btnSugerir.addEventListener('click', function () {
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const symbols = '!@#$';
+            const allChars = uppercase + lowercase + numbers + symbols;
+
+            let pass = '';
+            // Garantizar al menos uno de cada tipo
+            pass += uppercase.charAt(Math.floor(Math.random() * uppercase.length));
+            pass += lowercase.charAt(Math.floor(Math.random() * lowercase.length));
+            pass += numbers.charAt(Math.floor(Math.random() * numbers.length));
+            pass += symbols.charAt(Math.floor(Math.random() * symbols.length));
+
+            // Rellenar el resto hasta 12 caracteres
+            for (let i = 4; i < 12; i++) {
+                pass += allChars.charAt(Math.floor(Math.random() * allChars.length));
+            }
+
+            // Mezclar caracteres
+            pass = pass.split('').sort(() => 0.5 - Math.random()).join('');
+            
+            const contrasena = document.getElementById('id_contrasena');
+            const confirmar = document.getElementById('confirmarContrasena');
+            
+            if (contrasena && confirmar) {
+                contrasena.value = pass;
+                confirmar.value = pass;
+                
+                // Cambiar tipo a texto para que lo vea
+                contrasena.type = 'text';
+                confirmar.type = 'text';
+                
+                // Actualizar íconos del ojo a abierto
+                const toggle2 = document.getElementById('togglePassword2');
+                const toggle3 = document.getElementById('togglePassword3');
+                [toggle2, toggle3].forEach(btn => {
+                    if (btn) {
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        }
+                    }
+                });
+                
+                // Disparar evento input para actualizar medidor de fuerza
+                contrasena.dispatchEvent(new Event('input'));
+                
+                smaxDialog.alert('', {
+                    title: 'Contraseña Sugerida',
+                    icon: 'key',
+                    html: 'Se ha generado una contraseña fuerte:<span class="smax-highlight">' + pass + '</span>Por favor, cópiala y guárdala en un lugar seguro.',
+                    buttonText: 'Entendido'
+                });
+            }
         });
     }
 
@@ -114,12 +187,34 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                if (loginAlert) {
-                    loginAlert.className = `alert alert-${data.status === 'success' ? 'success' : 'danger'}`;
-                    loginAlert.innerHTML = data.message;
-                }
                 if (data.status === 'success') {
-                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 1000);
+                    if (loginAlert) {
+                        loginAlert.className = 'alert alert-success';
+                        loginAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + data.message;
+                    }
+                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 900);
+                } else if (data.status === 'blocked' || data.bloqueado) {
+                    // Mostrar modal de cuenta bloqueada
+                    if (loginAlert) {
+                        loginAlert.className = 'alert alert-warning';
+                        loginAlert.innerHTML = '<i class="fas fa-lock me-2"></i>' + data.message;
+                    }
+                    const minutos = data.minutos || 5;
+                    const msg = minutos >= 1440
+                        ? 'Tu cuenta fue bloqueada por 24 horas por múltiples intentos fallidos.'
+                        : `Tu cuenta fue bloqueada por ${minutos} minuto(s) por intentos fallidos.`;
+                    // Mostrar modal de bloqueo
+                    const elModalBloqueo = document.getElementById('modalCuentaBloqueada');
+                    if (elModalBloqueo) {
+                        document.getElementById('msgBloqueo').textContent = msg;
+                        const bsModal = new bootstrap.Modal(elModalBloqueo);
+                        bsModal.show();
+                    }
+                } else {
+                    if (loginAlert) {
+                        loginAlert.className = 'alert alert-danger';
+                        loginAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i>' + data.message;
+                    }
                 }
             })
             .catch(error => {
@@ -159,6 +254,47 @@ document.addEventListener('DOMContentLoaded', function () {
                     registerAlert.classList.remove('d-none');
                     registerAlert.className = 'alert alert-warning mt-3';
                     registerAlert.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Las contraseñas no coinciden.';
+                }
+                return;
+            }
+
+            // ── Validación de contraseña débil ──
+            const commonPasswords = [
+                '12345678', '123456789', '1234567890', 'password', 'contrasena',
+                'contraseña', 'qwerty', 'abcdefgh', '11111111', '00000000',
+                'admin123', 'password1', '12341234', 'abc12345'
+            ];
+            const numDoc = document.getElementById('id_numero_documento') ? document.getElementById('id_numero_documento').value : '';
+
+            if (pass.length < 8) {
+                if (registerAlert) {
+                    registerAlert.classList.remove('d-none');
+                    registerAlert.className = 'alert alert-danger mt-3';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña debe tener al menos 8 caracteres.';
+                }
+                return;
+            }
+            if (/^\d+$/.test(pass)) {
+                if (registerAlert) {
+                    registerAlert.classList.remove('d-none');
+                    registerAlert.className = 'alert alert-danger mt-3';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña no puede ser solo números. Incluye letras y/o símbolos.';
+                }
+                return;
+            }
+            if (commonPasswords.includes(pass.toLowerCase())) {
+                if (registerAlert) {
+                    registerAlert.classList.remove('d-none');
+                    registerAlert.className = 'alert alert-danger mt-3';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Esa contraseña es demasiado común. Por favor, elige otra.';
+                }
+                return;
+            }
+            if (numDoc && pass.toLowerCase() === numDoc.toLowerCase()) {
+                if (registerAlert) {
+                    registerAlert.classList.remove('d-none');
+                    registerAlert.className = 'alert alert-danger mt-3';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña no puede ser igual a tu número de documento.';
                 }
                 return;
             }
@@ -274,7 +410,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         for (let id in campos) {
             const el = document.getElementById(id);
-            if (el) el.value = campos[id];
+            if (el) {
+                el.value = campos[id];
+                if (id === 'inputEstadoGeneral') el.disabled = false;
+            }
         }
 
         if (previewImagenElemento) {
@@ -443,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = new FormData(this);
             const reportAlert = document.getElementById('reportAlert');
 
-            fetch(window.location.pathname, {
+            fetch('/perfil/', {
                 method: 'POST',
                 body: formData,
                 headers: { 

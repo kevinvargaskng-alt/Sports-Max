@@ -5,139 +5,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
-<style>
-    /* 3. ESTILOS DE LA FOTO Y CÁMARA */
-    .btn-camera {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        background: var(--accent-blue);
-        color: white;
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        border: 2px solid #050814;
-        transition: all 0.3s ease;
-        z-index: 10;
-    }
-    .btn-camera:hover {
-        background: var(--accent-hover);
-        transform: scale(1.1);
-    }
+<link rel="stylesheet" href="{% static 'css/perfil_styles.css' %}">
 
-    /* 4. NAVEGACIÓN POR TABS */
-    .nav-tabs .nav-link {
-        color: rgba(255,255,255,0.6);
-        border: none;
-        border-bottom: 2px solid transparent;
-        transition: all 0.3s;
-        text-transform: capitalize !important;
-        font-weight: 500;
-        padding: 10px 20px;
-    }
-    .nav-tabs .nav-link.active {
-        background: transparent !important;
-        color: var(--accent-blue) !important;
-        border-bottom: 2px solid var(--accent-blue);
-    }
-
-    /* 5. DISEÑO DE NOVEDADES */
-    .news-item {
-        border-left: 3px solid var(--accent-blue);
-        background: rgba(255, 255, 255, 0.03);
-        transition: transform 0.2s;
-    }
-    .news-item:hover {
-        transform: translateX(5px);
-        background: rgba(255, 255, 255, 0.06);
-    }
-
-    /* 6. INPUTS DESHABILITADOS */
-    .custom-input:disabled {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        opacity: 0.8;
-        color: #aaa !important;
-    }
-
-    /* 7. RESPONSIVE */
-    @media (max-width: 768px) {
-        .border-md-end {
-            border-right: none !important;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 25px;
-            margin-bottom: 25px;
-        }
-    }
-
-    /* ESTILOS DEL BUZÓN */
-    #modalBuzonSugerencias .form-select,
-    #modalBuzonSugerencias .form-control {
-        background: #1e2937 !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        color: #fff !important;
-    }
-    /* AJUSTE DE COLOR PARA LAS PESTAÑAS DENTRO DEL MODAL DE ERROR */
-    #modalBuzonSugerencias .nav-tabs .nav-link {
-        color: rgba(255,255,255,0.5) !important;
-        border: none !important;
-    }
-    #modalBuzonSugerencias .nav-tabs .nav-link.active {
-        color: var(--accent-blue) !important;
-        border-bottom: 3px solid var(--accent-blue) !important;
-        background: transparent !important;
-    }
-    
-    /* Estilo de alerta armonizado con el sistema */
-    #reportAlert {
-        background-color: rgba(74, 158, 255, 0.1) !important;
-        color: #fff !important;
-        border: 1px solid rgba(74, 158, 255, 0.2) !important;
-        border-left: 5px solid var(--accent-blue) !important;
-    }
-    
-    /* Eliminar cualquier rastro de azul en los botones del modal de error */
-    #modalBuzonSugerencias .btn-enviar-reporte {
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover)) !important;
-        border: none !important;
-        color: #050814 !important;
-    }
-    
-    /* Estilo para la inicial si no hay foto */
-    .initial-avatar {
-        width: 150px;
-        height: 150px;
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover));
-        color: #050814;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 4.5rem;
-        font-weight: bold;
-        border: 3px solid var(--accent-blue);
-        box-shadow: 0 0 20px rgba(74, 158, 255, 0.2);
-    }
-    .initial-avatar-sm {
-        width: 120px;
-        height: 120px;
-        font-size: 3.5rem;
-    }
-
-    /* Eliminar el resplandor azul de los campos de texto al hacer clic */
-</style>
-<style>
-    .sugerencia-card {
-        background: rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
-    }
-    .sugerencia-card:hover {
-        transform: translateY(-4px);
-        background: rgba(255,255,255,0.08);
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -148,13 +17,13 @@
             <div class="row align-items-center p-2">
 
                 <!-- COLUMNA IZQUIERDA: FOTO Y NOMBRE -->
-                <div class="col-md-4 text-center border-md-end" style="border-color: rgba(255,255,255,0.1) !important;">
+                <div class="col-md-4 text-center border-md-end prf-u-1">
                     <div class="mb-3 position-relative d-inline-block">
                         {% if usuario.foto_perfil %}
-                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--accent-blue);">
+                            <img src="{{ usuario.foto_perfil.url }}" alt="Perfil" class="rounded-circle shadow prf-u-2" data-bs-toggle="modal" data-bs-target="#modalFotoGrande" style="cursor: pointer; object-fit: cover; object-position: {{ usuario.foto_posicion }};">
                         {% else %}
                             <div class="rounded-circle shadow initial-avatar mx-auto">
-                                {{ usuario.first_name|first|upper }}
+                                {{ usuario.iniciales }}
                             </div>
                         {% endif %}
                     </div>
@@ -216,10 +85,7 @@
         <!-- NAVEGACIÓN DE SECCIONES -->
         <ul class="nav nav-tabs mb-4 justify-content-center border-0" id="perfilTabs" role="tablist">
             <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-novedades">Novedades</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">Gimnasio</button>
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-gimnasio">Gimnasio</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prestamos">Préstamos</button>
@@ -231,9 +97,9 @@
             
             {% if user.is_staff %}
             <li class="nav-item">
-                <button class="nav-link text-info fw-bold" data-bs-toggle="tab" data-bs-target="#tab-admin-usuarios">
-                    <i class="fas fa-users-cog me-1"></i> Usuarios
-                </button>
+                <a class="nav-link text-info fw-bold" href="{% url 'gestionar_usuarios' %}">
+                    <i class="fas fa-users-cog me-1"></i> Gestión Usuarios
+                </a>
             </li>
 
             <li class="nav-item">
@@ -258,27 +124,8 @@
 
         <div class="tab-content pb-5">
 
-            <!-- 1. TAB NOVEDADES -->
-            <div class="tab-pane fade show active" id="tab-novedades">
-                <div class="sport-card text-start">
-                    <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-rss me-2"></i>Notificaciones del sistema</h5>
-                    <div class="news-item p-3 mb-3 rounded">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary p-2 rounded-circle me-3"><i class="fas fa-info-circle text-white"></i></div>
-                                <div>
-                                    <h6 class="text-white mb-1 fw-bold text-cap">Bienvenido al sistema</h6>
-                                    <p class="text-white-50 small mb-0">Gestiona tus actividades deportivas, torneos e implementos desde un solo lugar.</p>
-                                </div>
-                            </div>
-                            <span class="badge bg-dark text-info text-cap">Reciente</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. TAB GIMNASIO -->
-            <div class="tab-pane fade" id="tab-gimnasio">
+            <!-- 1. TAB GIMNASIO -->
+            <div class="tab-pane fade show active" id="tab-gimnasio">
                 <div class="sport-card text-start">
                     <h5 class="fw-bold mb-4 text-info text-cap"><i class="fas fa-clock me-2"></i>Historial de ingresos al gimnasio</h5>
                     <div class="table-responsive">
@@ -376,76 +223,15 @@
 
 
 
+
+
             {% if user.is_staff %}
-            <!-- 6. TAB GESTIÓN USUARIOS (SOLO ADMIN) -->
-            <div class="tab-pane fade" id="tab-admin-usuarios">
-                <div class="sport-card text-start">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold text-info text-cap m-0"><i class="fas fa-users me-2"></i>Control de Usuarios Registrados</h5>
-                        <span class="badge bg-dark border border-info text-info">{{ total_usuarios }} Usuarios</span>
-                    </div>
-
-                    <div class="input-group mb-3 shadow-sm">
-                        <span class="input-group-text bg-dark border-info text-info">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" id="searchDocumento" class="form-control bg-dark text-white border-info" placeholder="Buscar por número de documento..." onkeyup="filtrarUsuarios()">
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle" id="tablaUsuariosAdmin">
-                            <thead>
-                                <tr class="text-cap">
-                                    <th>Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Rol</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for u in todos_usuarios %}
-                                <tr>
-                                    <td class="fw-bold">{{ u.numero_documento }}</td>
-                                    <td class="text-cap">{{ u.get_full_name|lower }}</td>
-                                    <td><span class="badge bg-secondary text-cap">{{ u.rol }}</span></td>
-                                    <td>
-                                        {% if u.is_active %}
-                                            <span class="text-info small"><i class="fas fa-check-circle me-1"></i>Activo</span>
-                                        {% else %}
-                                            <span class="text-danger small"><i class="fas fa-ban me-1"></i>Bloqueado</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            {% if u.id != usuario.id %}
-                                            <form action="{% url 'toggle_usuario' u.id %}" method="POST" style="display:inline;">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-info{% endif %}" title="Cambiar estado">
-                                                    <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
-                                                </button>
-                                            </form>
-                                            {% else %}
-                                            <button class="btn btn-sm btn-outline-secondary" disabled title="No puedes bloquear tu propia cuenta">
-                                                <i class="fas fa-user-shield"></i>
-                                            </button>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <!-- 6. TAB GESTIÓN REPORTES (SOLO ADMIN) -->
             <div class="tab-pane fade" id="tab-admin-reportes">
                 <div class="sport-card text-start">
                     <h5 class="fw-bold mb-4 text-warning text-cap"><i class="fas fa-clipboard-list me-2"></i>Administración Global de Reportes</h5>
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle" style="border-collapse: separate; border-spacing: 0 8px;">
+                        <table class="table table-dark table-hover align-middle prf-u-4">
                             <thead>
                                 <tr class="text-cap">
                                     <th>Usuario</th>
@@ -458,13 +244,13 @@
                             </thead>
                             <tbody>
                                 {% for s in reportes_todos %}
-                                <tr style="background: rgba(255,255,255,0.02);">
+                                <tr class="prf-u-5">
                                     <td class="text-info fw-bold">{{ s.usuario.get_full_name|lower }}</td>
-                                    <td><div class="small text-white-50 text-truncate" style="max-width: 250px;">{{ s.comentario }}</div></td>
+                                    <td><div class="small text-white-50 text-truncate prf-u-6">{{ s.comentario }}</div></td>
                                     <td>
                                         {% if s.imagen %}
                                             <a href="{{ s.imagen.url }}" target="_blank">
-                                                <img src="{{ s.imagen.url }}" alt="Evidencia" class="rounded" style="width: 40px; height: 40px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                                                <img src="{{ s.imagen.url }}" alt="Evidencia" class="rounded prf-u-7">
                                             </a>
                                         {% else %}
                                             <span class="text-white-50 small">Sin imagen</span>
@@ -511,23 +297,41 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-0">
-                <form method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
+                <form id="formEditarPerfil" method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="text-center mb-4 mt-2">
                         <div class="position-relative d-inline-block">
-                            {% if usuario.foto_perfil %}
-                                <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
-                            {% else %}
-                                <div id="initialPreview" class="rounded-circle shadow initial-avatar initial-avatar-sm mx-auto">
-                                    {{ usuario.first_name|first|upper }}
-                                </div>
-                                <img id="imgPreviewPerfil" src="" class="rounded-circle shadow d-none" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid var(--accent-blue);">
-                            {% endif %}
+                            <div class="profile-cropper-wrapper shadow mx-auto" style="width: 140px; height: 140px; border-radius: 50%; overflow: hidden; position: relative; border: 3px solid var(--accent-blue, #2b7de9); background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center;">
+                                {% if usuario.foto_perfil %}
+                                    <img id="imgPreviewPerfil" src="{{ usuario.foto_perfil.url }}" class="profile-cropper-img" style="width: 100%; height: 100%; object-fit: cover; cursor: move; user-select: none; -webkit-user-drag: none; object-position: {{ usuario.foto_posicion }};">
+                                {% else %}
+                                    <div id="initialPreview" class="profile-cropper-initials" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; color: var(--accent-blue, #2b7de9); background: rgba(255, 255, 255, 0.05);">
+                                        {{ usuario.iniciales }}
+                                    </div>
+                                    <img id="imgPreviewPerfil" src="" class="profile-cropper-img d-none" style="width: 100%; height: 100%; object-fit: cover; cursor: move; user-select: none; -webkit-user-drag: none;">
+                                {% endif %}
+                            </div>
                             <label for="inputFotoPerfil" class="btn-camera" title="Cambiar foto">
                                 <i class="fas fa-camera"></i>
                             </label>
                             <input type="file" name="imagen" id="inputFotoPerfil" class="d-none" accept="image/*" onchange="previewProfileImage(event)">
+                        </div>
+                        
+                        <!-- Controles de Ajuste de Imagen y Eliminar -->
+                        <div class="mt-3">
+                            <input type="hidden" name="foto_posicion" id="foto_posicion_input" value="{{ usuario.foto_posicion }}">
+                            <input type="hidden" name="eliminar_foto" id="eliminar_foto_input" value="false">
+                            
+                            <div id="cropperControls" class="{% if usuario.foto_perfil %}d-block{% else %}d-none{% endif %} mb-2">
+                                <p class="small text-white-50 mb-0"><i class="fas fa-arrows-alt-v me-1 text-info"></i>Arrastra verticalmente la foto en el círculo para encuadrarla</p>
+                            </div>
+                            
+                            {% if usuario.foto_perfil %}
+                            <button type="button" id="btnEliminarFoto" class="btn btn-outline-danger btn-sm rounded-pill px-3 mt-2" onclick="eliminarFotoPerfil()">
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar foto
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -571,152 +375,11 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalBuzonSugerencias" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: linear-gradient(145deg, #0f172a, #1e2937); border: 1px solid rgba(74, 158, 255, 0.2); border-radius: 16px;">
-            <div class="modal-header border-0 pb-1">
-                <h4 class="modal-title fw-bold">
-                    <i class="fas fa-bug text-info me-3"></i>Buzón de Reportes y Fallos
-                </h4>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body pt-0">
-                <ul class="nav nav-tabs mb-4 border-0" id="buzonTabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#buzon-enviar">
-                            <i class="fas fa-bug me-2"></i>Enviar Reporte
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#buzon-respuestas">
-                            <i class="fas fa-history me-2"></i>Mis Reportes
-                        </button>
-                    </li>
-                </ul>
-
-                <div class="tab-content">
-                    <!-- ENVIAR -->
-                    <div class="tab-pane fade show active" id="buzon-enviar">
-                        <div id="reportAlert" class="alert d-none mb-3 shadow-lg fw-bold text-center" role="alert"></div>
-                        <form id="reportarErrorForm" method="POST" action="{% url 'perfil' %}" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="hidden" name="tipo" value="error">
-
-                            <div class="mt-3">
-                                <label class="form-label fw-bold text-white-50">Descripción del fallo</label>
-                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe detalladamente el error que encontraste..." required></textarea>
-                            </div>
-
-                            <div class="mt-3">
-                                <label class="form-label fw-bold text-white-50 small d-block">Captura de pantalla del error</label>
-                                <label for="imagen_error" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" style="background: #161b22; border: 1px solid #30363d;">
-                                    <span id="fileName" class="text-white-50 small">Seleccionar imagen desde su equipo...</span>
-                                    <i class="fas fa-upload"></i>
-                                </label>
-                                <input type="file" name="imagen_error" id="imagen_error" class="d-none" accept="image/*" 
-                                       onchange="document.getElementById('fileName').innerText = this.files[0].name">
-                            </div>
-
-                            <button type="submit" class="btn btn-info btn-enviar-reporte w-100 mt-4 py-3 fw-bold">
-                                <i class="fas fa-paper-plane me-2"></i>Enviar Reporte al Sistema
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- MIS SUGERENCIAS -->
-                    <div class="tab-pane fade" id="buzon-respuestas">
-                        <div id="lista-reportes-container">
-                        
-                        {% if sugerencias_usuario %} {# Línea 462 #}
-                            {% for s in sugerencias_usuario %}
-                            <div class="sugerencia-card p-4 mb-3 rounded-3" id="sugerencia-{{ s.id }}"
-                                 style="border-left: 5px solid {% if s.respuesta %}var(--accent-blue){% else %}#eab308{% endif %};">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <div>
-                                        <span class="badge {% if s.tipo == 'error' %}bg-danger{% else %}bg-info{% endif %}">
-                                            {{ s.tipo|upper }}
-                                        </span>
-                                        {% if not s.respuesta %}
-                                        <button type="button" class="btn btn-sm btn-link text-warning p-0 ms-2 btn-editar-reporte" 
-                                                data-id="{{ s.id }}" data-comentario="{{ s.comentario }}" title="Editar reporte">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2 btn-borrar-reporte" 
-                                                data-id="{{ s.id }}" title="Eliminar reporte">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        {% endif %}
-                                    </div>
-                                    <small class="text-white-50">{{ s.fecha|date:"d/m/Y H:i" }}</small>
-                                </div>
-                                <p class="mb-3">{{ s.comentario }}</p>
-
-                                {% if s.imagen %}
-                                    <div class="mb-3">
-                                        <a href="{{ s.imagen.url }}" target="_blank">
-                                            <img src="{{ s.imagen.url }}" alt="Evidencia" class="img-fluid rounded border border-secondary" style="max-height: 150px; cursor: pointer;">
-                                        </a>
-                                    </div>
-                                {% endif %}
-
-                                {% if s.respuesta %}
-                                    <div class="p-3 rounded bg-info bg-opacity-10 border-start border-info border-3">
-                                        <strong class="text-info"><i class="fas fa-check-circle me-1"></i>Reporte Corregido:</strong><br>
-                                        <p class="small text-white mt-1 mb-0">{{ s.respuesta }}</p>
-                                    </div>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark">Pendiente</span>
-                                    <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>En revisión</span>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="text-center py-5 text-white-50">
-                                <i class="fas fa-inbox fa-4x mb-3"></i>
-                                <p>No has enviado ningún reporte de error todavía.</p>
-                            </div>
-                        {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- MODAL EDITAR REPORTE -->
-<div class="modal fade" id="modalEditarReporte" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #ff4d4d; border-radius: 12px;">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2 text-warning"></i>Editar Reporte</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="formEditarReporte" method="POST" action="{% url 'perfil' %}">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="editar_reporte">
-                <input type="hidden" name="reporte_id" id="inputEditId">
-                <div class="modal-body">
-                    <div class="mb-3 text-start">
-                        <label class="form-label small fw-bold text-white-50">Nuevo comentario</label>
-                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning btn-sm fw-bold">Guardar Cambios</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <!-- MODAL TEST DE RENDIMIENTO INICIAL -->
 <div class="modal fade" id="modalTestRendimiento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid var(--accent-blue); border-radius: 20px;">
+        <div class="modal-content text-white prf-u-10">
             <div class="modal-header border-0 pb-0">
                 <h4 class="modal-title fw-bold"><i class="fas fa-chart-line text-info me-3"></i>Test de Rendimiento Inicial</h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -726,7 +389,7 @@
                     <div class="row g-4">
                         <!-- Bloque 1: Biometría -->
                         <div class="col-md-6">
-                            <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="p-3 rounded-4 prf-u-11">
                                 <h6 class="text-info fw-bold mb-3 small text-uppercase"><i class="fas fa-weight me-2"></i>Biometría</h6>
                                 <div class="mb-3">
                                     <label class="form-label small text-white-50">Peso (kg)</label>
@@ -736,7 +399,7 @@
                                     <label class="form-label small text-white-50">Estatura (cm)</label>
                                     <input type="number" id="inputAltura" class="form-control bg-dark text-white border-secondary" placeholder="170">
                                 </div>
-                                <div class="mt-4 p-3 rounded text-center" style="background: rgba(74, 158, 255, 0.1);">
+                                <div class="mt-4 p-3 rounded text-center prf-u-12">
                                     <span class="d-block small text-white-50">Tu IMC Estimado</span>
                                     <h3 id="valorIMC" class="fw-bold text-info mb-1">--.-</h3>
                                     <span id="estadoIMC" class="badge bg-secondary">Sin datos</span>
@@ -746,7 +409,7 @@
 
                         <!-- Bloque 2: Pruebas Físicas -->
                         <div class="col-md-6">
-                            <div class="p-3 rounded-4 h-100" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="p-3 rounded-4 h-100 prf-u-13">
                                 <h6 class="text-warning fw-bold mb-3 small text-uppercase"><i class="fas fa-heartbeat me-2"></i>Capacidad Física</h6>
                                 <div class="mb-3">
                                     <label class="form-label small text-white-50">Pulsaciones (Reposo)</label>
@@ -791,7 +454,7 @@
 <!-- MODAL ESTÉTICO DE CONFIRMACIÓN PARA ELIMINAR -->
 <div class="modal fade" id="modalConfirmarEliminarReporte" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid #dc3545; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="modal-content text-white prf-u-14">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-shield-alt me-2 text-danger"></i>Seguridad de Datos</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -816,7 +479,7 @@
 </div>
 
 <!-- FORMULARIO OCULTO PARA BORRAR -->
-<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" style="display:none;">
+<form id="formBorrarReporte" method="POST" action="{% url 'perfil' %}" class="prf-u-15">
     {% csrf_token %}
     <input type="hidden" name="tipo" value="borrar_reporte">
     <input type="hidden" name="reporte_id" id="inputDeleteId">
@@ -825,7 +488,7 @@
 <!-- MODAL PARA QUE EL ADMIN RESPONDA -->
 <div class="modal fade" id="modalResponderReporte" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-white" style="background: #0f172a; border: 1px solid var(--accent-blue); border-radius: 12px;">
+        <div class="modal-content text-white prf-u-16">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold"><i class="fas fa-reply me-2 text-info"></i>Responder al Aprendiz</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -837,12 +500,12 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-white-50">Reporte original:</label>
-                        <div id="textoReporteOriginal" class="p-3 rounded bg-dark small text-white-50" style="border: 1px solid rgba(255,255,255,0.1);"></div>
+                        <div id="textoReporteOriginal" class="p-3 rounded bg-dark small text-white-50 prf-u-17"></div>
                         <div id="contenedorImagenReporte" class="mt-2 d-none"></div>
                     </div>
                     <div class="mb-3 text-start">
                         <label class="form-label small fw-bold text-info">Tu Respuesta / Solución</label>
-                        <textarea name="respuesta" id="inputRespuestaAdmin" rows="5" class="form-control" style="background: #1e2937; color: #fff; border: 1px solid rgba(255,255,255,0.1);" required placeholder="Escribe aquí la solución o respuesta para el aprendiz..."></textarea>
+                        <textarea name="respuesta" id="inputRespuestaAdmin" rows="5" class="form-control prf-u-18" required placeholder="Escribe aquí la solución o respuesta para el aprendiz..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -854,22 +517,150 @@
     </div>
 </div>
 
+<!-- MODAL AGRANDAR FOTO -->
+<div class="modal fade" id="modalFotoGrande" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0 text-center">
+            <div class="modal-header border-0 p-0 justify-content-end">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="margin-bottom: 10px;"></button>
+            </div>
+            <div class="modal-body p-0">
+                {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" class="img-fluid rounded-4 shadow-lg border border-secondary" style="max-height: 80vh; max-width: 100%;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
+    let imgElement = document.getElementById('imgPreviewPerfil');
+    let controlsDiv = document.getElementById('cropperControls');
+    
+    let isDragging = false;
+    let startY = 0;
+    
+    let cropperActive = imgElement && imgElement.src && !imgElement.src.endsWith('/') && !imgElement.classList.contains('d-none');
+    
+    let initialPercentY = 50;
+    const initialPos = document.getElementById('foto_posicion_input').value;
+    if (initialPos && initialPos.includes(' ')) {
+        const parts = initialPos.split(' ');
+        if (parts[1] && parts[1].includes('%')) {
+            initialPercentY = parseFloat(parts[1]);
+        }
+    }
+    
+    let currentPercentY = initialPercentY;
+    
     function previewProfileImage(event) {
         var reader = new FileReader();
         reader.onload = function() {
-            var output = document.getElementById('imgPreviewPerfil');
             var initial = document.getElementById('initialPreview');
-            output.src = reader.result;
-            output.classList.remove('d-none');
+            imgElement.src = reader.result;
+            imgElement.classList.remove('d-none');
             if (initial) initial.classList.add('d-none');
+            
+            controlsDiv.classList.remove('d-none');
+            
+            currentPercentY = 50;
+            initialPercentY = 50;
+            imgElement.style.objectPosition = `50% 50%`;
+            document.getElementById('foto_posicion_input').value = `50% 50%`;
+            
+            document.getElementById('eliminar_foto_input').value = 'false';
+            
+            const btnEliminar = document.getElementById('btnEliminarFoto');
+            if (btnEliminar) {
+                btnEliminar.classList.remove('d-none');
+            }
+            
+            cropperActive = true;
         };
         if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
     }
+    
+    function eliminarFotoPerfil() {
+        smaxDialog.confirm('¿Estás seguro de eliminar tu foto de perfil actual?', {
+            title: 'Eliminar foto de perfil',
+            icon: 'danger',
+            confirmText: 'Eliminar',
+            confirmClass: 'danger'
+        }).then(function(ok) {
+            if (!ok) return;
+            document.getElementById('eliminar_foto_input').value = 'true';
+            
+            imgElement.classList.add('d-none');
+            imgElement.src = '';
+            
+            const initial = document.getElementById('initialPreview');
+            if (initial) {
+                initial.classList.remove('d-none');
+            } else {
+                const wrapper = imgElement.parentElement;
+                const initialsDiv = document.createElement('div');
+                initialsDiv.id = 'initialPreview';
+                initialsDiv.className = 'profile-cropper-initials';
+                initialsDiv.innerText = '{{ usuario.iniciales }}';
+                wrapper.appendChild(initialsDiv);
+            }
+            
+            const btnEliminar = document.getElementById('btnEliminarFoto');
+            if (btnEliminar) {
+                btnEliminar.classList.add('d-none');
+            }
+            
+            controlsDiv.classList.add('d-none');
+            cropperActive = false;
+        });
+    }
+    
+    imgElement.addEventListener('mousedown', function(e) {
+        if (!cropperActive || !imgElement.src || imgElement.src === '') return;
+        isDragging = true;
+        startY = e.clientY;
+        e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        const deltaY = e.clientY - startY;
+        currentPercentY = Math.max(0, Math.min(100, initialPercentY - (deltaY * 0.5)));
+        imgElement.style.objectPosition = `50% ${currentPercentY}%`;
+        document.getElementById('foto_posicion_input').value = `50% ${currentPercentY}%`;
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            initialPercentY = currentPercentY;
+        }
+    });
+    
+    imgElement.addEventListener('touchstart', function(e) {
+        if (!cropperActive || !imgElement.src || imgElement.src === '') return;
+        isDragging = true;
+        startY = e.touches[0].clientY;
+    });
+    
+    imgElement.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        const deltaY = e.touches[0].clientY - startY;
+        currentPercentY = Math.max(0, Math.min(100, initialPercentY - (deltaY * 0.5)));
+        imgElement.style.objectPosition = `50% ${currentPercentY}%`;
+        document.getElementById('foto_posicion_input').value = `50% ${currentPercentY}%`;
+    });
+    
+    imgElement.addEventListener('touchend', function() {
+        if (isDragging) {
+            isDragging = false;
+            initialPercentY = currentPercentY;
+        }
+    });
 
     // Función para llenar y mostrar el modal de respuesta del admin
     function abrirModalRespuesta(id, comentario, respuestaExistente, urlImagen) {
@@ -880,8 +671,8 @@
         const contenedorImagen = document.getElementById('contenedorImagenReporte');
         if (urlImagen && urlImagen !== '') {
             contenedorImagen.innerHTML = `<label class="form-label small fw-bold text-white-50 d-block mt-2">Evidencia adjunta:</label>
-                                          <img src="${urlImagen}" class="img-fluid rounded border border-secondary" style="max-height: 180px; cursor: pointer;" onclick="window.open('${urlImagen}', '_blank')">
-                                          <p class="small text-info mt-1" style="font-size: 0.7rem;"><i class="fas fa-search-plus me-1"></i>Haz clic en la imagen para ampliar</p>`;
+                                          <img src="${urlImagen}" class="img-fluid rounded border border-secondary prf-u-19" onclick="window.open('${urlImagen}', '_blank')">
+                                          <p class="small text-info mt-1 prf-u-20"><i class="fas fa-search-plus me-1"></i>Haz clic en la imagen para ampliar</p>`;
             contenedorImagen.classList.remove('d-none');
         } else {
             contenedorImagen.innerHTML = '';

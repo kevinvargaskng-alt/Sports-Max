@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings 
+from django.conf import settings
+
 
 class Usuario(AbstractUser):
     TIPO_DOC = [
@@ -10,7 +11,8 @@ class Usuario(AbstractUser):
         ('PA', 'Pasaporte'),
     ]
     GENERO_CHOICES = [
-        ('M', 'Masculino'), ('F', 'Femenino'), ('O', 'Otro'), ('NR', 'Prefiero no decirlo'),
+        ('M', 'Masculino'), ('F', 'Femenino'), ('O',
+                                                'Otro'), ('NR', 'Prefiero no decirlo'),
     ]
     ESTADO_CHOICES = [
         ('activo', 'Activo'), ('inactivo', 'Inactivo'),
@@ -30,26 +32,54 @@ class Usuario(AbstractUser):
 
     numero_documento = models.CharField(max_length=20, unique=True)
     email = models.EmailField(unique=True, verbose_name="Correo Electrónico")
-    tipo_documento = models.CharField(max_length=2, choices=TIPO_DOC, default='CC')
+    tipo_documento = models.CharField(
+        max_length=2, choices=TIPO_DOC, default='CC')
     telefono = models.CharField(max_length=15, blank=True)
-    genero = models.CharField(max_length=2, choices=GENERO_CHOICES, blank=True, null=True)
+    genero = models.CharField(
+        max_length=2, choices=GENERO_CHOICES, blank=True, null=True)
     ficha = models.CharField(max_length=20, blank=True, null=True)
-    programa_formacion = models.CharField(max_length=25, choices=PROGRAMA_CHOICES, blank=True, null=True)
+    programa_formacion = models.CharField(
+        max_length=25, choices=PROGRAMA_CHOICES, blank=True, null=True)
     rol = models.CharField(max_length=20, default='aprendiz')
-    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='activo')
+    estado = models.CharField(
+        max_length=20, choices=ESTADO_CHOICES, default='activo')
     fecha_registro = models.DateTimeField(auto_now_add=True)
-    foto_perfil = models.ImageField(upload_to='perfiles/', blank=True, null=True)
+    foto_perfil = models.ImageField(
+        upload_to='perfiles/', blank=True, null=True)
+    foto_posicion = models.CharField(max_length=50, default='50% 50%')
+    # ── Seguridad: bloqueo por intentos fallidos ──────────────
+    intentos_fallidos = models.IntegerField(default=0)
+    bloqueado_hasta = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.numero_documento})"
-    
+
+    @property
+    def iniciales(self):
+        first = self.first_name.strip() if self.first_name else ""
+        last = self.last_name.strip() if self.last_name else ""
+        ini = ""
+        if first:
+            ini += first[0].upper()
+        if last:
+            ini += last[0].upper()
+        if not ini:
+            if self.username:
+                ini = self.username[:2].upper()
+            else:
+                ini = "US"
+        return ini
+
+
 class Sugerencia(models.Model):
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     tipo = models.CharField(max_length=50, default='otro')
     comentario = models.TextField()
-    anonimo = models.BooleanField(default=False) 
+    anonimo = models.BooleanField(default=False)
     respuesta = models.TextField(null=True, blank=True)
-    imagen = models.ImageField(upload_to='reportes_errores/', null=True, blank=True)
+    imagen = models.ImageField(
+        upload_to='reportes_errores/', null=True, blank=True)
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -30,11 +30,14 @@ urlpatterns = [
 
     # ── Biblioteca de materiales ─────────────────────
     path('biblioteca/', views.biblioteca, name='biblioteca'),
-    path('biblioteca/descargar/<int:pk>/', views.descargar_material, name='descargar_material'),
+    path('biblioteca/descargar/<int:pk>/',
+         views.descargar_material, name='descargar_material'),
 
     # ── Seguimiento de salud ─────────────────────────
-    path('salud/registrar/', views.registrar_seguimiento, name='registrar_seguimiento'),
+    path('salud/registrar/', views.registrar_seguimiento,
+         name='registrar_seguimiento'),
     path('salud/historial/', views.historial_salud, name='historial_salud'),
     path('salud/<int:pk>/', views.detalle_seguimiento, name='detalle_seguimiento'),
-    path('salud/<int:pk>/eliminar/', views.eliminar_seguimiento, name='eliminar_seguimiento'),
+    path('salud/<int:pk>/eliminar/', views.eliminar_seguimiento,
+         name='eliminar_seguimiento'),
 ]

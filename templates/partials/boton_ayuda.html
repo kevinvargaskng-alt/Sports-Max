@@ -1,0 +1,47 @@
+{% load static %}
+
+<!-- Botón de Ayuda Flotante (Esquina inferior izquierda) -->
+<a href="{% url 'ayuda' %}" id="help-toggle" title="Centro de Ayuda y Soporte" aria-label="Centro de Ayuda">
+    <i class="fas fa-question-circle"></i>
+</a>
+
+<style>
+/* ── Botón flotante de ayuda ── */
+#help-toggle {
+    position: fixed !important;
+    bottom: 28px !important;
+    left: 28px !important;
+    z-index: 9999;
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, var(--accent-blue, #2b7de9), #00d2ff) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(43, 125, 233, 0.45) !important;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.5rem !important;
+    text-decoration: none !important;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s !important;
+}
+
+#help-toggle:hover {
+    transform: scale(1.12) rotate(-15deg) !important;
+    box-shadow: 0 6px 28px rgba(43, 125, 233, 0.65) !important;
+    color: #fff !important;
+}
+
+/* Ajustes de responsividad para pantallas pequeñas */
+@media (max-width: 576px) {
+    #help-toggle {
+        width: 48px !important;
+        height: 48px !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        font-size: 1.3rem !important;
+    }
+}
+</style>

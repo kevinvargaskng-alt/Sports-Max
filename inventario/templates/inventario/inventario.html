@@ -5,122 +5,15 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
-<style>
-    .table-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #30363d; }
-    .badge-status { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
-
-    .btn-icon {
-        width: 30px; height: 30px;
-        padding: 0;
-        display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-
-    /* Panel de detalle expandido */
-    .expansion-row td { background: #0d1117; }
-    .detail-panel {
-        display: flex;
-        gap: 20px;
-        align-items: flex-start;
-        padding: 16px;
-        border-radius: 12px;
-        background: rgba(88,166,255,0.04);
-        border: 1px solid rgba(88,166,255,0.15);
-    }
-    .detail-panel img {
-        width: 110px; height: 110px; object-fit: cover;
-        border-radius: 12px; border: 2px solid #30363d;
-        flex-shrink: 0; display: block; aspect-ratio: 1 / 1;
-    }
-    .detail-panel .no-img {
-        width: 110px; height: 110px; border-radius: 12px;
-        border: 2px dashed #30363d; display: flex; align-items: center;
-        justify-content: center; flex-shrink: 0; aspect-ratio: 1 / 1;
-    }
-
-    /* ── CATÁLOGO (vista tarjetas) ── */
-    .catalogo-card {
-        background: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 16px;
-        overflow: hidden;
-        transition: border-color 0.2s, transform 0.2s;
-    }
-    .catalogo-card:hover { border-color: #58a6ff; transform: translateY(-2px); }
-    .catalogo-card img {
-        width: 100%; height: 160px; object-fit: cover;
-    }
-    .catalogo-card .no-img-cat {
-        width: 100%; height: 160px;
-        background: #0d1117;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .stock-badge {
-        position: absolute; top: 10px; right: 10px;
-        font-size: 0.7rem; font-weight: 800;
-        padding: 4px 10px; border-radius: 20px;
-    }
-
-    /* Tabs de navegación de secciones */
-    .section-tabs .nav-link {
-        color: #8b949e;
-        border: 1px solid transparent;
-        border-radius: 10px;
-        padding: 8px 18px;
-        font-weight: 700;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .section-tabs .nav-link.active {
-        color: #fff;
-        background: rgba(88,166,255,0.12);
-        border-color: rgba(88,166,255,0.3);
-    }
-    .section-tabs .nav-link:hover:not(.active) { color: #58a6ff; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-        #tablaElementos thead { display: none; }
-        table, tbody, tr, td { display: block; width: 100%; }
-
-        tr.main-row {
-            margin-bottom: 24px !important;
-            border: 1px solid #30363d !important;
-            border-radius: 16px;
-            background: #161b22;
-            padding: 12px 0;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-        }
-        tr.expansion-row, tr.fila-detalle { display: none !important; }
-
-        td {
-            text-align: left !important;
-            padding: 10px 20px !important;
-            border: none !important;
-            position: relative;
-            padding-top: 34px !important;
-        }
-        td::before {
-            content: attr(data-label);
-            position: absolute; top: 10px; left: 20px;
-            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-            color: #58a6ff; letter-spacing: 1.2px;
-        }
-        td[data-label="Imagen"] { padding-top: 12px !important; text-align: center !important; }
-        td[data-label="Imagen"]::before { display: none; }
-        .table-img { width: 80px !important; height: 80px !important; margin: 0 auto; border-radius: 12px; }
-        td[data-label="Detalle"], .btn-expand { display: none !important; }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/inventario_styles.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
     <div class="container text-start">
+        <div class="mb-4">
+            {% include 'partials/back_button.html' with back_url='home' back_label='Volver' %}
+        </div>
 
         <!-- HEADER -->
         <header class="modulo-header text-center mb-5">
@@ -258,19 +151,45 @@
             <div class="row g-3">
                 {% for e in elementos %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="catalogo-card position-relative">
+                    <div class="catalogo-card position-relative {% if not e.habilitado %}opacity-50 border-danger{% endif %}">
 
                         <!-- Imagen -->
                         {% if e.imagen %}
                             <img src="{{ e.imagen.url }}" alt="{{ e.tipo_maquina }}">
                         {% else %}
-                            <div class="no-img-cat">
-                                <i class="fas fa-dumbbell fa-3x text-muted"></i>
-                            </div>
+                            {% if "caminadora" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/caminadora.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "bicicleta" in e.tipo_maquina|lower or "bici" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/bicicleta.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "elíptica" in e.tipo_maquina|lower or "eliptica" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/eliptica.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "multifuerza" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/multifuerza.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "prensa" in e.tipo_maquina|lower or "press" in e.tipo_maquina|lower or "banca" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/press_banca.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "sentadilla" in e.tipo_maquina|lower or "rack" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/rack_sentadillas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "remo" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/remo.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/sports_soccer.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/sports_basketball.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/sports_volleyball.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% else %}
+                                <img src="{% static 'img/balon.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% endif %}
                         {% endif %}
 
-                        <!-- Badge stock -->
-                        {% if e.cantidad_total > 0 %}
+                        <!-- Badge stock / Habilitado status -->
+                        {% if not e.habilitado %}
+                            <span class="stock-badge bg-secondary text-white border border-danger">
+                                <i class="fas fa-eye-slash me-1"></i>Inhabilitado
+                            </span>
+                        {% elif e.cantidad_total > 0 %}
                             <span class="stock-badge bg-success text-white">
                                 <i class="fas fa-check me-1"></i>{{ e.cantidad_total }} disp.
                             </span>
@@ -283,17 +202,10 @@
                         <!-- Contenido -->
                         <div class="p-3">
                             <h6 class="fw-bold text-white mb-1 text-truncate">{{ e.tipo_maquina }}</h6>
-                            <p class="text-white-50 small mb-2" style="font-size:0.75rem; min-height:36px;">
+                            <p class="text-white-50 small mb-2 inv-u-1">
                                 {{ e.descripcion|default:"Sin descripción."|truncatechars:70 }}
                             </p>
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="badge-status
-                                    {% if e.estado_general == 'Bueno' %}bg-success
-                                    {% elif e.estado_general == 'Regular' %}bg-warning text-dark
-                                    {% else %}bg-danger{% endif %}"
-                                    style="font-size:0.65rem; padding:4px 10px;">
-                                    {{ e.estado_general }}
-                                </span>
                                 <span class="text-white-50 small">
                                     <i class="fas fa-user me-1"></i>
                                     {{ e.usuario_responsable.get_full_name|default:"Sin asignar"|truncatechars:18 }}
@@ -304,7 +216,7 @@
                             {% if user.is_staff %}
                             <div class="d-flex gap-2">
                                 <button type="button"
-                                        class="btn btn-warning btn-sm flex-fill fw-bold btn-editar-elemento"
+                                        class="btn btn-warning btn-sm flex-fill fw-bold btn-editar-elemento inv-u-3"
                                         data-id="{{ e.id }}"
                                         data-tipo="{{ e.tipo_maquina }}"
                                         data-cantidad="{{ e.cantidad_total }}"
@@ -312,29 +224,28 @@
                                         data-responsable-id="{{ e.usuario_responsable.pk|default:'' }}"
                                         data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
                                         data-descripcion="{{ e.descripcion|default:'' }}"
+                                        data-habilitado="{% if e.habilitado %}true{% else %}false{% endif %}"
                                         {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}
-                                        data-bs-toggle="modal" data-bs-target="#modalElemento"
-                                        style="font-size:0.75rem;">
+                                        data-bs-toggle="modal" data-bs-target="#modalElemento">
                                     <i class="fas fa-edit me-1"></i>Editar
                                 </button>
                                 <a href="{% url 'eliminar_elemento' e.id %}"
-                                   class="btn btn-outline-danger btn-sm fw-bold"
-                                   onclick="return confirm('¿Eliminar «{{ e.tipo_maquina }}»?')"
-                                   style="font-size:0.75rem;">
-                                    <i class="fas fa-trash"></i>
+                                   class="btn btn-outline-danger btn-sm fw-bold inv-u-4"
+                                   data-confirm="¿Eliminar «{{ e.tipo_maquina }}»?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar"
+                                   title="Eliminar">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
                                 </a>
                             </div>
                             {% else %}
                                 {% if e.cantidad_total > 0 %}
                                 <button type="button"
-                                        class="btn btn-info btn-sm w-100 fw-bold text-dark"
+                                        class="btn btn-info btn-sm w-100 fw-bold text-dark inv-u-5"
                                         onclick="prestamoRapido('{{ e.id }}')"
-                                        {% if sanciones %}disabled title="Tienes sanciones activas"{% endif %}
-                                        style="font-size:0.8rem;">
+                                        {% if sanciones %}disabled title="Tienes sanciones activas"{% endif %}>
                                     <i class="fas fa-hand-holding me-1"></i>Solicitar Préstamo
                                 </button>
                                 {% else %}
-                                <button class="btn btn-secondary btn-sm w-100 fw-bold" disabled style="font-size:0.8rem;">
+                                <button class="btn btn-secondary btn-sm w-100 fw-bold inv-u-6" disabled>
                                     <i class="fas fa-times me-1"></i>Sin Disponibilidad
                                 </button>
                                 {% endif %}
@@ -363,7 +274,7 @@
         <!-- ══════════════════════════════════════════
              SECCIÓN 2 — TABLA INVENTARIO (admin + usuarios)
         ══════════════════════════════════════════ -->
-        <section id="secTabla" class="seccion-tab mb-4" style="display:none;">
+        <section id="secTabla" class="seccion-tab mb-4 inv-u-7">
             <h5 class="fw-bold mb-4">
                 <i class="fas fa-list text-warning me-2"></i>Existencias en Inventario
             </h5>
@@ -375,14 +286,13 @@
                             <th>Imagen</th>
                             <th>Elemento</th>
                             <th>Stock</th>
-                            <th>Estado</th>
                             <th>Responsable</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for e in elementos %}
-                        <tr class="main-row"
+                        <tr class="main-row {% if not e.habilitado %}opacity-50{% endif %}"
                             data-id="{{ e.id }}"
                             data-tipo="{{ e.tipo_maquina }}"
                             data-cantidad="{{ e.cantidad_total }}"
@@ -391,11 +301,12 @@
                             data-responsable-id="{{ e.usuario_responsable.pk|default:'' }}"
                             data-fecha="{{ e.fecha_adquisicion|date:'Y-m-d' }}"
                             data-descripcion="{{ e.descripcion|default:'' }}"
+                            data-habilitado="{% if e.habilitado %}true{% else %}false{% endif %}"
                             {% if e.imagen %}data-imagen="{{ e.imagen.url }}"{% endif %}>
 
                             <td data-label="Detalle">
                                 <button class="btn btn-expand btn-icon border border-info text-info" title="Ver detalle">
-                                    <i class="fas fa-plus" style="font-size:0.7rem;"></i>
+                                    <i class="fas fa-plus inv-u-8"></i>
                                 </button>
                             </td>
 
@@ -403,25 +314,43 @@
                                 {% if e.imagen %}
                                     <img src="{{ e.imagen.url }}" class="table-img" alt="{{ e.tipo_maquina }}">
                                 {% else %}
-                                    <div class="table-img d-flex align-items-center justify-content-center bg-dark border border-secondary">
-                                        <i class="fas fa-image text-muted"></i>
-                                    </div>
+                                    {% if "caminadora" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/caminadora.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "bicicleta" in e.tipo_maquina|lower or "bici" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/bicicleta.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "elíptica" in e.tipo_maquina|lower or "eliptica" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/eliptica.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "multifuerza" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/multifuerza.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "prensa" in e.tipo_maquina|lower or "press" in e.tipo_maquina|lower or "banca" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/press_banca.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "sentadilla" in e.tipo_maquina|lower or "rack" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/rack_sentadillas.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "remo" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/remo.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/sports_soccer.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/sports_basketball.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/sports_volleyball.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% else %}
+                                        <img src="{% static 'img/balon.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% endif %}
                                 {% endif %}
                             </td>
 
-                            <td data-label="Elemento"><strong>{{ e.tipo_maquina }}</strong></td>
+                            <td data-label="Elemento">
+                                <strong>{{ e.tipo_maquina }}</strong>
+                                {% if not e.habilitado %}
+                                    <span class="badge bg-danger ms-1 text-white inv-u-9"><i class="fas fa-eye-slash me-1"></i>Inhabilitado</span>
+                                {% endif %}
+                            </td>
 
                             <td data-label="Stock">
                                 <span class="badge bg-dark border border-secondary px-3">{{ e.cantidad_total }}</span>
-                            </td>
-
-                            <td data-label="Estado">
-                                <span class="badge-status
-                                    {% if e.estado_general == 'Bueno' %}bg-success
-                                    {% elif e.estado_general == 'Regular' %}bg-warning text-dark
-                                    {% else %}bg-danger{% endif %}">
-                                    {{ e.estado_general }}
-                                </span>
                             </td>
 
                             <td data-label="Responsable">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</td>
@@ -429,89 +358,102 @@
                             <td data-label="Acciones" class="text-center">
                                 {% if user.is_staff %}
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button type="button"
-                                            class="btn btn-warning btn-icon btn-editar-elemento"
-                                            title="Editar"
-                                            data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <i class="fas fa-edit" style="font-size:0.7rem;"></i>
-                                    </button>
+                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="modal" data-bs-target="#modalElemento"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
                                     <a href="{% url 'eliminar_elemento' e.id %}"
-                                       class="btn btn-danger btn-icon"
+                                       class="btn btn-danger btn-sm fw-bold px-2"
                                        title="Eliminar"
                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                       onclick="return confirm('¿Eliminar este elemento del inventario?')">
-                                        <i class="fas fa-trash" style="font-size:0.7rem;"></i>
+                                       data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
+                                         <i class="fas fa-trash me-1 inv-u-12"></i>Eliminar
                                     </a>
                                 </div>
                                 {% else %}
                                     {% if e.cantidad_total > 0 %}
                                     <button type="button"
-                                            class="btn btn-info btn-icon text-dark"
+                                            class="btn btn-info btn-sm fw-bold px-2 text-dark"
                                             onclick="prestamoRapido('{{ e.id }}')"
                                             title="Solicitar Préstamo"
                                             {% if sanciones %}disabled{% endif %}
                                             data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <i class="fas fa-hand-pointer" style="font-size:0.7rem;"></i>
+                                         <i class="fas fa-hand-pointer me-1 inv-u-13"></i>Solicitar
                                     </button>
                                     {% else %}
-                                    <span class="badge bg-secondary" style="font-size:0.65rem;">Sin stock</span>
+                                    <span class="badge bg-secondary inv-u-14">Sin stock</span>
                                     {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
 
                         <!-- Fila expandida -->
-                        <tr class="expansion-row" style="display:none;">
+                        <tr class="expansion-row inv-u-15">
                             <td colspan="7">
                                 <div class="detail-panel">
                                     {% if e.imagen %}
                                         <img src="{{ e.imagen.url }}" alt="{{ e.tipo_maquina }}">
                                     {% else %}
-                                        <div class="no-img">
-                                            <i class="fas fa-image fa-2x text-muted"></i>
-                                        </div>
+                                        {% if "caminadora" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/caminadora.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "bicicleta" in e.tipo_maquina|lower or "bici" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/bicicleta.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "elíptica" in e.tipo_maquina|lower or "eliptica" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/eliptica.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "multifuerza" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/multifuerza.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "prensa" in e.tipo_maquina|lower or "press" in e.tipo_maquina|lower or "banca" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/press_banca.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "sentadilla" in e.tipo_maquina|lower or "rack" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/rack_sentadillas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "remo" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/remo.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/sports_soccer.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/sports_basketball.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/sports_volleyball.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% else %}
+                                            <img src="{% static 'img/balon.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% endif %}
                                     {% endif %}
                                     <div class="flex-grow-1">
                                         <h6 class="text-info fw-bold text-uppercase mb-2">{{ e.tipo_maquina }}</h6>
-                                        <p class="text-white-50 small mb-3" style="line-height:1.6;">
+                                        <p class="text-white-50 small mb-3 inv-u-16">
                                             {{ e.descripcion|default:"Sin descripción disponible." }}
                                         </p>
                                         <div class="d-flex flex-wrap gap-4 small text-white-50 mb-3">
                                             <span><i class="fas fa-cubes text-warning me-1"></i>Stock: <strong class="text-white">{{ e.cantidad_total }}</strong></span>
                                             <span><i class="fas fa-calendar me-1 text-info"></i>Adquirido: <strong class="text-white">{{ e.fecha_adquisicion|date:"d/m/Y"|default:"N/A" }}</strong></span>
                                             <span><i class="fas fa-user me-1 text-success"></i>Responsable: <strong class="text-white">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</strong></span>
-                                            <span><i class="fas fa-circle me-1
-                                                {% if e.estado_general == 'Bueno' %}text-success
-                                                {% elif e.estado_general == 'Regular' %}text-warning
-                                                {% else %}text-danger{% endif %}"></i>Estado: <strong class="text-white">{{ e.estado_general }}</strong></span>
                                         </div>
                                         <div class="d-flex gap-2 flex-wrap align-items-center">
                                             {% if user.is_staff %}
                                             <button type="button"
-                                                    class="btn btn-warning btn-icon btn-editar-elemento"
+                                                    class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento"
                                                     title="Editar Elemento"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top">
-                                                <i class="fas fa-edit" style="font-size:0.7rem;"></i>
+                                                    data-bs-toggle="modal" data-bs-target="#modalElemento">
+                                                <i class="fas fa-edit me-1"></i>Editar
                                             </button>
                                             <a href="{% url 'eliminar_elemento' e.id %}"
-                                               class="btn btn-danger btn-icon"
+                                               class="btn btn-danger btn-sm fw-bold px-2"
                                                title="Eliminar"
                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                               onclick="return confirm('¿Eliminar este elemento del inventario?')">
-                                                <i class="fas fa-trash" style="font-size:0.7rem;"></i>
+                                               data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
+                                                <i class="fas fa-trash me-1"></i>Eliminar
                                             </a>
                                             {% else %}
                                             {% if e.cantidad_total > 0 %}
                                             <button type="button"
-                                                    class="btn btn-info btn-icon text-dark fw-bold"
+                                                    class="btn btn-info btn-sm fw-bold px-2 text-dark"
                                                     onclick="prestamoRapido('{{ e.id }}')"
                                                     title="Solicitar Préstamo"
                                                     {% if sanciones %}disabled{% endif %}
                                                     data-bs-toggle="tooltip" data-bs-placement="top">
-                                                <i class="fas fa-hand-pointer" style="font-size:0.7rem;"></i>
+                                                <i class="fas fa-hand-pointer me-1 inv-u-19"></i>Solicitar
                                             </button>
                                             {% else %}
-                                            <span class="badge bg-secondary px-3 py-2" style="font-size:0.65rem;">Sin stock</span>
+                                            <span class="badge bg-secondary px-3 py-2 inv-u-20">Sin stock</span>
                                             {% endif %}
                                             {% endif %}
                                         </div>
@@ -536,7 +478,7 @@
              SECCIÓN 3A — MIS PRÉSTAMOS (usuarios normales)
         ══════════════════════════════════════════ -->
         {% if not user.is_staff %}
-        <section id="secMisPrestamos" class="seccion-tab mb-4" style="display:none;">
+        <section id="secMisPrestamos" class="seccion-tab mb-4 inv-u-21">
             <h5 class="fw-bold mb-4 text-info">
                 <i class="fas fa-history me-2"></i>Mis Préstamos en Curso
             </h5>
@@ -598,7 +540,7 @@
              SECCIÓN 3B — RESUMEN PRÉSTAMOS (solo admin)
         ══════════════════════════════════════════ -->
         {% if user.is_staff %}
-        <section id="secPrestamos" class="seccion-tab mb-4" style="display:none;">
+        <section id="secPrestamos" class="seccion-tab mb-4 inv-u-22">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h5 class="fw-bold mb-0 text-warning">
                     <i class="fas fa-chart-bar me-2"></i>Resumen General de Préstamos
@@ -646,7 +588,7 @@
                             <td class="text-center">
                                 {% if p.estado_prestamo == 'Activo' %}
                                 <a href="{% url 'devoluciones' %}?prestamo={{ p.codigo_prestamo }}"
-                                   class="btn btn-outline-success btn-sm fw-bold" style="font-size:0.75rem;">
+                                   class="btn btn-outline-success btn-sm fw-bold inv-u-23">
                                     <i class="fas fa-undo me-1"></i>Devolver
                                 </a>
                                 {% else %}
@@ -693,11 +635,8 @@
                         <!-- Imagen -->
                         <div class="col-md-4 text-center mb-3">
                             <img id="previewImagen" src=""
-                                 style="display:none; width:120px; height:120px; object-fit:cover;
-                                        border-radius:12px; margin:0 auto 10px; border:2px solid #58a6ff;">
-                            <div id="placeholderImagen" class="mx-auto mb-2 d-flex align-items-center justify-content-center"
-                                 style="width:120px; height:120px; border-radius:12px;
-                                        border:2px dashed #30363d; background:#0d1117;">
+                                 class="inv-u-24">
+                            <div id="placeholderImagen" class="mx-auto mb-2 d-flex align-items-center justify-content-center inv-u-25">
                                 <i class="fas fa-camera fa-2x text-muted"></i>
                             </div>
                             <label class="form-label fw-bold small d-block text-white-50">Imagen (Opcional)</label>
@@ -714,24 +653,19 @@
                                        placeholder="Ej: Balón de Fútbol, Aro de Básquet..." required>
                             </div>
                             <div class="row">
-                                <div class="col-6 mb-3">
+                                <div class="col-12 mb-3">
                                     <label class="form-label fw-bold small">Cantidad <span class="text-danger">*</span></label>
                                     <input type="number" id="inputCantidadTotal" name="cantidad_total"
                                            class="form-control custom-input" required min="0" placeholder="0">
                                 </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label fw-bold small">Estado</label>
-                                    <select id="inputEstadoGeneral" name="estado_general" class="form-select custom-input">
-                                        <option value="Bueno">Bueno</option>
-                                        <option value="Regular">Regular</option>
-                                        <option value="Malo">Malo</option>
-                                    </select>
-                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold small">Fecha Adquisición</label>
-                                <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion"
-                                       class="form-control custom-input">
+                                <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion" class="form-control custom-input">
+                            </div>
+                            <div class="form-check form-switch mb-3" id="containerHabilitado inv-u-26">
+                                <input class="form-check-input" type="checkbox" id="inputHabilitado" name="habilitado" checked>
+                                <label class="form-check-label small fw-bold text-white-50" for="inputHabilitado">Producto Habilitado (disponible para préstamo)</label>
                             </div>
                         </div>
                     </div>
@@ -783,8 +717,7 @@
             <div class="modal-body text-start">
 
                 <!-- Datos del solicitante -->
-                <div class="mb-4 p-3 rounded"
-                     style="background:rgba(88,166,255,0.05); border:1px solid rgba(88,166,255,0.2);">
+                <div class="mb-4 p-3 rounded inv-u-27">
                     <h6 class="text-info fw-bold small text-uppercase mb-2">
                         <i class="fas fa-user me-2"></i>Datos del Solicitante
                     </h6>
@@ -855,8 +788,7 @@
                         </div>
                     </div>
 
-                    <div id="infoFecha" class="alert small py-2 mb-4 text-center border-0"
-                         style="display:none; background:rgba(0,210,255,0.1); border-radius:10px;">
+                    <div id="infoFecha" class="alert small py-2 mb-4 text-center border-0 inv-u-28">
                         <i class="fas fa-calendar-alt me-2 text-info"></i>
                         Fecha de devolución: <strong id="spanFecha" class="text-warning"></strong>
                     </div>
@@ -908,6 +840,8 @@ function abrirModalCrear() {
     document.getElementById('previewImagen').style.display     = 'none';
     document.getElementById('placeholderImagen').style.display = 'flex';
     document.getElementById('inputCodigo').value   = '';
+    const inputHab = document.getElementById('inputHabilitado');
+    if (inputHab) inputHab.checked = true;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -928,10 +862,14 @@ function initBotonesEditar() {
             document.getElementById('inputCodigo').value              = src.dataset.id;
             document.getElementById('inputNombreElemento').value      = src.dataset.tipo;
             document.getElementById('inputCantidadTotal').value       = src.dataset.cantidad;
-            document.getElementById('inputEstadoGeneral').value       = src.dataset.estado;
             document.getElementById('inputUsuarioResponsable').value  = src.dataset.responsableId || '';
             document.getElementById('inputFechaAdquisicion').value    = src.dataset.fecha || '';
             document.getElementById('inputDescripcion').value         = src.dataset.descripcion || '';
+
+            const inputHab = document.getElementById('inputHabilitado');
+            if (inputHab) {
+                inputHab.checked = (src.dataset.habilitado === 'true');
+            }
 
             const preview      = document.getElementById('previewImagen');
             const placeholder  = document.getElementById('placeholderImagen');

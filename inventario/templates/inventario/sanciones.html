@@ -46,7 +46,7 @@
         <!-- Nav rápida -->
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm fw-bold">
-                <i class="fas fa-arrow-left me-1"></i>Volver al Inventario
+{% include 'partials/back_button.html' with back_url='inventario' back_label='Volver al Inventario' %}
             </a>
             <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm fw-bold">
                 <i class="fas fa-undo me-1"></i>Ir a Devoluciones
@@ -146,7 +146,7 @@
                             <td data-label="Estado">
                                 <span class="badge-status {% if s.estado_sancion == 'Activa' %}bg-danger{% else %}bg-success{% endif %}">
                                     {% if s.estado_sancion == 'Activa' %}
-                                        <i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>
+                                        <i class="fas fa-circle me-1 sanc-u-1"></i>
                                     {% else %}
                                         <i class="fas fa-check me-1"></i>
                                     {% endif %}
@@ -156,12 +156,11 @@
                             {% if user.is_staff %}
                             <td data-label="Acción" class="text-center">
                                 {% if s.estado_sancion == 'Activa' %}
-                                <form method="POST" style="display:inline;"
-                                      onsubmit="return confirm('¿Cerrar esta sanción?')">
+                                <form method="POST" class="sanc-u-2">
                                     {% csrf_token %}
                                     <input type="hidden" name="accion"        value="cerrar_sancion">
                                     <input type="hidden" name="codigo_sancion" value="{{ s.codigo_sancion }}">
-                                    <button type="submit" class="btn btn-outline-success btn-sm fw-bold">
+                                    <button type="submit" class="btn btn-outline-success btn-sm fw-bold" data-confirm="¿Cerrar esta sanción?" data-confirm-title="Cerrar Sanción" data-confirm-icon="warning" data-confirm-text="Cerrar">
                                         <i class="fas fa-lock me-1"></i>Cerrar
                                     </button>
                                 </form>
@@ -172,7 +171,7 @@
                             {% endif %}
                         </tr>
                         {% if s.descripcion_sancion and s.descripcion_sancion|length > 80 %}
-                        <tr style="background: #0d1117;">
+                        <tr class="sanc-u-3">
                             <td colspan="{% if user.is_staff %}8{% else %}6{% endif %}" class="text-white-50 small py-2 px-4">
                                 <i class="fas fa-comment-dots text-info me-2"></i>{{ s.descripcion_sancion }}
                             </td>

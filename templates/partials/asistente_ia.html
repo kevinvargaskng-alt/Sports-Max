@@ -310,9 +310,12 @@
   </div>
 
   <div class="modules">
-    <button class="chip" onclick="sendQuick('¿Cuántas reservas hay pendientes en el gimnasio?')">🏋️ Gimnasio</button>
-    <button class="chip" onclick="sendQuick('¿Cuántos torneos de interfichas hay activos?')">📋 Interfichas</button>
+    <button class="chip" onclick="sendQuick('¿Estado y horarios del gimnasio?')">🏋️ Gimnasio</button>
     <button class="chip" onclick="sendQuick('¿Qué elementos hay en el inventario deportivo?')">📦 Inventario</button>
+    <button class="chip" onclick="sendQuick('¿Cuáles son los torneos de interfichas?')">📋 Interfichas</button>
+    <button class="chip" onclick="sendQuick('¿Qué rutinas de ejercicio físico hay?')">💪 Rutinas</button>
+    <button class="chip" onclick="sendQuick('¿Qué hábitos saludables y consejos hay?')">🥗 Nutrición</button>
+    <button class="chip" onclick="sendQuick('¿Cómo funcionan las sanciones por préstamos?')">⚠️ Sanciones</button>
   </div>
 
   <div class="messages" id="msgs">
@@ -354,7 +357,7 @@
     </div>
     <div class="input-footer">
       Tux · Gestión Deportiva SENA · Motor IA propio
-      <span class="voice-support-badge" id="voiceBadge" style="display:none">· 🎙️ Voz activa</span>
+      <span class="voice-support-badge" id="voiceBadge ai-u-1">· 🎙️ Voz activa</span>
     </div>
   </div>
 </div>
@@ -395,90 +398,132 @@ function getCookie(name) {
 // ══════════════════════════════════════════════
 let history = [];
 let isListening = false;
-let recognition = null;
 let currentUtterance = null;
 let ttsEnabled = true;  // Síntesis de voz activada por defecto
 
 // ══════════════════════════════════════════════
-//  SPEECH RECOGNITION (STT) — Web Speech API
+//  SPEECH RECOGNITION (STT) — MediaRecorder + Gemini API
 // ══════════════════════════════════════════════
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const voiceBadge = document.getElementById('voiceBadge');
 const voicePill = document.getElementById('voicePill');
+let mediaRecorder = null;
+let audioChunks = [];
+let voiceStream = null;
 
-if (SpeechRecognition) {
-    voiceBadge.style.display = 'inline-flex';
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (voiceBadge) voiceBadge.style.display = 'inline-flex';
+}
 
-    recognition = new SpeechRecognition();
-    recognition.lang = 'es-CO';         // Español Colombia
-    recognition.interimResults = true;  // Mostrar texto mientras habla
-    recognition.continuous = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-        isListening = true;
-        document.getElementById('micBtn').classList.add('active');
-        document.getElementById('inputWrap').classList.add('listening');
-        voicePill.classList.add('visible');
-        document.getElementById('chatIn').placeholder = '🎙️ Te estoy escuchando...';
-        showListenBubble();
-    };
-
-    recognition.onresult = (event) => {
-        let interim = '';
-        let final = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            const t = event.results[i][0].transcript;
-            if (event.results[i].isFinal) final += t;
-            else interim += t;
+async function startRecording() {
+    audioChunks = [];
+    try {
+        voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        let options = {};
+        if (MediaRecorder.isTypeSupported('audio/webm')) {
+            options = { mimeType: 'audio/webm' };
+        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+            options = { mimeType: 'audio/ogg' };
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+            options = { mimeType: 'audio/mp4' };
         }
-        // Mostrar en input lo que dice
-        document.getElementById('chatIn').value = final || interim;
-        updateListenBubble(final || interim);
-    };
-
-    recognition.onend = () => {
+        
+        mediaRecorder = new MediaRecorder(voiceStream, options);
+        
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstart = () => {
+            isListening = true;
+            document.getElementById('micBtn').classList.add('active');
+            document.getElementById('inputWrap').classList.add('listening');
+            voicePill.classList.add('visible');
+            document.getElementById('chatIn').placeholder = '🎙️ Escuchando... Habla ahora';
+            showListenBubble();
+        };
+        
+        mediaRecorder.onstop = async () => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('active');
+            document.getElementById('inputWrap').classList.remove('listening');
+            voicePill.classList.remove('visible');
+            document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
+            removeListenBubble();
+            
+            if (voiceStream) {
+                voiceStream.getTracks().forEach(track => track.stop());
+            }
+            
+            const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+            if (audioBlob.size > 1000) {
+                await transcribeAudio(audioBlob);
+            } else {
+                addMsg('🎙️ Audio demasiado corto o vacío.', 'bot', now());
+            }
+        };
+        
+        mediaRecorder.start();
+    } catch (err) {
+        console.error("Error al acceder al micrófono:", err);
+        addMsg('⚠️ No se pudo acceder al micrófono. Por favor permite los accesos.', 'bot', now());
         isListening = false;
         document.getElementById('micBtn').classList.remove('active');
         document.getElementById('inputWrap').classList.remove('listening');
         voicePill.classList.remove('visible');
-        document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
-        removeListenBubble();
+    }
+}
 
-        // Si hay texto en el input, enviarlo automáticamente
-        const texto = document.getElementById('chatIn').value.trim();
-        if (texto) {
-            setTimeout(() => send(), 100);
-        }
-    };
-
-    recognition.onerror = (event) => {
-        isListening = false;
-        document.getElementById('micBtn').classList.remove('active');
-        document.getElementById('inputWrap').classList.remove('listening');
-        voicePill.classList.remove('visible');
-        removeListenBubble();
-        document.getElementById('chatIn').placeholder = 'Pregúntame o usa el micrófono...';
-
-        if (event.error === 'not-allowed') {
-            addMsg('🎙️ Permiso de micrófono denegado. Actívalo en la configuración del navegador.', 'bot', now());
-        } else if (event.error !== 'no-speech') {
-            addMsg(`⚠️ Error de voz: ${event.error}`, 'bot', now());
-        }
-    };
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+    }
 }
 
 function toggleMic() {
-    if (!SpeechRecognition) {
-        addMsg('⚠️ Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.', 'bot', now());
-        return;
-    }
+    stopSpeaking();
     if (isListening) {
-        recognition.stop();
+        stopRecording();
     } else {
-        // Parar TTS si está hablando
-        stopSpeaking();
-        recognition.start();
+        startRecording();
+    }
+}
+
+async function transcribeAudio(blob) {
+    addTyping();
+    const formData = new FormData();
+    formData.append('audio', blob, 'recording.webm');
+    
+    try {
+        const res = await fetch('/api/transcribe-voice/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        });
+        
+        const data = await res.json();
+        removeTyping();
+        
+        if (data.error) {
+            addMsg(`⚠️ Error de voz: ${data.error}`, 'bot', now());
+            return;
+        }
+        
+        const transcripcion = (data.text || '').trim();
+        if (transcripcion) {
+            document.getElementById('chatIn').value = transcripcion;
+            await send();
+        } else {
+            addMsg('🤔 No logré escuchar ningún mensaje claro. Por favor intenta de nuevo.', 'bot', now());
+        }
+    } catch (err) {
+        removeTyping();
+        console.error("Error al enviar el audio:", err);
+        addMsg('🔌 Error al procesar tu voz en el servidor de IA.', 'bot', now());
     }
 }
 
@@ -492,7 +537,7 @@ function showListenBubble() {
     listenRow.innerHTML = `${catAv()}<div>
       <div class="listen-bubble">
         <div class="listen-waves"><span></span><span></span><span></span><span></span><span></span></div>
-        <span id="listenText" style="flex:1;color:rgba(255,255,255,0.7);font-size:12px;">Escuchando...</span>
+        <span id="listenText" class="ai-u-2">Escuchando...</span>
       </div>
     </div>`;
     msgs.appendChild(listenRow);
@@ -582,14 +627,14 @@ function addMsg(html, role, t, rawText){
     } else {
         // Botón para que Tux repita la respuesta en voz
         const speakBtnHtml = window.speechSynthesis
-            ? `<button class="speak-btn" onclick="speakMessage(this, '${encodeURIComponent(rawText||html)}')" title="Escuchar respuesta" aria-label="Escuchar respuesta" style="width:22px;height:22px;border-radius:7px;margin-top:4px;margin-left:2px">
+            ? `<button class="speak-btn" onclick="speakMessage(this, '${encodeURIComponent(rawText||html)}')" title="Escuchar respuesta" aria-label="Escuchar respuesta ai-u-3">
                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" stroke-linecap="round">
                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
                  </svg>
                </button>`
             : '';
-        row.innerHTML = `${catAv()}<div style="position:relative"><div class="bubble bot">${html}</div><div style="display:flex;gap:4px;align-items:center"><span class="btime">${t}</span>${speakBtnHtml}</div></div>`;
+        row.innerHTML = `${catAv()}<div class="ai-u-4"><div class="bubble bot">${html}</div><div class="ai-u-5"><span class="btime">${t}</span>${speakBtnHtml}</div></div>`;
     }
     msgs.appendChild(row);
     msgs.scrollTop = msgs.scrollHeight;
@@ -673,14 +718,15 @@ async function send(){
         }
 
         const reply = data.reply || "No recibí respuesta.";
-        const safeReply = reply
+        let formatted = reply
             .replace(/</g,'&lt;').replace(/>/g,'&gt;')
-            .replace(/\n/g,'<br>')
             .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g,'<em>$1</em>');
+            .replace(/\*(.*?)\*/g,'<em>$1</em>')
+            .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,0.1);padding:2px 5px;border-radius:4px;">$1</code>')
+            .replace(/\n/g,'<br>');
 
         history.push({"role":"assistant","content":reply});
-        addMsg(safeReply,'bot',now(),reply);
+        addMsg(formatted,'bot',now(),reply);
 
         // ── Hablar la respuesta automáticamente ──
         speak(reply);

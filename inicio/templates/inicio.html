@@ -7,527 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --sena-green: #1a5fb4;
-    --sena-dark: var(--primary-dark);
-    --sena-card: var(--card-bg);
-    --sena-border: var(--neon-border);
-    --accent: #1a5fb4;
-    --accent2: var(--warning);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--sena-dark);
-    font-family: 'Barlow', sans-serif;
-    color: #fff;
-    overflow-x: hidden;
-  }
-
-  /* ── TICKER ── */
-  .ticker-bar {
-    background: var(--sena-green);
-    padding: 8px 0;
-    overflow: hidden;
-    white-space: nowrap;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #fff;
-  }
-  .ticker-inner {
-    display: inline-block;
-    animation: ticker 28s linear infinite;
-  }
-  .ticker-inner span { margin: 0 40px; }
-  .ticker-sep { color: rgba(255,255,255,0.5); }
-  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    min-height: 92vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    overflow: hidden;
-    background: #050a05;
-  }
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(26,95,180,0.25) 0%, transparent 65%),
-      radial-gradient(ellipse 50% 80% at 0% 100%, rgba(26,95,180,0.15) 0%, transparent 60%),
-      url('https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=1600&q=80') center/cover no-repeat;
-    filter: brightness(0.4);
-    z-index: 0;
-  }
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, #050a05 0%, rgba(5,10,5,0.5) 50%, transparent 100%);
-    z-index: 1;
-  }
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    padding: 0 5vw 80px;
-    max-width: 900px;
-  }
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--sena-green);
-    color: #fff;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 2px;
-    margin-bottom: 22px;
-  }
-  .hero-eyebrow::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: #fff;
-    border-radius: 50%;
-    animation: pulse 1.4s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
-
-  .hero-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: clamp(52px, 8vw, 110px);
-    font-weight: 900;
-    line-height: 0.92;
-    text-transform: uppercase;
-    letter-spacing: -2px;
-    margin-bottom: 24px;
-    animation: fadeInUp 0.8s ease-out;
-  }
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .hero-title .accent { color: var(--sena-green); }
-  .hero-title .outline {
-    -webkit-text-stroke: 2px rgba(255,255,255,0.3);
-    color: transparent;
-    transition: -webkit-text-stroke 0.3s;
-  }
-  .hero-title:hover .outline {
-    -webkit-text-stroke: 2px var(--sena-green);
-  }
-
-  .hero-sub {
-    font-size: 17px;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.6;
-    max-width: 520px;
-    margin-bottom: 40px;
-    font-weight: 400;
-    animation: fadeInUp 1s ease-out;
-  }
-
-  .hero-cta {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .btn-primary-sport {
-    background: var(--sena-green);
-    color: #fff;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 15px 36px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
-  }
-  .btn-primary-sport:hover { background: #154d96; transform: translateY(-2px); color: #fff; }
-  .btn-outline-sport {
-    background: transparent;
-    color: #fff;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 14px 36px;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    border-radius: 3px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
-  }
-  .btn-outline-sport:hover { border-color: #fff; color: #fff; }
-
-  /* ── COUNTDOWN STRIP ── */
-  .countdown-strip {
-    background: rgba(255,255,255,0.03);
-    border-top: 1px solid var(--sena-border);
-    border-bottom: 1px solid var(--sena-border);
-    padding: 28px 5vw;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .countdown-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--sena-green);
-    font-weight: 700;
-  }
-  .countdown-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-  .countdown-units {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  .countdown-box {
-    text-align: center;
-    min-width: 64px;
-  }
-  .countdown-num {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 48px;
-    font-weight: 900;
-    line-height: 1;
-    color: #fff;
-    display: block;
-  }
-  .countdown-unit {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
-    font-weight: 600;
-  }
-  .countdown-sep {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 42px;
-    font-weight: 900;
-    color: var(--sena-green);
-    line-height: 1;
-    margin-top: -8px;
-  }
-
-  /* ── STATS BAR ── */
-  .stats-bar {
-    background: var(--sena-green);
-    padding: 18px 5vw;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    overflow-x: auto;
-  }
-  .stat-item {
-    flex: 1;
-    min-width: 120px;
-    text-align: center;
-    padding: 0 16px;
-    border-right: 1px solid rgba(255,255,255,0.2);
-  }
-  .stat-item:last-child { border-right: none; }
-  .stat-num {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 32px;
-    font-weight: 900;
-    display: block;
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    opacity: 0.8;
-    font-weight: 600;
-  }
-
-  /* ── SECTION SHARED ── */
-  section { padding: 80px 5vw; }
-  .section-tag {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--sena-green);
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .section-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: clamp(36px, 5vw, 64px);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -1px;
-    line-height: 0.95;
-    margin-bottom: 16px;
-  }
-  .section-sub {
-    color: rgba(255,255,255,0.5);
-    font-size: 16px;
-    max-width: 480px;
-    line-height: 1.6;
-    margin-bottom: 52px;
-  }
-
-  /* ── SPORTS CARDS ── */
-  .sports-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-  }
-  @media (max-width: 768px) { .sports-grid { grid-template-columns: 1fr; } }
-
-  .sport-card {
-    position: relative;
-    aspect-ratio: 3/4;
-    overflow: hidden;
-    cursor: pointer;
-  }
-  .sport-card-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.6s ease;
-    filter: brightness(0.5);
-  }
-  .sport-card:hover .sport-card-bg { transform: scale(1.08); filter: brightness(0.4); }
-  .sport-card-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
-  }
-  .sport-card-content {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 28px 24px;
-  }
-  .sport-card-num {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 80px;
-    font-weight: 900;
-    color: rgba(255,255,255,0.06);
-    line-height: 1;
-    position: absolute;
-    top: 16px; right: 16px;
-  }
-  .sport-badge {
-    display: inline-block;
-    background: var(--sena-green);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 2px;
-    margin-bottom: 10px;
-  }
-  .sport-card-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 30px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -0.5px;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .sport-card-desc {
-    font-size: 13px;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.5;
-    max-width: 260px;
-  }
-  .sport-card-arrow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px; height: 36px;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    margin-top: 14px;
-    font-size: 16px;
-    transition: all 0.2s;
-  }
-  .sport-card:hover .sport-card-arrow { background: var(--sena-green); border-color: var(--sena-green); }
-
-  /* ── SERVICES ── */
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-  @media (max-width: 768px) { .services-grid { grid-template-columns: 1fr; } }
-
-  .service-card {
-    background: var(--sena-card);
-    border: 1px solid var(--sena-border);
-    border-radius: 4px;
-    padding: 36px 32px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--sena-green);
-    transform: scaleX(0);
-    transition: transform 0.3s;
-    transform-origin: left;
-  }
-  .service-card:hover { border-color: rgba(26,95,180,0.4); }
-  .service-card:hover::before { transform: scaleX(1); }
-
-  .service-icon {
-    width: 52px; height: 52px;
-    background: rgba(26,95,180,0.12);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: var(--sena-green);
-  }
-  .service-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-  }
-  .service-desc {
-    font-size: 14px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.65;
-  }
-  .service-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 20px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--sena-green);
-    text-decoration: none;
-  }
-  .service-link:hover { color: #fff; }
-
-  /* ── MATCH FEATURED ── */
-  .match-feature {
-    background: rgba(26,95,180,0.06);
-    border: 1px solid rgba(26,95,180,0.2);
-    border-radius: 4px;
-    padding: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-bottom: 80px;
-  }
-  .match-team {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 42px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -1px;
-    flex: 1;
-    min-width: 120px;
-  }
-  .match-team.right { text-align: right; }
-  .match-center {
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .match-vs {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--sena-green);
-    display: block;
-    margin-bottom: 4px;
-  }
-  .match-date {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-
-  /* ── MODAL ── */
-  .custom-modal {
-    background: var(--primary-dark);
-    border: 1px solid var(--neon-border);
-    border-radius: 8px;
-    color: #fff;
-  }
-  .custom-input {
-    background: rgba(255,255,255,0.05) !important;
-    border-color: rgba(255,255,255,0.1) !important;
-    color: #fff !important;
-  }
-  .custom-input:focus {
-    background: rgba(255,255,255,0.08) !important;
-    border-color: rgba(26,95,180,0.5) !important;
-    box-shadow: 0 0 0 3px rgba(26,95,180,0.15) !important;
-  }
-  .nav-pills .nav-link {
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.6);
-    border-radius: 4px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    letter-spacing: 1px;
-    font-weight: 700;
-  }
-  .nav-pills .nav-link.active {
-    background: var(--sena-green) !important;
-    color: #fff !important;
-  }
-</style>
+<link rel="stylesheet" href="{% static 'css/inicio_styles.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -535,13 +15,13 @@
 <!-- TICKER -->
 <div class="ticker-bar" aria-hidden="true">
   <div class="ticker-inner">
-    <span>⚽ Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> 🏀 Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> 🏐 Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> 🏋️ Reserva el gimnasio ahora <span class="ticker-sep">•</span> ⚽ Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> 🏀 Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> 🏐 Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> 🏋️ Reserva el gimnasio ahora</span>
+    <span> Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> Reserva el gimnasio ahora <span class="ticker-sep">•</span> Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> Reserva el gimnasio ahora</span>
   </div>
 </div>
 
 <!-- HERO -->
 <header class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" style="background-image: url('{% static 'img/hero_bg.png' %}'); background-size: cover; background-position: center; opacity: 0.25;"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">
@@ -564,7 +44,7 @@
           Registrarse
         </button>
       {% else %}
-        <p style="color:rgba(255,255,255,0.6); margin-bottom:12px;">Bienvenido, <strong style="color:#fff;">{{ nombre_usuario }}</strong></p>
+        <p class="ini-u-1">Bienvenido, <strong class="ini-u-2">{{ nombre_usuario }}</strong></p>
         <a href="{% url 'perfil' %}" class="btn-primary-sport">
           <i class="fas fa-tachometer-alt"></i> Ir a mi perfil
         </a>
@@ -605,36 +85,35 @@
 <!-- STATS BAR -->
 <div class="stats-bar">
   <div class="stat-item">
-    <span class="stat-num">12</span>
+    <span class="stat-num">{{ stats.equipos_inscritos }}</span>
     <span class="stat-label">Equipos inscritos</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">3</span>
+    <span class="stat-num">{{ stats.disciplinas_activas }}</span>
     <span class="stat-label">Disciplinas activas</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">340+</span>
+    <span class="stat-num">{{ stats.total_aprendices }}</span>
     <span class="stat-label">Aprendices</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">6</span>
+    <span class="stat-num">{{ stats.jornadas_jugadas }}</span>
     <span class="stat-label">Jornadas jugadas</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">2</span>
+    <span class="stat-num">{{ stats.escenarios_deportivos }}</span>
     <span class="stat-label">Escenarios deportivos</span>
   </div>
 </div>
 
 <!-- DISCIPLINAS -->
 <section>
-  <div class="section-tag">Disciplinas</div>
-  <h2 class="section-title">Nuestros<br>deportes</h2>
+  <div class="section-title">Disciplinas</div>
   <p class="section-sub">Actividades disponibles para todos los aprendices del centro de formación.</p>
 
   <div class="sports-grid">
     <div class="sport-card">
-      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80');"></div>
+      <div class="sport-card-bg ini-u-3" style="background-image: url('{% static 'img/sports_soccer.png' %}');"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">01</div>
       <div class="sport-card-content">
@@ -645,7 +124,7 @@
       </div>
     </div>
     <div class="sport-card">
-      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80');"></div>
+      <div class="sport-card-bg ini-u-4" style="background-image: url('{% static 'img/sports_basketball.png' %}');"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">02</div>
       <div class="sport-card-content">
@@ -656,7 +135,7 @@
       </div>
     </div>
     <div class="sport-card">
-      <div class="sport-card-bg" style="background-image:url('https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80');"></div>
+      <div class="sport-card-bg ini-u-5" style="background-image: url('{% static 'img/sports_volleyball.png' %}');"></div>
       <div class="sport-card-overlay"></div>
       <div class="sport-card-num">03</div>
       <div class="sport-card-content">
@@ -671,7 +150,6 @@
 
 <!-- SERVICIOS -->
 <section>
-  <div class="section-tag">Servicios</div>
   <h2 class="section-title">¿Qué encontrarás<br>aquí?</h2>
   <p class="section-sub">Gestiona tu vida deportiva de forma integral desde una sola plataforma.</p>
 
@@ -703,13 +181,67 @@
   </div>
 </section>
 
+<!-- CÓMO FUNCIONA -->
+<section class="ini-u-6">
+  <h2 class="section-title">¿Cómo<br>funciona?</h2>
+  <p class="section-sub">En tres pasos estás dentro del sistema y aprovechando todos los recursos deportivos del SENA.</p>
+
+  <div class="ini-u-7">
+
+    <div class="how-step fade-in-up ini-u-8">
+      <div class="ini-u-9">
+        <div class="ini-u-10">
+          <span class="ini-u-11">01</span>
+        </div>
+        <div class="ini-u-12"></div>
+      </div>
+      <h3 class="ini-u-13">Créate una cuenta</h3>
+      <p class="ini-u-14">Regístrate con tu número de documento y datos SENA. Puedes escanear tu carnet para llenar el formulario automáticamente.</p>
+    </div>
+
+    <div class="how-step fade-in-up ini-u-15">
+      <div class="ini-u-16">
+        <div class="ini-u-17">
+          <span class="ini-u-18">02</span>
+        </div>
+        <div class="ini-u-19"></div>
+      </div>
+      <h3 class="ini-u-20">Accede a tu módulo</h3>
+      <p class="ini-u-21">Desde tu perfil accede al gimnasio, inventario de implementos, torneos inter-fichas o las competencias inter-centros.</p>
+    </div>
+
+    <div class="how-step fade-in-up ini-u-22">
+      <div class="ini-u-23">
+        <div class="ini-u-24">
+          <span class="ini-u-25">03</span>
+        </div>
+        <div class="ini-u-26"></div>
+      </div>
+      <h3 class="ini-u-27">Participa y compite</h3>
+      <p class="ini-u-28">Inscribe tu equipo, reserva el gimnasio, solicita implementos y sigue tu historial deportivo en tiempo real.</p>
+    </div>
+
+    <div class="how-step fade-in-up ini-u-29">
+      <div class="ini-u-30">
+        <div class="ini-u-31">
+          <i class="fas fa-robot ini-u-32"></i>
+        </div>
+        <div class="ini-u-33"></div>
+      </div>
+      <h3 class="ini-u-34">Pregúntale a Tux</h3>
+      <p class="ini-u-35">Nuestro asistente IA responde tus preguntas sobre horarios, disponibilidad y torneos sin depender de internet externo.</p>
+    </div>
+
+  </div>
+</section>
+
 <!-- MODAL AUTENTICACIÓN -->
 <div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content custom-modal">
       <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bolder text-white fs-4" style="font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; text-transform:uppercase;">
-          <i class="fas fa-shield-alt me-2" style="color:var(--sena-green);"></i>Acceso al sistema
+        <h5 class="modal-title fw-bolder text-white fs-4 ini-u-36">
+          <i class="fas fa-shield-alt me-2 ini-u-37"></i>Acceso al sistema
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
@@ -733,27 +265,27 @@
             <form id="loginForm" novalidate class="px-2 py-3">
               {% csrf_token %}
               <div class="mb-4">
-                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número de Documento</label>
+                <label class="form-label fw-semibold text-white small text-uppercase ini-u-38">Número de Documento</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-id-card text-white-50"></i></span>
-                  <input type="text" name="username" class="form-control custom-input border-start-0 ps-0" placeholder="Ej: 1052345678" required pattern="\d{5,20}" autocomplete="username" style="box-shadow:none;">
+                  <span class="input-group-text bg-transparent custom-input ini-u-39"><i class="fas fa-id-card text-white-50"></i></span>
+                  <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678" required pattern="\d{5,20}" autocomplete="username ini-u-40">
                 </div>
               </div>
               <div class="mb-4">
-                <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Contraseña</label>
+                <label class="form-label fw-semibold text-white small text-uppercase ini-u-41">Contraseña</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-lock text-white-50"></i></span>
-                  <input type="password" id="id_password" name="password" class="form-control custom-input border-start-0 ps-0 border-end-0" placeholder="Tu clave secreta" required minlength="8" autocomplete="current-password" style="box-shadow:none;">
-                  <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left:none;" type="button" id="togglePassword">
+                  <span class="input-group-text bg-transparent custom-input ini-u-42"><i class="fas fa-lock text-white-50"></i></span>
+                  <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta" required minlength="8" autocomplete="current-password ini-u-43">
+                  <button class="btn btn-outline-secondary custom-input ini-u-44" type="button" id="togglePassword">
                     <i class="fas fa-eye text-white-50"></i>
                   </button>
                 </div>
                 <div class="text-end mt-3">
-                  <a href="{% url 'password_reset' %}" class="small text-decoration-none fw-bold" style="color:var(--sena-green);">¿Olvidaste tu contraseña?</a>
+                  <a href="{% url 'password_reset' %}" class="small text-decoration-none fw-bold ini-u-45">¿Olvidaste tu contraseña?</a>
                 </div>
               </div>
               <div id="loginAlert" class="alert d-none" role="alert"></div>
-              <button type="submit" class="btn w-100 py-3 mt-2 fw-bold text-uppercase text-white" style="background:var(--sena-green); letter-spacing:1px; border-radius:4px; font-family:'Barlow Condensed',sans-serif; font-size:16px;">Ingresar al sistema</button>
+              <button type="submit" class="btn w-100 py-3 mt-2 fw-bold text-uppercase text-white ini-u-46">Ingresar al sistema</button>
             </form>
           </div>
 
@@ -761,12 +293,57 @@
           <div class="tab-pane fade" id="registerPanel" role="tabpanel">
             <form id="registerForm" novalidate class="px-2 py-3">
               {% csrf_token %}
+
+              <!-- ══ ESCÁNER DE CARNET SENA ══ -->
+              <button type="button" class="scanner-btn" id="btnAbrirScanner">
+                <i class="fas fa-qrcode fa-lg"></i>
+                <span>Escanear carnet SENA con cámara</span>
+              </button>
+
+              <!-- Badge de verificación -->
+              <div class="sena-verified-badge" id="senaVerifiedBadge">
+                <div class="badge-icon"><i class="fas fa-check text-white"></i></div>
+                <div class="badge-text">
+                  <span id="senaVerifiedNombre">Aprendiz verificado</span>
+                  <small id="senaVerifiedFicha">Ficha SENA detectada</small>
+                </div>
+                <i class="fas fa-shield-alt ini-u-47"></i>
+              </div>
+
+              <!-- Visor de cámara -->
+              <div id="scannerWrapper">
+                <video id="scannerVideo" autoplay playsinline muted></video>
+                <canvas id="scannerCanvas"></canvas>
+                <!-- Mira visual -->
+                <div class="scan-reticle">
+                  <span class="reticle-corner rc-tl"></span>
+                  <span class="reticle-corner rc-tr"></span>
+                  <span class="reticle-corner rc-bl"></span>
+                  <span class="reticle-corner rc-br"></span>
+                  <div class="scan-line"></div>
+                </div>
+                <div id="scanStatus">Apunta al código QR o de barras del carnet</div>
+                <!-- Spinner mientras arranca la cámara -->
+                <div id="scannerLoader">
+                  <div class="spinner-ring"></div>
+                  <div class="loader-text">Iniciando cámara...</div>
+                </div>
+                <button id="btnCambiarCamara" type="button" title="Cambiar cámara (delantera/trasera)">
+                  <i class="fas fa-camera-rotate"></i>
+                </button>
+                <button id="btnCerrarScanner" type="button" title="Cerrar cámara">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+
+              <!-- ══════════════════════════════ -->
+
               <div class="row g-4">
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Tipo Documento <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-48">Tipo Documento <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-id-card-alt text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="tipo_documento" required style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-49"><i class="fas fa-id-card-alt text-white-50"></i></span>
+                    <select class="form-select custom-input" name="tipo_documento" id="id_tipo_documento" required class="ini-u-50">
                       <option value="" selected disabled>-- Selecciona --</option>
                       <option value="CC">Cédula de Ciudadanía</option>
                       <option value="TI">Tarjeta de Identidad</option>
@@ -776,32 +353,32 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número Documento <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-51">Número Documento <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-hashtag text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username" style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-52"><i class="fas fa-hashtag text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input" name="numero_documento" id="id_numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username ini-u-53">
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Nombres <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-54">Nombres <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="nombres" required minlength="2" maxlength="100" autocomplete="given-name" style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-55"><i class="fas fa-user text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" autocomplete="given-name ini-u-56">
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Apellidos <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-57">Apellidos <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="apellidos" required minlength="2" maxlength="100" autocomplete="family-name" style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-58"><i class="fas fa-user text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" autocomplete="family-name ini-u-59">
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Género <span class="text-muted fw-normal text-lowercase">(Opcional)</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-60">Género <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-venus-mars text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="genero" style="box-shadow:none;">
-                      <option value="">-- Seleccionar (Opcional) --</option>
+                    <span class="input-group-text bg-transparent custom-input ini-u-61"><i class="fas fa-venus-mars text-white-50"></i></span>
+                    <select class="form-select custom-input" name="genero" id="id_genero" required>
+                      <option value="" selected disabled>-- Selecciona --</option>
                       <option value="M">Masculino</option>
                       <option value="F">Femenino</option>
                       <option value="O">Otro</option>
@@ -810,17 +387,17 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Teléfono <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-63">Teléfono <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-phone text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="telefono" required pattern="\d{7,15}" maxlength="15" autocomplete="tel" style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-64"><i class="fas fa-phone text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input" name="telefono" required pattern="\d{7,15}" maxlength="15" autocomplete="tel ini-u-65">
                   </div>
                 </div>
                 <div class="col-md-12">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Programa de Formación <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-66">Programa de Formación <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-graduation-cap text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="programa_formacion" required style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-67"><i class="fas fa-graduation-cap text-white-50"></i></span>
+                    <select class="form-select custom-input" name="programa_formacion" id="id_programa_formacion" required class="ini-u-68">
                       <option value="" selected disabled>-- Selecciona tu programa --</option>
                       <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
                       <option value="MINERIA">Supervisión de Procesos Mineros</option>
@@ -835,42 +412,47 @@
                   </div>
                 </div>
                 <div class="col-md-12">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Correo Electrónico <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-69">Correo Electrónico <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-envelope text-white-50"></i></span>
-                    <input type="email" class="form-control custom-input border-start-0 ps-0" name="email" required autocomplete="email" style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-70"><i class="fas fa-envelope text-white-50"></i></span>
+                    <input type="email" class="form-control custom-input" name="email" required autocomplete="email ini-u-71">
                   </div>
                 </div>
                 <div class="col-md-12">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Número de Ficha <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-72">Número de Ficha <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-users text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" autocomplete="off" style="box-shadow:none;">
+                    <span class="input-group-text bg-transparent custom-input ini-u-73"><i class="fas fa-users text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" autocomplete="off ini-u-74">
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Contraseña <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-lock text-white-50"></i></span>
-                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password" style="box-shadow:none;">
-                    <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left:none;" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label fw-semibold text-white small text-uppercase ini-u-75 mb-0">Contraseña <span class="text-danger">*</span></label>
+                    <button type="button" class="btn btn-link text-decoration-none btn-sm p-0 mb-0" id="btnSugerirClave" style="font-size: 0.72rem; color: #1a5fb4; font-weight: 700;">
+                      <i class="fas fa-magic"></i> Sugerir clave
+                    </button>
                   </div>
-                  <div class="progress mt-2" style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;">
-                    <div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="border-radius:2px;"></div>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent custom-input ini-u-76"><i class="fas fa-lock text-white-50"></i></span>
+                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" required minlength="8" maxlength="128" autocomplete="new-password ini-u-77">
+                    <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
+                  </div>
+                  <div class="progress mt-2 ini-u-79">
+                    <div id="passwordStrengthBar" class="progress-bar" role="progressbar ini-u-80"></div>
                   </div>
                   <small id="passwordStrengthText" class="text-white-50"></small>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold text-white small text-uppercase" style="letter-spacing:0.5px;">Confirmar Clave <span class="text-danger">*</span></label>
+                  <label class="form-label fw-semibold text-white small text-uppercase ini-u-81">Confirmar Clave <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input" style="border-right:none;"><i class="fas fa-check-circle text-white-50"></i></span>
-                    <input type="password" id="confirmarContrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password" style="box-shadow:none;">
-                    <button class="btn btn-outline-secondary custom-input border-start-0" style="border-left:none;" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
+                    <span class="input-group-text bg-transparent custom-input ini-u-82"><i class="fas fa-check-circle text-white-50"></i></span>
+                    <input type="password" id="confirmarContrasena" class="form-control custom-input" required minlength="8" maxlength="128" autocomplete="new-password ini-u-83">
+                    <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
                   </div>
                 </div>
               </div>
               <div id="registerAlert" class="alert d-none mt-4" role="alert"></div>
-              <button type="submit" class="btn w-100 py-3 mt-4 fw-bold text-uppercase text-white" style="background:var(--sena-green); letter-spacing:1px; border-radius:4px; font-family:'Barlow Condensed',sans-serif; font-size:16px;">Finalizar Registro</button>
+              <button type="submit" class="btn w-100 py-3 mt-4 fw-bold text-uppercase text-white ini-u-85">Finalizar Registro</button>
             </form>
           </div>
         </div>
@@ -879,36 +461,491 @@
   </div>
 </div>
 
+<!-- MODAL: CUENTA BLOQUEADA -->
+<div class="modal fade" id="modalCuentaBloqueada" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-white ini-u-86">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold"><i class="fas fa-lock text-danger me-2"></i>CUENTA BLOQUEADA</h5>
+      </div>
+      <div class="modal-body text-center py-4">
+        <i class="fas fa-shield-alt fa-4x mb-3 ini-u-87"></i>
+        <p id="msgBloqueo" class="mb-4 ini-u-88"></p>
+        <p class="small text-white-50 mb-4">Selecciona una opción para continuar:</p>
+        <div class="d-grid gap-3">
+          <a href="mailto:soporte@sena.edu.co?subject=Desbloqueo%20de%20cuenta" 
+             class="btn btn-outline-warning fw-bold py-3">
+            <i class="fas fa-headset me-2"></i>CONTACTAR SOPORTE TÉCNICO
+          </a>
+          <button type="button" class="btn fw-bold py-3 ini-u-89"
+                  data-bs-dismiss="modal"
+                  data-bs-toggle="modal" data-bs-target="#modalDesbloqueoUrgente">
+            <i class="fas fa-user-shield me-2"></i>DESBLOQUEO URGENTE (DATOS PERSONALES)
+          </button>
+          <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DESBLOQUEO URGENTE POR DATOS PERSONALES -->
+<div class="modal fade" id="modalDesbloqueoUrgente" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-white ini-u-90">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold"><i class="fas fa-user-shield me-2 ini-u-91"></i>VERIFICACIÓN DE IDENTIDAD</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-white-50 small mb-4">Ingresa tus datos de registro para verificar tu identidad y desbloquear tu cuenta.</p>
+        <div id="alertDesbloqueo" class="alert d-none mb-3"></div>
+        <form id="formDesbloqueoUrgente">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-white-50">NÚMERO DE DOCUMENTO</label>
+            <input type="text" name="numero_documento" class="form-control custom-input" required placeholder="Ej: 1052345678">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-white-50">CORREO ELECTRÓNICO</label>
+            <input type="email" name="email" class="form-control custom-input" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-white-50">TELÉFONO REGISTRADO</label>
+            <input type="text" name="telefono" class="form-control custom-input" required placeholder="Ej: 3001234567">
+          </div>
+          <button type="submit" class="btn w-100 py-3 fw-bold text-white ini-u-92">
+            <i class="fas fa-unlock me-2"></i>VERIFICAR Y DESBLOQUEAR
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
+<!-- ZXing (Códigos de barras 1D Code128/Code39/PDF417) + jsQR (Códigos QR) -->
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
-  // Countdown — cambia la fecha objetivo a la del próximo evento real
-  (function() {
-    const target = new Date('2025-05-31T10:00:00');
-    function update() {
-      const diff = target - new Date();
-      if (diff <= 0) { document.querySelector('.countdown-strip').style.display='none'; return; }
-      const d = Math.floor(diff/86400000);
-      const h = Math.floor((diff%86400000)/3600000);
-      const m = Math.floor((diff%3600000)/60000);
-      const s = Math.floor((diff%60000)/1000);
-      const pad = n => String(n).padStart(2,'0');
-      document.getElementById('cd-days').textContent = pad(d);
-      document.getElementById('cd-hours').textContent = pad(h);
-      document.getElementById('cd-mins').textContent = pad(m);
-      document.getElementById('cd-secs').textContent = pad(s);
-    }
-    update(); setInterval(update, 1000);
-  })();
+/* ═══════════════════════════════════════════════════════════
+   MÓDULO: ESCÁNER DE CARNET SENA MULTIFORMATO (1D & 2D)
+   ═══════════════════════════════════════════════════════════ */
+(function () {
 
-  // Abrir modal si viene ?login=1
-  document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('login') === '1') {
-      new bootstrap.Modal(document.getElementById('modalForm')).show();
+  /* ── Referencias DOM ── */
+  const btnAbrir    = document.getElementById('btnAbrirScanner');
+  const btnCerrar   = document.getElementById('btnCerrarScanner');
+  const btnCambiar  = document.getElementById('btnCambiarCamara');
+  const wrapper     = document.getElementById('scannerWrapper');
+  const video       = document.getElementById('scannerVideo');
+  const canvas      = document.getElementById('scannerCanvas');
+  const statusEl    = document.getElementById('scanStatus');
+  const loaderEl    = document.getElementById('scannerLoader');
+  const badgeEl     = document.getElementById('senaVerifiedBadge');
+  const badgeNombre = document.getElementById('senaVerifiedNombre');
+  const badgeFicha  = document.getElementById('senaVerifiedFicha');
+
+  let streamActivo   = null;
+  let animFrame      = null;
+  let escaneando     = false;
+  let camaraTrasera  = true;
+  let zxingReader    = null;
+
+  /* Inicializar decodificador ZXing para barras 1D (Code128, Code39, PDF417) */
+  if (typeof ZXing !== 'undefined') {
+    try {
+      zxingReader = new ZXing.BrowserMultiFormatReader();
+    } catch (e) {
+      console.warn('ZXing Reader no disponible:', e);
     }
+  }
+
+  /* ── Alternar cámara trasera / frontal ── */
+  if (btnCambiar) {
+    btnCambiar.addEventListener('click', () => {
+      camaraTrasera = !camaraTrasera;
+      cerrarCamara();
+      setTimeout(abrirCamara, 300);
+    });
+  }
+
+  /* ── Abrir cámara ── */
+  btnAbrir.addEventListener('click', abrirCamara);
+
+  async function abrirCamara() {
+    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+      mostrarError('Tu navegador no permite acceso a la cámara. Ingresa los datos manualmente.');
+      return;
+    }
+
+    wrapper.classList.add('active');
+    loaderEl.classList.add('active');
+    btnAbrir.style.display = 'none';
+    statusEl.textContent = 'Iniciando cámara del celular...';
+
+    const preferredFacing = camaraTrasera ? 'environment' : 'user';
+
+    const constraintsList = [
+      { video: { facingMode: { exact: preferredFacing }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+      { video: { facingMode: preferredFacing } },
+      { video: true },
+      { video: {}, audio: false }
+    ];
+
+    let stream = null;
+
+    for (const constraints of constraintsList) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        break;
+      } catch (err) {
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          mostrarError('Permiso de cámara denegado. Permite el acceso a la cámara en los ajustes del navegador.');
+          cerrarCamara();
+          return;
+        }
+      }
+    }
+
+    if (!stream) {
+      mostrarError('No se encontró cámara disponible. Asegúrate de otorgar permisos.');
+      cerrarCamara();
+      return;
+    }
+
+    streamActivo = stream;
+
+    try {
+      video.srcObject = stream;
+    } catch (_) {
+      video.src = URL.createObjectURL(stream);
+    }
+
+    video.onloadedmetadata = function () {
+      video.play()
+        .then(() => {
+          loaderEl.classList.remove('active');
+          escaneando = true;
+          statusEl.textContent = 'Apunta al código de barras o QR del carnet';
+          animFrame = requestAnimationFrame(procesarFrame);
+        })
+        .catch(err => {
+          mostrarError('Error al reproducir video: ' + (err.message || err));
+          cerrarCamara();
+        });
+    };
+
+    if (video.readyState >= 1) {
+      video.onloadedmetadata();
+    }
+  }
+
+  /* ── Cerrar cámara ── */
+  btnCerrar.addEventListener('click', cerrarCamara);
+
+  function cerrarCamara() {
+    escaneando = false;
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    if (streamActivo) {
+      streamActivo.getTracks().forEach(t => t.stop());
+      streamActivo = null;
+    }
+    video.srcObject = null;
+    video.src = '';
+    loaderEl.classList.remove('active');
+    wrapper.classList.remove('active');
+    btnAbrir.style.display = '';
+  }
+
+  document.getElementById('modalForm').addEventListener('hidden.bs.modal', cerrarCamara);
+
+  /* ── Detección Multiformato (1D & 2D) ── */
+  function procesarFrame() {
+    if (!escaneando) return;
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+      const ctx = canvas.getContext('2d');
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      /* 1. Detección Nativa BarcodeDetector (Chrome Android / Desktop) */
+      if ('BarcodeDetector' in window) {
+        try {
+          const bd = new BarcodeDetector({
+            formats: ['qr_code', 'code_128', 'code_39', 'pdf417', 'data_matrix', 'ean_13', 'ean_8']
+          });
+          bd.detect(canvas).then(barcodes => {
+            if (barcodes.length > 0 && escaneando) {
+              onCodigoDetectado(barcodes[0].rawValue);
+            }
+          }).catch(() => {});
+        } catch (_) {}
+      }
+
+      /* 2. Detección ZXing (Código de barras 1D: Code 128, Code 39, PDF417) */
+      if (zxingReader && escaneando) {
+        try {
+          const result = zxingReader.decodeFromCanvas(canvas);
+          if (result && result.text && escaneando) {
+            onCodigoDetectado(result.text);
+            return;
+          }
+        } catch (_) {}
+      }
+
+      /* 3. Detección jsQR (Respaldo QR) */
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const qr = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'attemptBoth'
+      });
+      if (qr && qr.data && escaneando) {
+        onCodigoDetectado(qr.data);
+        return;
+      }
+    }
+
+    animFrame = requestAnimationFrame(procesarFrame);
+  }
+
+  /* ── Procesamiento del código detectado ── */
+  function onCodigoDetectado(raw) {
+    escaneando = false;
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    statusEl.textContent = '✓ Código detectado — procesando...';
+
+    const datos = parsearDatosCarnet(raw);
+
+    if (!datos || !datos.numero_doc) {
+      statusEl.textContent = '✗ No se reconoció documento en el código. Reintenta.';
+      setTimeout(() => {
+        if (streamActivo) {
+          escaneando = true;
+          statusEl.textContent = 'Apunta al código de barras o QR del carnet';
+          animFrame = requestAnimationFrame(procesarFrame);
+        }
+      }, 2000);
+      return;
+    }
+
+    llenarFormulario(datos);
+    cerrarCamara();
+  }
+
+  /* ── Parser inteligente de carnet (SENA, Cédula PDF417, 1D Barcode, JSON, CSV) ── */
+  function parsearDatosCarnet(raw) {
+    raw = (raw || '').trim();
+    if (!raw) return null;
+
+    /* Formato 1: JSON */
+    try {
+      const obj = JSON.parse(raw);
+      return normalizarDatos(obj);
+    } catch (_) {}
+
+    /* Formato 2: CSV o valores separados por ; | , */
+    const sep = raw.includes(';') ? ';' : raw.includes('|') ? '|' : (raw.includes(',') ? ',' : null);
+    if (sep) {
+      const partes = raw.split(sep).map(s => s.trim());
+      if (partes.length >= 2) {
+        let numDoc = '', nombres = '', apellidos = '', ficha = '';
+        partes.forEach(p => {
+          const digits = p.replace(/\D/g, '');
+          if (!numDoc && digits.length >= 6 && digits.length <= 11) {
+            numDoc = digits;
+          } else if (!ficha && digits.length >= 5 && digits.length <= 8) {
+            ficha = digits;
+          } else if (!nombres && /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(p)) {
+            nombres = p;
+          } else if (!apellidos && /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(p)) {
+            apellidos = p;
+          }
+        });
+        if (numDoc) {
+          return normalizarDatos({ nombres, apellidos, numero_doc: numDoc, ficha });
+        }
+      }
+    }
+
+    /* Formato 3: PDF417 Cédula Colombiana o Carnet con números de 6 a 11 dígitos */
+    const matchesDoc = raw.match(/\d{6,11}/g);
+    if (matchesDoc && matchesDoc.length > 0) {
+      for (const candidate of matchesDoc) {
+        const clean = candidate.replace(/^0+/, '');
+        if (clean.length >= 6 && clean.length <= 11) {
+          return normalizarDatos({ numero_doc: clean, tipo_doc: 'CC' });
+        }
+      }
+    }
+
+    /* Formato 4: Código de barras 1D numérico o alfanumérico simple */
+    const soloDigitos = raw.replace(/\D/g, '');
+    if (soloDigitos.length >= 6 && soloDigitos.length <= 11) {
+      return normalizarDatos({ numero_doc: soloDigitos, tipo_doc: 'CC' });
+    }
+
+    return null;
+  }
+
+
+  function toTitleCase(str) {
+    if (!str) return '';
+    return str.toString().toLowerCase().trim().replace(/(?:^|\s|-)\S/g, function(m) {
+      return m.toUpperCase();
+    });
+  }
+
+  function normalizarDatos(obj) {
+    return {
+      nombres:    toTitleCase(obj.nombres    || obj.first_name || obj.nombre   || ''),
+      apellidos:  toTitleCase(obj.apellidos  || obj.last_name  || obj.apellido || ''),
+      tipo_doc:   (obj.tipo_doc   || obj.tipo_documento              || 'CC').toUpperCase().trim(),
+      numero_doc: (obj.numero_doc || obj.numero_documento || obj.cedula || obj.documento || '').replace(/\D/g, '').trim(),
+      ficha:      (obj.ficha      || obj.numero_ficha                || '').replace(/\D/g, '').trim(),
+      programa:   (obj.programa   || obj.programa_formacion          || '').toUpperCase().trim()
+    };
+  }
+
+  /* ── Rellenar formulario de registro ── */
+  function llenarFormulario(datos) {
+    function setVal(id, val) {
+      const el = document.getElementById(id);
+      if (el && val) { el.value = val; el.classList.add('input-verified'); }
+    }
+
+    setVal('id_nombres',          datos.nombres);
+    setVal('id_apellidos',        datos.apellidos);
+    setVal('id_numero_documento', datos.numero_doc);
+    setVal('id_ficha',            datos.ficha);
+
+    /* Tipo de documento */
+    const tipoEl = document.getElementById('id_tipo_documento');
+    if (tipoEl && datos.tipo_doc) {
+      for (const opt of tipoEl.options) {
+        if (opt.value === datos.tipo_doc) { opt.selected = true; break; }
+      }
+      tipoEl.classList.add('input-verified');
+    }
+
+    /* Programa de formación */
+    const progEl = document.getElementById('id_programa_formacion');
+    if (progEl && datos.programa) {
+      for (const opt of progEl.options) {
+        if (opt.value === datos.programa) { opt.selected = true; break; }
+      }
+    }
+
+    /* Badge de verificación */
+    const nombreCompleto = [datos.nombres, datos.apellidos].filter(Boolean).join(' ') || 'Aprendiz SENA';
+    badgeNombre.textContent = nombreCompleto;
+    badgeFicha.textContent  = datos.ficha ? 'Ficha ' + datos.ficha : 'Carnet escaneado correctamente';
+    badgeEl.classList.add('show');
+
+    document.getElementById('registerForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── Mostrar error ── */
+  function mostrarError(msg) {
+    const alertEl = document.getElementById('registerAlert');
+    alertEl.className = 'alert alert-danger mt-2';
+    alertEl.textContent = msg;
+    alertEl.classList.remove('d-none');
+    setTimeout(() => alertEl.classList.add('d-none'), 6000);
+  }
+
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   COUNTDOWN
+═══════════════════════════════════════════════════════════ */
+(function () {
+  const target = new Date('2025-05-31T10:00:00');
+  function update() {
+    const diff = target - new Date();
+    if (diff <= 0) { document.querySelector('.countdown-strip').style.display = 'none'; return; }
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('cd-days').textContent  = pad(Math.floor(diff / 86400000));
+    document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 60000) / 1000));
+  }
+  update();
+  setInterval(update, 1000);
+})();
+
+/* Abrir modal si viene ?login=1 */
+document.addEventListener('DOMContentLoaded', function () {
+  if (new URLSearchParams(window.location.search).get('login') === '1') {
+    new bootstrap.Modal(document.getElementById('modalForm')).show();
+  }
+
+  /* ── Intersection Observer para animaciones de entrada ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+});
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DESBLOQUEO URGENTE DE CUENTA
+═══════════════════════════════════════════════════ */
+(function() {
+  const formDesbloqueo = document.getElementById('formDesbloqueoUrgente');
+  if (!formDesbloqueo) return;
+
+  formDesbloqueo.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const alertEl = document.getElementById('alertDesbloqueo');
+    const formData = new FormData(this);
+
+    if (alertEl) {
+      alertEl.className = 'alert alert-info';
+      alertEl.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando datos...';
+      alertEl.classList.remove('d-none');
+    }
+
+    fetch('/desbloquear/', {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (alertEl) {
+        if (data.status === 'success') {
+          alertEl.className = 'alert alert-success';
+          alertEl.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + data.message;
+          setTimeout(() => {
+            bootstrap.Modal.getInstance(document.getElementById('modalDesbloqueoUrgente'))?.hide();
+            document.getElementById('modalForm') && new bootstrap.Modal(document.getElementById('modalForm')).show();
+          }, 2000);
+        } else {
+          alertEl.className = 'alert alert-danger';
+          alertEl.innerHTML = '<i class="fas fa-times-circle me-2"></i>' + data.message;
+        }
+      }
+    })
+    .catch(() => {
+      if (alertEl) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.textContent = 'Error de conexión. Intenta de nuevo.';
+      }
+    });
   });
+})();
 </script>
 {% endblock %}

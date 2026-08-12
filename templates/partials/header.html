@@ -61,17 +61,18 @@
     .navbar-brand:hover span { opacity: 0.8; }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark p-0" style="position: sticky; top: 0; z-index: 1030;">
-    <div class="container-fluid d-flex align-items-center px-3 px-md-4 py-2" style="background: rgba(10, 14, 17, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid var(--neon-border);">
+<nav class="navbar navbar-expand-lg navbar-dark p-0 hdr-u-1">
+    <div class="container-fluid d-flex align-items-center px-3 px-md-4 py-2 hdr-u-2">
         
         <a class="navbar-brand d-flex align-items-center me-auto" href="{% url 'home' %}">
-            <i class="fas fa-futbol me-2 icon-balon"></i>
+            <img src="{% static 'img/logo_sports_max.png' %}" alt="Logo Sports-Max" class="me-2" style="height: 38px; width: 38px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(26, 95, 180, 0.4));">
             <span class="fw-bold fs-6 fs-md-5 text-white">
                 Gestión 
-                <span style="color: var(--sena-green, #1a5fb4);">Deportiva</span>
+                <span class="hdr-u-3">Deportiva</span>
             </span>
         </a>
 
+        {% if user.is_authenticated %}
         <button class="navbar-toggler border-0 shadow-none p-0 ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <i class="fas fa-bars fs-3 text-white"></i>
         </button>
@@ -102,7 +103,7 @@
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'interfichas' %}">Inter-Fichas</a></li>
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'gimnasio' %}">Gimnasio</a></li>
                 <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'inventario' %}">Inventario</a></li>
-                <li class="nav-item">
+                <li class="nav-item border-bottom border-secondary">
                     <a class="nav-link py-3 px-2" href="{% url 'habitos:inicio' %}">
                         <i class="fas fa-heartbeat me-1"></i>
                         Hábitos Saludables
@@ -111,15 +112,32 @@
             </ul>
             {% endwith %}
         </div>
+        {% endif %}
 
-        <div class="ms-auto ps-3 d-flex align-items-center">
+        <div class="ms-auto ps-3 d-flex align-items-center gap-2">
+            <!-- SWITCH MODO CLARO / OSCURO -->
+            <button id="themeToggleBtn" title="Cambiar tema claro/oscuro"
+                    class="hdr-u-4">
+                <i class="fas fa-sun" id="themeIcon"></i>
+            </button>
+            
             {% if user.is_authenticated %}
+            <!-- CAMPANITA DE NOTIFICACIONES -->
+            <button class="btn-campanita hdr-u-5" id="btnCampanita"
+                    data-bs-toggle="modal" data-bs-target="#modalNotificacionesSistema"
+                    title="Notificaciones del sistema"
+                    aria-label="Notificaciones del sistema">
+                <i class="fas fa-bell"></i>
+                {% if notificaciones_count > 0 %}
+                <span id="puntoCampanita" class="hdr-u-6">{{ notificaciones_count }}</span>
+                {% endif %}
+            </button>
             <div class="dropdown">
                 <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
                     {% if user.foto_perfil %}
-                        <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle" style="width: 25px; height: 25px; object-fit: cover; border: 1px solid var(--accent-blue);">
+                        <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle hdr-u-7" style="object-fit: cover; object-position: {{ user.foto_posicion }};">
                     {% else %}
-                        <i class="fas fa-user-circle fs-5"></i>
+                        <div class="header-avatar-initials">{{ user.iniciales }}</div>
                     {% endif %}
                     <span class="d-none d-md-inline">{{ user.first_name|default:user.username|upper }}</span>
                 </a>

@@ -12,9 +12,9 @@ class Disciplina(models.Model):
         ('sets',    'Sets (Voleibol, Pimpón, Bádminton)'),
     ]
     nombre_disciplina = models.CharField(max_length=50, unique=True)
-    icono             = models.CharField(max_length=60, default='fa-medal')
-    reglas            = models.TextField(blank=True, default='')
-    tipo_marcador     = models.CharField(
+    icono = models.CharField(max_length=60, default='fa-medal')
+    reglas = models.TextField(blank=True, default='')
+    tipo_marcador = models.CharField(
         max_length=10,
         choices=TIPO_MARCADOR_CHOICES,
         default='goles',
@@ -30,15 +30,15 @@ class Disciplina(models.Model):
 # ================================================================
 class TorneoInterfichas(models.Model):
     codigo_torneo_fichas = models.AutoField(primary_key=True)
-    nombre_torneo        = models.CharField(max_length=100)
-    fecha_torneo_fichas  = models.DateField()
+    nombre_torneo = models.CharField(max_length=100)
+    fecha_torneo_fichas = models.DateField()
     horario_torneo_fichas = models.TimeField(default='08:00')
-    lugar                = models.CharField(max_length=100)
-    disciplina           = models.ForeignKey(
+    lugar = models.CharField(max_length=100)
+    disciplina = models.ForeignKey(
         Disciplina, on_delete=models.SET_NULL, null=True, related_name='torneos'
     )
-    estado               = models.CharField(max_length=20, default='activo')
-    fecha_registro       = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=20, default='activo')
+    fecha_registro = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.nombre_torneo} ({self.disciplina})"
@@ -49,21 +49,21 @@ class TorneoInterfichas(models.Model):
 # ================================================================
 class EquipoInterfichas(models.Model):
     codigo_equipo_interfichas = models.AutoField(primary_key=True)
-    ficha          = models.IntegerField()
-    programa       = models.CharField(max_length=150)
-    nombre_equipo  = models.CharField(max_length=100)
-    capitan        = models.CharField(max_length=100)
-    torneo         = models.ForeignKey(
+    ficha = models.IntegerField()
+    programa = models.CharField(max_length=150)
+    nombre_equipo = models.CharField(max_length=100)
+    capitan = models.CharField(max_length=100)
+    torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='equipos'
     )
-    disciplina     = models.ForeignKey(
+    disciplina = models.ForeignKey(
         Disciplina, on_delete=models.SET_NULL, null=True
     )
     usuario_registra = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
     fecha_inscripcion = models.DateField(auto_now_add=True)
-    estado            = models.CharField(max_length=20, default='Inscrito')
+    estado = models.CharField(max_length=20, default='Inscrito')
 
     def __str__(self):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
@@ -74,7 +74,7 @@ class EquipoInterfichas(models.Model):
 # ================================================================
 class JugadorEquipo(models.Model):
     nombre_completo = models.CharField(max_length=150)
-    equipo          = models.ForeignKey(
+    equipo = models.ForeignKey(
         EquipoInterfichas, on_delete=models.CASCADE, related_name='jugadores'
     )
 
@@ -86,11 +86,11 @@ class JugadorEquipo(models.Model):
 # 5. GRUPOS
 # ================================================================
 class GrupoInterfichas(models.Model):
-    torneo      = models.ForeignKey(
+    torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='grupos'
     )
     nombre_grupo = models.CharField(max_length=10)   # "A", "B", "C", "D"
-    equipos      = models.ManyToManyField(EquipoInterfichas, related_name='grupos')
+    equipos = models.ManyToManyField(EquipoInterfichas, related_name='grupos')
 
     def __str__(self):
         return f"Grupo {self.nombre_grupo} - {self.torneo.nombre_torneo}"
@@ -106,16 +106,18 @@ FASE_CHOICES = [
     ('final',     'Final'),
 ]
 
+
 class PartidoInterfichas(models.Model):
-    torneo    = models.ForeignKey(
+    torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='partidos'
     )
-    grupo     = models.ForeignKey(
+    grupo = models.ForeignKey(
         GrupoInterfichas, on_delete=models.SET_NULL, null=True, blank=True, related_name='partidos'
     )
-    fase      = models.CharField(max_length=20, choices=FASE_CHOICES, default='grupo')
+    fase = models.CharField(
+        max_length=20, choices=FASE_CHOICES, default='grupo')
 
-    equipo_local     = models.ForeignKey(
+    equipo_local = models.ForeignKey(
         EquipoInterfichas, on_delete=models.CASCADE, related_name='partidos_local'
     )
     equipo_visitante = models.ForeignKey(
@@ -123,24 +125,31 @@ class PartidoInterfichas(models.Model):
     )
 
     fecha_partido = models.DateField(null=True, blank=True)
-    hora_partido  = models.TimeField(null=True, blank=True)
+    hora_partido = models.TimeField(null=True, blank=True)
 
     # Campo genérico: goles, puntos o sets ganados según disciplina
-    goles_local      = models.IntegerField(null=True, blank=True)
-    goles_visitante  = models.IntegerField(null=True, blank=True)
+    goles_local = models.IntegerField(null=True, blank=True)
+    goles_visitante = models.IntegerField(null=True, blank=True)
 
     # Detalle de sets para voleibol / pimpón  [25, 23, 15]
-    sets_local      = models.JSONField(null=True, blank=True)
-    sets_visitante  = models.JSONField(null=True, blank=True)
+    sets_local = models.JSONField(null=True, blank=True)
+    sets_visitante = models.JSONField(null=True, blank=True)
 
     # Tarjetas y Sanciones Disciplinarias
-    tarjetas_amarillas_local = models.IntegerField(default=0, verbose_name="Amarillas Local")
-    tarjetas_amarillas_visitante = models.IntegerField(default=0, verbose_name="Amarillas Visitante")
-    tarjetas_rojas_local = models.IntegerField(default=0, verbose_name="Rojas Local")
-    tarjetas_rojas_visitante = models.IntegerField(default=0, verbose_name="Rojas Visitante")
-    tarjetas_azules_local = models.IntegerField(default=0, verbose_name="Azules Local (Fútsal)")
-    tarjetas_azules_visitante = models.IntegerField(default=0, verbose_name="Azules Visitante (Fútsal)")
-    detalles_sanciones = models.TextField(blank=True, default='', verbose_name="Detalles de Sanciones")
+    tarjetas_amarillas_local = models.IntegerField(
+        default=0, verbose_name="Amarillas Local")
+    tarjetas_amarillas_visitante = models.IntegerField(
+        default=0, verbose_name="Amarillas Visitante")
+    tarjetas_rojas_local = models.IntegerField(
+        default=0, verbose_name="Rojas Local")
+    tarjetas_rojas_visitante = models.IntegerField(
+        default=0, verbose_name="Rojas Visitante")
+    tarjetas_azules_local = models.IntegerField(
+        default=0, verbose_name="Azules Local (Fútsal)")
+    tarjetas_azules_visitante = models.IntegerField(
+        default=0, verbose_name="Azules Visitante (Fútsal)")
+    detalles_sanciones = models.TextField(
+        blank=True, default='', verbose_name="Detalles de Sanciones")
 
     jugado = models.BooleanField(default=False)
 
@@ -149,15 +158,21 @@ class PartidoInterfichas(models.Model):
 
     # Helpers de puntos para tabla de posiciones (solo aplica a goles/puntos)
     def puntos_local(self):
-        if not self.jugado: return 0
-        if self.goles_local > self.goles_visitante:   return 3
-        elif self.goles_local == self.goles_visitante: return 1
+        if not self.jugado:
+            return 0
+        if self.goles_local > self.goles_visitante:
+            return 3
+        elif self.goles_local == self.goles_visitante:
+            return 1
         return 0
 
     def puntos_visitante(self):
-        if not self.jugado: return 0
-        if self.goles_visitante > self.goles_local:   return 3
-        elif self.goles_local == self.goles_visitante: return 1
+        if not self.jugado:
+            return 0
+        if self.goles_visitante > self.goles_local:
+            return 3
+        elif self.goles_local == self.goles_visitante:
+            return 1
         return 0
 
     @property
@@ -181,14 +196,14 @@ class PartidoInterfichas(models.Model):
 # 7. RESULTADOS DE TORNEOS
 # ================================================================
 class ResultadoTorneo(models.Model):
-    torneo       = models.OneToOneField(
+    torneo = models.OneToOneField(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='resultado'
     )
-    ganador      = models.ForeignKey(
+    ganador = models.ForeignKey(
         EquipoInterfichas, on_delete=models.SET_NULL, null=True, related_name='torneos_ganados'
     )
     fecha_cierre = models.DateTimeField(auto_now_add=True)
-    archivado    = models.BooleanField(default=False)
+    archivado = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Resultado de {self.torneo.nombre_torneo}"

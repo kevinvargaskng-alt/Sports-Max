@@ -1,8 +1,7 @@
 {% load static %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-<svg style="position:absolute;width:0;height:0;" xmlns="http://www.w3.org/2000/svg">
+<svg class="acc-u-1" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <filter id="daltonismo-filter">
             <feColorMatrix type="matrix"
@@ -202,6 +201,27 @@
     position: relative;
     flex-shrink: 0;
 }
+.acc-theme-dot[data-theme=""] {
+    background: linear-gradient(135deg, #0d1526, #1e293b) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+}
+.acc-theme-dot[data-theme="acc-claro"] {
+    background: linear-gradient(135deg, #ffffff, #e2e8f0) !important;
+    border: 1px solid #cbd5e1 !important;
+}
+.acc-theme-dot[data-theme="acc-azul-noche"] {
+    background: linear-gradient(135deg, #0a1128, #00d2ff) !important;
+}
+.acc-theme-dot[data-theme="acc-sepia"] {
+    background: linear-gradient(135deg, #f5e6d3, #d4b896) !important;
+}
+.acc-theme-dot[data-theme="acc-alto-contraste"] {
+    background: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}
+.acc-theme-dot[data-theme="acc-daltonismo"] {
+    background: linear-gradient(135deg, #4338ca, #06b6d4) !important;
+}
 .acc-theme-dot:hover { transform: scale(1.12); }
 .acc-theme-dot.active { border-color: #fff !important; box-shadow: 0 0 0 2px rgba(255,255,255,0.4); }
 .acc-theme-dot .dot-label {
@@ -210,7 +230,7 @@
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.55rem !important;
-    color: rgba(255,255,255,0.4) !important;
+    color: rgba(255,255,255,0.6) !important;
     white-space: nowrap;
 }
 
@@ -288,34 +308,408 @@
    TEMAS GLOBALES — REGLAS CORREGIDAS
 ════════════════════════════════════════════════════ */
 
-/* Alto contraste */
-html.acc-alto-contraste body { background: #000 !important; }
-html.acc-alto-contraste body *:not(#acc-panel):not(#acc-panel *):not(#acc-toggle):not(#acc-toggle *) {
-    color: #ffff00 !important; border-color: #ffff00 !important;
+/* Proteccion de Imagenes para todos los temas */
+html.acc-azul-noche img, html.acc-azul-noche picture, html.acc-azul-noche video,
+html.acc-sepia img, html.acc-sepia picture, html.acc-sepia video,
+html.acc-alto-contraste img, html.acc-alto-contraste picture, html.acc-alto-contraste video {
+    background-color: transparent !important;
+}
+
+/* ── TEMA MODO CLARO ── */
+html.acc-claro,
+html.acc-claro body {
+    background: #f8fafc !important;
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+html.acc-claro body p, 
+html.acc-claro body span, 
+html.acc-claro body label, 
+html.acc-claro body div, 
+html.acc-claro body td, 
+html.acc-claro body th,
+html.acc-claro body li,
+html.acc-claro body small,
+html.acc-claro body strong,
+html.acc-claro body b {
+    color: #1e293b !important;
+}
+html.acc-claro body h1,
+html.acc-claro body h2,
+html.acc-claro body h3,
+html.acc-claro body h4,
+html.acc-claro body h5,
+html.acc-claro body h6,
+html.acc-claro .section-title,
+html.acc-claro .hero-title,
+html.acc-claro .service-title,
+html.acc-claro .text-info {
+    color: #0284c7 !important;
+}
+html.acc-claro .section-sub,
+html.acc-claro .hero-sub,
+html.acc-claro .service-desc,
+html.acc-claro .text-white-50, 
+html.acc-claro .text-muted {
+    color: #64748b !important;
+}
+html.acc-claro .sport-card, 
+html.acc-claro .main-container, 
+html.acc-claro .modal-content,
+html.acc-claro .card,
+html.acc-claro .dropdown-menu,
+html.acc-claro .table,
+html.acc-claro .list-group-item,
+html.acc-claro .navbar,
+html.acc-claro .how-step,
+html.acc-claro .step-card,
+html.acc-claro .mi-equipo-card,
+html.acc-claro .hero-aprendiz,
+html.acc-claro .jira-card,
+html.acc-claro .stat-pill,
+html.acc-claro .footer,
+html.acc-claro footer {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+html.acc-claro .footer p,
+html.acc-claro .footer span,
+html.acc-claro .footer a,
+html.acc-claro footer p,
+html.acc-claro footer span,
+html.acc-claro footer a {
+    color: #475569 !important;
+}
+html.acc-claro .form-control,
+html.acc-claro .form-select,
+html.acc-claro .custom-input,
+html.acc-claro .jira-input,
+html.acc-claro .input-group-text {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+html.acc-claro .form-control::placeholder { color: #94a3b8 !important; }
+/* Override Bootstrap text-white / text-white-50 en tema claro */
+html.acc-claro .text-white,
+html.acc-claro .text-white-50 { color: #1e293b !important; }
+html.acc-claro .text-white-50 { opacity: 1 !important; color: #64748b !important; }
+/* Nav links, badges, alertas, botones */
+html.acc-claro .nav-link { color: #0f172a !important; }
+html.acc-claro .nav-link.active { color: #0284c7 !important; }
+html.acc-claro .badge.bg-dark, html.acc-claro .badge.bg-secondary { background: #e2e8f0 !important; color: #0f172a !important; }
+html.acc-claro .badge.bg-success, html.acc-claro .badge.bg-primary { color: #ffffff !important; }
+html.acc-claro .alert { color: #1e293b !important; border-color: #cbd5e1 !important; }
+html.acc-claro .btn-outline-secondary { border-color: #64748b !important; color: #1e293b !important; }
+html.acc-claro .table-dark, html.acc-claro .thead-dark th { background: #e2e8f0 !important; color: #0f172a !important; }
+html.acc-claro td, html.acc-claro th { color: #1e293b !important; }
+html.acc-claro .navbar-brand, html.acc-claro .navbar-brand span { color: #0f172a !important; }
+html.acc-claro .dropdown-item { color: #1e293b !important; background: #ffffff !important; }
+html.acc-claro .dropdown-item:hover { background: #f1f5f9 !important; }
+html.acc-claro .pagination .page-link { color: #0284c7 !important; background: #ffffff !important; border-color: #cbd5e1 !important; }
+html.acc-claro .modulo-header h2, html.acc-claro .modulo-header h3 { color: #0284c7 !important; }
+html.acc-claro .modulo-header p, html.acc-claro .modulo-header span { color: #475569 !important; }
+
+/* ── TEMA AZUL NOCHE ── */
+html.acc-azul-noche,
+html.acc-azul-noche body {
+    background: #0a1128 !important;
+    color: #e0f2fe !important;
+}
+html.acc-azul-noche body p, 
+html.acc-azul-noche body span, 
+html.acc-azul-noche body label, 
+html.acc-azul-noche body div, 
+html.acc-azul-noche body td, 
+html.acc-azul-noche body th,
+html.acc-azul-noche body li {
+    color: #e0f2fe !important;
+}
+html.acc-azul-noche body h1,
+html.acc-azul-noche body h2,
+html.acc-azul-noche body h3,
+html.acc-azul-noche body h4,
+html.acc-azul-noche body h5,
+html.acc-azul-noche body h6,
+html.acc-azul-noche .section-title,
+html.acc-azul-noche .hero-title,
+html.acc-azul-noche .service-title,
+html.acc-azul-noche .text-info {
+    color: #38bdf8 !important;
+}
+html.acc-azul-noche .section-sub,
+html.acc-azul-noche .hero-sub,
+html.acc-azul-noche .service-desc,
+html.acc-azul-noche .text-white-50, 
+html.acc-azul-noche .text-muted {
+    color: #93c5fd !important;
+}
+html.acc-azul-noche .sport-card, 
+html.acc-azul-noche .main-container, 
+html.acc-azul-noche .modal-content,
+html.acc-azul-noche .card,
+html.acc-azul-noche .dropdown-menu,
+html.acc-azul-noche .table,
+html.acc-azul-noche .list-group-item,
+html.acc-azul-noche .navbar,
+html.acc-azul-noche .how-step,
+html.acc-azul-noche .step-card,
+html.acc-azul-noche .mi-equipo-card,
+html.acc-azul-noche .hero-aprendiz,
+html.acc-azul-noche .jira-card,
+html.acc-azul-noche .stat-pill,
+html.acc-azul-noche .footer,
+html.acc-azul-noche footer {
+    background: #1c2541 !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+    color: #e0f2fe !important;
+}
+html.acc-azul-noche .footer p,
+html.acc-azul-noche .footer span,
+html.acc-azul-noche .footer a,
+html.acc-azul-noche footer p,
+html.acc-azul-noche footer span,
+html.acc-azul-noche footer a {
+    color: #93c5fd !important;
+}
+html.acc-azul-noche .form-control,
+html.acc-azul-noche .form-select,
+html.acc-azul-noche .custom-input,
+html.acc-azul-noche .jira-input,
+html.acc-azul-noche .input-group-text {
+    background: #0f172a !important;
+    border-color: #38bdf8 !important;
+    color: #e0f2fe !important;
+}
+html.acc-azul-noche .form-control::placeholder { color: #7dd3fc !important; }
+/* Override Bootstrap en tema azul noche */
+html.acc-azul-noche .text-white { color: #e0f2fe !important; }
+html.acc-azul-noche .text-white-50 { color: #93c5fd !important; opacity: 1 !important; }
+html.acc-azul-noche .nav-link { color: #e0f2fe !important; }
+html.acc-azul-noche .nav-link.active { color: #38bdf8 !important; }
+html.acc-azul-noche .badge { color: #0a1128 !important; }
+html.acc-azul-noche .badge.bg-success { background: #22c55e !important; }
+html.acc-azul-noche .badge.bg-danger { background: #ef4444 !important; }
+html.acc-azul-noche .alert { color: #e0f2fe !important; background: #1c2541 !important; border-color: rgba(56,189,248,0.4) !important; }
+html.acc-azul-noche td, html.acc-azul-noche th { color: #e0f2fe !important; }
+html.acc-azul-noche .dropdown-item { color: #e0f2fe !important; background: #1c2541 !important; }
+html.acc-azul-noche .dropdown-item:hover { background: #263354 !important; }
+html.acc-azul-noche .pagination .page-link { color: #38bdf8 !important; background: #1c2541 !important; border-color: rgba(56,189,248,0.3) !important; }
+html.acc-azul-noche small, html.acc-azul-noche .small { color: #93c5fd !important; }
+html.acc-azul-noche .modulo-header h2, html.acc-azul-noche .modulo-header h3 { color: #38bdf8 !important; }
+
+/* ── TEMA SEPIA ── */
+html.acc-sepia,
+html.acc-sepia body { 
+    background-color: #f5e6d3 !important; 
+    background: #f5e6d3 !important;
+    color: #3b2a1a !important;
+}
+html.acc-sepia body p, 
+html.acc-sepia body span, 
+html.acc-sepia body label, 
+html.acc-sepia body div, 
+html.acc-sepia body td, 
+html.acc-sepia body th,
+html.acc-sepia body li {
+    color: #3b2a1a !important;
+}
+html.acc-sepia body h1,
+html.acc-sepia body h2,
+html.acc-sepia body h3,
+html.acc-sepia body h4,
+html.acc-sepia body h5,
+html.acc-sepia body h6,
+html.acc-sepia .section-title,
+html.acc-sepia .hero-title,
+html.acc-sepia .service-title,
+html.acc-sepia .text-info {
+    color: #2c1d11 !important;
+}
+html.acc-sepia .section-sub,
+html.acc-sepia .hero-sub,
+html.acc-sepia .service-desc,
+html.acc-sepia .text-white-50, 
+html.acc-sepia .text-muted {
+    color: #5c4033 !important;
+}
+html.acc-sepia .sport-card, 
+html.acc-sepia .main-container, 
+html.acc-sepia .modal-content,
+html.acc-sepia .card,
+html.acc-sepia .dropdown-menu,
+html.acc-sepia .table,
+html.acc-sepia .list-group-item,
+html.acc-sepia .navbar,
+html.acc-sepia .how-step,
+html.acc-sepia .step-card,
+html.acc-sepia .mi-equipo-card,
+html.acc-sepia .hero-aprendiz,
+html.acc-sepia .jira-card,
+html.acc-sepia .stat-pill,
+html.acc-sepia .footer,
+html.acc-sepia footer {
+    background: #e8d5c4 !important;
+    border-color: #cbb49d !important;
+    color: #3b2a1a !important;
+}
+html.acc-sepia .footer p,
+html.acc-sepia .footer span,
+html.acc-sepia .footer a,
+html.acc-sepia footer p,
+html.acc-sepia footer span,
+html.acc-sepia footer a {
+    color: #5c4033 !important;
+}
+html.acc-sepia .form-control,
+html.acc-sepia .form-select,
+html.acc-sepia .custom-input,
+html.acc-sepia .jira-input,
+html.acc-sepia .input-group-text {
+    background: #fbf4eb !important;
+    border-color: #a88b70 !important;
+    color: #2c1d11 !important;
+}
+html.acc-sepia .form-control::placeholder { color: #a88b70 !important; }
+/* Override Bootstrap en tema sepia */
+html.acc-sepia .text-white,
+html.acc-sepia .text-white-50 { color: #3b2a1a !important; opacity: 1 !important; }
+html.acc-sepia .text-white-50 { color: #5c4033 !important; }
+html.acc-sepia .nav-link { color: #3b2a1a !important; }
+html.acc-sepia .nav-link.active { color: #7c4b2a !important; }
+html.acc-sepia .badge.bg-dark, html.acc-sepia .badge.bg-secondary { background: #cbb49d !important; color: #2c1d11 !important; }
+html.acc-sepia .alert { color: #2c1d11 !important; background: #f5e6d3 !important; border-color: #cbb49d !important; }
+html.acc-sepia td, html.acc-sepia th { color: #3b2a1a !important; }
+html.acc-sepia .dropdown-item { color: #3b2a1a !important; background: #fbf4eb !important; }
+html.acc-sepia .dropdown-item:hover { background: #f0dcc8 !important; }
+html.acc-sepia .pagination .page-link { color: #7c4b2a !important; background: #fbf4eb !important; border-color: #cbb49d !important; }
+html.acc-sepia small, html.acc-sepia .small { color: #5c4033 !important; }
+html.acc-sepia strong, html.acc-sepia b { color: #2c1d11 !important; }
+html.acc-sepia .navbar-brand, html.acc-sepia .navbar-brand span { color: #2c1d11 !important; }
+html.acc-sepia .modulo-header h2, html.acc-sepia .modulo-header h3 { color: #7c4b2a !important; }
+html.acc-sepia .modulo-header p, html.acc-sepia .modulo-header span { color: #5c4033 !important; }
+
+/* ── TEMA ALTO CONTRASTE ── */
+html.acc-alto-contraste,
+html.acc-alto-contraste body { background: #000000 !important; color: #ffff00 !important; }
+html.acc-alto-contraste body p,
+html.acc-alto-contraste body span,
+html.acc-alto-contraste body label,
+html.acc-alto-contraste body div,
+html.acc-alto-contraste body td,
+html.acc-alto-contraste body th,
+html.acc-alto-contraste body li,
+html.acc-alto-contraste body h1,
+html.acc-alto-contraste body h2,
+html.acc-alto-contraste body h3,
+html.acc-alto-contraste body h4,
+html.acc-alto-contraste body h5,
+html.acc-alto-contraste body h6,
+html.acc-alto-contraste .section-title,
+html.acc-alto-contraste .hero-title,
+html.acc-alto-contraste .service-title {
+    color: #ffff00 !important;
+}
+html.acc-alto-contraste .section-sub,
+html.acc-alto-contraste .hero-sub,
+html.acc-alto-contraste .service-desc,
+html.acc-alto-contraste .text-white-50,
+html.acc-alto-contraste .text-muted,
+html.acc-alto-contraste footer p,
+html.acc-alto-contraste footer span,
+html.acc-alto-contraste footer a {
+    color: #ffffff !important;
+}
+html.acc-alto-contraste a {
+    color: #00ffff !important;
 }
 html.acc-alto-contraste .sport-card, 
 html.acc-alto-contraste .main-container, 
-html.acc-alto-contraste .modal-content { background: #000 !important; border: 1px solid #ff0 !important; }
-
-/* Claro */
-html.acc-claro body { background: #f0f4f8 !important; }
-html.acc-claro body *:not(#acc-panel):not(#acc-panel *):not(#acc-toggle):not(#acc-toggle *) { color: #1a1a2e !important; }
-html.acc-claro .sport-card, html.acc-claro .main-container { background: #ffffff !important; }
-
-/* Sepia (CORREGIDO PARA EVITAR SALTO) */
-html.acc-sepia body { background-color: #f5e6d3 !important; }
-html.acc-sepia body *:not(#acc-panel):not(#acc-panel *):not(#acc-toggle):not(#acc-toggle *) { 
-    color: #3b2a1a !important; 
+html.acc-alto-contraste .modal-content,
+html.acc-alto-contraste .card,
+html.acc-alto-contraste .dropdown-menu,
+html.acc-alto-contraste .table,
+html.acc-alto-contraste .list-group-item,
+html.acc-alto-contraste .navbar,
+html.acc-alto-contraste .how-step,
+html.acc-alto-contraste .step-card,
+html.acc-alto-contraste .mi-equipo-card,
+html.acc-alto-contraste .hero-aprendiz,
+html.acc-alto-contraste .jira-card,
+html.acc-alto-contraste .stat-pill,
+html.acc-alto-contraste .footer,
+html.acc-alto-contraste footer { 
+    background: #000000 !important; 
+    border: 1px solid #ffff00 !important; 
+    color: #ffff00 !important;
 }
+html.acc-alto-contraste .form-control,
+html.acc-alto-contraste .form-select,
+html.acc-alto-contraste .custom-input,
+html.acc-alto-contraste .jira-input,
+html.acc-alto-contraste .input-group-text {
+    background: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    color: #ffff00 !important;
+}
+html.acc-alto-contraste .form-control::placeholder { color: #aaffaa !important; }
+/* Override Bootstrap en alto contraste */
+html.acc-alto-contraste .text-white,
+html.acc-alto-contraste .text-white-50 { color: #ffff00 !important; opacity: 1 !important; }
+html.acc-alto-contraste .nav-link { color: #ffff00 !important; }
+html.acc-alto-contraste .nav-link.active { color: #00ffff !important; }
+html.acc-alto-contraste .badge { background: #000000 !important; border: 1px solid #ffff00 !important; color: #ffff00 !important; }
+html.acc-alto-contraste .badge.bg-success { background: #003300 !important; color: #00ff00 !important; border-color: #00ff00 !important; }
+html.acc-alto-contraste .badge.bg-danger { background: #330000 !important; color: #ff4444 !important; border-color: #ff4444 !important; }
+html.acc-alto-contraste .alert { color: #ffff00 !important; background: #000000 !important; border: 2px solid #ffff00 !important; }
+html.acc-alto-contraste td, html.acc-alto-contraste th { color: #ffff00 !important; border-color: #ffff00 !important; }
+html.acc-alto-contraste .dropdown-item { color: #ffff00 !important; background: #000000 !important; border-bottom: 1px solid #333 !important; }
+html.acc-alto-contraste .dropdown-item:hover { background: #111100 !important; color: #00ffff !important; }
+html.acc-alto-contraste .pagination .page-link { color: #ffff00 !important; background: #000000 !important; border: 2px solid #ffff00 !important; }
+html.acc-alto-contraste small, html.acc-alto-contraste .small { color: #ffffff !important; }
+html.acc-alto-contraste strong, html.acc-alto-contraste b { color: #ffff00 !important; }
+html.acc-alto-contraste .navbar-brand, html.acc-alto-contraste .navbar-brand span { color: #ffff00 !important; }
+html.acc-alto-contraste .btn { border: 2px solid #ffff00 !important; color: #ffff00 !important; background: #000000 !important; }
+html.acc-alto-contraste .btn-primary { background: #000099 !important; border-color: #00ffff !important; color: #00ffff !important; }
+html.acc-alto-contraste .btn-success { background: #003300 !important; border-color: #00ff00 !important; color: #00ff00 !important; }
+html.acc-alto-contraste .btn-danger { background: #330000 !important; border-color: #ff4444 !important; color: #ff4444 !important; }
+html.acc-alto-contraste .btn-warning { background: #332200 !important; border-color: #ffcc00 !important; color: #ffcc00 !important; }
+html.acc-alto-contraste .modulo-header h2, html.acc-alto-contraste .modulo-header h3 { color: #ffff00 !important; }
 
-/* Daltonismo CORREGIDO (Evita saltos de scroll) */
+/* Daltonismo CORREGIDO (Evita saltos de scroll y compatibilidad con Modales) */
 html.acc-daltonismo body { filter: none !important; }
-/* Aplicamos el filtro al contenido principal, pero no al body para no romper el scroll */
-html.acc-daltonismo main, html.acc-daltonismo .container-fluid, html.acc-daltonismo #main-wrapper {
+
+/* Aplicamos el filtro al contenido principal cuando NO hay modal abierto */
+html.acc-daltonismo:not(.modal-open) body:not(.modal-open) main,
+html.acc-daltonismo:not(.modal-open) body:not(.modal-open) .container-fluid,
+html.acc-daltonismo:not(.modal-open) body:not(.modal-open) #main-wrapper {
     filter: url('#daltonismo-filter') !important;
 }
-/* El panel y toggle siempre limpios de filtros */
-html.acc-daltonismo #acc-panel, html.acc-daltonismo #acc-toggle { filter: none !important; }
+
+/* Cuando un modal está abierto, eliminamos el filtro del contenedor principal para no romper position:fixed ni el z-index del modal */
+html.acc-daltonismo.modal-open main,
+html.acc-daltonismo body.modal-open main,
+html.acc-daltonismo.modal-open .container-fluid,
+html.acc-daltonismo body.modal-open .container-fluid,
+html.acc-daltonismo body.modal-open #main-wrapper {
+    filter: none !important;
+}
+
+/* Aplicamos el filtro a los elementos de la página y al contenido del modal de forma independiente */
+html.acc-daltonismo body.modal-open main > *:not(.modal),
+html.acc-daltonismo .modal-content {
+    filter: url('#daltonismo-filter') !important;
+}
+
+/* El panel de accesibilidad, el toggle, la estructura del modal y el backdrop se mantienen libres de distorsiones de posicionamiento */
+html.acc-daltonismo #acc-panel, 
+html.acc-daltonismo #acc-toggle,
+html.acc-daltonismo .modal,
+html.acc-daltonismo .modal-backdrop { 
+    filter: none !important; 
+}
 
 /* Tamaño fuente */
 html.acc-font-sm  body { font-size: 14px !important; }
@@ -359,24 +753,22 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     <div class="acc-section">
         <div class="acc-label"><i class="fas fa-palette"></i> Tema de color</div>
         <div class="acc-theme-row">
-            <div class="acc-theme-dot active" data-theme="" title="Predeterminado"
-                 style="background:linear-gradient(135deg,#050814,#0d1b3e);">
+            <div class="acc-theme-dot active" data-theme="" title="Predeterminado acc-u-2">
                 <span class="dot-label">Default</span>
             </div>
-            <div class="acc-theme-dot" data-theme="acc-claro" title="Tema claro"
-                 style="background:linear-gradient(135deg,#f0f4f8,#dde4ed);">
+            <div class="acc-theme-dot" data-theme="acc-claro" title="Modo Claro">
                 <span class="dot-label">Claro</span>
             </div>
-            <div class="acc-theme-dot" data-theme="acc-sepia" title="Sepia"
-                 style="background:linear-gradient(135deg,#f5e6d3,#e8d5b7);">
+            <div class="acc-theme-dot" data-theme="acc-azul-noche" title="Azul Noche acc-u-3">
+                <span class="dot-label">Azul Noche</span>
+            </div>
+            <div class="acc-theme-dot" data-theme="acc-sepia" title="Sepia acc-u-4">
                 <span class="dot-label">Sepia</span>
             </div>
-            <div class="acc-theme-dot" data-theme="acc-alto-contraste" title="Alto contraste"
-                 style="background:#000; border:2px solid #ff0;">
+            <div class="acc-theme-dot" data-theme="acc-alto-contraste" title="Alto contraste acc-u-5">
                 <span class="dot-label">Contraste</span>
             </div>
-            <div class="acc-theme-dot" data-theme="acc-daltonismo" title="Daltonismo"
-                 style="background:linear-gradient(135deg,#5b6abf,#b5651d);">
+            <div class="acc-theme-dot" data-theme="acc-daltonismo" title="Daltonismo acc-u-6">
                 <span class="dot-label">Dalton.</span>
             </div>
         </div>
@@ -387,13 +779,13 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     <div class="acc-section">
         <div class="acc-label"><i class="fas fa-text-height"></i> Tamaño de texto</div>
         <div class="acc-slider-wrap">
-            <span style="font-size:0.65rem !important;">A</span>
+            <span class="acc-u-7">A</span>
             <input type="range" class="acc-slider" id="acc-font-size"
                    min="0" max="3" step="1" value="1" aria-label="Tamaño de fuente">
-            <span style="font-size:1rem !important;">A</span>
+            <span class="acc-u-8">A</span>
         </div>
-        <div style="text-align:center;margin-top:4px;">
-            <span id="acc-font-label" style="font-size:0.65rem !important;color:rgba(255,255,255,0.3);">Normal (16px)</span>
+        <div class="acc-u-9">
+            <span id="acc-font-label" class="acc-u-10">Normal (16px)</span>
         </div>
     </div>
 
@@ -405,9 +797,7 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
             <button class="acc-btn active" data-font="">Sans</button>
             <button class="acc-btn" data-font="acc-font-serif">Serif</button>
             <button class="acc-btn" data-font="acc-font-mono">Mono</button>
-            <button class="acc-btn" data-font="acc-font-dyslexic">
-                <i class="fas fa-brain"></i> Dislexia
-            </button>
+            <button class="acc-btn" data-font="acc-font-dyslexic">Dislexia</button>
         </div>
     </div>
 
@@ -440,12 +830,12 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
             <i class="fas fa-play" id="acc-voice-icon"></i>
             <span id="acc-voice-label">Leer página</span>
         </button>
-        <div style="margin-top:6px;display:flex;align-items:center;gap:6px;">
-            <span style="font-size:0.65rem !important;color:rgba(255,255,255,0.3);">Velocidad</span>
+        <div class="acc-u-11">
+            <span class="acc-u-12">Velocidad</span>
             <input type="range" class="acc-slider" id="acc-speed"
-                   min="0.5" max="2" step="0.25" value="1" style="flex:1;"
+                   min="0.5" max="2" step="0.25" value="1" class="acc-u-13"
                    aria-label="Velocidad de lectura">
-            <span id="acc-speed-label" style="font-size:0.65rem !important;color:rgba(255,255,255,0.3);width:26px;">1x</span>
+            <span id="acc-speed-label" class="acc-u-14">1x</span>
         </div>
     </div>
 
@@ -460,7 +850,7 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     var panel  = document.getElementById('acc-panel');
     var KEY    = 'sena_acc_prefs';
 
-    var THEMES = ['acc-claro','acc-sepia','acc-alto-contraste','acc-daltonismo'];
+    var THEMES = ['acc-claro','acc-azul-noche','acc-sepia','acc-alto-contraste','acc-daltonismo'];
     var FONTS  = ['acc-font-sans','acc-font-serif','acc-font-mono','acc-font-dyslexic'];
     var SIZES  = ['acc-font-sm','acc-font-md','acc-font-lg','acc-font-xl'];
     var LINES  = ['acc-line-normal','acc-line-wide','acc-line-wider'];
@@ -476,11 +866,19 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     function applyAll() {
         clearClasses(THEMES.concat(FONTS, SIZES, LINES, FOCOS));
         if (prefs.theme) html.classList.add(prefs.theme);
+        if (prefs.theme === 'acc-claro') {
+            document.body.classList.add('light-theme');
+            localStorage.setItem('theme', 'light');
+        } else if (prefs.theme) {
+            document.body.classList.remove('light-theme');
+            localStorage.setItem('theme', 'dark');
+        }
         if (prefs.font)  html.classList.add(prefs.font);
         html.classList.add(SIZES[prefs.size]);
         if (prefs.line)  html.classList.add(prefs.line);
         if (prefs.foco)  html.classList.add(prefs.foco);
     }
+
 
     function save() {
         try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch(e){}

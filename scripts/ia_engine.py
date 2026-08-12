@@ -22,31 +22,39 @@ except ImportError:
 # ============================================================
 SINONIMOS = {
     # Módulos
-    "gimansio": "gimnasio", "gym": "gimnasio", "ejercicio": "gimnasio",
-    "pesas": "gimnasio", "maquinas": "gimnasio inventario",
-    "inventario": "inventario implementos", "implemento": "inventario elemento",
-    "elemento": "inventario implemento", "equipo": "equipo torneo",
-    "interfichas": "interfichas torneo ficha", "fichas": "interfichas torneo",
-    "intercentros": "intercentros competencia centro", "centros": "intercentros",
+    "gimansio": "gimnasio", "gym": "gimnasio", "ejercicio": "gimnasio entrenar",
+    "pesas": "gimnasio musculacion", "maquinas": "gimnasio inventario elementos",
+    "inventario": "inventario implementos deportivo", "implemento": "inventario elemento",
+    "elemento": "inventario implemento", "equipo": "equipo torneo interfichas",
+    "interfichas": "interfichas torneo ficha aprendices", "fichas": "interfichas torneo",
+    "intercentros": "intercentros competencia centro regional", "centros": "intercentros",
+    "salud": "habitos saludables salud alimentacion", "habito": "habito saludable salud",
+    "rutina": "rutina ejercicio entrenamiento", "entrenar": "rutina ejercicio gimnasio",
+    "dieta": "nutricion alimentacion salud", "comida": "nutricion alimentacion",
+    "nutricion": "nutricion alimentacion saludable", "agua": "hidratacion salud",
     # Acciones
-    "reservar": "reserva gimnasio", "reservacion": "reserva gimnasio",
-    "pedir": "prestamo solicitar", "solicitar": "prestamo solicitar",
+    "reservar": "reserva gimnasio horario", "reservacion": "reserva gimnasio",
+    "pedir": "prestamo solicitar implemento", "solicitar": "prestamo solicitar",
     "prestar": "prestamo solicitar", "devolver": "devolucion prestamo",
     "inscribir": "inscripcion equipo torneo", "inscripcion": "inscripcion equipo",
     "postular": "postulacion intercentros", "postularse": "postulacion intercentros",
-    "anotar": "inscripcion registrar",
-    # Estados
+    "anotar": "inscripcion registrar", "editar": "perfil editar cambiar",
+    "cambiar": "perfil cambiar contraseña tema", "recuperar": "contraseña recuperar",
+    # Estados y accesibilidad
     "abierto": "abierto estado gimnasio", "cerrado": "cerrado estado gimnasio",
     "pendiente": "pendiente reserva aprobacion", "activo": "activo estado",
-    "sancionado": "sancion penalizado", "sancion": "sancion penalizado prestamo",
-    # Números
+    "sancionado": "sancion penalizado prestamo", "sancion": "sancion penalizado prestamo",
+    "tema": "accesibilidad tema color", "color": "accesibilidad tema color",
+    "letra": "accesibilidad fuente tamaño", "fuente": "accesibilidad fuente",
+    "voz": "lectura voz asistente hablar", "modo": "accesibilidad tema modo",
+    # Números y consultas
     "cuantos": "cantidad total numero", "cuantas": "cantidad total numero",
     "cuanto": "cantidad total", "total": "total cantidad numero",
     "hay": "hay cantidad disponible", "tiene": "tiene cantidad",
     # Misc
     "hoy": "hoy fecha actual", "ahora": "ahora estado actual",
     "resultado": "resultado marcador partido", "marcador": "resultado marcador",
-    "tabla": "tabla posiciones clasificacion",
+    "tabla": "tabla posiciones clasificacion", "reglas": "normas reglamento deportes",
 }
 
 
@@ -306,7 +314,8 @@ class MotorIA:
     Soporta contexto multi-turno y expansión de sinónimos.
     """
 
-    RUTA_MODELO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ia_model.pkl")
+    RUTA_MODELO = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "ia_model.pkl")
 
     def __init__(self):
         self.vectorizer = TfidfVectorizer(
@@ -330,6 +339,7 @@ class MotorIA:
         self._agregar_docs_gimnasio(datos_bd)
         self._agregar_docs_interfichas(datos_bd)
         self._agregar_docs_intercentros(datos_bd)
+        self._agregar_docs_habitos(datos_bd)
 
         # Corpus = pregunta + respuesta (más contexto semántico)
         corpus = [
@@ -418,7 +428,8 @@ class MotorIA:
                 "modulo": "interfichas",
             })
 
-        resumen = ", ".join(t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
+        resumen = ", ".join(
+            t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
         self.conocimiento.append({
             "pregunta": "cuántos torneos interfichas activos equipos partidos jugados resumen total fichas",
             "respuesta": (
@@ -447,7 +458,8 @@ class MotorIA:
                 "modulo": "intercentros",
             })
 
-        resumen = ", ".join(t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
+        resumen = ", ".join(
+            t["nombre"] for t in torneos) if torneos else "ninguno activo por el momento"
         self.conocimiento.append({
             "pregunta": "cuántos torneos intercentros activos postulaciones aprendices inscritos competencias regional",
             "respuesta": (
@@ -457,6 +469,59 @@ class MotorIA:
             ),
             "modulo": "intercentros",
         })
+
+    def _agregar_docs_habitos(self, datos_bd):
+        habitos = datos_bd.get("habitos_saludables", [])
+        rutinas = datos_bd.get("rutinas_fisicas", [])
+        materiales = datos_bd.get("materiales_apoyo", [])
+
+        if habitos:
+            lista_hab = ", ".join(h["titulo"] for h in habitos)
+            self.conocimiento.append({
+                "pregunta": "qué hábitos saludables hay consejos de salud lista de habitos recomendados",
+                "respuesta": f"🍏 **Hábitos saludables recomendados en el sistema:**\n{lista_hab}.\n\nPregúntame por alguno de ellos para darte detalles y consejos.",
+                "modulo": "habitos"
+            })
+            for h in habitos:
+                consejos_str = "\n".join(f"• {c}" for c in h.get("consejos", []))
+                self.conocimiento.append({
+                    "pregunta": f"consejo habito {h['titulo'].lower()} recomendaciones tips salud categoria {h['categoria']}",
+                    "respuesta": (
+                        f"🍏 **Hábito Saludable: {h['titulo']}** ({h['categoria'].capitalize()})\n\n"
+                        f"{h['descripcion']}\n\n"
+                        f"💡 **Recomendaciones prácticas:**\n{consejos_str}"
+                    ),
+                    "modulo": "habitos"
+                })
+
+        if rutinas:
+            lista_rut = ", ".join(f"{r['nombre']} ({r['nivel']})" for r in rutinas)
+            self.conocimiento.append({
+                "pregunta": "qué rutinas de ejercicio físico actividad entrenamiento entrenar hay listas nivel objetivo",
+                "respuesta": f"🏋️ **Rutinas físicas sugeridas en el sistema:**\n{lista_rut}.\n\nPregúntame por alguna de ellas para darte los ejercicios detallados.",
+                "modulo": "habitos"
+            })
+            for r in rutinas:
+                ejercicios_str = "\n".join(f"• {e}" for e in r.get("ejercicios", []))
+                self.conocimiento.append({
+                    "pregunta": f"rutina {r['nombre'].lower()} ejercicios objetivo {r['objetivo']} nivel {r['nivel']} duracion minutos",
+                    "respuesta": (
+                        f"🏋️ **Rutina: {r['nombre']}**\n"
+                        f"• Objetivo: {r['objetivo'].capitalize()}\n"
+                        f"• Nivel: {r['nivel'].capitalize()}\n"
+                        f"• Duración: {r['duracion_minutos']} minutos\n\n"
+                        f"📋 **Ejercicios a realizar:**\n{ejercicios_str}"
+                    ),
+                    "modulo": "habitos"
+                })
+
+        if materiales:
+            lista_mat = ", ".join(m["titulo"] for m in materiales)
+            self.conocimiento.append({
+                "pregunta": "qué material de apoyo guías manuales documentos biblioteca pdf infografía hay descargar",
+                "respuesta": f"📚 **Material de apoyo y guías disponibles en la biblioteca:**\n{lista_mat}.\n\nPuedes descargarlos desde la sección Biblioteca en el módulo de Hábitos Saludables.",
+                "modulo": "habitos"
+            })
 
     # ── INFERENCIA ───────────────────────────────────────────
     def responder(self, pregunta: str, historial: list = None) -> dict:
@@ -549,7 +614,8 @@ class MotorIA:
                 motor.ultima_actualizacion = datos.get("ultima_actualizacion")
                 motor._entrenado = True
             except Exception as e:
-                print(f"[MotorIA] Error cargando modelo: {e}. Se creará uno nuevo al entrenar.")
+                print(
+                    f"[MotorIA] Error cargando modelo: {e}. Se creará uno nuevo al entrenar.")
         return motor
 
     # ── UTILIDADES ───────────────────────────────────────────
