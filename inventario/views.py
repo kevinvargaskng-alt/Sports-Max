@@ -82,7 +82,7 @@ def inventario_list(request):
 
                 elemento.tipo_maquina = request.POST.get('nombre_elemento')
                 elemento.cantidad_total = request.POST.get('cantidad_total')
-                elemento.estado_general = request.POST.get('estado_general')
+                elemento.estado_general = request.POST.get('estado_general') or elemento.estado_general or 'Buen estado'
                 elemento.fecha_adquisicion = request.POST.get(
                     'fecha_adquisicion') or None
                 elemento.descripcion = request.POST.get('descripcion', '')

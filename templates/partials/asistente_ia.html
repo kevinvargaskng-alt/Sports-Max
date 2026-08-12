@@ -310,9 +310,12 @@
   </div>
 
   <div class="modules">
-    <button class="chip" onclick="sendQuick('¿Cuántas reservas hay pendientes en el gimnasio?')">🏋️ Gimnasio</button>
-    <button class="chip" onclick="sendQuick('¿Cuántos torneos de interfichas hay activos?')">📋 Interfichas</button>
+    <button class="chip" onclick="sendQuick('¿Estado y horarios del gimnasio?')">🏋️ Gimnasio</button>
     <button class="chip" onclick="sendQuick('¿Qué elementos hay en el inventario deportivo?')">📦 Inventario</button>
+    <button class="chip" onclick="sendQuick('¿Cuáles son los torneos de interfichas?')">📋 Interfichas</button>
+    <button class="chip" onclick="sendQuick('¿Qué rutinas de ejercicio físico hay?')">💪 Rutinas</button>
+    <button class="chip" onclick="sendQuick('¿Qué hábitos saludables y consejos hay?')">🥗 Nutrición</button>
+    <button class="chip" onclick="sendQuick('¿Cómo funcionan las sanciones por préstamos?')">⚠️ Sanciones</button>
   </div>
 
   <div class="messages" id="msgs">
@@ -715,14 +718,15 @@ async function send(){
         }
 
         const reply = data.reply || "No recibí respuesta.";
-        const safeReply = reply
+        let formatted = reply
             .replace(/</g,'&lt;').replace(/>/g,'&gt;')
-            .replace(/\n/g,'<br>')
             .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g,'<em>$1</em>');
+            .replace(/\*(.*?)\*/g,'<em>$1</em>')
+            .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,0.1);padding:2px 5px;border-radius:4px;">$1</code>')
+            .replace(/\n/g,'<br>');
 
         history.push({"role":"assistant","content":reply});
-        addMsg(safeReply,'bot',now(),reply);
+        addMsg(formatted,'bot',now(),reply);
 
         // ── Hablar la respuesta automáticamente ──
         speak(reply);

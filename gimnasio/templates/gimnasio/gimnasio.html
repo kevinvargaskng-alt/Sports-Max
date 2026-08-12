@@ -37,47 +37,47 @@
 
     <!-- NAV ADMIN -->
     <nav class="row g-3 mb-5 justify-content-center">
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('disponibilidad', this)">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button" onclick="mostrarSec('disponibilidad', this)">
                 <i class="fas fa-toggle-on fa-2x mb-2 text-warning"></i>
-                <h6 class="fw-bold text-white small mb-0">DISPONIBILIDAD</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">DISPONIBILIDAD</h6>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('horarios', this)">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button" onclick="mostrarSec('horarios', this)">
                 <i class="fas fa-clock fa-2x mb-2 text-info"></i>
-                <h6 class="fw-bold text-white small mb-0">HORARIOS</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">HORARIOS</h6>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('fechas', this)">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button" onclick="mostrarSec('fechas', this)">
                 <i class="fas fa-calendar-alt fa-2x mb-2 text-success"></i>
-                <h6 class="fw-bold text-white small mb-0">FECHAS ESPECIALES</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">FECHAS ESPECIALES</h6>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('registros', this)">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button" onclick="mostrarSec('registros', this)">
                 <i class="fas fa-clipboard-list fa-2x mb-2 text-danger"></i>
-                <h6 class="fw-bold text-white small mb-0">VER REGISTROS</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">VER REGISTROS</h6>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('maquinas', this)">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button" onclick="mostrarSec('maquinas', this)">
                 <i class="fas fa-cogs fa-2x mb-2 gym-u-1"></i>
-                <h6 class="fw-bold text-white small mb-0">MÁQUINAS</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">MÁQUINAS</h6>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button"
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button"
                  onclick="window.location='{% url 'admin_lista_anamnesis' %}'">
                 <i class="fas fa-heartbeat fa-2x mb-2 gym-u-2"></i>
-                <h6 class="fw-bold text-white small mb-0">FICHAS SALUD</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">FICHAS SALUD</h6>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="sport-card text-center p-3" role="button" onclick="mostrarSec('configuracion', this)">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="sport-card text-center px-2 py-3 h-100" role="button" onclick="mostrarSec('configuracion', this)">
                 <i class="fas fa-cog fa-2x mb-2 text-secondary"></i>
-                <h6 class="fw-bold text-white small mb-0">CONFIGURACIÓN</h6>
+                <h6 class="fw-bold text-white small mb-0 text-break">CONFIGURACIÓN</h6>
             </div>
         </div>
     </nav>
@@ -243,7 +243,7 @@
                             <form method="post" action="{% url 'admin_eliminar_fecha' f.pk %}" class="gym-u-12">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('¿Eliminar esta fecha?')">
+                                        data-confirm="¿Eliminar esta fecha?" data-confirm-title="Eliminar Fecha" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                     <i class="fas fa-trash me-1"></i>Eliminar
                                 </button>
                             </form>
@@ -316,7 +316,7 @@
                             <form method="post" action="{% url 'cancelar_reserva_admin' r.codigo_registro %}" class="gym-u-20">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-edit" title="Cancelar"
-                                        onclick="return confirm('¿Cancelar el registro de {{ r.usuario_solicitante.get_full_name }}?')">
+                                        data-confirm="¿Cancelar el registro de {{ r.usuario_solicitante.get_full_name }}?" data-confirm-title="Cancelar Registro" data-confirm-icon="warning" data-confirm-text="Cancelar">
                                     <i class="fas fa-ban me-1"></i>Cancelar
                                 </button>
                             </form>
@@ -324,7 +324,7 @@
                             <form method="post" action="{% url 'eliminar_reserva' r.codigo_registro %}" class="gym-u-21">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-trash" title="Eliminar"
-                                        onclick="return confirm('¿Eliminar registro de {{ r.usuario_solicitante.get_full_name }}?')">
+                                        data-confirm="¿Eliminar registro de {{ r.usuario_solicitante.get_full_name }}?" data-confirm-title="Eliminar Registro" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
@@ -449,7 +449,7 @@
                             <form method="post" action="{% url 'eliminar_maquina' m.pk %}" class="gym-u-30">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-trash" title="Eliminar"
-                                        onclick="return confirm('¿Eliminar la máquina {{ m.nombre }}?')">
+                                        data-confirm="¿Eliminar la máquina {{ m.nombre }}?" data-confirm-title="Eliminar Máquina" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
@@ -815,7 +815,7 @@
                         <form method="post" action="{% url 'eliminar_reserva' r.codigo_registro %}" class="gym-u-56">
                             {% csrf_token %}
                             <button type="submit" class="btn-trash"
-                                    onclick="return confirm('¿Borrar este registro?')">
+                                    data-confirm="¿Borrar este registro?" data-confirm-title="Eliminar Registro" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                 <i class="fas fa-trash-alt me-1"></i>Eliminar
                             </button>
                         </form>

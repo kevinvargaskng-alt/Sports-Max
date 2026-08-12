@@ -15,7 +15,7 @@
   --border-h: rgba(255,255,255,0.13);
   --muted: rgba(255,255,255,0.4);
   --teal: #20c997;
-  --font-display: 'Syne', sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'DM Sans', sans-serif;
 }
 body { background: var(--surface); color: #fff; font-family: var(--font-body); }
@@ -197,7 +197,7 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
                                 <a href="{% url 'habitos:detalle_seguimiento' seg.pk %}" class="btn btn-sm btn-outline-info hab-sal-u-18"><i class="fas fa-eye me-1"></i>Ver</a>
                                 <form action="{% url 'habitos:eliminar_seguimiento' seg.pk %}" method="post" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-outline-danger hab-sal-u-19" onclick="return confirm('¿Estás seguro de eliminar este registro?')"><i class="fas fa-trash me-1"></i>Eliminar</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger hab-sal-u-19" data-confirm="¿Estás seguro de eliminar este registro?" data-confirm-title="Eliminar Registro" data-confirm-icon="danger" data-confirm-text="Eliminar"><i class="fas fa-trash me-1"></i>Eliminar</button>
                                 </form>
                             </div>
                         </td>
