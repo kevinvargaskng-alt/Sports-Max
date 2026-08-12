@@ -22,31 +22,39 @@ except ImportError:
 # ============================================================
 SINONIMOS = {
     # Módulos
-    "gimansio": "gimnasio", "gym": "gimnasio", "ejercicio": "gimnasio",
-    "pesas": "gimnasio", "maquinas": "gimnasio inventario",
-    "inventario": "inventario implementos", "implemento": "inventario elemento",
-    "elemento": "inventario implemento", "equipo": "equipo torneo",
-    "interfichas": "interfichas torneo ficha", "fichas": "interfichas torneo",
-    "intercentros": "intercentros competencia centro", "centros": "intercentros",
+    "gimansio": "gimnasio", "gym": "gimnasio", "ejercicio": "gimnasio entrenar",
+    "pesas": "gimnasio musculacion", "maquinas": "gimnasio inventario elementos",
+    "inventario": "inventario implementos deportivo", "implemento": "inventario elemento",
+    "elemento": "inventario implemento", "equipo": "equipo torneo interfichas",
+    "interfichas": "interfichas torneo ficha aprendices", "fichas": "interfichas torneo",
+    "intercentros": "intercentros competencia centro regional", "centros": "intercentros",
+    "salud": "habitos saludables salud alimentacion", "habito": "habito saludable salud",
+    "rutina": "rutina ejercicio entrenamiento", "entrenar": "rutina ejercicio gimnasio",
+    "dieta": "nutricion alimentacion salud", "comida": "nutricion alimentacion",
+    "nutricion": "nutricion alimentacion saludable", "agua": "hidratacion salud",
     # Acciones
-    "reservar": "reserva gimnasio", "reservacion": "reserva gimnasio",
-    "pedir": "prestamo solicitar", "solicitar": "prestamo solicitar",
+    "reservar": "reserva gimnasio horario", "reservacion": "reserva gimnasio",
+    "pedir": "prestamo solicitar implemento", "solicitar": "prestamo solicitar",
     "prestar": "prestamo solicitar", "devolver": "devolucion prestamo",
     "inscribir": "inscripcion equipo torneo", "inscripcion": "inscripcion equipo",
     "postular": "postulacion intercentros", "postularse": "postulacion intercentros",
-    "anotar": "inscripcion registrar",
-    # Estados
+    "anotar": "inscripcion registrar", "editar": "perfil editar cambiar",
+    "cambiar": "perfil cambiar contraseña tema", "recuperar": "contraseña recuperar",
+    # Estados y accesibilidad
     "abierto": "abierto estado gimnasio", "cerrado": "cerrado estado gimnasio",
     "pendiente": "pendiente reserva aprobacion", "activo": "activo estado",
-    "sancionado": "sancion penalizado", "sancion": "sancion penalizado prestamo",
-    # Números
+    "sancionado": "sancion penalizado prestamo", "sancion": "sancion penalizado prestamo",
+    "tema": "accesibilidad tema color", "color": "accesibilidad tema color",
+    "letra": "accesibilidad fuente tamaño", "fuente": "accesibilidad fuente",
+    "voz": "lectura voz asistente hablar", "modo": "accesibilidad tema modo",
+    # Números y consultas
     "cuantos": "cantidad total numero", "cuantas": "cantidad total numero",
     "cuanto": "cantidad total", "total": "total cantidad numero",
     "hay": "hay cantidad disponible", "tiene": "tiene cantidad",
     # Misc
     "hoy": "hoy fecha actual", "ahora": "ahora estado actual",
     "resultado": "resultado marcador partido", "marcador": "resultado marcador",
-    "tabla": "tabla posiciones clasificacion",
+    "tabla": "tabla posiciones clasificacion", "reglas": "normas reglamento deportes",
 }
 
 

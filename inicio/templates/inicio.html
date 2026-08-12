@@ -15,7 +15,7 @@
 <!-- TICKER -->
 <div class="ticker-bar" aria-hidden="true">
   <div class="ticker-inner">
-    <span>⚽ Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> 🏀 Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> 🏐 Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> 🏋️ Reserva el gimnasio ahora <span class="ticker-sep">•</span> ⚽ Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> 🏀 Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> 🏐 Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> 🏋️ Reserva el gimnasio ahora</span>
+    <span> Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> Reserva el gimnasio ahora <span class="ticker-sep">•</span> Torneo Inter-Fichas en curso <span class="ticker-sep">•</span> Inscripciones Baloncesto abiertas <span class="ticker-sep">•</span> Voleibol mixto — próxima fecha: Sábado <span class="ticker-sep">•</span> Reserva el gimnasio ahora</span>
   </div>
 </div>
 
@@ -85,31 +85,30 @@
 <!-- STATS BAR -->
 <div class="stats-bar">
   <div class="stat-item">
-    <span class="stat-num">12</span>
+    <span class="stat-num">{{ stats.equipos_inscritos }}</span>
     <span class="stat-label">Equipos inscritos</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">3</span>
+    <span class="stat-num">{{ stats.disciplinas_activas }}</span>
     <span class="stat-label">Disciplinas activas</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">340+</span>
+    <span class="stat-num">{{ stats.total_aprendices }}</span>
     <span class="stat-label">Aprendices</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">6</span>
+    <span class="stat-num">{{ stats.jornadas_jugadas }}</span>
     <span class="stat-label">Jornadas jugadas</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">2</span>
+    <span class="stat-num">{{ stats.escenarios_deportivos }}</span>
     <span class="stat-label">Escenarios deportivos</span>
   </div>
 </div>
 
 <!-- DISCIPLINAS -->
 <section>
-  <div class="section-tag">Disciplinas</div>
-  <h2 class="section-title">Nuestros<br>deportes</h2>
+  <div class="section-title">Disciplinas</div>
   <p class="section-sub">Actividades disponibles para todos los aprendices del centro de formación.</p>
 
   <div class="sports-grid">
@@ -151,7 +150,6 @@
 
 <!-- SERVICIOS -->
 <section>
-  <div class="section-tag">Servicios</div>
   <h2 class="section-title">¿Qué encontrarás<br>aquí?</h2>
   <p class="section-sub">Gestiona tu vida deportiva de forma integral desde una sola plataforma.</p>
 
@@ -185,7 +183,6 @@
 
 <!-- CÓMO FUNCIONA -->
 <section class="ini-u-6">
-  <div class="section-tag">Simple y rápido</div>
   <h2 class="section-title">¿Cómo<br>funciona?</h2>
   <p class="section-sub">En tres pasos estás dentro del sistema y aprovechando todos los recursos deportivos del SENA.</p>
 
@@ -270,16 +267,16 @@
               <div class="mb-4">
                 <label class="form-label fw-semibold text-white small text-uppercase ini-u-38">Número de Documento</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-39"><i class="fas fa-id-card text-white-50"></i></span>
-                  <input type="text" name="username" class="form-control custom-input border-start-0 ps-0" placeholder="Ej: 1052345678" required pattern="\d{5,20}" autocomplete="username ini-u-40">
+                  <span class="input-group-text bg-transparent custom-input ini-u-39"><i class="fas fa-id-card text-white-50"></i></span>
+                  <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678" required pattern="\d{5,20}" autocomplete="username ini-u-40">
                 </div>
               </div>
               <div class="mb-4">
                 <label class="form-label fw-semibold text-white small text-uppercase ini-u-41">Contraseña</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-42"><i class="fas fa-lock text-white-50"></i></span>
-                  <input type="password" id="id_password" name="password" class="form-control custom-input border-start-0 ps-0 border-end-0" placeholder="Tu clave secreta" required minlength="8" autocomplete="current-password ini-u-43">
-                  <button class="btn btn-outline-secondary custom-input border-start-0 ini-u-44" type="button" id="togglePassword">
+                  <span class="input-group-text bg-transparent custom-input ini-u-42"><i class="fas fa-lock text-white-50"></i></span>
+                  <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta" required minlength="8" autocomplete="current-password ini-u-43">
+                  <button class="btn btn-outline-secondary custom-input ini-u-44" type="button" id="togglePassword">
                     <i class="fas fa-eye text-white-50"></i>
                   </button>
                 </div>
@@ -331,18 +328,22 @@
                   <div class="spinner-ring"></div>
                   <div class="loader-text">Iniciando cámara...</div>
                 </div>
+                <button id="btnCambiarCamara" type="button" title="Cambiar cámara (delantera/trasera)">
+                  <i class="fas fa-camera-rotate"></i>
+                </button>
                 <button id="btnCerrarScanner" type="button" title="Cerrar cámara">
                   <i class="fas fa-times"></i>
                 </button>
               </div>
+
               <!-- ══════════════════════════════ -->
 
               <div class="row g-4">
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-48">Tipo Documento <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-49"><i class="fas fa-id-card-alt text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="tipo_documento" id="id_tipo_documento" required class="ini-u-50">
+                    <span class="input-group-text bg-transparent custom-input ini-u-49"><i class="fas fa-id-card-alt text-white-50"></i></span>
+                    <select class="form-select custom-input" name="tipo_documento" id="id_tipo_documento" required class="ini-u-50">
                       <option value="" selected disabled>-- Selecciona --</option>
                       <option value="CC">Cédula de Ciudadanía</option>
                       <option value="TI">Tarjeta de Identidad</option>
@@ -354,29 +355,29 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-51">Número Documento <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-52"><i class="fas fa-hashtag text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="numero_documento" id="id_numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username ini-u-53">
+                    <span class="input-group-text bg-transparent custom-input ini-u-52"><i class="fas fa-hashtag text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input" name="numero_documento" id="id_numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username ini-u-53">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-54">Nombres <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-55"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" autocomplete="given-name ini-u-56">
+                    <span class="input-group-text bg-transparent custom-input ini-u-55"><i class="fas fa-user text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" autocomplete="given-name ini-u-56">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-57">Apellidos <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-58"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0 text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" autocomplete="family-name ini-u-59">
+                    <span class="input-group-text bg-transparent custom-input ini-u-58"><i class="fas fa-user text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" autocomplete="family-name ini-u-59">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-60">Género <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-61"><i class="fas fa-venus-mars text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="genero" id="id_genero" required>
+                    <span class="input-group-text bg-transparent custom-input ini-u-61"><i class="fas fa-venus-mars text-white-50"></i></span>
+                    <select class="form-select custom-input" name="genero" id="id_genero" required>
                       <option value="" selected disabled>-- Selecciona --</option>
                       <option value="M">Masculino</option>
                       <option value="F">Femenino</option>
@@ -388,15 +389,15 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-63">Teléfono <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-64"><i class="fas fa-phone text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="telefono" required pattern="\d{7,15}" maxlength="15" autocomplete="tel ini-u-65">
+                    <span class="input-group-text bg-transparent custom-input ini-u-64"><i class="fas fa-phone text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input" name="telefono" required pattern="\d{7,15}" maxlength="15" autocomplete="tel ini-u-65">
                   </div>
                 </div>
                 <div class="col-md-12">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-66">Programa de Formación <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-67"><i class="fas fa-graduation-cap text-white-50"></i></span>
-                    <select class="form-select custom-input border-start-0 ps-0" name="programa_formacion" id="id_programa_formacion" required class="ini-u-68">
+                    <span class="input-group-text bg-transparent custom-input ini-u-67"><i class="fas fa-graduation-cap text-white-50"></i></span>
+                    <select class="form-select custom-input" name="programa_formacion" id="id_programa_formacion" required class="ini-u-68">
                       <option value="" selected disabled>-- Selecciona tu programa --</option>
                       <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
                       <option value="MINERIA">Supervisión de Procesos Mineros</option>
@@ -413,15 +414,15 @@
                 <div class="col-md-12">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-69">Correo Electrónico <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-70"><i class="fas fa-envelope text-white-50"></i></span>
-                    <input type="email" class="form-control custom-input border-start-0 ps-0" name="email" required autocomplete="email ini-u-71">
+                    <span class="input-group-text bg-transparent custom-input ini-u-70"><i class="fas fa-envelope text-white-50"></i></span>
+                    <input type="email" class="form-control custom-input" name="email" required autocomplete="email ini-u-71">
                   </div>
                 </div>
                 <div class="col-md-12">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-72">Número de Ficha <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-73"><i class="fas fa-users text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input border-start-0 ps-0" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" autocomplete="off ini-u-74">
+                    <span class="input-group-text bg-transparent custom-input ini-u-73"><i class="fas fa-users text-white-50"></i></span>
+                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" autocomplete="off ini-u-74">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -432,9 +433,9 @@
                     </button>
                   </div>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-76"><i class="fas fa-lock text-white-50"></i></span>
-                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password ini-u-77">
-                    <button class="btn btn-outline-secondary custom-input border-start-0 ini-u-78" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
+                    <span class="input-group-text bg-transparent custom-input ini-u-76"><i class="fas fa-lock text-white-50"></i></span>
+                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" required minlength="8" maxlength="128" autocomplete="new-password ini-u-77">
+                    <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
                   </div>
                   <div class="progress mt-2 ini-u-79">
                     <div id="passwordStrengthBar" class="progress-bar" role="progressbar ini-u-80"></div>
@@ -444,9 +445,9 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-81">Confirmar Clave <span class="text-danger">*</span></label>
                   <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 custom-input ini-u-82"><i class="fas fa-check-circle text-white-50"></i></span>
-                    <input type="password" id="confirmarContrasena" class="form-control custom-input border-start-0 ps-0 border-end-0" required minlength="8" maxlength="128" autocomplete="new-password ini-u-83">
-                    <button class="btn btn-outline-secondary custom-input border-start-0 ini-u-84" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
+                    <span class="input-group-text bg-transparent custom-input ini-u-82"><i class="fas fa-check-circle text-white-50"></i></span>
+                    <input type="password" id="confirmarContrasena" class="form-control custom-input" required minlength="8" maxlength="128" autocomplete="new-password ini-u-83">
+                    <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
                   </div>
                 </div>
               </div>
@@ -527,18 +528,20 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- jsQR: decodifica QR desde frames de video -->
+<!-- ZXing (Códigos de barras 1D Code128/Code39/PDF417) + jsQR (Códigos QR) -->
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="{% static 'js/inicio.js' %}"></script>
 <script>
 /* ═══════════════════════════════════════════════════════════
-   MÓDULO: ESCÁNER DE CARNET SENA — versión móvil robusta
+   MÓDULO: ESCÁNER DE CARNET SENA MULTIFORMATO (1D & 2D)
    ═══════════════════════════════════════════════════════════ */
 (function () {
 
   /* ── Referencias DOM ── */
   const btnAbrir    = document.getElementById('btnAbrirScanner');
   const btnCerrar   = document.getElementById('btnCerrarScanner');
+  const btnCambiar  = document.getElementById('btnCambiarCamara');
   const wrapper     = document.getElementById('scannerWrapper');
   const video       = document.getElementById('scannerVideo');
   const canvas      = document.getElementById('scannerCanvas');
@@ -548,88 +551,96 @@
   const badgeNombre = document.getElementById('senaVerifiedNombre');
   const badgeFicha  = document.getElementById('senaVerifiedFicha');
 
-  let streamActivo  = null;
-  let animFrame     = null;
-  let escaneando    = false;
+  let streamActivo   = null;
+  let animFrame      = null;
+  let escaneando     = false;
+  let camaraTrasera  = true;
+  let zxingReader    = null;
 
-  /* ── Cadena de constraints: de más específica a más permisiva ── */
-  const CONSTRAINTS_LIST = [
-    /* 1. Cámara trasera ideal (la preferida en móvil) */
-    { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
-    /* 2. Cámara trasera sin resolución forzada */
-    { video: { facingMode: 'environment' } },
-    /* 3. Cualquier cámara disponible (fallback desktop / iOS Safari) */
-    { video: true },
-    /* 4. Último recurso: sin constraints en absoluto */
-    { video: {}, audio: false }
-  ];
+  /* Inicializar decodificador ZXing para barras 1D (Code128, Code39, PDF417) */
+  if (typeof ZXing !== 'undefined') {
+    try {
+      zxingReader = new ZXing.BrowserMultiFormatReader();
+    } catch (e) {
+      console.warn('ZXing Reader no disponible:', e);
+    }
+  }
+
+  /* ── Alternar cámara trasera / frontal ── */
+  if (btnCambiar) {
+    btnCambiar.addEventListener('click', () => {
+      camaraTrasera = !camaraTrasera;
+      cerrarCamara();
+      setTimeout(abrirCamara, 300);
+    });
+  }
 
   /* ── Abrir cámara ── */
   btnAbrir.addEventListener('click', abrirCamara);
 
   async function abrirCamara() {
-    /* Comprobación básica de soporte */
     if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
-      mostrarError('Tu navegador no permite acceso a la cámara. Ingresa los datos manualmente o usa Chrome/Firefox actualizados.');
+      mostrarError('Tu navegador no permite acceso a la cámara. Ingresa los datos manualmente.');
       return;
     }
 
-    /* Mostrar visor con spinner */
     wrapper.classList.add('active');
     loaderEl.classList.add('active');
     btnAbrir.style.display = 'none';
-    statusEl.textContent = 'Iniciando cámara...';
+    statusEl.textContent = 'Iniciando cámara del celular...';
+
+    const preferredFacing = camaraTrasera ? 'environment' : 'user';
+
+    const constraintsList = [
+      { video: { facingMode: { exact: preferredFacing }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+      { video: { facingMode: preferredFacing } },
+      { video: true },
+      { video: {}, audio: false }
+    ];
 
     let stream = null;
 
-    for (const constraints of CONSTRAINTS_LIST) {
+    for (const constraints of constraintsList) {
       try {
         stream = await navigator.mediaDevices.getUserMedia(constraints);
-        break; /* Salir del loop en cuanto funcione */
+        break;
       } catch (err) {
-        const nombre = err.name || '';
-        /* Si el usuario denegó el permiso explícitamente, no seguir intentando */
-        if (nombre === 'NotAllowedError' || nombre === 'PermissionDeniedError') {
-          mostrarError('Permiso de cámara denegado. Ve a los ajustes del navegador y permite el acceso a la cámara para este sitio.');
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          mostrarError('Permiso de cámara denegado. Permite el acceso a la cámara en los ajustes del navegador.');
           cerrarCamara();
           return;
         }
-        /* Cualquier otro error (NotFoundError, OverconstrainedError, etc.): probar siguiente constraint */
       }
     }
 
     if (!stream) {
-      mostrarError('No se encontró ninguna cámara disponible. Verifica que el dispositivo tenga cámara y que el sitio use HTTPS.');
+      mostrarError('No se encontró cámara disponible. Asegúrate de otorgar permisos.');
       cerrarCamara();
       return;
     }
 
     streamActivo = stream;
 
-    /* Vincular stream al elemento <video> de forma compatible con iOS Safari */
     try {
       video.srcObject = stream;
     } catch (_) {
-      /* Fallback muy antiguo — raro pero seguro */
       video.src = URL.createObjectURL(stream);
     }
 
-    /* Esperar a que el video esté listo antes de iniciar el loop */
     video.onloadedmetadata = function () {
       video.play()
         .then(() => {
           loaderEl.classList.remove('active');
           escaneando = true;
-          statusEl.textContent = 'Apunta al código QR o de barras del carnet';
+          statusEl.textContent = 'Apunta al código de barras o QR del carnet';
           animFrame = requestAnimationFrame(procesarFrame);
         })
         .catch(err => {
-          mostrarError('No se pudo reproducir el video de la cámara: ' + (err.message || err));
+          mostrarError('Error al reproducir video: ' + (err.message || err));
           cerrarCamara();
         });
     };
 
-    /* Por si onloadedmetadata ya disparó (algunos browsers) */
     if (video.readyState >= 1) {
       video.onloadedmetadata();
     }
@@ -652,10 +663,9 @@
     btnAbrir.style.display = '';
   }
 
-  /* Cerrar si el modal Bootstrap se cierra */
   document.getElementById('modalForm').addEventListener('hidden.bs.modal', cerrarCamara);
 
-  /* ── Loop de detección de frames ── */
+  /* ── Detección Multiformato (1D & 2D) ── */
   function procesarFrame() {
     if (!escaneando) return;
 
@@ -665,33 +675,46 @@
       canvas.height = video.videoHeight;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      /* ─ Intentar BarcodeDetector nativo (Chrome Android 8+, Chrome Desktop) ─ */
+      /* 1. Detección Nativa BarcodeDetector (Chrome Android / Desktop) */
       if ('BarcodeDetector' in window) {
-        const bd = new BarcodeDetector({
-          formats: ['qr_code', 'code_128', 'code_39', 'pdf417', 'data_matrix', 'ean_13', 'ean_8']
-        });
-        bd.detect(canvas).then(barcodes => {
-          if (barcodes.length > 0 && escaneando) {
-            onCodigoDetectado(barcodes[0].rawValue);
-          }
-        }).catch(() => {/* BarcodeDetector puede fallar en algunos frames — ignorar */});
+        try {
+          const bd = new BarcodeDetector({
+            formats: ['qr_code', 'code_128', 'code_39', 'pdf417', 'data_matrix', 'ean_13', 'ean_8']
+          });
+          bd.detect(canvas).then(barcodes => {
+            if (barcodes.length > 0 && escaneando) {
+              onCodigoDetectado(barcodes[0].rawValue);
+            }
+          }).catch(() => {});
+        } catch (_) {}
       }
 
-      /* ─ jsQR como respaldo universal ─ */
+      /* 2. Detección ZXing (Código de barras 1D: Code 128, Code 39, PDF417) */
+      if (zxingReader && escaneando) {
+        try {
+          const result = zxingReader.decodeFromCanvas(canvas);
+          if (result && result.text && escaneando) {
+            onCodigoDetectado(result.text);
+            return;
+          }
+        } catch (_) {}
+      }
+
+      /* 3. Detección jsQR (Respaldo QR) */
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const qr = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'attemptBoth' /* mejora detección en fondos oscuros */
+        inversionAttempts: 'attemptBoth'
       });
       if (qr && qr.data && escaneando) {
         onCodigoDetectado(qr.data);
-        return; /* No pedir otro frame */
+        return;
       }
     }
 
     animFrame = requestAnimationFrame(procesarFrame);
   }
 
-  /* ── Código detectado ── */
+  /* ── Procesamiento del código detectado ── */
   function onCodigoDetectado(raw) {
     escaneando = false;
     if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
@@ -700,11 +723,11 @@
     const datos = parsearDatosCarnet(raw);
 
     if (!datos || !datos.numero_doc) {
-      statusEl.textContent = '✗ No se reconoció como carnet SENA. Intenta de nuevo.';
+      statusEl.textContent = '✗ No se reconoció documento en el código. Reintenta.';
       setTimeout(() => {
-        if (streamActivo) { /* Solo reiniciar si la cámara sigue activa */
+        if (streamActivo) {
           escaneando = true;
-          statusEl.textContent = 'Apunta al código QR o de barras del carnet';
+          statusEl.textContent = 'Apunta al código de barras o QR del carnet';
           animFrame = requestAnimationFrame(procesarFrame);
         }
       }, 2000);
@@ -715,48 +738,73 @@
     cerrarCamara();
   }
 
-  /* ── Parser de datos del carnet SENA ──────────────────────────
-     Formatos soportados:
-       1) JSON   {"nombres":"...","apellidos":"...","tipo_doc":"CC","numero_doc":"...","ficha":"..."}
-       2) CSV    "NOMBRES;APELLIDOS;TIPO_DOC;NUMERO_DOC;FICHA;PROGRAMA"
-       3) Solo número de cédula (barcode simple)
-  ─────────────────────────────────────────────────────────── */
+  /* ── Parser inteligente de carnet (SENA, Cédula PDF417, 1D Barcode, JSON, CSV) ── */
   function parsearDatosCarnet(raw) {
     raw = (raw || '').trim();
     if (!raw) return null;
 
-    /* Intento 1: JSON */
+    /* Formato 1: JSON */
     try {
       const obj = JSON.parse(raw);
       return normalizarDatos(obj);
     } catch (_) {}
 
-    /* Intento 2: separadores ; | , */
-    const sep = raw.includes(';') ? ';' : raw.includes('|') ? '|' : ',';
-    const partes = raw.split(sep).map(s => s.trim());
-    if (partes.length >= 4) {
-      return normalizarDatos({
-        nombres:    partes[0] || '',
-        apellidos:  partes[1] || '',
-        tipo_doc:   partes[2] || 'CC',
-        numero_doc: partes[3] || '',
-        ficha:      partes[4] || '',
-        programa:   partes[5] || ''
-      });
+    /* Formato 2: CSV o valores separados por ; | , */
+    const sep = raw.includes(';') ? ';' : raw.includes('|') ? '|' : (raw.includes(',') ? ',' : null);
+    if (sep) {
+      const partes = raw.split(sep).map(s => s.trim());
+      if (partes.length >= 2) {
+        let numDoc = '', nombres = '', apellidos = '', ficha = '';
+        partes.forEach(p => {
+          const digits = p.replace(/\D/g, '');
+          if (!numDoc && digits.length >= 6 && digits.length <= 11) {
+            numDoc = digits;
+          } else if (!ficha && digits.length >= 5 && digits.length <= 8) {
+            ficha = digits;
+          } else if (!nombres && /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(p)) {
+            nombres = p;
+          } else if (!apellidos && /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]+$/.test(p)) {
+            apellidos = p;
+          }
+        });
+        if (numDoc) {
+          return normalizarDatos({ nombres, apellidos, numero_doc: numDoc, ficha });
+        }
+      }
     }
 
-    /* Intento 3: solo número de documento */
-    if (/^\d{5,20}$/.test(raw)) {
-      return normalizarDatos({ numero_doc: raw, tipo_doc: 'CC' });
+    /* Formato 3: PDF417 Cédula Colombiana o Carnet con números de 6 a 11 dígitos */
+    const matchesDoc = raw.match(/\d{6,11}/g);
+    if (matchesDoc && matchesDoc.length > 0) {
+      for (const candidate of matchesDoc) {
+        const clean = candidate.replace(/^0+/, '');
+        if (clean.length >= 6 && clean.length <= 11) {
+          return normalizarDatos({ numero_doc: clean, tipo_doc: 'CC' });
+        }
+      }
+    }
+
+    /* Formato 4: Código de barras 1D numérico o alfanumérico simple */
+    const soloDigitos = raw.replace(/\D/g, '');
+    if (soloDigitos.length >= 6 && soloDigitos.length <= 11) {
+      return normalizarDatos({ numero_doc: soloDigitos, tipo_doc: 'CC' });
     }
 
     return null;
   }
 
+
+  function toTitleCase(str) {
+    if (!str) return '';
+    return str.toString().toLowerCase().trim().replace(/(?:^|\s|-)\S/g, function(m) {
+      return m.toUpperCase();
+    });
+  }
+
   function normalizarDatos(obj) {
     return {
-      nombres:    (obj.nombres    || obj.first_name || obj.nombre   || '').toUpperCase().trim(),
-      apellidos:  (obj.apellidos  || obj.last_name  || obj.apellido || '').toUpperCase().trim(),
+      nombres:    toTitleCase(obj.nombres    || obj.first_name || obj.nombre   || ''),
+      apellidos:  toTitleCase(obj.apellidos  || obj.last_name  || obj.apellido || ''),
       tipo_doc:   (obj.tipo_doc   || obj.tipo_documento              || 'CC').toUpperCase().trim(),
       numero_doc: (obj.numero_doc || obj.numero_documento || obj.cedula || obj.documento || '').replace(/\D/g, '').trim(),
       ficha:      (obj.ficha      || obj.numero_ficha                || '').replace(/\D/g, '').trim(),

@@ -157,9 +157,31 @@
                         {% if e.imagen %}
                             <img src="{{ e.imagen.url }}" alt="{{ e.tipo_maquina }}">
                         {% else %}
-                            <div class="no-img-cat">
-                                <i class="fas fa-dumbbell fa-3x text-muted"></i>
-                            </div>
+                            {% if "caminadora" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/caminadora.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "bicicleta" in e.tipo_maquina|lower or "bici" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/bicicleta.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "elíptica" in e.tipo_maquina|lower or "eliptica" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/eliptica.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "multifuerza" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/multifuerza.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "prensa" in e.tipo_maquina|lower or "press" in e.tipo_maquina|lower or "banca" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/press_banca.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "sentadilla" in e.tipo_maquina|lower or "rack" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/rack_sentadillas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "remo" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/remo.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/sports_soccer.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/sports_basketball.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/sports_volleyball.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% else %}
+                                <img src="{% static 'img/balon.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% endif %}
                         {% endif %}
 
                         <!-- Badge stock / Habilitado status -->
@@ -184,13 +206,6 @@
                                 {{ e.descripcion|default:"Sin descripción."|truncatechars:70 }}
                             </p>
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="badge-status
-                                    {% if e.estado_general == 'Bueno' %}bg-success
-                                    {% elif e.estado_general == 'Regular' %}bg-warning text-dark
-                                    {% else %}bg-danger{% endif %}"
-                                    class="inv-u-2">
-                                    {{ e.estado_general }}
-                                </span>
                                 <span class="text-white-50 small">
                                     <i class="fas fa-user me-1"></i>
                                     {{ e.usuario_responsable.get_full_name|default:"Sin asignar"|truncatechars:18 }}
@@ -216,7 +231,7 @@
                                 </button>
                                 <a href="{% url 'eliminar_elemento' e.id %}"
                                    class="btn btn-outline-danger btn-sm fw-bold inv-u-4"
-                                   onclick="return confirm('¿Eliminar «{{ e.tipo_maquina }}»?')"
+                                   data-confirm="¿Eliminar «{{ e.tipo_maquina }}»?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar"
                                    title="Eliminar">
                                     <i class="fas fa-trash me-1"></i>Eliminar
                                 </a>
@@ -271,7 +286,6 @@
                             <th>Imagen</th>
                             <th>Elemento</th>
                             <th>Stock</th>
-                            <th>Estado</th>
                             <th>Responsable</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -300,9 +314,31 @@
                                 {% if e.imagen %}
                                     <img src="{{ e.imagen.url }}" class="table-img" alt="{{ e.tipo_maquina }}">
                                 {% else %}
-                                    <div class="table-img d-flex align-items-center justify-content-center bg-dark border border-secondary">
-                                        <i class="fas fa-image text-muted"></i>
-                                    </div>
+                                    {% if "caminadora" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/caminadora.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "bicicleta" in e.tipo_maquina|lower or "bici" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/bicicleta.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "elíptica" in e.tipo_maquina|lower or "eliptica" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/eliptica.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "multifuerza" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/multifuerza.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "prensa" in e.tipo_maquina|lower or "press" in e.tipo_maquina|lower or "banca" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/press_banca.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "sentadilla" in e.tipo_maquina|lower or "rack" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/rack_sentadillas.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "remo" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/remo.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/sports_soccer.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/sports_basketball.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
+                                        <img src="{% static 'img/sports_volleyball.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% else %}
+                                        <img src="{% static 'img/balon.png' %}" class="table-img" alt="{{ e.tipo_maquina }}">
+                                    {% endif %}
                                 {% endif %}
                             </td>
 
@@ -317,26 +353,17 @@
                                 <span class="badge bg-dark border border-secondary px-3">{{ e.cantidad_total }}</span>
                             </td>
 
-                            <td data-label="Estado">
-                                <span class="badge-status
-                                    {% if e.estado_general == 'Bueno' %}bg-success
-                                    {% elif e.estado_general == 'Regular' %}bg-warning text-dark
-                                    {% else %}bg-danger{% endif %}">
-                                    {{ e.estado_general }}
-                                </span>
-                            </td>
-
                             <td data-label="Responsable">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</td>
 
                             <td data-label="Acciones" class="text-center">
                                 {% if user.is_staff %}
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top inv-u-10"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
+                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="modal" data-bs-target="#modalElemento"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
                                     <a href="{% url 'eliminar_elemento' e.id %}"
                                        class="btn btn-danger btn-sm fw-bold px-2"
                                        title="Eliminar"
                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                       onclick="return confirm('¿Eliminar este elemento del inventario?')">
+                                       data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                          <i class="fas fa-trash me-1 inv-u-12"></i>Eliminar
                                     </a>
                                 </div>
@@ -364,9 +391,31 @@
                                     {% if e.imagen %}
                                         <img src="{{ e.imagen.url }}" alt="{{ e.tipo_maquina }}">
                                     {% else %}
-                                        <div class="no-img">
-                                            <i class="fas fa-image fa-2x text-muted"></i>
-                                        </div>
+                                        {% if "caminadora" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/caminadora.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "bicicleta" in e.tipo_maquina|lower or "bici" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/bicicleta.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "elíptica" in e.tipo_maquina|lower or "eliptica" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/eliptica.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "multifuerza" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/multifuerza.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "prensa" in e.tipo_maquina|lower or "press" in e.tipo_maquina|lower or "banca" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/press_banca.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "sentadilla" in e.tipo_maquina|lower or "rack" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/rack_sentadillas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "remo" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/remo.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/sports_soccer.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/sports_basketball.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
+                                            <img src="{% static 'img/sports_volleyball.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% else %}
+                                            <img src="{% static 'img/balon.png' %}" alt="{{ e.tipo_maquina }}">
+                                        {% endif %}
                                     {% endif %}
                                     <div class="flex-grow-1">
                                         <h6 class="text-info fw-bold text-uppercase mb-2">{{ e.tipo_maquina }}</h6>
@@ -377,24 +426,20 @@
                                             <span><i class="fas fa-cubes text-warning me-1"></i>Stock: <strong class="text-white">{{ e.cantidad_total }}</strong></span>
                                             <span><i class="fas fa-calendar me-1 text-info"></i>Adquirido: <strong class="text-white">{{ e.fecha_adquisicion|date:"d/m/Y"|default:"N/A" }}</strong></span>
                                             <span><i class="fas fa-user me-1 text-success"></i>Responsable: <strong class="text-white">{{ e.usuario_responsable.get_full_name|default:"Sin asignar" }}</strong></span>
-                                            <span><i class="fas fa-circle me-1
-                                                {% if e.estado_general == 'Bueno' %}text-success
-                                                {% elif e.estado_general == 'Regular' %}text-warning
-                                                {% else %}text-danger{% endif %}"></i>Estado: <strong class="text-white">{{ e.estado_general }}</strong></span>
                                         </div>
                                         <div class="d-flex gap-2 flex-wrap align-items-center">
                                             {% if user.is_staff %}
                                             <button type="button"
                                                     class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento"
                                                     title="Editar Elemento"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top">
+                                                    data-bs-toggle="modal" data-bs-target="#modalElemento">
                                                 <i class="fas fa-edit me-1"></i>Editar
                                             </button>
                                             <a href="{% url 'eliminar_elemento' e.id %}"
                                                class="btn btn-danger btn-sm fw-bold px-2"
                                                title="Eliminar"
                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                               onclick="return confirm('¿Eliminar este elemento del inventario?')">
+                                               data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                                 <i class="fas fa-trash me-1"></i>Eliminar
                                             </a>
                                             {% else %}
@@ -608,18 +653,10 @@
                                        placeholder="Ej: Balón de Fútbol, Aro de Básquet..." required>
                             </div>
                             <div class="row">
-                                <div class="col-6 mb-3">
+                                <div class="col-12 mb-3">
                                     <label class="form-label fw-bold small">Cantidad <span class="text-danger">*</span></label>
                                     <input type="number" id="inputCantidadTotal" name="cantidad_total"
                                            class="form-control custom-input" required min="0" placeholder="0">
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label fw-bold small">Estado</label>
-                                    <select id="inputEstadoGeneral" name="estado_general" class="form-select custom-input">
-                                        <option value="Bueno">Bueno</option>
-                                        <option value="Regular">Regular</option>
-                                        <option value="Malo">Malo</option>
-                                    </select>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -803,12 +840,8 @@ function abrirModalCrear() {
     document.getElementById('previewImagen').style.display     = 'none';
     document.getElementById('placeholderImagen').style.display = 'flex';
     document.getElementById('inputCodigo').value   = '';
-    
-    const inputEstado = document.getElementById('inputEstadoGeneral');
-    if (inputEstado) {
-        inputEstado.value = 'Bueno';
-        inputEstado.disabled = true;
-    }
+    const inputHab = document.getElementById('inputHabilitado');
+    if (inputHab) inputHab.checked = true;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -829,14 +862,14 @@ function initBotonesEditar() {
             document.getElementById('inputCodigo').value              = src.dataset.id;
             document.getElementById('inputNombreElemento').value      = src.dataset.tipo;
             document.getElementById('inputCantidadTotal').value       = src.dataset.cantidad;
-            const inputEstado = document.getElementById('inputEstadoGeneral');
-            if (inputEstado) {
-                inputEstado.disabled = false;
-                inputEstado.value = src.dataset.estado;
-            }
             document.getElementById('inputUsuarioResponsable').value  = src.dataset.responsableId || '';
             document.getElementById('inputFechaAdquisicion').value    = src.dataset.fecha || '';
             document.getElementById('inputDescripcion').value         = src.dataset.descripcion || '';
+
+            const inputHab = document.getElementById('inputHabilitado');
+            if (inputHab) {
+                inputHab.checked = (src.dataset.habilitado === 'true');
+            }
 
             const preview      = document.getElementById('previewImagen');
             const placeholder  = document.getElementById('placeholderImagen');

@@ -228,8 +228,8 @@ def registro_view(request):
     if request.method == 'POST':
 
         numero_documento = request.POST.get('numero_documento', '').strip()
-        nombres = request.POST.get('nombres', '').strip()
-        apellidos = request.POST.get('apellidos', '').strip()
+        nombres = request.POST.get('nombres', '').strip().title()
+        apellidos = request.POST.get('apellidos', '').strip().title()
         contrasena = request.POST.get('contrasena', '').strip()
         correo = request.POST.get('email', '').strip()
         tipo_doc = request.POST.get('tipo_documento', '').strip()
@@ -555,8 +555,8 @@ def admin_editar_usuario(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
     u = get_object_or_404(Usuario, pk=user_id)
-    u.first_name = request.POST.get('first_name', u.first_name).strip()
-    u.last_name = request.POST.get('last_name', u.last_name).strip()
+    u.first_name = request.POST.get('first_name', u.first_name).strip().title()
+    u.last_name = request.POST.get('last_name', u.last_name).strip().title()
     u.email = request.POST.get('email', u.email).strip()
     u.save()
     messages.success(request, f'Datos de {u.get_full_name()} actualizados correctamente.')

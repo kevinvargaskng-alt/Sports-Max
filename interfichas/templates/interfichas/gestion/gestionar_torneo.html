@@ -289,7 +289,7 @@
                 <form method="POST" action="{% url 'asignar_paises_torneo' torneo_id=torneo.codigo_torneo_fichas %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-warning fw-bold"
-                            onclick="return confirm('¿Asignar nombres de países automáticamente? Se asignarán según el orden de la lista. Los nombres actuales serán reemplazados.')">
+                            data-confirm="¿Asignar nombres de países automáticamente? Se asignarán según el orden de la lista. Los nombres actuales serán reemplazados." data-confirm-title="Asignar Países" data-confirm-icon="warning" data-confirm-text="Asignar">
                         <i class="fas fa-flag me-2"></i>Asignar Nombres de Países
                     </button>
                 </form>
@@ -323,9 +323,9 @@
                                     onclick="abrirEditarEquipo('{{ eq.pk }}', '{{ eq.nombre_equipo|escapejs }}', '{{ eq.capitan|escapejs }}', '{{ eq.ficha|escapejs }}', '{{ eq.programa|escapejs }}')">
                                 <i class="fas fa-edit me-1"></i>Editar
                             </button>
-                            <form method="POST" action="{% url 'eliminar_equipo' equipo_id=eq.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar a {{ eq.nombre_equipo }}? Se eliminarán sus partidos asociados.')" class="flex-fill d-flex">
+                            <form method="POST" action="{% url 'eliminar_equipo' equipo_id=eq.pk %}" class="flex-fill d-flex">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger flex-fill fw-bold text-uppercase torneo-u-11">
+                                <button type="submit" class="btn btn-sm btn-outline-danger flex-fill fw-bold text-uppercase torneo-u-11" data-confirm="¿Seguro que deseas eliminar a {{ eq.nombre_equipo }}? Se eliminarán sus partidos asociados." data-confirm-title="Eliminar Equipo" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
@@ -475,12 +475,11 @@
                 </h5>
                 {% if fase_actual == 'grupos' %}
                 <div class="d-flex gap-2 flex-wrap">
-                    <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}"
-                          onsubmit="return confirm('¿Re-sortear grupos automáticamente? Se borrarán todos los partidos actuales.')">
+                    <form method="POST" action="{% url 'generar_grupos' torneo_id=torneo.codigo_torneo_fichas %}">
                         {% csrf_token %}
                         <input type="hidden" name="num_grupos"        value="{{ grupos_con_tabla|length }}">
                         <input type="hidden" name="equipos_por_grupo" value="4">
-                        <button type="submit" class="btn btn-outline-warning btn-sm fw-bold">
+                        <button type="submit" class="btn btn-outline-warning btn-sm fw-bold" data-confirm="¿Re-sortear grupos automáticamente? Se borrarán todos los partidos actuales." data-confirm-title="Re-sortear Grupos" data-confirm-icon="warning" data-confirm-text="Re-sortear">
                             <i class="fas fa-random me-1"></i>Re-sortear automático
                         </button>
                     </form>
@@ -544,7 +543,7 @@
                     </p>
                     <form method="POST" action="{% url 'generar_grupos_manual' torneo_id=torneo.codigo_torneo_fichas %}"
                           id="formResortearManual"
-                          onsubmit="return confirm('¿Re-asignar grupos manualmente? Se borrarán todos los partidos actuales.') && validarGruposRemanual()">
+                          onsubmit="return validarGruposRemanual()">
                         {% csrf_token %}
                         <input type="hidden" name="num_grupos"        id="remanual-num-grupos"   value="{{ grupos_con_tabla|length }}">
                         <input type="hidden" name="equipos_por_grupo" id="remanual-eq-por-grupo" value="4">
@@ -556,7 +555,7 @@
                                 <i class="fas fa-exclamation-triangle me-2"></i>
                                 <span id="remanual-warning-msg"></span>
                             </div>
-                            <button type="submit" class="btn-action-primary btn">
+                            <button type="submit" class="btn-action-primary btn" data-confirm="¿Re-asignar grupos manualmente? Se borrarán todos los partidos actuales." data-confirm-title="Re-sortear Manual" data-confirm-icon="warning" data-confirm-text="Re-asignar">
                                 <i class="fas fa-check me-2"></i>Confirmar y Re-generar Partidos
                             </button>
                         </div>
