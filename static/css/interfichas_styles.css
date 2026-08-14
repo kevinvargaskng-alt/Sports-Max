@@ -12,7 +12,13 @@
     --radius:     10px;
   }
 
-  body { background: var(--bg-deep); color: var(--text); font-family: 'Segoe UI', sans-serif; }
+  body {
+    background: linear-gradient(135deg, rgba(13, 17, 23, 0.88) 0%, rgba(15, 23, 42, 0.94) 100%),
+                url('/static/img/interfichas_campo_bg.png') center/cover fixed no-repeat !important;
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+  }
 
   /* FUERZA a que todo el texto secundario use el gris iluminado */
   .text-muted {
@@ -60,27 +66,30 @@
   .badge-cerrado { background: rgba(48,54,61,.6); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; font-size:.7rem; font-weight:700; }
 
   .btn-accion {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 11px; border-radius: 6px; font-size: .78rem;
-    font-weight: 600; border: 1px solid transparent;
-    cursor: pointer; transition: all .15s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 13px; border-radius: 8px; font-size: .8rem;
+    font-weight: 700; border: 1px solid transparent;
+    cursor: pointer; transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none;
   }
-  .btn-primary-a  { background: rgba(31,111,235,.2);  color: #79c0ff; border-color: rgba(31,111,235,.4); }
-  .btn-primary-a:hover { background: rgba(31,111,235,.35); color:#fff; }
-  .btn-success-a  { background: rgba(35,134,54,.2);   color: #56d364; border-color: rgba(35,134,54,.4); }
-  .btn-success-a:hover { background: rgba(35,134,54,.35); color:#fff; }
-  .btn-warn-a     { background: rgba(210,153,34,.15); color: #f0b429; border-color: rgba(210,153,34,.35); }
-  .btn-warn-a:hover { background: rgba(210,153,34,.3); color:#fff; }
-  .btn-danger-a   { background: rgba(218,54,51,.15);  color: #ff7b72; border-color: rgba(218,54,51,.3); }
-  .btn-danger-a:hover { background: rgba(218,54,51,.3); color:#fff; }
-  .btn-info-a     { background: rgba(121,192,255,.1); color: #79c0ff; border-color: rgba(121,192,255,.25); }
-  .btn-info-a:hover { background: rgba(121,192,255,.25); color:#fff; }
+  .btn-primary-a  { background: rgba(2,132,199,.22);  color: #38bdf8; border-color: rgba(56,189,248,.45); }
+  .btn-primary-a:hover { background: linear-gradient(135deg, #0284c7, #0369a1); color:#fff; box-shadow: 0 4px 14px rgba(56,189,248,.4); transform: translateY(-1px); }
+  .btn-success-a  { background: rgba(16,185,129,.22);  color: #34d399; border-color: rgba(52,211,153,.45); }
+  .btn-success-a:hover { background: linear-gradient(135deg, #10b981, #059669); color:#fff; box-shadow: 0 4px 14px rgba(52,211,153,.4); transform: translateY(-1px); }
+  .btn-warn-a     { background: rgba(245,158,11,.22); color: #fbbf24; border-color: rgba(251,191,36,.45); }
+  .btn-warn-a:hover { background: linear-gradient(135deg, #f59e0b, #d97706); color:#fff; box-shadow: 0 4px 14px rgba(251,191,36,.4); transform: translateY(-1px); }
+  .btn-danger-a   { background: rgba(239,68,68,.22);  color: #f87171; border-color: rgba(248,113,113,.45); }
+  .btn-danger-a:hover { background: linear-gradient(135deg, #ef4444, #dc2626); color:#fff; box-shadow: 0 4px 14px rgba(248,113,113,.4); transform: translateY(-1px); }
+  .btn-info-a     { background: rgba(14,165,233,.22); color: #7dd3fc; border-color: rgba(125,211,252,.45); }
+  .btn-info-a:hover { background: linear-gradient(135deg, #0ea5e9, #0284c7); color:#fff; box-shadow: 0 4px 14px rgba(14,165,233,.4); transform: translateY(-1px); }
 
   .hero-aprendiz {
     position: relative; overflow: hidden;
-    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d2137 100%);
-    border: 1px solid var(--border); border-radius: 16px;
+    background: rgba(22, 33, 54, 0.65) !important;
+    border: 1px solid rgba(16,185,129,0.3) !important;
+    border-radius: 18px;
     padding: 36px 32px; margin-bottom: 32px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
   }
   .hero-aprendiz::before {
     content: '';
@@ -369,3 +378,270 @@
 .int-u-66 { letter-spacing:.5px; }
 .int-u-67 { letter-spacing:.5px; }
 .int-u-68 { background:linear-gradient(135deg,#238636,#196c2e);color:#fff;border-radius:8px; }
+
+/* ══════════════════════════════════════════
+   ESTILOS DEPORTIVOS "MELO" — EQUIPOS Y MODALES POR TORNEO
+   ══════════════════════════════════════════ */
+
+.torneo-filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.torneo-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    background: rgba(2, 132, 199, 0.18);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.torneo-filter-btn:hover {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+    transform: translateY(-1px);
+}
+
+.torneo-filter-btn.active {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+}
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+/* Tarjetas deportivas de equipos ("Diseño Melo") */
+.team-card-sport {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-left: 4px solid #38bdf8;
+    border-radius: 14px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.team-card-sport:hover {
+    transform: translateY(-4px);
+    border-color: #38bdf8;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4), 0 0 18px rgba(56, 189, 248, 0.2);
+}
+
+.team-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.team-crest-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0284c7 0%, #1e293b 100%);
+    border: 2px solid rgba(56, 189, 248, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #38bdf8;
+    font-size: 1.3rem;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+.team-title-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-bottom: 2px;
+    letter-spacing: 0.3px;
+}
+
+.team-badge-group {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.team-badge-nogroup {
+    background: rgba(148, 163, 184, 0.12);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+.team-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+}
+
+.team-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.player-chips-title {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #38bdf8;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.player-chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.player-chip-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Modal Deportivo por Torneo */
+.modal-sport-header {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.98) 100%);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.3) !important;
+    padding: 1.25rem 1.5rem;
+}
+
+.sport-search-wrap {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto 1.25rem;
+}
+
+.sport-search-wrap input {
+    background: #0d1117;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 20px;
+    color: #f8fafc;
+    font-size: 0.85rem;
+    padding: 8px 16px 8px 38px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sport-search-wrap input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+.sport-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #38bdf8;
+    font-size: 0.82rem;
+}
+
+/* Contenedores de Agrupación por Grupo ("Por Fuera") */
+.grupo-container-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.grupo-header-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.grupo-title-badge {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    background: rgba(2, 132, 199, 0.18);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.view-mode-btn:hover {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+    transform: translateY(-1px);
+}
+
+.view-mode-btn.active {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+}
+
+

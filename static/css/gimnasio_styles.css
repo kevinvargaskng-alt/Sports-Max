@@ -9,6 +9,26 @@
     }
 
     /* ══════════════════════════════════════════
+       MÓDULO Y BODY CON IMAGEN DE FONDO DE TODO EL BODY
+    ══════════════════════════════════════════ */
+    body {
+        background: linear-gradient(135deg, rgba(5,10,25,0.88) 0%, rgba(15,23,42,0.96) 100%),
+                    url('/static/img/gym_bg.png') center/cover fixed no-repeat !important;
+        min-height: 100vh;
+    }
+
+    .modulo-header {
+        position: relative;
+        background: rgba(15, 23, 42, 0.65) !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        border-radius: 20px !important;
+        padding: 3rem 2rem !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(15px) !important;
+        overflow: hidden;
+    }
+
+    /* ══════════════════════════════════════════
        RELOJ / FECHA
     ══════════════════════════════════════════ */
     .gym-clock-wrap {
@@ -415,4 +435,206 @@
 .gym-estado-abierta { color: #56d364; }
 .gym-estado-cerrada { color: #f85149; }
 .gym-estado-mantenimiento { color: #e3b341; }
+
+/* ══════════════════════════════════════════
+   NUEVO DASHBOARD ADMINISTRATIVO & REGISTROS POR FECHA
+   ══════════════════════════════════════════ */
+
+/* Banners por Fecha */
+.date-group-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(88, 166, 255, 0.25);
+    border-left: 4px solid #58a6ff;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.date-group-card:hover {
+    border-color: rgba(88, 166, 255, 0.45);
+}
+.date-group-header {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.date-group-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #f0f6fc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+.date-group-badge {
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* Dashboard Hub Grid */
+.adm-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+.adm-hub-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+}
+.adm-hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+.adm-hub-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(88, 166, 255, 0.5);
+    background: rgba(22, 32, 54, 0.85);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(88, 166, 255, 0.15);
+}
+.adm-hub-card:hover::before {
+    background: linear-gradient(90deg, #58a6ff, #22d3ee);
+}
+.adm-hub-card.hub-accent-amber:hover::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.adm-hub-card.hub-accent-blue:hover::before  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.adm-hub-card.hub-accent-green:hover::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.adm-hub-card.hub-accent-red:hover::before   { background: linear-gradient(90deg, #ef4444, #f87171); }
+.adm-hub-card.hub-accent-purple:hover::before{ background: linear-gradient(90deg, #8b5cf6, #c084fc); }
+
+.adm-hub-icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+.adm-hub-card:hover .adm-hub-icon-wrap {
+    transform: scale(1.1);
+    background: rgba(88, 166, 255, 0.12);
+}
+.adm-hub-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f0f6fc;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.5px;
+}
+.adm-hub-desc {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+.adm-hub-action-btn {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+}
+.adm-hub-card:hover .adm-hub-action-btn {
+    background: #58a6ff;
+    color: #0d1117;
+    border-color: #58a6ff;
+}
+
+/* Nav tabs bar compact view for active sub-sections */
+.adm-nav-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.adm-nav-btn {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.adm-nav-btn:hover {
+    color: #f8fafc;
+    border-color: #58a6ff;
+    background: rgba(88, 166, 255, 0.1);
+}
+.adm-nav-btn.active {
+    background: #58a6ff;
+    color: #0f172a;
+    border-color: #58a6ff;
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.4);
+}
+.adm-nav-btn.btn-dashboard-main {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: #f59e0b;
+    color: #fbbf24;
+}
+.adm-nav-btn.btn-dashboard-main:hover {
+    background: #f59e0b;
+    color: #0f172a;
+}
+
+.btn-back-dashboard {
+    background: rgba(88, 166, 255, 0.1);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    color: #58a6ff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-back-dashboard:hover {
+    background: #58a6ff;
+    color: #0d1117;
+}
+
 

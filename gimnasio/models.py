@@ -112,3 +112,78 @@ class Maquina(models.Model):
         }
         filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
         return f"/static/img/maquinas/{filename}"
+
+
+class Machine(models.Model):
+    TIPO_CHOICES = [
+        ('Cardio', 'Cardio'),
+        ('Fuerza', 'Fuerza'),
+        ('Funcional', 'Funcional'),
+        ('Flexibilidad', 'Flexibilidad / Salud'),
+    ]
+    ESTADO_CHOICES = [
+        ('Disponible', 'Disponible'),
+        ('En Mantenimiento', 'En Mantenimiento'),
+        ('Fuera de Servicio', 'Fuera de Servicio'),
+    ]
+
+    nombre = models.CharField(max_length=100, verbose_name="Nombre de la Máquina")
+    tipo = models.CharField(max_length=50, choices=TIPO_CHOICES, default='Cardio', verbose_name="Tipo")
+    estado = models.CharField(max_length=50, choices=ESTADO_CHOICES, default='Disponible', verbose_name="Estado")
+    imagen = models.ImageField(upload_to='maquinas/', null=True, blank=True, verbose_name="Imagen")
+    descripcion = models.TextField(blank=True, verbose_name="Descripción")
+    fecha_adquisicion = models.DateField(null=True, blank=True, verbose_name="Fecha de Adquisición")
+
+    class Meta:
+        ordering = ['tipo', 'nombre']
+        verbose_name = 'Máquina (Machine)'
+        verbose_name_plural = 'Máquinas (Machines)'
+
+    def __str__(self):
+        return f"{self.nombre} ({self.tipo})"
+
+    @property
+    def badge_icon(self):
+        """Devuelve la clase de FontAwesome correspondiente al tipo de máquina."""
+        icon_map = {
+            'Cardio': 'fa-heart',
+            'Fuerza': 'fa-dumbbell',
+            'Funcional': 'fa-bolt',
+            'Flexibilidad': 'fa-child',
+        }
+        return icon_map.get(self.tipo, 'fa-fire')
+
+    @property
+    def badge_color(self):
+        color_map = {
+            'Cardio': 'danger',
+            'Fuerza': 'primary',
+            'Funcional': 'warning text-dark',
+            'Flexibilidad': 'info text-dark',
+        }
+        return color_map.get(self.tipo, 'secondary')
+
+    @property
+    def estado_badge_color(self):
+        color_map = {
+            'Disponible': 'success',
+            'En Mantenimiento': 'warning text-dark',
+            'Fuera de Servicio': 'danger',
+        }
+        return color_map.get(self.estado, 'secondary')
+
+    @property
+    def imagen_url(self):
+        if self.imagen:
+            return self.imagen.url
+        mapping = {
+            'caminadora': 'caminadora.jpg',
+            'bicicleta estática': 'bicicleta.jpg',
+            'elíptica': 'eliptica.jpg',
+            'press de banca': 'press_banca.jpg',
+            'multiestación': 'multifuerza.jpg',
+            'rack de sentadillas': 'rack_sentadillas.jpg',
+            'remo': 'remo.jpg',
+        }
+        filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
+        return f"/static/img/maquinas/{filename}"

@@ -129,12 +129,12 @@
               {% endif %}
             </td>
             <td>
-              <span class="fw-bold text-info">{{ t.equipos.count }}</span>
+              <span class="fw-bold text-info fs-6">{{ t.equipos.count }}</span>
             </td>
             <td class="text-center">
               <div class="d-flex gap-1 justify-content-center flex-wrap">
                 <a href="{% url 'gestionar_torneo' torneo_id=t.pk %}" class="btn-accion btn-primary-a">
-                  <i class="fas fa-sitemap"></i> Gestionar
+                  <i class="fas fa-sitemap me-1"></i>Gestionar
                 </a>
                 <a href="{% url 'reporte_torneo' torneo_id=t.pk %}" class="btn-accion btn-success-a" target="_blank" title="Reporte">
                    <i class="fas fa-file-alt me-1"></i>Reporte
@@ -174,12 +174,110 @@
     </div>
   </div>
 
-  <div class="main-card">
-    <div class="section-header">
-      <h5 class="fw-bold mb-0"><i class="fas fa-users text-success me-2"></i>Equipos Inscritos</h5>
+  <div class="main-card mb-4">
+    <div class="section-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <h5 class="fw-bold mb-0"><i class="fas fa-users text-success me-2"></i>Equipos por Grupo</h5>
+        <small class="text-muted">Equipos organizados por su grupo correspondiente en cada torneo.</small>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="view-mode-btn active" id="btnModoGrupos" onclick="cambiarModoVistaEquipos('grupos')">
+          <i class="fas fa-layer-group me-1"></i> Por Grupos
+        </button>
+        <button type="button" class="view-mode-btn" id="btnModoTabla" onclick="cambiarModoVistaEquipos('tabla')">
+          <i class="fas fa-table me-1"></i> Tabla General
+        </button>
+        <span class="badge bg-secondary px-3 py-2 rounded-pill small ms-2">Total: {{ equipos|length }} equipos</span>
+      </div>
     </div>
-    <div class="table-responsive">
-      <table class="table-torneos">
+    <div class="p-3 bg-dark bg-opacity-25">
+      <div class="torneo-filter-bar mb-0 border-0">
+        <button type="button" class="torneo-filter-btn active" data-torneo-id="todos" onclick="filtrarEquiposPorTorneo('todos', this)">
+          <i class="fas fa-th-large me-1"></i> Todos los Torneos ({{ equipos|length }})
+        </button>
+        {% for t in torneos %}
+          {% if t.equipos.count > 0 %}
+          <button type="button" class="torneo-filter-btn" data-torneo-id="{{ t.pk }}" onclick="filtrarEquiposPorTorneo('{{ t.pk }}', this)">
+            <i class="fas fa-trophy text-warning me-1"></i> {{ t.nombre_torneo }} ({{ t.equipos.count }})
+          </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- VISTA POR GRUPOS ("POR FUERA") -->
+    <div class="p-4" id="contenedorVistaGrupos">
+      {% for g in grupos_ordenados %}
+      <div class="grupo-container-card bloque-grupo-card" data-grupo-nombre="{{ g.nombre_grupo }}">
+        <div class="grupo-header-banner">
+          <div class="grupo-title-badge">
+            <i class="fas fa-shield-alt text-info me-2"></i>{{ g.nombre_grupo }}
+          </div>
+          <span class="badge bg-primary px-3 py-1 rounded-pill small fw-bold">
+            {{ g.total }} equipo{{ g.total|pluralize }}
+          </span>
+        </div>
+        <div class="row g-3">
+          {% for eq in g.equipos %}
+          <div class="col-12 col-md-6 col-lg-4 item-equipo-card-main" data-torneo-id="{{ eq.torneo_id }}">
+            <div class="team-card-sport">
+              <div class="team-card-header">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="team-crest-wrap">
+                    <i class="fas fa-shield-alt"></i>
+                  </div>
+                  <div>
+                    <div class="team-title-name">{{ eq.nombre_equipo }}</div>
+                    <div class="small text-muted">{{ eq.torneo.nombre_torneo }}</div>
+                  </div>
+                </div>
+                {% if eq.nombre_grupo %}
+                  <span class="team-badge-group">Grupo {{ eq.nombre_grupo }}</span>
+                {% else %}
+                  <span class="team-badge-nogroup">Sin grupo</span>
+                {% endif %}
+              </div>
+
+              <div class="team-info-grid">
+                <div class="team-info-item">
+                  <i class="fas fa-crown text-warning me-1"></i>
+                  <span>Capitán: <strong class="text-white">{{ eq.capitan }}</strong></span>
+                </div>
+                <div class="team-info-item">
+                  <i class="fas fa-id-card text-info me-1"></i>
+                  <span>Ficha: <strong class="text-warning">{{ eq.ficha }}</strong></span>
+                </div>
+                <div class="team-info-item w-100">
+                  <i class="fas fa-graduation-cap text-success me-1"></i>
+                  <span class="text-truncate">{{ eq.programa|truncatechars:35 }}</span>
+                </div>
+              </div>
+
+              <div class="mt-2 pt-2 border-top border-secondary">
+                <div class="player-chips-title text-info mb-1">
+                  <i class="fas fa-users me-1"></i> Integrantes de la Plantilla ({{ eq.jugadores.count }})
+                </div>
+                <div class="player-chips-wrap">
+                  {% for j in eq.jugadores.all %}
+                    <span class="player-chip-item"><i class="fas fa-user-circle text-info me-1"></i>{{ j.nombre_completo }}</span>
+                  {% empty %}
+                    <span class="text-muted small italic">Capitán registrado</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state py-5"><i class="fas fa-users d-block"></i>Sin equipos inscritos aún.</div>
+      {% endfor %}
+    </div>
+
+    <!-- VISTA TABLA GENERAL (SECUNDARIA) -->
+    <div class="table-responsive d-none" id="contenedorVistaTabla">
+      <table class="table-torneos" id="tablaEquiposInscritos">
         <thead>
           <tr>
             <th class="ps-4">Equipo</th>
@@ -187,14 +285,22 @@
             <th>Programa</th>
             <th>Torneo</th>
             <th>Disciplina</th>
+            <th>Grupo</th>
           </tr>
         </thead>
         <tbody>
           {% for eq in equipos %}
-          <tr>
-            <td class="ps-4 fw-bold">{{ eq.nombre_equipo }}</td>
+          <tr class="fila-equipo-torneo" data-torneo-id="{{ eq.torneo_id }}">
+            <td class="ps-4 fw-bold">
+              <div class="d-flex align-items-center gap-2">
+                <span class="team-crest-wrap" style="width:28px; height:28px; font-size:0.8rem;">
+                  <i class="fas fa-shield-alt text-info"></i>
+                </span>
+                <span class="text-white fs-6">{{ eq.nombre_equipo }}</span>
+              </div>
+            </td>
             <td>
-              <div>{{ eq.capitan }}</div>
+              <div class="fw-bold text-white">{{ eq.capitan }}</div>
               <div class="text-muted int-u-16">Ficha: <span class="text-warning fw-bold">{{ eq.ficha }}</span></div>
             </td>
             <td class="text-muted int-u-17">{{ eq.programa|truncatechars:40 }}</td>
@@ -204,9 +310,16 @@
                 <span class="badge-disc badge-{{ eq.disciplina.tipo_marcador }}">{{ eq.disciplina.nombre_disciplina }}</span>
               {% else %}—{% endif %}
             </td>
+            <td>
+              {% if eq.nombre_grupo %}
+                <span class="team-badge-group">Grupo {{ eq.nombre_grupo }}</span>
+              {% else %}
+                <span class="team-badge-nogroup">Sin grupo</span>
+              {% endif %}
+            </td>
           </tr>
           {% empty %}
-          <tr><td colspan="5">
+          <tr><td colspan="6">
             <div class="empty-state"><i class="fas fa-users d-block"></i>Sin equipos inscritos aún.</div>
           </td></tr>
           {% endfor %}
@@ -437,7 +550,7 @@
         <div class="torneo-card-footer">
           <button class="btn-inscribir"
                   onclick="abrirInscripcion('{{ t.pk }}','{{ t.nombre_torneo|escapejs }}','{{ t.disciplina.nombre_disciplina|default:''|escapejs }}')">
-            <i class="fas fa-plus-circle"></i>
+            <i class="fas fa-plus-circle me-1"></i>
             Inscribir mi equipo
           </button>
         </div>
@@ -721,6 +834,40 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL INSPECTOR DE EQUIPOS POR TORNEO ("DISEÑO MELO") -->
+<div class="modal fade" id="modalEquiposTorneo" tabindex="-1" aria-labelledby="modalEquiposTorneoTitulo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content custom-modal text-white border-0 rounded-4 shadow-lg" style="background: #0f172a; border: 1px solid rgba(56,189,248,0.3) !important;">
+      <div class="modal-header modal-sport-header justify-content-between align-items-center">
+        <div>
+          <h5 class="modal-title fw-bold text-white mb-1" id="modalEquiposTorneoTitulo">
+            <i class="fas fa-trophy text-warning me-2"></i> Equipos Inscritos al Torneo
+          </h5>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge bg-primary px-3 py-1 rounded-pill small" id="modalEquiposTorneoDisciplina"></span>
+            <span class="badge bg-secondary px-3 py-1 rounded-pill small" id="modalEquiposTorneoCantidad"></span>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="sport-search-wrap">
+          <i class="fas fa-search sport-search-icon"></i>
+          <input type="text" id="inputBuscarEquipoModal" placeholder="Buscar equipo, capitán, ficha o programa..." oninput="filtrarEquiposModal(this.value)">
+        </div>
+        <div class="row g-3" id="gridEquiposModal">
+          <!-- Equipos renderizados dinámicamente -->
+        </div>
+      </div>
+      <div class="modal-footer border-top border-secondary justify-content-center py-3">
+        <button type="button" class="btn btn-outline-info rounded-pill px-5 fw-bold" data-bs-dismiss="modal">
+          <i class="fas fa-check me-1"></i> Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -731,7 +878,168 @@
     {% endfor %}
   };
 
+  const DATOS_EQUIPOS_TODOS = [
+    {% for eq in todos_equipos %}
+    {
+      id: "{{ eq.pk }}",
+      torneo_id: "{{ eq.torneo_id }}",
+      torneo_nombre: "{{ eq.torneo.nombre_torneo|escapejs }}",
+      nombre_equipo: "{{ eq.nombre_equipo|escapejs }}",
+      capitan: "{{ eq.capitan|escapejs }}",
+      ficha: "{{ eq.ficha }}",
+      programa: "{{ eq.programa|escapejs }}",
+      disciplina: "{{ eq.disciplina.nombre_disciplina|default:''|escapejs }}",
+      nombre_grupo: "{{ eq.nombre_grupo|default:''|escapejs }}",
+      jugadores: [
+        {% for j in eq.jugadores.all %}
+        "{{ j.nombre_completo|escapejs }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
   let torneoActivoId = "";
+
+  function verEquiposTorneo(torneoId, torneoNombre, disciplina) {
+    const tituloEl = document.getElementById('modalEquiposTorneoTitulo');
+    const discEl = document.getElementById('modalEquiposTorneoDisciplina');
+    const cantEl = document.getElementById('modalEquiposTorneoCantidad');
+    const searchInput = document.getElementById('inputBuscarEquipoModal');
+    if (searchInput) searchInput.value = '';
+
+    if (tituloEl) tituloEl.innerHTML = `<i class="fas fa-trophy text-warning me-2"></i> ${torneoNombre}`;
+    if (discEl) discEl.textContent = disciplina ? disciplina : 'Torneo Deportivo';
+
+    const equiposTorneo = DATOS_EQUIPOS_TODOS.filter(eq => String(eq.torneo_id) === String(torneoId));
+    if (cantEl) cantEl.textContent = `${equiposTorneo.length} equipo${equiposTorneo.length !== 1 ? 's' : ''} registrado${equiposTorneo.length !== 1 ? 's' : ''}`;
+
+    renderizarEquiposModal(equiposTorneo);
+    new bootstrap.Modal(document.getElementById('modalEquiposTorneo')).show();
+  }
+
+  function renderizarEquiposModal(lista) {
+    const gridEl = document.getElementById('gridEquiposModal');
+    if (!gridEl) return;
+
+    if (!lista || lista.length === 0) {
+      gridEl.innerHTML = `
+        <div class="col-12 text-center py-5 text-white-50">
+          <i class="fas fa-users-slash fa-3x mb-3 text-info opacity-50 d-block"></i>
+          <h6 class="fw-bold text-white mb-1">Sin equipos inscritos aún</h6>
+          <p class="small mb-0">No se encontraron equipos registrados para este torneo.</p>
+        </div>`;
+      return;
+    }
+
+    gridEl.innerHTML = lista.map(eq => {
+      const jugadoresHtml = (eq.jugadores && eq.jugadores.length > 0)
+        ? eq.jugadores.map(j => `<span class="player-chip-item"><i class="fas fa-user-circle text-info"></i> ${j}</span>`).join('')
+        : `<span class="text-muted small italic">Sin integrantes registrados aún</span>`;
+
+      const grupoBadge = eq.nombre_grupo
+        ? `<span class="team-badge-group"><i class="fas fa-layer-group me-1"></i> Grupo ${eq.nombre_grupo}</span>`
+        : `<span class="team-badge-nogroup">Sin grupo asignado</span>`;
+
+      return `
+        <div class="col-12 col-md-6 col-lg-4 item-equipo-card-modal">
+          <div class="team-card-sport">
+            <div class="team-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <div class="team-crest-wrap">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                  <div class="team-title-name">${eq.nombre_equipo}</div>
+                  <div class="small text-muted">${eq.torneo_nombre}</div>
+                </div>
+              </div>
+              ${grupoBadge}
+            </div>
+
+            <div class="team-info-grid">
+              <div class="team-info-item">
+                <i class="fas fa-crown text-warning"></i>
+                <span>Capitán: <strong class="text-white">${eq.capitan}</strong></span>
+              </div>
+              <div class="team-info-item">
+                <i class="fas fa-id-card text-info"></i>
+                <span>Ficha: <strong class="text-warning">${eq.ficha}</strong></span>
+              </div>
+              <div class="team-info-item w-100">
+                <i class="fas fa-graduation-cap text-success"></i>
+                <span class="text-truncate">${eq.programa || 'Programa no asignado'}</span>
+              </div>
+            </div>
+
+            <div class="mt-2 pt-2 border-top border-secondary">
+              <div class="player-chips-title">
+                <i class="fas fa-users"></i> Integrantes de Plantilla (${eq.jugadores ? eq.jugadores.length : 0})
+              </div>
+              <div class="player-chips-wrap mt-1">
+                ${jugadoresHtml}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function filtrarEquiposModal(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('#gridEquiposModal .item-equipo-card-modal').forEach(card => {
+      const match = card.textContent.toLowerCase().includes(q);
+      card.style.display = match ? '' : 'none';
+    });
+  }
+
+  function cambiarModoVistaEquipos(modo) {
+    const btnGrupos = document.getElementById('btnModoGrupos');
+    const btnTabla = document.getElementById('btnModoTabla');
+    const containerGrupos = document.getElementById('contenedorVistaGrupos');
+    const containerTabla = document.getElementById('contenedorVistaTabla');
+
+    if (modo === 'grupos') {
+      if (btnGrupos) btnGrupos.classList.add('active');
+      if (btnTabla) btnTabla.classList.remove('active');
+      if (containerGrupos) containerGrupos.classList.remove('d-none');
+      if (containerTabla) containerTabla.classList.add('d-none');
+    } else {
+      if (btnTabla) btnTabla.classList.add('active');
+      if (btnGrupos) btnGrupos.classList.remove('active');
+      if (containerTabla) containerTabla.classList.remove('d-none');
+      if (containerGrupos) containerGrupos.classList.add('d-none');
+    }
+  }
+
+  function filtrarEquiposPorTorneo(torneoId, btn) {
+    document.querySelectorAll('.torneo-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    // Filtrar en la tabla general
+    document.querySelectorAll('#tablaEquiposInscritos tbody tr.fila-equipo-torneo').forEach(row => {
+      if (torneoId === 'todos' || String(row.dataset.torneoId) === String(torneoId)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Filtrar tarjetas en la vista de grupos
+    document.querySelectorAll('#contenedorVistaGrupos .item-equipo-card-main').forEach(card => {
+      if (torneoId === 'todos' || String(card.dataset.torneoId) === String(torneoId)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Ocultar bloques de grupo sin tarjetas visibles
+    document.querySelectorAll('#contenedorVistaGrupos .bloque-grupo-card').forEach(bloque => {
+      const visibles = bloque.querySelectorAll('.item-equipo-card-main:not([style*="display: none"])');
+      bloque.style.display = (visibles.length > 0) ? '' : 'none';
+    });
+  }
 
   function abrirEditar(id, nombre, lugar, fecha, discId) {
     document.getElementById('edit-nombre').value = nombre;
@@ -865,7 +1173,7 @@
     torneoActivoId = "";
     document.getElementById('equipo-torneo-id').value = "";
     ocultarAlertaFicha();
-    
+
     // Resetear campo de nombre de equipo
     const bloqueNombre = document.getElementById('bloque-nombre-equipo');
     const campoNombre = document.getElementById('campo-nombre-equipo');
@@ -878,7 +1186,7 @@
     if (ayudaNombre) {
       ayudaNombre.innerHTML = `<i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.`;
     }
-    
+
     jugNum = 1;
     document.getElementById('jugadores-container').innerHTML = `
       <div class="jugador-row">

@@ -3,7 +3,6 @@
 {% block title %}Mi Dashboard | Hábitos Saludables{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --acid: #C8FF00;
@@ -414,16 +413,12 @@ canvas { width: 100% !important; max-height: 220px !important; }
     <p>Registra tu primer seguimiento de salud y empieza a visualizar tu evolución.</p>
     <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid">
       <i class="fas fa-plus-circle"></i> Registrar ahora
-    </a>
   </div>
-  {% endif %}
-  {% endif %}
-
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'vendor/chartjs/chart.umd.js' %}"></script>
 <script>
   const io = new IntersectionObserver(e => e.forEach((x,i) => {
     if (x.isIntersecting) { setTimeout(() => { x.target.classList.add('visible'); io.unobserve(x.target); }, i*70); }
