@@ -74,8 +74,17 @@
   .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, #050a05 0%, rgba(5,10,5,0.5) 50%, transparent 100%);
+    background: linear-gradient(to top, #050a05 0%, rgba(5,10,5,0.25) 60%, transparent 100%);
     z-index: 1;
+  }
+
+  .hover-lift {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+  }
+  .hover-lift:hover {
+    transform: translateY(-5px) !important;
+    border-color: rgba(26, 95, 180, 0.6) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4) !important;
   }
   .hero-content {
     position: relative;
@@ -331,13 +340,14 @@
     background-size: cover;
     background-position: center;
     transition: transform 0.6s ease;
-    filter: brightness(0.5);
+    filter: brightness(0.85);
+    opacity: 0.95;
   }
-  .sport-card:hover .sport-card-bg { transform: scale(1.08); filter: brightness(0.4); }
+  .sport-card:hover .sport-card-bg { transform: scale(1.08); filter: brightness(1); opacity: 1; }
   .sport-card-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+    background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 70%);
   }
   .sport-card-content {
     position: absolute;

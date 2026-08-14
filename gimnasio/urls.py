@@ -25,6 +25,7 @@ urlpatterns = [
          name='admin_lista_anamnesis'),
 
     # ── Máquinas y equipos ──
+    path('maquinas/inventario/', views.MachineListView.as_view(), name='machine_list'),
     path('gimnasio/admin/maquinas/crear/',
          views.crear_maquina, name='crear_maquina'),
     path('gimnasio/admin/maquinas/editar/<int:pk>/',

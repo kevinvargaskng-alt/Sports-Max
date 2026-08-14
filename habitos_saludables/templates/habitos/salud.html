@@ -4,7 +4,6 @@
 {% block title %}{{ titulo_pagina }} | Hábitos Saludables{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --acid: #C8FF00;
@@ -286,7 +285,7 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 </script>
 
 {% if vista == 'historial' and seguimientos %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'vendor/chartjs/chart.umd.js' %}"></script>
 <script>
     const data = JSON.parse('{{ data_json|escapejs }}');
     const ctx = document.getElementById('healthChart').getContext('2d');

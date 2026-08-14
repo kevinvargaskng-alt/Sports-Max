@@ -30,58 +30,74 @@ PROGRAMAS_GLOBALES = [
 ]
 
 
+from functools import wraps
+from django.core.exceptions import PermissionDenied
+import threading
+
+
 def es_admin(user):
     return user.is_authenticated and user.is_staff
 
 
 def solo_admin(view_func):
-    decorated = user_passes_test(es_admin, login_url='interfichas')(view_func)
-    return decorated
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not (request.user.is_authenticated and request.user.is_staff):
+            raise PermissionDenied("Acceso denegado. Se requieren permisos de administración.")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 
 def _calcular_tabla(grupo):
     equipos = grupo.equipos.all()
-    tabla = []
-    for eq in equipos:
-        partidos_local = PartidoInterfichas.objects.filter(
-            grupo=grupo, jugado=True, equipo_local=eq)
-        partidos_visitante = PartidoInterfichas.objects.filter(
-            grupo=grupo, jugado=True, equipo_visitante=eq)
+    # 1 sola consulta SQL precargando equipos locales y visitantes para eliminar el problema N+1
+    partidos_jugados = grupo.partidos.filter(jugado=True).select_related('equipo_local', 'equipo_visitante')
 
-        pj = pg = pe = pp = gf = gc = pts = 0
-
-        for p in partidos_local:
-            gf += p.goles_local
-            gc += p.goles_visitante
-            if p.goles_local > p.goles_visitante:
-                pg += 1
-                pts += 3
-            elif p.goles_local == p.goles_visitante:
-                pe += 1
-                pts += 1
-            else:
-                pp += 1
-            pj += 1
-
-        for p in partidos_visitante:
-            gf += p.goles_visitante
-            gc += p.goles_local
-            if p.goles_visitante > p.goles_local:
-                pg += 1
-                pts += 3
-            elif p.goles_local == p.goles_visitante:
-                pe += 1
-                pts += 1
-            else:
-                pp += 1
-            pj += 1
-
-        tabla.append({
+    stats_map = {
+        eq.id: {
             'equipo': eq,
-            'pj': pj, 'pg': pg, 'pe': pe, 'pp': pp,
-            'gf': gf, 'gc': gc, 'dg': gf - gc, 'pts': pts,
-        })
+            'pj': 0, 'pg': 0, 'pe': 0, 'pp': 0,
+            'gf': 0, 'gc': 0, 'dg': 0, 'pts': 0
+        }
+        for eq in equipos
+    }
 
+    for p in partidos_jugados:
+        local_id = p.equipo_local_id
+        visit_id = p.equipo_visitante_id
+
+        if local_id in stats_map:
+            st = stats_map[local_id]
+            st['pj'] += 1
+            st['gf'] += p.goles_local
+            st['gc'] += p.goles_visitante
+            if p.goles_local > p.goles_visitante:
+                st['pg'] += 1
+                st['pts'] += 3
+            elif p.goles_local == p.goles_visitante:
+                st['pe'] += 1
+                st['pts'] += 1
+            else:
+                st['pp'] += 1
+
+        if visit_id in stats_map:
+            st = stats_map[visit_id]
+            st['pj'] += 1
+            st['gf'] += p.goles_visitante
+            st['gc'] += p.goles_local
+            if p.goles_visitante > p.goles_local:
+                st['pg'] += 1
+                st['pts'] += 3
+            elif p.goles_local == p.goles_visitante:
+                st['pe'] += 1
+                st['pts'] += 1
+            else:
+                st['pp'] += 1
+
+    for st in stats_map.values():
+        st['dg'] = st['gf'] - st['gc']
+
+    tabla = list(stats_map.values())
     tabla.sort(key=lambda x: (-x['pts'], -x['dg'], -x['gf']))
     return tabla
 
@@ -134,19 +150,112 @@ def _reordenar_partidos_con_descanso(partidos_lista):
     return resultado
 
 
+from django.core.mail import send_mail
+from django.conf import settings
+
+
+def enviar_notificacion_partido(partido, tipo_evento='programacion'):
+    """
+    Envía notificaciones por correo electrónico en un hilo en segundo plano (daemon thread)
+    para evitar cualquier bloqueo en la respuesta de la solicitud HTTP.
+    """
+    def _envio_background():
+        try:
+            destinatarios = set()
+
+            if partido.equipo_local and partido.equipo_local.usuario_registra and partido.equipo_local.usuario_registra.email:
+                destinatarios.add(partido.equipo_local.usuario_registra.email)
+
+            if partido.equipo_visitante and partido.equipo_visitante.usuario_registra and partido.equipo_visitante.usuario_registra.email:
+                destinatarios.add(partido.equipo_visitante.usuario_registra.email)
+
+            if not destinatarios:
+                return
+
+            disciplina_nombre = partido.torneo.disciplina.nombre_disciplina if (partido.torneo and partido.torneo.disciplina) else "Deporte"
+            fase_label = partido.get_fase_display() if hasattr(partido, 'get_fase_display') else partido.fase
+            fecha_str = partido.fecha_partido.strftime('%d/%m/%Y') if partido.fecha_partido else "Por confirmar"
+            hora_str = partido.hora_partido.strftime('%H:%M') if partido.hora_partido else "Por confirmar"
+            lugar_str = partido.torneo.lugar if partido.torneo else "Sede SENA"
+
+            if tipo_evento == 'resultado':
+                asunto = f"⚽ Resultado del Partido: {partido.equipo_local.nombre_equipo} ({partido.goles_local}) vs ({partido.goles_visitante}) {partido.equipo_visitante.nombre_equipo}"
+                mensaje = (
+                    f"¡Hola! Se ha registrado el resultado de tu partido en el SENA:\n\n"
+                    f"🏆 Torneo: {partido.torneo.nombre_torneo} ({disciplina_nombre})\n"
+                    f"⚔️ Encuentro: {partido.equipo_local.nombre_equipo} {partido.goles_local} - {partido.goles_visitante} {partido.equipo_visitante.nombre_equipo}\n"
+                    f"📌 Fase: {fase_label}\n\n"
+                    f"Ingresa a la plataforma para consultar la tabla de posiciones actualizada."
+                )
+            else:
+                asunto = f"🏆 Próximo Partido: {partido.equipo_local.nombre_equipo} vs {partido.equipo_visitante.nombre_equipo}"
+                mensaje = (
+                    f"¡Hola! Te informamos que tu equipo tiene un partido programado en el SENA:\n\n"
+                    f"🏆 Torneo: {partido.torneo.nombre_torneo} ({disciplina_nombre})\n"
+                    f"⚔️ Encuentro: {partido.equipo_local.nombre_equipo} VS {partido.equipo_visitante.nombre_equipo}\n"
+                    f"📌 Fase: {fase_label}\n"
+                    f"📅 Fecha: {fecha_str}\n"
+                    f"⏰ Hora: {hora_str}\n"
+                    f"📍 Lugar: {lugar_str}\n\n"
+                    f"Por favor preséntate con tu plantilla de jugadores. ¡Muchos éxitos!"
+                )
+
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'kevinvargaskng@gmail.com')
+            send_mail(
+                subject=asunto,
+                message=mensaje,
+                from_email=from_email,
+                recipient_list=list(destinatarios),
+                fail_silently=True
+            )
+        except Exception:
+            pass
+
+    threading.Thread(target=_envio_background, daemon=True).start()
+
+
 @login_required
 def interfichas_list(request):
     admin = es_admin(request.user)
 
+    todos_equipos_qs = EquipoInterfichas.objects.select_related(
+        'torneo', 'disciplina'
+    ).prefetch_related('jugadores').all()
+
+    grupos_rel = GrupoInterfichas.objects.prefetch_related('equipos').all()
+    equipo_grupo_map = {}
+    for g in grupos_rel:
+        for eq in g.equipos.all():
+            equipo_grupo_map[eq.pk] = g.nombre_grupo
+
+    todos_equipos_list = list(todos_equipos_qs)
+    for eq in todos_equipos_list:
+        eq.nombre_grupo = equipo_grupo_map.get(eq.pk, '')
+
+    # Agrupar los equipos por Grupo para la visualización en bloques
+    grupos_dict = {}
+    for eq in todos_equipos_list:
+        g_nombre = f"Grupo {eq.nombre_grupo}" if eq.nombre_grupo else "Sin Grupo Asignado"
+        if g_nombre not in grupos_dict:
+            grupos_dict[g_nombre] = []
+        grupos_dict[g_nombre].append(eq)
+
+    grupos_ordenados = []
+    for g_nombre in sorted(grupos_dict.keys(), key=lambda x: (x == "Sin Grupo Asignado", x)):
+        grupos_ordenados.append({
+            'nombre_grupo': g_nombre,
+            'equipos': grupos_dict[g_nombre],
+            'total': len(grupos_dict[g_nombre])
+        })
+
     if admin:
         torneos = TorneoInterfichas.objects.all().order_by('-fecha_torneo_fichas')
-        equipos = EquipoInterfichas.objects.select_related(
-            'torneo', 'disciplina').all()
+        equipos = todos_equipos_list
         disciplinas = Disciplina.objects.all().order_by('nombre_disciplina')
     else:
         torneos = TorneoInterfichas.objects.exclude(
             estado='cerrado').order_by('-fecha_torneo_fichas')
-        equipos = EquipoInterfichas.objects.none()
+        equipos = todos_equipos_list
         disciplinas = Disciplina.objects.none()
 
     if request.method == 'POST':
@@ -297,9 +406,7 @@ def interfichas_list(request):
         )
         mis_equipos = list(mis_equipos_qs)
         for eq in mis_equipos:
-            grupo_asignado = GrupoInterfichas.objects.filter(
-                torneo=eq.torneo, equipos=eq).first()
-            eq.mi_grupo = grupo_asignado
+            eq.mi_grupo = equipo_grupo_map.get(eq.pk, '')
 
         mis_partidos = (
             PartidoInterfichas.objects
@@ -317,6 +424,8 @@ def interfichas_list(request):
     context = {
         'torneos':             torneos,
         'equipos':             equipos,
+        'todos_equipos':       todos_equipos_list,
+        'grupos_ordenados':    grupos_ordenados,
         'disciplinas':         disciplinas,
         'es_admin':            admin,
         'mis_equipos':         mis_equipos,
@@ -772,7 +881,11 @@ def asignar_fecha_partido(request, partido_id):
             return redirect('gestionar_torneo', torneo_id=partido.torneo.pk)
     partido.hora_partido = request.POST.get('hora_partido')
     partido.save()
-    messages.success(request, "Fecha y hora actualizadas.")
+
+    # Notificar a los equipos por correo electrónico
+    enviar_notificacion_partido(partido, 'programacion')
+
+    messages.success(request, "Fecha y hora actualizadas y notificación enviada por correo.")
     return redirect('gestionar_torneo', torneo_id=partido.torneo.pk)
 
 

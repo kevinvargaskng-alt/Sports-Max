@@ -2,14 +2,17 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // === INICIALIZAR TOOLTIPS DE BOOTSTRAP ===
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
 
     // ============================================================
     // 1. CONFIGURACIÓN, HELPERS Y REFERENCIAS
     // ============================================================
+    const urlParams = new URLSearchParams(window.location.search);
     const PLACEHOLDER_IMG = '/static/images/placeholder.png';
 
     function escapeHtml(str) {
@@ -56,13 +59,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById(btnId);
         const input = document.getElementById(inputId);
         if (btn && input) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
                 const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
                 input.setAttribute('type', type);
                 const icon = this.querySelector('i');
                 if (icon) {
-                    icon.classList.toggle('fa-eye');
-                    icon.classList.toggle('fa-eye-slash');
+                    if (type === 'text') {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
                 }
             });
         }
@@ -71,6 +80,14 @@ document.addEventListener('DOMContentLoaded', function () {
     setupToggle('togglePassword', 'id_password');
     setupToggle('togglePassword2', 'id_contrasena');
     setupToggle('togglePassword3', 'confirmarContrasena');
+
+    // Filtro en tiempo real para Número de Documento (Carnet): solo dígitos
+    const numDocEl = document.getElementById('id_numero_documento');
+    if (numDocEl) {
+        numDocEl.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
 
     // Medidor de fortaleza de contraseña
     const contrasenaInput = document.getElementById('id_contrasena');
@@ -118,8 +135,9 @@ document.addEventListener('DOMContentLoaded', function () {
             pass += numbers.charAt(Math.floor(Math.random() * numbers.length));
             pass += symbols.charAt(Math.floor(Math.random() * symbols.length));
 
-            // Rellenar el resto hasta 12 caracteres
-            for (let i = 4; i < 12; i++) {
+            // Rellenar el resto hasta una longitud aleatoria de 7 a 10 caracteres
+            const targetLength = Math.floor(Math.random() * 4) + 7; // 7, 8, 9 o 10
+            for (let i = 4; i < targetLength; i++) {
                 pass += allChars.charAt(Math.floor(Math.random() * allChars.length));
             }
 
@@ -266,11 +284,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ];
             const numDoc = document.getElementById('id_numero_documento') ? document.getElementById('id_numero_documento').value : '';
 
-            if (pass.length < 8) {
+            if (pass.length < 7 || pass.length > 10) {
                 if (registerAlert) {
                     registerAlert.classList.remove('d-none');
                     registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña debe tener al menos 8 caracteres.';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña debe tener entre 7 y 10 caracteres.';
                 }
                 return;
             }

@@ -34,3 +34,39 @@ class UsuariosAppTests(TestCase):
         self.assertEqual(sugerencia.tipo, "queja")
         self.assertEqual(sugerencia.anonimo, False)
         self.assertIn("Sugerencia #", str(sugerencia))
+
+    def test_login_por_documento_y_correo(self):
+        """Verifica que el login funcione tanto con número de documento como con correo electrónico."""
+        # Login con numero de documento (AJAX)
+        resp_doc = self.client.post('/login/', {'username': '12345678', 'password': 'password123'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_doc.status_code, 200)
+        self.assertTrue(resp_doc.json().get('success'))
+
+        self.client.logout()
+
+        # Login con correo electronico (AJAX)
+        resp_email = self.client.post('/login/', {'username': 'test@sena.edu.co', 'password': 'password123'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_email.status_code, 200)
+        self.assertTrue(resp_email.json().get('success'))
+
+        self.client.logout()
+
+        # Login estándar sin AJAX (debe redirigir 302)
+        resp_std = self.client.post('/login/', {'username': '12345678', 'password': 'password123'})
+        self.assertEqual(resp_std.status_code, 302)
+        self.assertEqual(resp_std.url, '/perfil/')
+
+    def test_login_cuenta_inactiva(self):
+        """Verifica que una cuenta inactiva retorne un mensaje adecuado."""
+        self.usuario.is_active = False
+        self.usuario.estado = 'inactivo'
+        self.usuario.save()
+
+        # AJAX request
+        resp = self.client.post('/login/', {'username': '12345678', 'password': 'password123'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 403)
+        self.assertIn('inactiva', resp.json().get('message', ''))
+
+        # Standard POST request (302 redirect)
+        resp_std = self.client.post('/login/', {'username': '12345678', 'password': 'password123'})
+        self.assertEqual(resp_std.status_code, 302)

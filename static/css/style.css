@@ -2,7 +2,6 @@
    ESTILO MAESTRO DEPORTIVO — GLASSMORPHISM & NEON PRO (V3.5)
    SISTEMA UNIFICADO: INVENTARIO, TORNEOS, USUARIOS Y GIMNASIO
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap');
 
 :root {
     --primary-dark: #0b0e14;
@@ -1387,4 +1386,55 @@ body.light-theme .btn-outline-sm.active {
     border-color: #2b7de9 !important;
     background: rgba(43, 125, 233, 0.08) !important;
     color: #2b7de9 !important;
+}
+
+/* ============================================================
+   MÓDULO HÁBITOS SALUDABLES & NUTRICIÓN — ESTILOS PREMIUM
+   ============================================================ */
+/* MÓDULO HÁBITOS SALUDABLES — ESTILO GLASSMORPHISM UNIFICADO */
+
+/* Glassmorphism para Hero y Tarjetas del Módulo */
+.hero-wrap {
+    background: rgba(15, 23, 42, 0.82) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.nav-card,
+.panel,
+.tracking-card,
+.no-tracking-card,
+.library-banner,
+.admin-section {
+    background: rgba(15, 23, 42, 0.78) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+.nav-card:hover,
+.panel:hover,
+.tracking-card:hover,
+.admin-action-btn:hover {
+    border-color: rgba(52, 211, 153, 0.5) !important;
+    box-shadow: 0 12px 28px rgba(52, 211, 153, 0.15) !important;
+}
+
+.habitos-card-premium:hover {
+    transform: translateY(-5px);
+    border-color: rgba(52, 211, 153, 0.5);
+    box-shadow: 0 12px 28px rgba(52, 211, 153, 0.15);
+}
+
+.badge-salud-verde {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-weight: 700;
+    font-size: 0.78rem;
 }

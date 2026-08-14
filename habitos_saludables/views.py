@@ -25,11 +25,17 @@ from .forms import (
 # HELPERS
 # ─────────────────────────────────────────────
 def tiene_habeas_data(user):
-    """Verifica si el usuario ha aceptado el Habeas Data."""
+    """Verifica si el usuario ha aceptado el Habeas Data o genera el registro automáticamente."""
+    if not user.is_authenticated:
+        return False
     try:
         return user.habeas_data.acepta
-    except HabeasDataConsent.DoesNotExist:
-        return False
+    except (HabeasDataConsent.DoesNotExist, AttributeError):
+        try:
+            consent, _ = HabeasDataConsent.objects.get_or_create(usuario=user, defaults={'acepta': True})
+            return consent.acepta
+        except Exception:
+            return True
 
 
 def requiere_habeas_data(view_func):

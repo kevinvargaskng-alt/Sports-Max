@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Catálogo e Inventario de Máquinas | Sport-Max{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── MÓDULO DE MÁQUINAS: ESTILO DEPORTIVO Y CUADROS CON IMAGEN GRANDE ── */
+.inventory-header {
+  background: linear-gradient(135deg, rgba(26,95,180,0.25) 0%, rgba(15,23,42,0.95) 100%);
+  border: 1px solid var(--neon-border);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+/* Tarjetas en Cuadros */
+.machine-card-grid {
+  background: rgba(22, 33, 54, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(15px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.machine-card-grid:hover {
+  transform: translateY(-6px);
+  border-color: rgba(43, 125, 233, 0.5);
+  box-shadow: 0 18px 40px rgba(43, 125, 233, 0.25);
+}
+
+/* Imagen Grande de la Tarjeta */
+.machine-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.machine-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.machine-card-grid:hover .machine-card-img-wrap img {
+  transform: scale(1.08);
+}
+
+/* Overlay de la imagen */
+.machine-card-img-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);
+  pointer-events: none;
+}
+
+/* Badge Flotante sobre Imagen */
+.machine-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+
+.machine-cat-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+}
+
+.badge-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 0.32rem 0.75rem;
+  border-radius: 50rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+/* Cuerpo de la tarjeta */
+.machine-card-body {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botones de Acción */
+.action-btn-group {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.action-btn-group .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.action-btn-group .btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Botones de cambio de vista (Cuadros vs Tabla) */
+.view-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-toggle-btn.active, .view-toggle-btn:hover {
+  background: var(--accent-blue, #1a5fb4);
+  border-color: var(--accent-blue, #1a5fb4);
+  color: #fff;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- CABECERA -->
+  <div class="inventory-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge bg-primary text-uppercase px-3 py-2" style="letter-spacing: 1.5px;">
+          <i class="fas fa-boxes-packing me-1"></i> Módulo Gimnasio
+        </span>
+        <a href="{% url 'gimnasio' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+          <i class="fas fa-arrow-left me-1"></i> Volver al Gimnasio
+        </a>
+      </div>
+      <h1 class="h2 fw-bold text-white mb-1">
+        <i class="fas fa-dumbbell text-primary me-2"></i>Catálogo e Inventario de Máquinas
+      </h1>
+      <p class="text-white-50 mb-0 small">
+        Equipamiento técnico del Centro Deportivo SENA — Vista en cuadros con imagen ampliada y fichas de estado.
+      </p>
+    </div>
+
+    <!-- Acciones y Contadores -->
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      {% if user.is_staff or user.is_superuser %}
+      <button type="button" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow" data-bs-toggle="modal" data-bs-target="#modalCrearMachine">
+        <i class="fas fa-plus-circle me-1"></i> Nueva Máquina
+      </button>
+      {% endif %}
+
+      <div class="d-flex gap-2">
+        <div class="text-center px-3 py-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+          <span class="d-block h4 fw-bold text-white mb-0">{{ total_count }}</span>
+          <small class="text-white-50 text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Total Equipos</small>
+        </div>
+        <div class="text-center px-3 py-2 rounded-3" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3);">
+          <span class="d-block h4 fw-bold text-success mb-0">{{ disponibles_count }}</span>
+          <small class="text-success text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Disponibles</small>
+        </div>
+        <div class="text-center px-3 py-2 rounded-3" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);">
+          <span class="d-block h4 fw-bold text-warning mb-0">{{ mantenimiento_count }}</span>
+          <small class="text-warning text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Mantenimiento</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE BÚSQUEDA, FILTROS Y ALTERNADOR DE VISTA -->
+  <div class="card bg-dark text-white border-secondary shadow-lg rounded-4 p-3 mb-4">
+    <div class="row g-3 align-items-center">
+      <!-- Buscador -->
+      <div class="col-md-5">
+        <form method="GET" action="{% url 'machine_list' %}" class="d-flex gap-2">
+          {% if selected_tipo %}
+            <input type="hidden" name="tipo" value="{{ selected_tipo }}">
+          {% endif %}
+          <div class="input-group">
+            <span class="input-group-text custom-input"><i class="fas fa-search text-white-50"></i></span>
+            <input type="text" name="q" class="form-control custom-input" placeholder="Buscar máquina por nombre..." value="{{ search_q }}">
+            <button type="submit" class="btn btn-primary px-3"><i class="fas fa-search"></i></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Alternador de Vista (Cuadros vs Tabla) -->
+      <div class="col-md-7 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+        <div class="me-2">
+          <button type="button" class="view-toggle-btn active" id="btnViewGrid" onclick="toggleViewMode('grid')">
+            <i class="fas fa-th-large me-1"></i> Cuadros
+          </button>
+          <button type="button" class="view-toggle-btn" id="btnViewTable" onclick="toggleViewMode('table')">
+            <i class="fas fa-table-list me-1"></i> Tabla
+          </button>
+        </div>
+
+        <div class="d-flex gap-1 flex-wrap">
+          <a href="{% url 'machine_list' %}" class="btn btn-sm {% if not selected_tipo %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">Todas</a>
+          <a href="{% url 'machine_list' %}?tipo=Cardio" class="btn btn-sm {% if selected_tipo == 'Cardio' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-heart me-1"></i> Cardio</a>
+          <a href="{% url 'machine_list' %}?tipo=Fuerza" class="btn btn-sm {% if selected_tipo == 'Fuerza' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-dumbbell me-1"></i> Fuerza</a>
+          <a href="{% url 'machine_list' %}?tipo=Funcional" class="btn btn-sm {% if selected_tipo == 'Funcional' %}btn-warning text-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-bolt me-1"></i> Funcional</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA EN CUADROS (GRID DE TARJETAS CON IMAGEN GRANDE) - PREDETERMINADO -->
+  <div id="gridContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 mb-4">
+    {% for m in machines %}
+      <div class="col">
+        <div class="machine-card-grid">
+          <!-- IMAGEN GRANDE DE LA MÁQUINA -->
+          <div class="machine-card-img-wrap">
+            <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" loading="lazy">
+            
+            <!-- Badge Estado Flotante -->
+            <div class="machine-status-badge">
+              <span class="badge bg-{{ m.estado_badge_color }} text-uppercase fw-bold shadow-sm">
+                {% if m.estado == 'Disponible' %}
+                  <i class="fas fa-check-circle me-1"></i>
+                {% elif m.estado == 'En Mantenimiento' %}
+                  <i class="fas fa-wrench me-1"></i>
+                {% else %}
+                  <i class="fas fa-times-circle me-1"></i>
+                {% endif %}
+                {{ m.estado }}
+              </span>
+            </div>
+
+            <!-- Badge Categoría / Pegatina -->
+            <div class="machine-cat-badge">
+              <span class="badge-sticker bg-{{ m.badge_color }}">
+                <i class="fas {{ m.badge_icon }}"></i> {{ m.tipo }}
+              </span>
+            </div>
+          </div>
+
+          <!-- CUERPO DE INFORMACIÓN -->
+          <div class="machine-card-body">
+            <h5 class="fw-bold text-white mb-2">{{ m.nombre }}</h5>
+            <p class="text-white-50 small mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+              {{ m.descripcion|default:"Equipo deportivo acondicionado para el entrenamiento físico y control antropométrico." }}
+            </p>
+
+            <!-- ACCIONES Y BOTONES -->
+            <div class="pt-2 border-top border-secondary d-flex justify-content-between align-items-center">
+              <span class="small text-white-50"><i class="fas fa-tag me-1"></i>{{ m.tipo }}</span>
+              <div class="action-btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" title="Ver detalle"
+                        data-bs-toggle="modal" data-bs-target="#modalVerMachine{{ m.pk }}">
+                  <i class="fas fa-eye me-1"></i> Ver
+                </button>
+                {% if user.is_staff or user.is_superuser %}
+                <button type="button" class="btn btn-sm btn-outline-success" title="Editar"
+                        data-bs-toggle="modal" data-bs-target="#modalEditarMachine{{ m.pk }}">
+                  <i class="fas fa-pen"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar"
+                        data-bs-toggle="modal" data-bs-target="#modalEliminarMachine{{ m.pk }}">
+                  <i class="fas fa-trash"></i>
+                </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5 text-white-50">
+        <i class="fas fa-box-open fa-3x mb-3 text-secondary d-block"></i>
+        <h5>No se encontraron máquinas registradas</h5>
+        <p class="small mb-0">Intenta cambiar los términos de búsqueda o los filtros seleccionados.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- VISTA EN TABLA (OCULTA POR DEFECTO, ALTERNABLE) -->
+  <div id="tableContainer" class="card bg-dark text-white border-secondary shadow-lg rounded-4 overflow-hidden mb-4 d-none">
+    <div class="table-responsive">
+      <table class="table table-dark table-hover align-middle mb-0">
+        <thead>
+          <tr class="text-uppercase small text-white-50" style="background: rgba(15, 26, 46, 0.95);">
+            <th class="py-3 px-4 text-center" style="width: 80px;">Slot</th>
+            <th class="py-3 px-4">Nombre de la Máquina</th>
+            <th class="py-3 px-4 text-center">Tipo</th>
+            <th class="py-3 px-4 text-center">Estado</th>
+            <th class="py-3 px-4 text-end" style="width: 140px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in machines %}
+            <tr>
+              <td class="px-4 text-center">
+                <div class="rounded-3 overflow-hidden border border-secondary mx-auto" style="width: 50px; height: 50px;">
+                  <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+              </td>
+              <td class="px-4">
+                <div class="fw-bold text-white">{{ m.nombre }}</div>
+                <span class="badge-sticker bg-{{ m.badge_color }} mt-1">
+                  <i class="fas {{ m.badge_icon }}"></i> {{ m.tipo }}
+                </span>
+              </td>
+              <td class="px-4 text-center">
+                <span class="badge bg-secondary">{{ m.tipo }}</span>
+              </td>
+              <td class="px-4 text-center">
+                <span class="badge bg-{{ m.estado_badge_color }} px-3 py-2 text-uppercase fw-bold">
+                  {{ m.estado }}
+                </span>
+              </td>
+              <td class="px-4 text-end">
+                <div class="action-btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modalVerMachine{{ m.pk }}"><i class="fas fa-eye me-1"></i> Ver</button>
+                  {% if user.is_staff or user.is_superuser %}
+                  <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalEditarMachine{{ m.pk }}"><i class="fas fa-pen"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarMachine{{ m.pk }}"><i class="fas fa-trash"></i></button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  {% if is_paginated %}
+    <div class="card bg-dark text-white border-secondary p-3 d-flex flex-row justify-content-between align-items-center rounded-4 mb-4">
+      <small class="text-white-50">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</small>
+      <div class="btn-group">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if selected_tipo %}&tipo={{ selected_tipo }}{% endif %}{% if search_q %}&q={{ search_q }}{% endif %}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-left me-1"></i> Anterior</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if selected_tipo %}&tipo={{ selected_tipo }}{% endif %}{% if search_q %}&q={{ search_q }}{% endif %}" class="btn btn-sm btn-outline-secondary">Siguiente <i class="fas fa-chevron-right ms-1"></i></a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+
+<!-- MODALES PARA MÁQUINAS -->
+{% for m in machines %}
+  <!-- MODAL VER DETALLE -->
+  <div class="modal fade" id="modalVerMachine{{ m.pk }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content custom-modal">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-white fw-bold"><i class="fas fa-dumbbell text-primary me-2"></i>{{ m.nombre }}</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" class="img-fluid rounded-3 mb-3 border border-secondary shadow" style="max-height: 240px; width: 100%; object-fit: cover;">
+          <div class="mb-3">
+            <span class="badge-sticker bg-{{ m.badge_color }} me-2">
+              <i class="fas {{ m.badge_icon }}"></i> {{ m.tipo }}
+            </span>
+            <span class="badge bg-{{ m.estado_badge_color }} px-3 py-2 text-uppercase fw-bold">
+              {{ m.estado }}
+            </span>
+          </div>
+          <p class="text-white-50 px-3">{{ m.descripcion|default:"Sin descripción técnica registrada." }}</p>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR -->
+  <div class="modal fade" id="modalEditarMachine{{ m.pk }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content custom-modal">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-white fw-bold"><i class="fas fa-pen text-success me-2"></i>Editar Máquina</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" action="{% url 'editar_maquina' m.pk %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="machine_list">
+          <div class="modal-body py-3">
+            <div class="mb-3">
+              <label class="form-label small text-white-50 text-uppercase fw-semibold">Nombre</label>
+              <input type="text" name="nombre" class="form-control custom-input" value="{{ m.nombre }}" required>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-white-50 text-uppercase fw-semibold">Tipo</label>
+                <select name="categoria" class="form-select custom-input">
+                  <option value="Cardio" {% if m.tipo == 'Cardio' %}selected{% endif %}>Cardio</option>
+                  <option value="Fuerza" {% if m.tipo == 'Fuerza' %}selected{% endif %}>Fuerza</option>
+                  <option value="Funcional" {% if m.tipo == 'Funcional' %}selected{% endif %}>Funcional</option>
+                  <option value="Flexibilidad" {% if m.tipo == 'Flexibilidad' %}selected{% endif %}>Flexibilidad</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-white-50 text-uppercase fw-semibold">Estado</label>
+                <select name="estado" class="form-select custom-input">
+                  <option value="Disponible" {% if m.estado == 'Disponible' %}selected{% endif %}>Disponible</option>
+                  <option value="En Mantenimiento" {% if m.estado == 'En Mantenimiento' %}selected{% endif %}>En Mantenimiento</option>
+                  <option value="Fuera de Servicio" {% if m.estado == 'Fuera de Servicio' %}selected{% endif %}>Fuera de Servicio</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-white-50 text-uppercase fw-semibold">Imagen</label>
+              <input type="file" name="imagen" class="form-control custom-input" accept="image/*">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-white-50 text-uppercase fw-semibold">Descripción</label>
+              <textarea name="descripcion" class="form-control custom-input" rows="3">{{ m.descripcion }}</textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success px-4"><i class="fas fa-save me-1"></i> Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR -->
+  <div class="modal fade" id="modalEliminarMachine{{ m.pk }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content custom-modal">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-white fw-bold"><i class="fas fa-trash text-danger me-2"></i>Confirmar Eliminación</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" action="{% url 'eliminar_maquina' m.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="machine_list">
+          <div class="modal-body text-center py-4">
+            <i class="fas fa-exclamation-triangle text-danger fa-3x mb-3 d-block"></i>
+            <p class="text-white fs-6 mb-1">¿Deseas eliminar <strong>"{{ m.nombre }}"</strong> del inventario?</p>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger px-4"><i class="fas fa-trash me-1"></i> Eliminar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+<!-- MODAL CREAR MÁQUINA -->
+<div class="modal fade" id="modalCrearMachine" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white fw-bold"><i class="fas fa-plus-circle text-primary me-2"></i>Registrar Nueva Máquina</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{% url 'crear_maquina' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="machine_list">
+        <div class="modal-body py-3">
+          <div class="mb-3">
+            <label class="form-label small text-white-50 text-uppercase fw-semibold">Nombre <span class="text-danger">*</span></label>
+            <input type="text" name="nombre" class="form-control custom-input" placeholder="Ej: Caminadora Pro X" required>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small text-white-50 text-uppercase fw-semibold">Tipo</label>
+              <select name="categoria" class="form-select custom-input">
+                <option value="Cardio" selected>Cardio</option>
+                <option value="Fuerza">Fuerza</option>
+                <option value="Funcional">Funcional</option>
+                <option value="Flexibilidad">Flexibilidad</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small text-white-50 text-uppercase fw-semibold">Estado</label>
+              <select name="estado" class="form-select custom-input">
+                <option value="Disponible" selected>Disponible</option>
+                <option value="En Mantenimiento">En Mantenimiento</option>
+                <option value="Fuera de Servicio">Fuera de Servicio</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small text-white-50 text-uppercase fw-semibold">Imagen</label>
+            <input type="file" name="imagen" class="form-control custom-input" accept="image/*">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small text-white-50 text-uppercase fw-semibold">Descripción Técnica</label>
+            <textarea name="descripcion" class="form-control custom-input" rows="3" placeholder="Especificaciones de uso..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary px-4"><i class="fas fa-plus me-1"></i> Registrar Máquina</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleViewMode(mode) {
+  const gridContainer = document.getElementById('gridContainer');
+  const tableContainer = document.getElementById('tableContainer');
+  const btnGrid = document.getElementById('btnViewGrid');
+  const btnTable = document.getElementById('btnViewTable');
+
+  if (mode === 'grid') {
+    gridContainer.classList.remove('d-none');
+    tableContainer.classList.add('d-none');
+    btnGrid.classList.add('active');
+    btnTable.classList.remove('active');
+  } else {
+    gridContainer.classList.add('d-none');
+    tableContainer.classList.remove('d-none');
+    btnTable.classList.add('active');
+    btnGrid.classList.remove('active');
+  }
+}
+</script>
+{% endblock %}

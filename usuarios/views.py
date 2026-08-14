@@ -16,44 +16,71 @@ from interfichas.models import EquipoInterfichas, TorneoInterfichas
 
 
 def login_view(request):
-    """Procesa el inicio de sesión con bloqueo por intentos fallidos."""
+    """Procesa el inicio de sesión con soporte para documento o correo, AJAX y POST estándar."""
     if request.method == 'POST':
-        doc = request.POST.get('username')
-        password = request.POST.get('password')
+        doc = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
         next_url = request.POST.get(
             'next') or request.GET.get('next') or '/perfil/'
 
-        # Intentar obtener el usuario primero
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
+
+        if not doc or not password:
+            msg = 'Por favor ingrese su documento/correo y contraseña.'
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'success': False, 'message': msg}, status=400)
+            messages.error(request, msg)
+            return redirect('home')
+
+        # Intentar obtener el usuario por username, numero_documento o email
         from django.utils import timezone as _tz
         import datetime as _dt
+        from django.db.models import Q
 
         try:
-            usuario_obj = Usuario.objects.get(username=doc)
+            usuario_obj = Usuario.objects.get(
+                Q(username__iexact=doc) | Q(numero_documento__iexact=doc) | Q(email__iexact=doc)
+            )
         except Usuario.DoesNotExist:
             usuario_obj = None
+        except Usuario.MultipleObjectsReturned:
+            usuario_obj = Usuario.objects.filter(
+                Q(username__iexact=doc) | Q(numero_documento__iexact=doc) | Q(email__iexact=doc)
+            ).first()
 
-        # Verificar si la cuenta está bloqueada
+        # Verificar si la cuenta está inactiva
+        if usuario_obj and (not usuario_obj.is_active or usuario_obj.estado == 'inactivo'):
+            msg = 'Tu cuenta se encuentra inactiva. Comunícate con un administrador para activarla.'
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'success': False, 'message': msg}, status=403)
+            messages.error(request, msg)
+            return redirect('home')
+
+        # Verificar si la cuenta está bloqueada temporalmente por intentos fallidos
         if usuario_obj and usuario_obj.bloqueado_hasta:
             ahora = _tz.localtime(_tz.now())
             if ahora < usuario_obj.bloqueado_hasta:
                 minutos_restantes = int(
                     (usuario_obj.bloqueado_hasta - ahora).total_seconds() / 60) + 1
-                return JsonResponse({
-                    'status': 'blocked',
-                    'success': False,
-                    'bloqueado': True,
-                    'minutos': minutos_restantes,
-                    'message': (
-                        f'Cuenta bloqueada. Intente de nuevo en {minutos_restantes} minuto(s).'
-                    )
-                }, status=403)
+                msg = f'Cuenta bloqueada. Intente de nuevo en {minutos_restantes} minuto(s).'
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'blocked',
+                        'success': False,
+                        'bloqueado': True,
+                        'minutos': minutos_restantes,
+                        'message': msg
+                    }, status=403)
+                messages.error(request, msg)
+                return redirect('home')
             else:
                 # Tiempo de bloqueo expirado — resetear
                 usuario_obj.intentos_fallidos = 0
                 usuario_obj.bloqueado_hasta = None
                 usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
 
-        user = authenticate(request, username=doc, password=password)
+        username_auth = usuario_obj.username if usuario_obj else doc
+        user = authenticate(request, username=username_auth, password=password)
         if user:
             # Login exitoso: resetear intentos
             if usuario_obj:
@@ -61,12 +88,15 @@ def login_view(request):
                 usuario_obj.bloqueado_hasta = None
                 usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
             login(request, user)
-            return JsonResponse({
-                'status': 'success',
-                'success': True,
-                'redirect': next_url,
-                'message': 'Bienvenido al sistema'
-            })
+            if is_ajax:
+                return JsonResponse({
+                    'status': 'success',
+                    'success': True,
+                    'redirect': next_url,
+                    'message': 'Bienvenido al sistema'
+                })
+            messages.success(request, 'Bienvenido al sistema')
+            return redirect(next_url)
 
         # Fallo de autenticación
         if usuario_obj:
@@ -77,38 +107,54 @@ def login_view(request):
                 # Bloqueo de 24 horas
                 usuario_obj.bloqueado_hasta = _tz.now() + _dt.timedelta(hours=24)
                 usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
-                return JsonResponse({
-                    'status': 'blocked',
-                    'success': False,
-                    'bloqueado': True,
-                    'minutos': 1440,
-                    'message': 'Cuenta bloqueada por 24 horas por múltiples intentos fallidos.'
-                }, status=403)
+                msg = 'Cuenta bloqueada por 24 horas por múltiples intentos fallidos.'
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'blocked',
+                        'success': False,
+                        'bloqueado': True,
+                        'minutos': 1440,
+                        'message': msg
+                    }, status=403)
+                messages.error(request, msg)
+                return redirect('home')
             elif intentos >= 3:
                 # Bloqueo de 5 minutos
                 usuario_obj.bloqueado_hasta = _tz.now() + _dt.timedelta(minutes=5)
                 usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
-                return JsonResponse({
-                    'status': 'blocked',
-                    'success': False,
-                    'bloqueado': True,
-                    'minutos': 5,
-                    'message': f'Cuenta bloqueada por 5 minutos. Intento {intentos}/6.'
-                }, status=403)
+                msg = f'Cuenta bloqueada por 5 minutos. Intento {intentos}/6.'
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'blocked',
+                        'success': False,
+                        'bloqueado': True,
+                        'minutos': 5,
+                        'message': msg
+                    }, status=403)
+                messages.error(request, msg)
+                return redirect('home')
             else:
                 usuario_obj.save(update_fields=['intentos_fallidos'])
                 restantes = 3 - intentos if intentos < 3 else 6 - intentos
-                return JsonResponse({
-                    'status': 'error',
-                    'success': False,
-                    'message': f'Documento o contraseña incorrectos. Intentos restantes: {restantes}.'
-                }, status=401)
+                msg = f'Documento/correo o contraseña incorrectos. Intentos restantes: {restantes}.'
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'error',
+                        'success': False,
+                        'message': msg
+                    }, status=401)
+                messages.error(request, msg)
+                return redirect('home')
 
-        return JsonResponse({
-            'status': 'error',
-            'success': False,
-            'message': 'Documento o contraseña incorrectos.'
-        }, status=401)
+        msg = 'Documento/correo o contraseña incorrectos.'
+        if is_ajax:
+            return JsonResponse({
+                'status': 'error',
+                'success': False,
+                'message': msg
+            }, status=401)
+        messages.error(request, msg)
+        return redirect('home')
 
     return redirect('home')
 
@@ -239,9 +285,9 @@ def registro_view(request):
         if not genero:
             return JsonResponse({'status': 'error', 'message': 'El campo género es obligatorio.'}, status=400)
 
-        # ── Validación de contraseña débil ──
-        if len(contrasena) < 8:
-            return JsonResponse({'status': 'error', 'message': 'La contraseña debe tener al menos 8 caracteres.'}, status=400)
+        # ── Validación de contraseña débil (7 a 10 caracteres) ──
+        if len(contrasena) < 7 or len(contrasena) > 10:
+            return JsonResponse({'status': 'error', 'message': 'La contraseña debe tener entre 7 y 10 caracteres.'}, status=400)
         if contrasena.isdigit():
             return JsonResponse({'status': 'error', 'message': 'La contraseña no puede ser solo números. Incluye letras y/o símbolos.'}, status=400)
         if contrasena.lower() in CLAVES_COMUNES:
