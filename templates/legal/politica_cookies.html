@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Política de Cookies — Gestión Deportiva SENA{% endblock %}
+
+{% block meta_description %}Información detallada sobre el uso de cookies técnicas, de preferencias y analíticas en Sports-Max SENA.{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'politica_cookies' %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card bg-dark text-white border-secondary mb-4 shadow-lg">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-warning bg-opacity-25 p-3 text-warning">
+                            <i class="fas fa-cookie-bite fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning text-dark mb-1">Transparencia Digital</span>
+                            <h1 class="h2 fw-bold text-white mb-0">Política de Cookies</h1>
+                            <small class="text-white-50">SENA Centro Minero | Sports-Max</small>
+                        </div>
+                    </div>
+
+                    <p class="text-white-50 small my-4">
+                        En <strong>Sports-Max</strong> utilizamos cookies y tecnologías similares para garantizar el funcionamiento seguro de la plataforma, recordar tus preferencias de accesibilidad y analizar de forma anónima el rendimiento de nuestros servicios deportivos.
+                    </p>
+
+                    <hr class="border-secondary my-4">
+
+                    <!-- Tipos de Cookies -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-warning fw-bold mb-3">1. Tipos de Cookies que Utilizamos</h2>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-dark table-bordered border-secondary small">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 25%;">Categoría</th>
+                                        <th scope="col" style="width: 50%;">Propósito y Datos</th>
+                                        <th scope="col" style="width: 25%;">Duración & Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold text-success"><i class="fas fa-shield-alt me-1" aria-hidden="true"></i>Técnicas / Necesarias</td>
+                                        <td>Esenciales para el inicio de sesión (`sessionid`), protección contra falsificación de peticiones (`csrftoken`) y control de autenticación.</td>
+                                        <td><span class="badge bg-success">Obligatorias</span><br><small class="text-white-50">2 horas / Sesión</small></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold text-info"><i class="fas fa-sliders-h me-1" aria-hidden="true"></i>Preferencias</td>
+                                        <td>Almacenan tus opciones de tema (modo oscuro/claro) y ajustes del panel de accesibilidad (tamaño de fuente, contraste).</td>
+                                        <td><span class="badge bg-info text-dark">Opcionales</span><br><small class="text-white-50">1 año</small></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold text-warning"><i class="fas fa-chart-line me-1" aria-hidden="true"></i>Analíticas</td>
+                                        <td>Miden métricas anónimas de navegación para optimizar tiempos de respuesta y rendimiento sin rastreo publicitario.</td>
+                                        <td><span class="badge bg-warning text-dark">Opcionales</span><br><small class="text-white-50">Sujetas a Consentimiento</small></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Cómo Gestionar -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-warning fw-bold mb-3">2. Cómo Gestionar tus Preferencias</h2>
+                        <p class="text-white-50 small">
+                            Puedes modificar o revocar tu consentimiento en cualquier momento utilizando nuestro panel interactivo de cookies:
+                        </p>
+                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="window.SenaCookieConsent && window.SenaCookieConsent.openPreferencesModal()">
+                            <i class="fas fa-cog me-1" aria-hidden="true"></i>Configurar Preferencias de Cookies
+                        </button>
+                    </section>
+
+                    <!-- Navegadores -->
+                    <section>
+                        <h2 class="h4 text-warning fw-bold mb-3">3. Configuración en el Navegador</h2>
+                        <p class="text-white-50 small mb-0">
+                            También puedes permitir, bloquear o eliminar las cookies instaladas en tu equipo mediante la configuración de las opciones de tu navegador web (Google Chrome, Mozilla Firefox, Microsoft Edge, Safari).
+                        </p>
+                    </section>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="btn btn-outline-light px-4 py-2">
+                    <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

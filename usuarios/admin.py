@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Usuario, Sugerencia
+from .models import Usuario, Sugerencia, HistorialAccion
+
 
 
 @admin.register(Usuario)
@@ -29,3 +30,15 @@ class SugerenciaAdmin(admin.ModelAdmin):
     def respondido(self, obj):
         return bool(obj.respuesta)
     respondido.boolean = True
+
+
+@admin.register(HistorialAccion)
+class HistorialAccionAdmin(admin.ModelAdmin):
+    list_display = ('fecha', 'usuario', 'modulo', 'accion', 'ip_origen')
+    list_filter = ('modulo', 'fecha')
+    search_fields = ('usuario__username', 'accion', 'descripcion', 'ip_origen')
+    readonly_fields = ('public_id', 'usuario', 'modulo', 'accion', 'descripcion', 'ip_origen', 'fecha')
+
+    def has_add_permission(self, request):
+        return False  # El historial solo se genera automáticamente por el sistema
+

@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from usuarios.models import Usuario
 from django.conf import settings
@@ -6,6 +7,8 @@ from django.conf import settings
 
 
 class Reserva(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_registro = models.AutoField(primary_key=True)
     # CAMBIO: De CharField a ForeignKey (Punto 6 del MER)
     usuario_solicitante = models.ForeignKey(
@@ -27,6 +30,8 @@ class Reserva(models.Model):
 
 
 class GimnasioConfig(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     ESTADO_CHOICES = [
         ('abierta', 'Sala Abierta'),
         ('cerrada', 'Sala Cerrada'),
@@ -70,6 +75,8 @@ class FechaIngreso(models.Model):
 
 
 class Maquina(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     CATEGORIAS = [
         ('cardio', 'Cardio'),
         ('fuerza', 'Fuerza'),
@@ -115,6 +122,8 @@ class Maquina(models.Model):
 
 
 class Machine(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     TIPO_CHOICES = [
         ('Cardio', 'Cardio'),
         ('Fuerza', 'Fuerza'),

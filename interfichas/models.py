@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.conf import settings
 
@@ -29,6 +30,8 @@ class Disciplina(models.Model):
 # 2. TORNEOS
 # ================================================================
 class TorneoInterfichas(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_torneo_fichas = models.AutoField(primary_key=True)
     nombre_torneo = models.CharField(max_length=100)
     fecha_torneo_fichas = models.DateField()
@@ -48,6 +51,8 @@ class TorneoInterfichas(models.Model):
 # 3. EQUIPOS
 # ================================================================
 class EquipoInterfichas(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_equipo_interfichas = models.AutoField(primary_key=True)
     ficha = models.IntegerField()
     programa = models.CharField(max_length=150)
@@ -108,6 +113,8 @@ FASE_CHOICES = [
 
 
 class PartidoInterfichas(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='partidos'
     )
@@ -196,6 +203,8 @@ class PartidoInterfichas(models.Model):
 # 7. RESULTADOS DE TORNEOS
 # ================================================================
 class ResultadoTorneo(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     torneo = models.OneToOneField(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='resultado'
     )

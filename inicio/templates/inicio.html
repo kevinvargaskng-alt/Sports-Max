@@ -285,7 +285,7 @@
                 <label class="form-label fw-semibold text-white small text-uppercase ini-u-41">Contraseña</label>
                 <div class="input-group">
                   <span class="input-group-text bg-transparent custom-input ini-u-42"><i class="fas fa-lock text-white-50"></i></span>
-                  <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu clave secreta (7 a 10 car.)" required minlength="7" maxlength="10" autocomplete="current-password ini-u-43">
+                  <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu contraseña secreta" required minlength="8" maxlength="128" autocomplete="current-password ini-u-43">
                   <button class="btn btn-outline-secondary custom-input ini-u-44" type="button" id="togglePassword">
                     <i class="fas fa-eye text-white-50"></i>
                   </button>
@@ -444,7 +444,7 @@
                   </div>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent custom-input ini-u-76"><i class="fas fa-lock text-white-50"></i></span>
-                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" required minlength="7" maxlength="10" autocomplete="new-password ini-u-77">
+                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" placeholder="Mínimo 8 caracteres seguros" required minlength="8" maxlength="128" autocomplete="new-password ini-u-77">
                     <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
                   </div>
                   <div class="progress mt-2 ini-u-79">
@@ -456,13 +456,15 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-81">Confirmar Clave <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text bg-transparent custom-input ini-u-82"><i class="fas fa-check-circle text-white-50"></i></span>
-                    <input type="password" id="confirmarContrasena" class="form-control custom-input" required minlength="7" maxlength="10" autocomplete="new-password ini-u-83">
+                    <input type="password" id="confirmarContrasena" class="form-control custom-input" placeholder="Repite tu contraseña" required minlength="8" maxlength="128" autocomplete="new-password ini-u-83">
                     <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
                   </div>
                 </div>
               </div>
               <div id="registerAlert" class="alert d-none mt-4" role="alert"></div>
-              <button type="submit" class="btn w-100 py-3 mt-4 fw-bold text-uppercase text-white ini-u-85">Finalizar Registro</button>
+              <button type="submit" id="btnSubmitRegistro" class="btn w-100 py-3 mt-4 fw-bold text-uppercase text-white ini-u-85">
+                <span id="btnRegistroText">Finalizar Registro</span>
+              </button>
             </form>
           </div>
         </div>
@@ -863,13 +865,88 @@
   /* ── Mostrar error ── */
   function mostrarError(msg) {
     const alertEl = document.getElementById('registerAlert');
-    alertEl.className = 'alert alert-danger mt-2';
-    alertEl.textContent = msg;
+    alertEl.className = 'alert alert-danger mt-2 text-danger fw-bold border-danger';
+    alertEl.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + msg;
     alertEl.classList.remove('d-none');
-    setTimeout(() => alertEl.classList.add('d-none'), 6000);
+    setTimeout(() => alertEl.classList.add('d-none'), 8000);
+  }
+
+  /* ── CP-04: Manejador de Registro con Estado de Carga y Bloqueo de Botón ── */
+  const formReg = document.getElementById('registerForm');
+  if (formReg) {
+    formReg.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const btnSubmit = document.getElementById('btnSubmitRegistro');
+      const btnText = document.getElementById('btnRegistroText');
+      const alertEl = document.getElementById('registerAlert');
+
+      // Validar contraseñas iguales
+      const pwd1 = document.getElementById('id_contrasena')?.value || '';
+      const pwd2 = document.getElementById('confirmarContrasena')?.value || '';
+
+      if (pwd1 && pwd2 && pwd1 !== pwd2) {
+        mostrarError('Las contraseñas no coinciden. Por favor verifícalas.');
+        return;
+      }
+
+      // Bloquear botón y mostrar spinner de carga (CP-04)
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        if (btnText) {
+          btnText.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Procesando registro...';
+        }
+      }
+
+      if (alertEl) {
+        alertEl.classList.add('d-none');
+      }
+
+      const formData = new FormData(this);
+
+      fetch(this.action || '/registro/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json().then(data => ({ status: response.status, data: data })))
+      .then(({ status, data }) => {
+        if (data.status === 'success' || status === 200) {
+          if (alertEl) {
+            alertEl.className = 'alert alert-success mt-2 fw-bold';
+            alertEl.innerHTML = '<i class="fas fa-check-circle me-2"></i> ¡Registro exitoso! Redirigiendo...';
+            alertEl.classList.remove('d-none');
+          }
+          setTimeout(() => {
+            window.location.href = data.redirect || '/perfil/';
+          }, 1500);
+        } else {
+          // Desbloquear botón y restaurar texto
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            if (btnText) {
+              btnText.textContent = 'Finalizar Registro';
+            }
+          }
+          mostrarError(data.message || 'Ocurrió un error al procesar el registro.');
+        }
+      })
+      .catch(err => {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          if (btnText) {
+            btnText.textContent = 'Finalizar Registro';
+          }
+        }
+        mostrarError('Error de conexión con el servidor. Intenta de nuevo.');
+      });
+    });
   }
 
 })();
+
 
 /* ═══════════════════════════════════════════════════════════
    COUNTDOWN

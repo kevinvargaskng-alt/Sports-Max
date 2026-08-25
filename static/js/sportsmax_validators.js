@@ -20,8 +20,10 @@ function initSportsMaxValidators() {
             if (REGEX_CARACTERES_PROHIBIDOS.test(e.target.value)) {
                 e.target.value = e.target.value.replace(REGEX_CARACTERES_PROHIBIDOS, '');
                 e.target.classList.add('is-invalid');
+                e.target.setAttribute('aria-invalid', 'true');
             } else {
                 e.target.classList.remove('is-invalid');
+                e.target.setAttribute('aria-invalid', 'false');
             }
         });
 

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}404 — Página No Encontrada | Sports-Max SENA{% endblock %}
+{% block meta_robots %}noindex, follow{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-auto text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="p-4 p-md-5 rounded-4 bg-dark text-white border border-secondary shadow-lg">
+                <!-- Icono e Ilustración Deportiva -->
+                <div class="position-relative d-inline-block mb-3">
+                    <div class="display-1 fw-bold text-success" style="letter-spacing: 4px;">
+                        4<i class="fas fa-volleyball-ball fa-spin text-warning mx-1" style="--fa-animation-duration: 10s;" aria-hidden="true"></i>4
+                    </div>
+                </div>
+
+                <h1 class="h2 fw-bold text-white mb-2">¡Ups! Jugada Fuera de Cancha</h1>
+                <p class="lead text-white-50 mb-4">
+                    La página o recurso que buscas no existe, cambió de dirección o se encuentra temporalmente fuera de juego.
+                </p>
+
+                <!-- Tarjetas de Acceso Rápido -->
+                <div class="row g-3 mb-4 text-start">
+                    <div class="col-sm-6 col-md-3">
+                        <a href="{% url 'home' %}" class="card bg-secondary bg-opacity-10 border-secondary text-decoration-none text-white p-3 h-100 text-center hover-card">
+                            <i class="fas fa-home text-success fs-3 mb-2" aria-hidden="true"></i>
+                            <span class="d-block fw-bold small">Inicio</span>
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <a href="{% url 'gimnasio' %}" class="card bg-secondary bg-opacity-10 border-secondary text-decoration-none text-white p-3 h-100 text-center hover-card">
+                            <i class="fas fa-dumbbell text-warning fs-3 mb-2" aria-hidden="true"></i>
+                            <span class="d-block fw-bold small">Gimnasio</span>
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <a href="{% url 'interfichas' %}" class="card bg-secondary bg-opacity-10 border-secondary text-decoration-none text-white p-3 h-100 text-center hover-card">
+                            <i class="fas fa-trophy text-info fs-3 mb-2" aria-hidden="true"></i>
+                            <span class="d-block fw-bold small">Torneos</span>
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <a href="{% url 'ayuda' %}" class="card bg-secondary bg-opacity-10 border-secondary text-decoration-none text-white p-3 h-100 text-center hover-card">
+                            <i class="fas fa-question-circle text-danger fs-3 mb-2" aria-hidden="true"></i>
+                            <span class="d-block fw-bold small">Centro de Ayuda</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Botón Principal -->
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'home' %}" class="btn btn-success btn-lg px-4 py-2 fw-bold">
+                        <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Volver al Inicio
+                    </a>
+                    <a href="{% url 'ayuda' %}" class="btn btn-outline-light btn-lg px-4 py-2">
+                        <i class="fas fa-headset me-2" aria-hidden="true"></i>Contactar Soporte
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-card {
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.hover-card:hover {
+    transform: translateY(-4px);
+    border-color: #39A900 !important;
+    background-color: rgba(57, 169, 0, 0.1) !important;
+}
+</style>
+{% endblock %}

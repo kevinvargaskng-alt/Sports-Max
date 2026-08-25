@@ -1,9 +1,12 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 
 class Usuario(AbstractUser):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     TIPO_DOC = [
         ('CC', 'Cédula de Ciudadanía'),
         ('TI', 'Tarjeta de Identidad'),
@@ -72,6 +75,8 @@ class Usuario(AbstractUser):
 
 
 class Sugerencia(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     tipo = models.CharField(max_length=50, default='otro')
@@ -84,3 +89,38 @@ class Sugerencia(models.Model):
 
     def __str__(self):
         return f"Sugerencia #{self.pk} - {self.tipo}"
+
+
+# ═══════════════════════════════════════════════════════════
+#  CP-02: HISTORIAL DE ACCIONES (AUDITORÍA EN BASE DE DATOS)
+# ═══════════════════════════════════════════════════════════
+class HistorialAccion(models.Model):
+    """
+    Tabla de historial_acciones para registrar qué usuario modificó qué dato,
+    en qué módulo y en qué fecha/hora.
+    """
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='historial_acciones',
+        verbose_name="Usuario que realizó la acción"
+    )
+    modulo = models.CharField(max_length=50, verbose_name="Módulo")
+    accion = models.CharField(max_length=100, verbose_name="Acción Realizada")
+    descripcion = models.TextField(verbose_name="Detalles de la Modificación")
+    ip_origen = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP de Origen")
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha y Hora")
+
+    class Meta:
+        db_table = 'historial_acciones'
+        verbose_name = 'Historial de Acción'
+        verbose_name_plural = 'Historial de Acciones'
+        ordering = ['-fecha']
+
+    def __str__(self):
+        usr = self.usuario.username if self.usuario else "Anónimo/Sistema"
+        return f"[{self.fecha.strftime('%d/%m/%Y %H:%M')}] {usr} -> {self.accion} ({self.modulo})"
+

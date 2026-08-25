@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error 403 — Acceso Denegado{% endblock %}
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-4 text-danger">🔒 Error 403</h1>
+    <p class="lead">No tienes permisos para acceder a este recurso.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Volver al Inicio</a>
+</div>
+{% endblock %}

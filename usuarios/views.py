@@ -1,17 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+# ── Módulos de seguridad ──────────────────────────────────────
+from core.security.audit import log_login_attempt, log_admin_action, log_suspicious_request
+from core.security.sanitizers import sanitize_html, sanitize_input
+from core.security.validators import validate_email_strict, validate_text_safe
+from core.security.file_upload import validate_uploaded_file
+from core.security.decorators import role_required, allowed_fields
 
 # Importaciones de modelos de otras apps
 from .models import Usuario, Sugerencia
 from inventario.models import Prestamo
-from gimnasio.models import Reserva, GimnasioConfig  # Agregado GimnasioConfig
+from gimnasio.models import Reserva, GimnasioConfig
 from interfichas.models import EquipoInterfichas, TorneoInterfichas
 
 
@@ -88,6 +96,8 @@ def login_view(request):
                 usuario_obj.bloqueado_hasta = None
                 usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
             login(request, user)
+            # ── Auditoría: login exitoso ──
+            log_login_attempt(request, user.username, success=True)
             if is_ajax:
                 return JsonResponse({
                     'status': 'success',
@@ -99,6 +109,7 @@ def login_view(request):
             return redirect(next_url)
 
         # Fallo de autenticación
+        log_login_attempt(request, doc, success=False, reason='credenciales_invalidas')
         if usuario_obj:
             usuario_obj.intentos_fallidos += 1
             intentos = usuario_obj.intentos_fallidos
@@ -285,15 +296,26 @@ def registro_view(request):
         if not genero:
             return JsonResponse({'status': 'error', 'message': 'El campo género es obligatorio.'}, status=400)
 
-        # ── Validación de contraseña débil (7 a 10 caracteres) ──
-        if len(contrasena) < 7 or len(contrasena) > 10:
-            return JsonResponse({'status': 'error', 'message': 'La contraseña debe tener entre 7 y 10 caracteres.'}, status=400)
-        if contrasena.isdigit():
-            return JsonResponse({'status': 'error', 'message': 'La contraseña no puede ser solo números. Incluye letras y/o símbolos.'}, status=400)
-        if contrasena.lower() in CLAVES_COMUNES:
-            return JsonResponse({'status': 'error', 'message': 'Esa contraseña es demasiado común. Elige una más segura.'}, status=400)
-        if contrasena.lower() == numero_documento.lower():
-            return JsonResponse({'status': 'error', 'message': 'La contraseña no puede ser igual a tu número de documento.'}, status=400)
+        # ── Validación de email estricta ──
+        try:
+            validate_email_strict(correo)
+        except ValidationError as e:
+            return JsonResponse({'status': 'error', 'message': str(e.message)}, status=400)
+
+        # ── Validación de contraseña robusta (12+ caracteres, complejidad, breached list) ──
+        # Crear usuario temporal para que los validadores puedan verificar datos personales
+        temp_user = Usuario(username=numero_documento, email=correo,
+                            first_name=nombres, last_name=apellidos,
+                            numero_documento=numero_documento)
+        try:
+            validate_password(contrasena, user=temp_user)
+        except ValidationError as e:
+            # Retornar el primer error de validación
+            return JsonResponse({'status': 'error', 'message': e.messages[0]}, status=400)
+
+        # ── Sanitización de campos de texto ──
+        nombres = validate_text_safe(nombres, 'nombre', max_length=100)
+        apellidos = validate_text_safe(apellidos, 'apellidos', max_length=100)
 
         if Usuario.objects.filter(numero_documento=numero_documento).exists():
             return JsonResponse({'status': 'error', 'message': 'El documento ya existe'}, status=400)
@@ -379,9 +401,9 @@ def perfil_view(request):
             sugerencia = Sugerencia.objects.create(
                 usuario=usuario,
                 tipo=tipo,
-                comentario=comentario,
+                comentario=sanitize_html(sanitize_input(comentario, max_length=2000)),
                 anonimo=False,
-                imagen=request.FILES.get('imagen_error')
+                imagen=validate_uploaded_file(request.FILES.get('imagen_error'), allowed_types='image') if request.FILES.get('imagen_error') else None
             )
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({
@@ -412,7 +434,12 @@ def perfil_view(request):
             usuario.foto_perfil = None
             usuario.foto_posicion = '50% 50%'
         elif 'imagen' in request.FILES:
-            usuario.foto_perfil = request.FILES.get('imagen')
+            try:
+                validated_img = validate_uploaded_file(request.FILES.get('imagen'), allowed_types='image')
+                usuario.foto_perfil = validated_img
+            except ValidationError as e:
+                messages.error(request, str(e.message))
+                return redirect('perfil')
             
         if foto_posicion:
             usuario.foto_posicion = foto_posicion
@@ -494,23 +521,45 @@ def cambiar_rol_usuario(request, user_id):
         return redirect('perfil')
     u = get_object_or_404(Usuario, pk=user_id)
     nuevo_rol = request.POST.get('rol')
+
+    # ── Protección contra escalación a superuser ──
+    if nuevo_rol == 'admin' and not request.user.is_superuser:
+        log_suspicious_request(request, 'Intento de escalación de rol a admin sin ser superuser')
+        messages.error(request, 'Solo un superusuario puede asignar el rol de administrador.')
+        return redirect('gestionar_usuarios')
+
     if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
         u.rol = nuevo_rol
         u.is_staff = (nuevo_rol == 'admin')
         u.save()
+        log_admin_action(request, 'CAMBIAR_ROL', 'Usuario', str(user_id),
+                         f'Nuevo rol: {nuevo_rol}')
     return redirect('gestionar_usuarios')
 
 
 @login_required(login_url='home')
 @require_POST
+@allowed_fields('first_name', 'last_name', 'email')
 def admin_editar_usuario(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
     u = get_object_or_404(Usuario, pk=user_id)
-    u.first_name = request.POST.get('first_name', u.first_name).strip().title()
-    u.last_name = request.POST.get('last_name', u.last_name).strip().title()
-    u.email = request.POST.get('email', u.email).strip()
+    u.first_name = validate_text_safe(
+        request.POST.get('first_name', u.first_name).strip(), 'nombre', max_length=100
+    ).title()
+    u.last_name = validate_text_safe(
+        request.POST.get('last_name', u.last_name).strip(), 'apellidos', max_length=100
+    ).title()
+    new_email = request.POST.get('email', u.email).strip()
+    try:
+        validate_email_strict(new_email)
+        u.email = new_email
+    except ValidationError:
+        messages.error(request, 'Correo electrónico inválido.')
+        return redirect('gestionar_usuarios')
     u.save()
+    log_admin_action(request, 'EDITAR_USUARIO', 'Usuario', str(user_id),
+                     f'Campos: first_name, last_name, email')
     messages.success(request, f'Datos de {u.get_full_name()} actualizados correctamente.')
     return redirect('gestionar_usuarios')
 
@@ -552,11 +601,12 @@ def export_database_backup(request):
     output = io.StringIO()
     try:
         management.call_command('dumpdata', stdout=output, indent=2, exclude=['contenttypes', 'auth.Permission'])
+        log_admin_action(request, 'EXPORT_DB_BACKUP', 'Database', '', 'Respaldo completo generado')
         response = HttpResponse(output.getvalue(), content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="respaldo_base_datos.json"'
         return response
-    except Exception as e:
-        messages.error(request, f"Error al generar el respaldo de la base de datos: {e}")
+    except Exception:
+        messages.error(request, 'Error al generar el respaldo de la base de datos.')
         return redirect('perfil')
 
 
@@ -586,9 +636,10 @@ def restore_database_backup(request):
 
             # Cargar los datos a la base de datos
             management.call_command('loaddata', temp_path)
-            messages.success(request, "Base de datos restaurada exitosamente desde el respaldo JSON.")
-        except Exception as e:
-            messages.error(request, f"Error al restaurar la base de datos: {e}")
+            log_admin_action(request, 'RESTORE_DB_BACKUP', 'Database', '', 'Respaldo restaurado')
+            messages.success(request, 'Base de datos restaurada exitosamente desde el respaldo JSON.')
+        except Exception:
+            messages.error(request, 'Error al restaurar la base de datos.')
         finally:
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error 400 — Solicitud Inválida{% endblock %}
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-4 text-warning">⚠️ Error 400</h1>
+    <p class="lead">La solicitud no pudo ser procesada. Verifica los datos enviados.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Volver al Inicio</a>
+</div>
+{% endblock %}

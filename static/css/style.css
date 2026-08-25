@@ -1438,3 +1438,57 @@ body.light-theme .btn-outline-sm.active {
     font-weight: 700;
     font-size: 0.78rem;
 }
+
+/* ============================================================
+   ACCESIBILIDAD (a11y — WCAG 2.1 AA) & DISEÑO MOBILE-FIRST
+   ============================================================ */
+
+/* Prevención de desbordamiento horizontal */
+html, body {
+    overflow-x: clip;
+    max-width: 100vw;
+}
+
+/* Enfoque accesible de alto contraste */
+:focus-visible {
+    outline: 3px solid #39A900 !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+}
+
+/* Skip-to-content Link para lectores de pantalla */
+.skip-to-content {
+    transition: transform 0.2s ease-in-out;
+    transform: translateY(-100%);
+}
+
+.skip-to-content:focus {
+    transform: translateY(0);
+}
+
+/* Touch Targets mínimos de 48px para ergonomía móvil */
+@media (max-width: 768px) {
+    .btn, 
+    .nav-link, 
+    .form-control, 
+    .form-select, 
+    .pagination .page-link {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-check-input {
+        width: 1.5em;
+        height: 1.5em;
+        margin-top: 0.15em;
+    }
+}
+
+/* Enlaces con estado hover accesible */
+.hover-underline:hover {
+    text-decoration: underline !important;
+    color: #ffffff !important;
+}
+

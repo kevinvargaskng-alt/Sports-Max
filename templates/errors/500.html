@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Error 500 — Error del Servidor{% endblock %}
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-4 text-danger">⚙️ Error 500</h1>
+    <p class="lead">Ocurrió un error inesperado. Nuestro equipo ha sido notificado.</p>
+    <p>Por favor intenta de nuevo en unos minutos.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Volver al Inicio</a>
+</div>
+{% endblock %}

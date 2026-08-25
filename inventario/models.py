@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.conf import settings
 
@@ -5,6 +6,8 @@ from django.conf import settings
 
 
 class ElementoDeportivo(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     # Estos son los campos que tu Admin está pidiendo:
     tipo_maquina = models.CharField(
         max_length=100, verbose_name="Tipo de Máquina/Elemento")
@@ -31,6 +34,8 @@ class ElementoDeportivo(models.Model):
 
 
 class Reserva(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_reserva = models.AutoField(primary_key=True)
     usuario_solicitante = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -47,6 +52,8 @@ class Reserva(models.Model):
 
 
 class Prestamo(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_prestamo = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -70,6 +77,8 @@ class Prestamo(models.Model):
 
 
 class DetallePrestamo(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     id_detalle = models.AutoField(primary_key=True)
     prestamo = models.ForeignKey(
         Prestamo, on_delete=models.CASCADE, related_name='detalles')
@@ -84,6 +93,8 @@ class DetallePrestamo(models.Model):
 
 
 class Devolucion(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_devolucion = models.AutoField(primary_key=True)
     prestamo = models.ForeignKey(
         Prestamo, on_delete=models.CASCADE, related_name='devoluciones')
@@ -116,6 +127,8 @@ class Revision(models.Model):
 
 
 class Sancion(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
     codigo_sancion = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -9,5 +9,8 @@ scikit-learn==1.8.0
 numpy==2.4.4
 python-dotenv==1.2.2
 rank-bm25==0.2.2
-psycopg2-binary>=2.9.10
+psycopg2-binary==2.9.10
 PyMySQL==1.2.0
+# ── Dependencias de Seguridad ────────────────────────────
+argon2-cffi==25.1.0
+cryptography==45.0.3

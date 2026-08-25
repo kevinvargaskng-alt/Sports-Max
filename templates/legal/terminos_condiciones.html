@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Términos y Condiciones de Uso — Gestión Deportiva SENA{% endblock %}
+
+{% block meta_description %}Lee los Términos y Condiciones oficiales para el uso de escenarios deportivos, gimnasio, préstamos de implementos y torneos en Sports-Max SENA.{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'terminos_condiciones' %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card bg-dark text-white border-secondary mb-4 shadow-lg">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-info bg-opacity-25 p-3 text-info">
+                            <i class="fas fa-file-contract fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-info text-dark mb-1">Reglamento Institucional</span>
+                            <h1 class="h2 fw-bold text-white mb-0">Términos y Condiciones de Uso</h1>
+                            <small class="text-white-50">Vigencia: Año Lectivo 2026 | SENA Centro Minero</small>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-dark border-secondary text-white-50 my-4" role="region" aria-label="Aceptación de Términos">
+                        <p class="mb-0 small">
+                            El acceso y uso de la plataforma digital <strong>Sports-Max</strong>, así como el disfrute de las instalaciones del <strong>Gimnasio</strong>, material del <strong>Inventario Deportivo</strong> y participación en el <strong>Torneo Inter-Fichas</strong> del Centro Minero SENA, implican la aceptación plena de los presentes Términos y Condiciones, sujetos al <strong>Reglamento del Aprendiz SENA (Acuerdo 007 de 2012)</strong>.
+                        </p>
+                    </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <!-- Sección 1: Cuentas y Accesos -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-warning fw-bold mb-3">1. Cuentas de Usuario y Credenciales</h2>
+                        <ul class="text-white-50 small ps-3">
+                            <li class="mb-2">El registro es personal e intransferible para los aprendices, instructores y personal administrativo vinculados al Centro Minero.</li>
+                            <li class="mb-2">El usuario es responsable de mantener la confidencialidad de su contraseña y de todas las actividades realizadas desde su cuenta.</li>
+                            <li class="mb-2">El sistema aplicará bloqueo automático temporal tras múltiples intentos fallidos de autenticación como medida preventiva de seguridad.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 2: Uso del Gimnasio -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-warning fw-bold mb-3">2. Reglamento de la Sala de Gimnasio</h2>
+                        <ul class="text-white-50 small ps-3">
+                            <li class="mb-2"><strong>Indumentaria obligatoria:</strong> Ropa deportiva adecuada, calzado deportivo limpio y toalla de uso personal.</li>
+                            <li class="mb-2"><strong>Reservas y Aforo:</strong> Toda sesión debe ser reservada a través de Sports-Max. El acceso está supeditado a la capacidad máxima establecida de la sala.</li>
+                            <li class="mb-2"><strong>Cuidado de Máquinas:</strong> Cada usuario debe limpiar y desinfectar las máquinas e implementos tras su uso y descargar las pesas utilizadas.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 3: Préstamos de Inventario -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-warning fw-bold mb-3">3. Préstamo de Balones e Implementos Deportivos</h2>
+                        <ul class="text-white-50 small ps-3">
+                            <li class="mb-2">Los implementos solicitados deben devolverse en el mismo estado en que fueron entregados y dentro de los plazos estipulados.</li>
+                            <li class="mb-2">El extravío, daño por negligencia o no devolución oportuna generará una <strong>Sanción en el Sistema</strong>, inhabilitando nuevos préstamos y reportándose a la coordinación académica de la ficha.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 4: Torneo Inter-Fichas -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-warning fw-bold mb-3">4. Participación en Torneo Inter-Fichas</h2>
+                        <ul class="text-white-50 small ps-3">
+                            <li class="mb-2">Todos los jugadores inscritos deben ser aprendices activos con matrícula vigente en el Centro Minero.</li>
+                            <li class="mb-2">El juego limpio (Fair Play), el respeto mutuo entre fichas, árbitros y coordinadores es condición indispensable de permanencia en el torneo.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 5: Modificaciones -->
+                    <section>
+                        <h2 class="h4 text-warning fw-bold mb-3">5. Modificaciones del Servicio</h2>
+                        <p class="text-white-50 small mb-0">
+                            La administración de Bienestar al Aprendiz del Centro Minero se reserva el derecho de actualizar el presente reglamento cuando las condiciones operativas o institucionales lo requieran.
+                        </p>
+                    </section>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="btn btn-outline-light px-4 py-2">
+                    <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

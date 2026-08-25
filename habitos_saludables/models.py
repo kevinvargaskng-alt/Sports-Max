@@ -2,6 +2,7 @@
 models.py - Módulo Hábitos Saludables SENA
 """
 
+import uuid
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -16,6 +17,7 @@ class HabeasDataConsent(models.Model):
     Registro de aceptación del tratamiento de datos personales.
     Obligatorio antes de registrar información médica.
     """
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -59,6 +61,7 @@ class HabeasDataConsent(models.Model):
 # HÁBITOS SALUDABLES
 # ─────────────────────────────────────────────
 class HabitoSaludable(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     CATEGORIA_CHOICES = [
         ('ejercicio', 'Ejercicio Físico'),
@@ -122,6 +125,7 @@ class HabitoSaludable(models.Model):
 # RUTINAS FÍSICAS
 # ─────────────────────────────────────────────
 class RutinaFisica(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     NIVEL_CHOICES = [
         ('principiante', 'Principiante'),
@@ -186,6 +190,7 @@ class RutinaFisica(models.Model):
 # PIRÁMIDE NUTRICIONAL
 # ─────────────────────────────────────────────
 class PiramideNutricional(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     CATEGORIA_CHOICES = [
         ('cereales', 'Cereales'),
@@ -263,6 +268,7 @@ class PiramideNutricional(models.Model):
 # MATERIAL DE APOYO
 # ─────────────────────────────────────────────
 class MaterialApoyo(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     TIPO_CHOICES = [
         ('pdf', 'PDF'),
@@ -329,6 +335,7 @@ class MaterialApoyo(models.Model):
 # SEGUIMIENTO DE SALUD
 # ─────────────────────────────────────────────
 class SeguimientoSalud(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     ACTIVIDAD_CHOICES = [
         ('sedentario', 'Sedentario'),

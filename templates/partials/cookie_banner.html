@@ -1,0 +1,243 @@
+{% load static %}
+<!-- ═══════════════════════════════════════════════════════════
+     BANNER DE CONSENTIMIENTO DE COOKIES (SPORTS-MAX SENA)
+     ESTILO: GLASSMORPHISM ATLETA & NEÓN AZUL/VERDE SENA
+     ═══════════════════════════════════════════════════════════ -->
+<div id="senaCookieBanner" class="position-fixed bottom-0 start-0 end-0 p-3" style="z-index: 1060; display: none;" role="region" aria-label="Aviso de Cookies y Privacidad">
+    <div class="container">
+        <div class="cookie-banner-glass p-3 p-md-4 rounded-4 shadow-lg">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="cookie-icon-wrapper" aria-hidden="true">
+                            <i class="fas fa-cookie-bite"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <span class="badge badge-sena-pill">Privacidad & Seguridad</span>
+                                <h2 class="h6 fw-bold text-white mb-0">Gestión de Cookies en Sports-Max</h2>
+                            </div>
+                            <p class="small text-white-50 mb-0">
+                                Utilizamos cookies técnicas esenciales para garantizar tu sesión segura, y cookies opcionales para recordar tus ajustes de accesibilidad y optimizar el rendimiento del sistema deportivo.
+                                <a href="{% url 'politica_cookies' %}" class="cookie-link-accent ms-1" target="_blank" rel="noopener noreferrer">Ver política</a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end d-flex flex-wrap gap-2 justify-content-lg-end justify-content-start">
+                    <button type="button" id="btnAcceptAllCookies" class="btn btn-cookie-primary btn-sm fw-bold px-3 py-2">
+                        <i class="fas fa-check me-1" aria-hidden="true"></i>Aceptar Todas
+                    </button>
+                    <button type="button" id="btnRejectOptionalCookies" class="btn btn-cookie-outline btn-sm px-3 py-2">
+                        Rechazar Opcionales
+                    </button>
+                    <button type="button" id="btnConfigCookies" class="btn btn-cookie-secondary btn-sm px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalConfigCookies">
+                        <i class="fas fa-sliders-h me-1" aria-hidden="true"></i>Preferencias
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE PREFERENCIAS DE COOKIES -->
+<div class="modal fade" id="modalConfigCookies" tabindex="-1" aria-labelledby="labelConfigCookies" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content cookie-modal-glass text-white">
+            <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="cookie-modal-icon">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="modal-title h5 fw-bold text-white mb-0" id="labelConfigCookies">
+                        Panel de Preferencias de Privacidad
+                    </h3>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="small text-white-50 mb-3">
+                    Personaliza qué categorías de cookies permites en tu navegador. Las cookies técnicas son estrictamente obligatorias para la autenticación y protección contra ataques informáticos.
+                </p>
+
+                <!-- Categoría 1: Necesarias -->
+                <div class="p-3 mb-3 rounded-3 cookie-category-card">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-lock text-info" aria-hidden="true"></i>
+                            <h4 class="h6 fw-bold mb-0 text-white">Cookies Técnicas y de Autenticación</h4>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 px-2 py-1">Obligatorias</span>
+                    </div>
+                    <p class="small text-white-50 mb-0">
+                        Gestionan tu sesión activa de usuario (`sessionid`), protección anti-falsificación CSRF (`csrftoken`) y control de acceso.
+                    </p>
+                </div>
+
+                <!-- Categoría 2: Personalización -->
+                <div class="p-3 mb-3 rounded-3 cookie-category-card">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-palette text-success" aria-hidden="true"></i>
+                            <h4 class="h6 fw-bold mb-0 text-white">Preferencias de Tema & Accesibilidad</h4>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input cookie-switch" type="checkbox" id="cookiePrefPersonalizacion" checked style="cursor: pointer;">
+                            <label class="visually-hidden" for="cookiePrefPersonalizacion">Permitir cookies de personalización</label>
+                        </div>
+                    </div>
+                    <p class="small text-white-50 mb-0">
+                        Guardan tu modo de visualización preferido (modo oscuro / claro) y los ajustes del panel de accesibilidad sensorial SENA.
+                    </p>
+                </div>
+
+                <!-- Categoría 3: Analíticas -->
+                <div class="p-3 rounded-3 cookie-category-card">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-chart-line text-warning" aria-hidden="true"></i>
+                            <h4 class="h6 fw-bold mb-0 text-white">Métricas Anónimas de Rendimiento</h4>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input cookie-switch" type="checkbox" id="cookiePrefAnaliticas" style="cursor: pointer;">
+                            <label class="visually-hidden" for="cookiePrefAnaliticas">Permitir cookies analíticas</label>
+                        </div>
+                    </div>
+                    <p class="small text-white-50 mb-0">
+                        Monitorean la velocidad de carga y rendimiento de forma 100% anónima para optimizar la plataforma sin fines publicitarios.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-secondary border-opacity-25 pt-3 d-flex justify-content-between">
+                <button type="button" id="btnRejectModalCookies" class="btn btn-cookie-outline btn-sm px-3" data-bs-dismiss="modal">
+                    Rechazar Opcionales
+                </button>
+                <button type="button" id="btnSaveCookiePreferences" class="btn btn-cookie-primary btn-sm fw-bold px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-save me-1" aria-hidden="true"></i>Guardar Preferencias
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ── ESTILOS INTEGRADOS COOKIES SPORTS-MAX ────────── */
+.cookie-banner-glass {
+    background: rgba(11, 15, 25, 0.94) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(43, 125, 233, 0.35) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(43, 125, 233, 0.15) !important;
+}
+
+.cookie-modal-glass {
+    background: rgba(13, 21, 38, 0.97) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(43, 125, 233, 0.3) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+}
+
+.cookie-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(43, 125, 233, 0.2), rgba(57, 169, 0, 0.2));
+    border: 1px solid rgba(43, 125, 233, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60a5fa;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.cookie-modal-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(43, 125, 233, 0.15);
+    border: 1px solid rgba(43, 125, 233, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60a5fa;
+    font-size: 0.95rem;
+}
+
+.badge-sena-pill {
+    background: rgba(43, 125, 233, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(43, 125, 233, 0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.cookie-link-accent {
+    color: #60a5fa;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+.cookie-link-accent:hover {
+    color: #93c5fd;
+}
+
+.cookie-category-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.cookie-category-card:hover {
+    background: rgba(43, 125, 233, 0.05);
+    border-color: rgba(43, 125, 233, 0.25);
+}
+
+.btn-cookie-primary {
+    background: linear-gradient(135deg, #1a5fb4, #2b7de9) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(43, 125, 233, 0.35);
+    transition: all 0.25s ease;
+}
+.btn-cookie-primary:hover {
+    background: linear-gradient(135deg, #1f64c8, #3b82f6) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(43, 125, 233, 0.5);
+}
+
+.btn-cookie-secondary {
+    background: rgba(43, 125, 233, 0.1) !important;
+    color: #93c5fd !important;
+    border: 1px solid rgba(43, 125, 233, 0.35) !important;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
+.btn-cookie-secondary:hover {
+    background: rgba(43, 125, 233, 0.2) !important;
+    color: #ffffff !important;
+    border-color: rgba(43, 125, 233, 0.6) !important;
+}
+
+.btn-cookie-outline {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
+.btn-cookie-outline:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.cookie-switch:checked {
+    background-color: #2b7de9 !important;
+    border-color: #2b7de9 !important;
+    box-shadow: 0 0 10px rgba(43, 125, 233, 0.5) !important;
+}
+</style>

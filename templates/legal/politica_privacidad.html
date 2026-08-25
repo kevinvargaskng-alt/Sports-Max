@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Política de Privacidad y Tratamiento de Datos — Gestión Deportiva SENA{% endblock %}
+
+{% block meta_description %}Conoce la Política de Privacidad y Tratamiento de Datos Personales de Sports-Max SENA conforme a la Ley 1581 de 2012 (Habeas Data), RGPD y CCPA.{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'politica_privacidad' %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <!-- Encabezado de Documento Legal -->
+            <div class="card bg-dark text-white border-secondary mb-4 shadow-lg">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-success bg-opacity-25 p-3 text-success">
+                            <i class="fas fa-user-shield fa-2x" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-success mb-1">Cumplimiento Legal & Habeas Data</span>
+                            <h1 class="h2 fw-bold text-white mb-0">Política de Privacidad y Tratamiento de Datos</h1>
+                            <small class="text-white-50">Última actualización: 25 de Agosto de 2026 | Versión 2.1</small>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-dark border-secondary text-white-50 my-4" role="region" aria-label="Aviso Legal Principal">
+                        <p class="mb-0 small">
+                            <strong class="text-white"><i class="fas fa-balance-scale text-warning me-2" aria-hidden="true"></i>Marco Normativo:</strong>
+                            El <strong>Servicio Nacional de Aprendizaje (SENA)</strong>, entidad pública colombiana identificada con <strong>NIT 899.999.034-1</strong>, a través del <strong>Centro Minero (Regional Boyacá)</strong>, garantiza la protección y confidencialidad de los datos personales suministrados por aprendices, instructores, funcionarios y visitantes en la plataforma <strong>Sports-Max</strong>, en estricto cumplimiento de la <strong>Ley Estatutaria 1581 de 2012</strong>, el <strong>Decreto 1377 de 2013</strong>, y estándares internacionales de protección de datos como el <strong>RGPD (Reglamento General de Protección de Datos)</strong> y la <strong>CCPA (California Consumer Privacy Act)</strong>.
+                        </p>
+                    </div>
+
+                    <hr class="border-secondary my-4">
+
+                    <!-- Sección 1 -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-success fw-bold mb-3">1. Responsable del Tratamiento</h2>
+                        <ul class="list-unstyled text-white-50 small ps-3">
+                            <li class="mb-2"><strong>Razón Social:</strong> Servicio Nacional de Aprendizaje — SENA (Regional Boyacá)</li>
+                            <li class="mb-2"><strong>Sede:</strong> Centro Minero — Vereda Morcá, Km 7 Vía Sogamoso - Monguí</li>
+                            <li class="mb-2"><strong>Ciudad / País:</strong> Sogamoso, Boyacá, Colombia</li>
+                            <li class="mb-2"><strong>Correo Institucional:</strong> <a href="mailto:centrominero@sena.edu.co" class="text-info">centrominero@sena.edu.co</a></li>
+                            <li class="mb-2"><strong>Canal Oficial de PQRSD:</strong> <a href="https://sciudadanos.sena.edu.co" target="_blank" rel="noopener noreferrer" class="text-info">sciudadanos.sena.edu.co</a></li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 2 -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-success fw-bold mb-3">2. Datos Personales Recolectados</h2>
+                        <p class="text-white-50 small">Para la prestación de los servicios deportivos, préstamos y reserva de instalaciones, Sports-Max recopila las siguientes categorías de información:</p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 rounded bg-secondary bg-opacity-10 border border-secondary h-100">
+                                    <h3 class="h6 text-white fw-bold"><i class="fas fa-id-card text-info me-2" aria-hidden="true"></i>Datos de Identificación y Contacto</h3>
+                                    <p class="small text-white-50 mb-0">Nombres, apellidos, tipo y número de documento, ficha de formación, programa académico, correo institucional/personal y número telefónico.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 rounded bg-secondary bg-opacity-10 border border-secondary h-100">
+                                    <h3 class="h6 text-white fw-bold"><i class="fas fa-heartbeat text-danger me-2" aria-hidden="true"></i>Datos de Salud y Condición Física (Sensibles)</h3>
+                                    <p class="small text-white-50 mb-0">Estatura, peso, IMC, presión arterial, antecedentes médicos para actividad física y registro de asistencia deportiva (previa autorización expresa).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Sección 3 -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-success fw-bold mb-3">3. Finalidades del Tratamiento</h2>
+                        <p class="text-white-50 small">Los datos personales recolectados son tratados exclusivamente para:</p>
+                        <ol class="text-white-50 small ps-3">
+                            <li class="mb-2">Gestionar la inscripción, control de aforo y acceso a la sala de gimnasio y escenarios deportivos.</li>
+                            <li class="mb-2">Administrar el inventario, control de préstamos, devoluciones y sanciones de implementos deportivos.</li>
+                            <li class="mb-2">Organizar, programar y publicar estadísticas del Torneo Inter-Fichas y actividades de bienestar al aprendiz.</li>
+                            <li class="mb-2">Monitorear hábitos saludables y recomendaciones antropométricas personalizadas con fines pedagógicos y preventivos.</li>
+                            <li class="mb-2">Auditoría, seguridad del sistema, trazabilidad de accesos y prevención de incidentes informáticos.</li>
+                        </ol>
+                    </section>
+
+                    <!-- Sección 4 -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-success fw-bold mb-3">4. Derechos de los Titulares (Derechos ARCO)</h2>
+                        <p class="text-white-50 small">Conforme al artículo 8 de la Ley 1581 de 2012 y el RGPD, los titulares tienen derecho a:</p>
+                        <ul class="text-white-50 small ps-3">
+                            <li class="mb-2"><strong>Acceso y Conocimiento:</strong> Conocer, actualizar y rectificar sus datos personales frente al SENA en cualquier momento.</li>
+                            <li class="mb-2"><strong>Supresión o Cancelación:</strong> Solicitar la eliminación de sus datos cuando considere que no se respetan los principios legales.</li>
+                            <li class="mb-2"><strong>Revocatoria:</strong> Revocar la autorización otorgada para el tratamiento de datos sensibles no esenciales.</li>
+                            <li class="mb-2"><strong>Quejas y Reclamos:</strong> Presentar quejas ante la Superintendencia de Industria y Comercio (SIC) de Colombia.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 5 -->
+                    <section class="mb-4">
+                        <h2 class="h4 text-success fw-bold mb-3">5. Medidas de Seguridad de la Información</h2>
+                        <p class="text-white-50 small">
+                            Sports-Max aplica estrictos estándares técnicos de seguridad:
+                        </p>
+                        <ul class="text-white-50 small ps-3">
+                            <li class="mb-1">Cifrado de datos en reposo (PII) mediante algoritmo simétrico <strong>Fernet (AES-128-CBC)</strong>.</li>
+                            <li class="mb-1">Hashing irreversible de credenciales con <strong>Argon2id</strong>.</li>
+                            <li class="mb-1">Tránsito seguro mediante <strong>HTTPS/TLS</strong> forzado y cabeceras HSTS/CSP.</li>
+                            <li class="mb-1">Aislamiento de sesiones con cookies seguras (<strong>HttpOnly</strong>, <strong>SameSite=Lax</strong>, <strong>Secure</strong>).</li>
+                        </ul>
+                    </section>
+
+                    <!-- Sección 6 -->
+                    <section>
+                        <h2 class="h4 text-success fw-bold mb-3">6. Contacto para Protección de Datos</h2>
+                        <p class="text-white-50 small mb-0">
+                            Para ejercer cualquiera de sus derechos o formular consultas sobre el tratamiento de sus datos personales, comuníquese con el <strong>Comité de Bienestar y Deporte del Centro Minero SENA</strong> al correo electrónico <a href="mailto:centrominero@sena.edu.co" class="text-info">centrominero@sena.edu.co</a> o radique su solicitud en la ventanilla única institucional.
+                        </p>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Botón Volver -->
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="btn btn-outline-light px-4 py-2">
+                    <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

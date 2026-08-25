@@ -35,3 +35,9 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
+
+# ── Error Handlers — mensajes genéricos, stack traces solo en logs ──
+handler400 = 'core.security.error_handlers.handler400'
+handler403 = 'core.security.error_handlers.handler403'
+handler404 = 'core.security.error_handlers.handler404'
+handler500 = 'core.security.error_handlers.handler500'

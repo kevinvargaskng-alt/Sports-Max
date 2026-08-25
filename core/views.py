@@ -2,12 +2,16 @@ from inventario.models import ElementoDeportivo, Prestamo, Sancion
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo, PartidoInterfichas
 from gimnasio.models import Reserva
 import json
+import logging
 import urllib.request
 import urllib.error
 import os
 import base64
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
+security_logger = logging.getLogger('security')
 
 
 # ============================================================
@@ -259,10 +263,10 @@ def _get_motor_ia_local():
 #  ENDPOINT PRINCIPAL: /api/chat-tux/
 # ============================================================
 
-@csrf_exempt
+@login_required
+@require_POST
 def chat_tux_api(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "Método no permitido."}, status=405)
+    # Método ya restringido por @require_POST
 
     try:
         data = json.loads(request.body)
@@ -307,18 +311,19 @@ def chat_tux_api(request):
         })
 
     except Exception as e:
-        return JsonResponse({"error": f"Error interno del asistente: {str(e)}"}, status=500)
+        security_logger.exception("Error en chat_tux_api: %s", e)
+        return JsonResponse({"error": "Error interno del asistente. Intenta de nuevo."}, status=500)
 
 
 # ============================================================
 #  ENDPOINT: /api/transcribe-voice/
 # ============================================================
 
-@csrf_exempt
+@login_required
+@require_POST
 def transcribe_voice_api(request):
     """Recibe audio grabado por el usuario y lo transcribe usando Gemini API"""
-    if request.method != "POST":
-        return JsonResponse({"error": "Método no permitido."}, status=405)
+    # Método ya restringido por @require_POST
 
     if not request.FILES or 'audio' not in request.FILES:
         return JsonResponse({"error": "No se recibió archivo de audio."}, status=400)
@@ -329,7 +334,8 @@ def transcribe_voice_api(request):
 
         api_key = os.environ.get('GEMINI_API_KEY')
         if not api_key:
-            return JsonResponse({"error": "Clave API de Gemini no configurada en el servidor."}, status=500)
+            security_logger.error("GEMINI_API_KEY no configurada para transcripción")
+            return JsonResponse({"error": "Servicio de transcripción temporalmente no disponible."}, status=503)
 
         mime_type = audio_file.content_type
         if not mime_type or 'audio' not in mime_type:
@@ -383,6 +389,7 @@ def transcribe_voice_api(request):
         return JsonResponse({"text": transcripcion})
 
     except Exception as e:
-        return JsonResponse({"error": f"Error al procesar el audio: {str(e)}"}, status=500)
+        security_logger.exception("Error en transcribe_voice_api: %s", e)
+        return JsonResponse({"error": "Error al procesar el audio. Intenta de nuevo."}, status=500)
 
 

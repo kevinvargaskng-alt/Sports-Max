@@ -1,0 +1,27 @@
+<!-- ═══════════════════════════════════════════════════════════
+     MEDICIÓN Y ANALÍTICA RESPETUOSA DE PRIVACIDAD (GA4 / CONSENT MODE V2)
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+    // Inicializar Google Consent Mode v2 por defecto como DENEGADO
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+
+    gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'granted',
+        'security_storage': 'granted',
+        'wait_for_update': 500
+    });
+
+    // Escuchar cambios de consentimiento desde cookie_consent.js
+    window.addEventListener('sena_cookie_consent_updated', function (e) {
+        const consent = e.detail;
+        if (consent && consent.analytics) {
+            // Activar seguimiento analítico sólo si fue explícitamente aceptado
+            gtag('consent', 'update', {
+                'analytics_storage': 'granted'
+            });
+        }
+    });
+</script>

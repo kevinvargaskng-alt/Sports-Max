@@ -1,11 +1,47 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CO">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Gestión Deportiva{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
+    <!-- ── SEO Básico y Metadatos Dinámicos ───────────────────── -->
+    <title>{% block title %}Sports-Max — Sistema de Gestión Deportiva SENA{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Plataforma oficial de gestión deportiva del SENA Centro Minero: reservas de gimnasio, torneos inter-fichas, inventario deportivo y hábitos saludables.{% endblock %}">
+    <meta name="author" content="SENA — Centro Minero Regional Boyacá">
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
+    <link rel="canonical" href="{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
+
+    <!-- ── Open Graph / Facebook / WhatsApp ──────────────────── -->
+    <meta property="og:site_name" content="Sports-Max SENA">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{{ block.super }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Sistema integral de gestión deportiva, torneos y bienestar para aprendices e instructores del SENA Centro Minero.{% endblock %}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_sports_max.png' %}{% endblock %}">
+    <meta property="og:locale" content="es_CO">
+
+    <!-- ── Twitter Cards ──────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ block.super }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Sistema integral de gestión deportiva, torneos y bienestar del SENA Centro Minero.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_sports_max.png' %}{% endblock %}">
+
+    <!-- ── PWA & Identidad de Marca ──────────────────────────── -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/logo_sports_max.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/logo_sports_max.png' %}">
+    <meta name="theme-color" content="#39A900">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sports-Max">
+
+    <!-- ── Preconnects de Rendimiento ────────────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- ── CSS & Frameworks ──────────────────────────────────── -->
     <!-- Bootstrap 5 (Local) -->
     <link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
 
@@ -14,16 +50,45 @@
     
     <!-- Estilos principales -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- ── Schema.org JSON-LD (Estructurado) ─────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsActivityLocation",
+      "name": "Sports-Max — SENA Centro Minero",
+      "description": "Sistema de gestión deportiva, gimnasio y torneos inter-fichas del Servicio Nacional de Aprendizaje SENA.",
+      "url": "{{ request.scheme }}://{{ request.get_host }}",
+      "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_sports_max.png' %}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Vereda Morcá, Km 7 Vía Sogamoso - Monguí",
+        "addressLocality": "Sogamoso",
+        "addressRegion": "Boyacá",
+        "addressCountry": "CO"
+      },
+      "openingHours": "Mo-Fr 07:00-17:00",
+      "telephone": "+57 (608) 7700000"
+    }
+    </script>
     
+    <!-- ── Medición y Analítica (Consent Mode v2) ─────────────── -->
+    {% include "partials/analytics.html" %}
+
     {% block extra_css %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
+
+    <!-- ── Enlace Accesible de Salto al Contenido Principal (Skip Link) ── -->
+    <a href="#main-content" class="skip-to-content visually-hidden-focusable py-2 px-3 bg-success text-white fw-bold position-absolute top-0 start-0 z-index-top" style="z-index: 1100;">
+        Saltar al contenido principal
+    </a>
 
     <!-- Header -->
     {% include "partials/header.html" %}
 
     <!-- Contenido principal -->
-    <main class="flex-grow-1">
+    <main id="main-content" class="flex-grow-1" role="main" tabindex="-1">
         <!-- Notificaciones Globales -->
         {% include "partials/messages.html" %}
         
@@ -32,6 +97,9 @@
 
     <!-- Footer -->
     {% include "partials/footer.html" %}
+
+    <!-- Banner de Cookies y Consentimiento -->
+    {% include "partials/cookie_banner.html" %}
 
     <!-- Botón de Accesibilidad -->
     {% include "partials/accesibilidad.html" %}
@@ -42,9 +110,7 @@
     <!-- Diálogos Personalizados (reemplazo de alert/confirm nativos) -->
     {% include "partials/custom_dialog.html" %}
 
-    <!-- ══════════════════════════════════════════════
-         ASISTENTE IA DEPORTIVO (NUEVO)
-         ══════════════════════════════════════════════ -->
+    <!-- Asistente IA Tux -->
     {% include "partials/asistente_ia.html" %}
 
     {% if user.is_authenticated %}
@@ -54,6 +120,7 @@
 
     <!-- Scripts (Local) -->
     <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/cookie_consent.js' %}"></script>
     <script src="{% static 'js/sportsmax_validators.js' %}"></script>
     
     <script>
@@ -88,12 +155,11 @@
         });
     }
     </script>
-
     
     <script>
-    // Enforce min attribute on date inputs globally (prevent past dates, except for acquisition dates)
+    // Enforce min attribute on date inputs globally
     document.addEventListener('DOMContentLoaded', () => {
-        const todayStr = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time
+        const todayStr = new Date().toLocaleDateString('en-CA');
         document.querySelectorAll('input[type="date"]').forEach(input => {
             if (input.name !== 'fecha_adquisicion' && input.id !== 'inputFechaAdquisicion') {
                 input.min = todayStr;
