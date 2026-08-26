@@ -1065,7 +1065,8 @@ function selEstado(btn) {
 }
 
 /* Días (admin) */
-const diasActivos = new Set({{ dias_activos|default:"[]"|safe }});
+{{ dias_activos|default:"[]"|json_script:"dias-activos-data" }}
+const diasActivos = new Set(JSON.parse(document.getElementById('dias-activos-data')?.textContent || '[]'));
 /**
  * Agrega o remueve un día de la semana del conjunto de días activos en que abre el gimnasio.
  * @param {HTMLElement} btn - El botón del día pulsado.

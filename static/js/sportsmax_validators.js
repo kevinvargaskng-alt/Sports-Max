@@ -100,21 +100,41 @@ function initSportsMaxValidators() {
         });
     });
 
-    // 6. PREVENCIÓN GLOBAL DE DOBLE CLIC EN ENVÍO DE FORMULARIOS (QA & UX)
-    document.querySelectorAll('form').forEach(form => {
+    // 6. PREVENCIÓN GLOBAL DE DOBLE CLIC EN ENVÍO DE FORMULARIOS ESTÁNDAR
+    document.querySelectorAll('form:not(#loginForm):not(#registerForm):not(#formDesbloqueoUrgente)').forEach(form => {
         form.addEventListener('submit', (e) => {
             if (form.checkValidity && !form.checkValidity()) {
-                return; // Si el formulario HTML5 no es válido, no deshabilitar aún
+                return; // Si el formulario HTML5 no es válido, no deshabilitar
             }
             const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
             if (submitBtn && !submitBtn.disabled) {
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.setAttribute('data-original-content', originalContent);
                 setTimeout(() => {
+                    if (e.defaultPrevented) return;
                     submitBtn.disabled = true;
-                    const originalContent = submitBtn.innerHTML;
-                    submitBtn.setAttribute('data-original-content', originalContent);
                     submitBtn.innerHTML = `<i class="fas fa-circle-notch fa-spin me-2"></i> Procesando...`;
-                }, 10);
+                }, 20);
             }
         });
     });
 }
+
+/**
+ * Función global para restaurar botones de envío bloqueados en llamadas AJAX o errores.
+ */
+function resetSubmitButton(btnOrForm) {
+    if (!btnOrForm) return;
+    const btn = btnOrForm.tagName === 'FORM'
+        ? btnOrForm.querySelector('button[type="submit"], input[type="submit"]')
+        : btnOrForm;
+    if (btn) {
+        btn.disabled = false;
+        const orig = btn.getAttribute('data-original-content');
+        if (orig) {
+            btn.innerHTML = orig;
+        }
+    }
+}
+window.resetSubmitButton = resetSubmitButton;
+

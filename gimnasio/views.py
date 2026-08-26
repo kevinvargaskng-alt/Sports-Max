@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
+from django.core.exceptions import ValidationError
+from core.security.file_upload import validate_uploaded_file
 from .models import Reserva, GimnasioConfig, FechaIngreso, Maquina
 import json
 
@@ -356,6 +358,15 @@ def crear_maquina(request):
     estado = request.POST.get('estado', 'Disponible')
     descripcion = request.POST.get('descripcion', '').strip()
     imagen = request.FILES.get('imagen')
+    if imagen:
+        try:
+            imagen = validate_uploaded_file(imagen, allowed_types='image')
+        except ValidationError as e:
+            messages.error(request, f"Error en la imagen: {e.message}")
+            if next_param == 'machine_list':
+                return redirect('machine_list')
+            request.session['seccion_admin'] = 'maquinas'
+            return redirect('gimnasio')
     next_param = request.POST.get('next')
 
     if not nombre:
@@ -410,13 +421,24 @@ def editar_maquina(request, pk):
         request.session['seccion_admin'] = 'maquinas'
         return redirect('gimnasio')
 
+    imagen_val = None
+    if request.FILES.get('imagen'):
+        try:
+            imagen_val = validate_uploaded_file(request.FILES.get('imagen'), allowed_types='image')
+        except ValidationError as e:
+            messages.error(request, f"Error en la imagen: {e.message}")
+            if next_param == 'machine_list':
+                return redirect('machine_list')
+            request.session['seccion_admin'] = 'maquinas'
+            return redirect('gimnasio')
+
     if machine:
         machine.nombre = nombre
         machine.tipo = request.POST.get('categoria', machine.tipo)
         machine.estado = request.POST.get('estado', machine.estado)
         machine.descripcion = request.POST.get('descripcion', '').strip()
-        if request.FILES.get('imagen'):
-            machine.imagen = request.FILES.get('imagen')
+        if imagen_val:
+            machine.imagen = imagen_val
         machine.save()
 
     if maquina:
@@ -424,8 +446,8 @@ def editar_maquina(request, pk):
         maquina.categoria = request.POST.get('categoria', maquina.categoria).lower()
         maquina.estado = request.POST.get('estado', maquina.estado)
         maquina.descripcion = request.POST.get('descripcion', '').strip()
-        if request.FILES.get('imagen'):
-            maquina.imagen = request.FILES.get('imagen')
+        if imagen_val:
+            maquina.imagen = imagen_val
         maquina.save()
 
     messages.success(request, 'Máquina actualizada correctamente.')

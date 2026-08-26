@@ -426,9 +426,13 @@ canvas { width: 100% !important; max-height: 220px !important; }
   document.querySelectorAll('.reveal').forEach(r => io.observe(r));
 
   {% if ultimo or seguimientos %}
-  const fechas = {{ fechas_json|safe }};
-  const pesos  = {{ pesos_json|safe }};
-  const imcs   = {{ imcs_json|safe }};
+  {{ fechas|json_script:"fechas-data" }}
+  {{ pesos|json_script:"pesos-data" }}
+  {{ imcs|json_script:"imcs-data" }}
+  <script>
+  const fechas = JSON.parse(document.getElementById('fechas-data')?.textContent || '[]');
+  const pesos  = JSON.parse(document.getElementById('pesos-data')?.textContent || '[]');
+  const imcs   = JSON.parse(document.getElementById('imcs-data')?.textContent || '[]');
 
   const isLightTheme = document.body.classList.contains('light-theme');
   Chart.defaults.color = isLightTheme ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)';

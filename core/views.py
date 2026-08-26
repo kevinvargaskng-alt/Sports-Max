@@ -330,6 +330,10 @@ def transcribe_voice_api(request):
 
     try:
         audio_file = request.FILES['audio']
+        # Limitar tamaño de audio a 10 MB para prevenir agotamiento de memoria
+        if audio_file.size > 10 * 1024 * 1024:
+            return JsonResponse({"error": "El archivo de audio no puede superar los 10 MB."}, status=400)
+
         audio_bytes = audio_file.read()
 
         api_key = os.environ.get('GEMINI_API_KEY')

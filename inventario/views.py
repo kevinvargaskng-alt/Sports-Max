@@ -5,6 +5,8 @@ from django.contrib import messages
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion
 from datetime import datetime, date, timedelta
 from usuarios.models import Usuario
+from django.core.exceptions import ValidationError
+from core.security.file_upload import validate_uploaded_file
 
 
 # ─────────────────────────────────────────────────────────────
@@ -47,6 +49,14 @@ def inventario_list(request):
             responsable = Usuario.objects.get(
                 id=responsable_id) if responsable_id else None
 
+            imagen_file = request.FILES.get('imagen')
+            if imagen_file:
+                try:
+                    imagen_file = validate_uploaded_file(imagen_file, allowed_types='image')
+                except ValidationError as e:
+                    messages.error(request, f"Error en la imagen: {e.message}")
+                    return redirect('inventario')
+
             ElementoDeportivo.objects.create(
                 tipo_maquina=request.POST.get('nombre_elemento'),
                 cantidad_total=request.POST.get('cantidad_total'),
@@ -54,7 +64,7 @@ def inventario_list(request):
                 fecha_adquisicion=request.POST.get(
                     'fecha_adquisicion') or None,
                 descripcion=request.POST.get('descripcion', ''),
-                imagen=request.FILES.get('imagen'),
+                imagen=imagen_file,
                 usuario_responsable=responsable,
                 habilitado=request.POST.get('habilitado') == 'on' if 'habilitado' in request.POST else True,
             )
@@ -88,7 +98,11 @@ def inventario_list(request):
                 elemento.descripcion = request.POST.get('descripcion', '')
                 elemento.habilitado = request.POST.get('habilitado') == 'on'
                 if 'imagen' in request.FILES:
-                    elemento.imagen = request.FILES['imagen']
+                    try:
+                        elemento.imagen = validate_uploaded_file(request.FILES['imagen'], allowed_types='image')
+                    except ValidationError as e:
+                        messages.error(request, f"Error en la imagen: {e.message}")
+                        return redirect('inventario')
                 elemento.save()
                 messages.success(
                     request, "Elemento actualizado correctamente.")
@@ -392,7 +406,11 @@ def editar_elemento(request, id):
     elemento = get_object_or_404(ElementoDeportivo, id=id)
     if request.method == 'POST':
         if 'imagen' in request.FILES:
-            elemento.imagen = request.FILES['imagen']
+            try:
+                elemento.imagen = validate_uploaded_file(request.FILES['imagen'], allowed_types='image')
+            except ValidationError as e:
+                messages.error(request, f"Error en la imagen: {e.message}")
+                return redirect('inventario')
         elemento.tipo_maquina = request.POST.get('tipo_maquina')
         elemento.cantidad_total = request.POST.get('cantidad_total')
         elemento.estado_general = request.POST.get('estado_general')

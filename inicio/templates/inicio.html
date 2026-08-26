@@ -865,84 +865,12 @@
   /* ── Mostrar error ── */
   function mostrarError(msg) {
     const alertEl = document.getElementById('registerAlert');
-    alertEl.className = 'alert alert-danger mt-2 text-danger fw-bold border-danger';
-    alertEl.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + msg;
-    alertEl.classList.remove('d-none');
-    setTimeout(() => alertEl.classList.add('d-none'), 8000);
-  }
-
-  /* ── CP-04: Manejador de Registro con Estado de Carga y Bloqueo de Botón ── */
-  const formReg = document.getElementById('registerForm');
-  if (formReg) {
-    formReg.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const btnSubmit = document.getElementById('btnSubmitRegistro');
-      const btnText = document.getElementById('btnRegistroText');
-      const alertEl = document.getElementById('registerAlert');
-
-      // Validar contraseñas iguales
-      const pwd1 = document.getElementById('id_contrasena')?.value || '';
-      const pwd2 = document.getElementById('confirmarContrasena')?.value || '';
-
-      if (pwd1 && pwd2 && pwd1 !== pwd2) {
-        mostrarError('Las contraseñas no coinciden. Por favor verifícalas.');
-        return;
-      }
-
-      // Bloquear botón y mostrar spinner de carga (CP-04)
-      if (btnSubmit) {
-        btnSubmit.disabled = true;
-        if (btnText) {
-          btnText.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Procesando registro...';
-        }
-      }
-
-      if (alertEl) {
-        alertEl.classList.add('d-none');
-      }
-
-      const formData = new FormData(this);
-
-      fetch(this.action || '/registro/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      .then(response => response.json().then(data => ({ status: response.status, data: data })))
-      .then(({ status, data }) => {
-        if (data.status === 'success' || status === 200) {
-          if (alertEl) {
-            alertEl.className = 'alert alert-success mt-2 fw-bold';
-            alertEl.innerHTML = '<i class="fas fa-check-circle me-2"></i> ¡Registro exitoso! Redirigiendo...';
-            alertEl.classList.remove('d-none');
-          }
-          setTimeout(() => {
-            window.location.href = data.redirect || '/perfil/';
-          }, 1500);
-        } else {
-          // Desbloquear botón y restaurar texto
-          if (btnSubmit) {
-            btnSubmit.disabled = false;
-            if (btnText) {
-              btnText.textContent = 'Finalizar Registro';
-            }
-          }
-          mostrarError(data.message || 'Ocurrió un error al procesar el registro.');
-        }
-      })
-      .catch(err => {
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          if (btnText) {
-            btnText.textContent = 'Finalizar Registro';
-          }
-        }
-        mostrarError('Error de conexión con el servidor. Intenta de nuevo.');
-      });
-    });
+    if (alertEl) {
+      alertEl.className = 'alert alert-danger mt-2 text-danger fw-bold border-danger';
+      alertEl.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + msg;
+      alertEl.classList.remove('d-none');
+      setTimeout(() => alertEl.classList.add('d-none'), 8000);
+    }
   }
 
 })();

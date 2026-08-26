@@ -187,14 +187,19 @@ document.addEventListener('DOMContentLoaded', function () {
         loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const loginAlert = document.getElementById('loginAlert');
-            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.innerHTML : 'Ingresar al sistema';
 
-            if (loginAlert) {
-                loginAlert.classList.remove('d-none');
-                loginAlert.className = 'alert alert-info';
-                loginAlert.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando credenciales...';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Ingresando...';
             }
 
+            if (loginAlert) {
+                loginAlert.classList.add('d-none');
+            }
+
+            const formData = new FormData(this);
             const nextUrl = urlParams.get('next');
             const url = nextUrl ? `/login/?next=${encodeURIComponent(nextUrl)}` : '/login/';
 
@@ -203,43 +208,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
+            .then(response => response.json().then(data => ({ ok: response.ok, status: response.status, data })))
+            .then(({ ok, status, data }) => {
+                if (data.status === 'success' || (ok && data.success)) {
                     if (loginAlert) {
                         loginAlert.className = 'alert alert-success';
-                        loginAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + data.message;
+                        loginAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + (data.message || 'Bienvenido al sistema');
+                        loginAlert.classList.remove('d-none');
                     }
-                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 900);
-                } else if (data.status === 'blocked' || data.bloqueado) {
-                    // Mostrar modal de cuenta bloqueada
-                    if (loginAlert) {
-                        loginAlert.className = 'alert alert-warning';
-                        loginAlert.innerHTML = '<i class="fas fa-lock me-2"></i>' + data.message;
-                    }
-                    const minutos = data.minutos || 5;
-                    const msg = minutos >= 1440
-                        ? 'Tu cuenta fue bloqueada por 24 horas por múltiples intentos fallidos.'
-                        : `Tu cuenta fue bloqueada por ${minutos} minuto(s) por intentos fallidos.`;
-                    // Mostrar modal de bloqueo
-                    const elModalBloqueo = document.getElementById('modalCuentaBloqueada');
-                    if (elModalBloqueo) {
-                        document.getElementById('msgBloqueo').textContent = msg;
-                        const bsModal = new bootstrap.Modal(elModalBloqueo);
-                        bsModal.show();
-                    }
+                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 500);
                 } else {
-                    if (loginAlert) {
-                        loginAlert.className = 'alert alert-danger';
-                        loginAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i>' + data.message;
+                    // Restaurar botón inmediatamente
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                    if (data.status === 'blocked' || data.bloqueado) {
+                        if (loginAlert) {
+                            loginAlert.className = 'alert alert-warning';
+                            loginAlert.innerHTML = '<i class="fas fa-lock me-2"></i>' + (data.message || 'Cuenta bloqueada');
+                            loginAlert.classList.remove('d-none');
+                        }
+                        const minutos = data.minutos || 5;
+                        const msg = minutos >= 1440
+                            ? 'Tu cuenta fue bloqueada por 24 horas por múltiples intentos fallidos.'
+                            : `Tu cuenta fue bloqueada por ${minutos} minuto(s) por intentos fallidos.`;
+                        const elModalBloqueo = document.getElementById('modalCuentaBloqueada');
+                        if (elModalBloqueo) {
+                            document.getElementById('msgBloqueo').textContent = msg;
+                            const bsModal = new bootstrap.Modal(elModalBloqueo);
+                            bsModal.show();
+                        }
+                    } else {
+                        if (loginAlert) {
+                            loginAlert.className = 'alert alert-danger';
+                            loginAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i>' + (data.message || 'Documento/correo o contraseña incorrectos.');
+                            loginAlert.classList.remove('d-none');
+                        }
                     }
                 }
             })
             .catch(error => {
                 console.error('Error en Login:', error);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
                 if (loginAlert) {
                     loginAlert.className = 'alert alert-danger';
-                    loginAlert.innerHTML = 'Error de conexión con el servidor.';
+                    loginAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i> Error de conexión con el servidor.';
+                    loginAlert.classList.remove('d-none');
                 }
             });
         });
@@ -252,20 +270,25 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const form = e.target;
             const registerAlert = document.getElementById('registerAlert');
+            const submitBtn = document.getElementById('btnSubmitRegistro') || form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.innerHTML : 'Finalizar Registro';
 
             if (!form.checkValidity()) {
                 e.stopPropagation();
-                form.classList.add('was-validated');
                 if (registerAlert) {
                     registerAlert.classList.remove('d-none');
                     registerAlert.className = 'alert alert-danger mt-3';
                     registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Por favor, completa todos los campos obligatorios (*).';
                 }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
                 return;
             }
 
-            const pass = document.getElementById('id_contrasena').value;
-            const confPass = document.getElementById('confirmarContrasena').value;
+            const pass = document.getElementById('id_contrasena')?.value || '';
+            const confPass = document.getElementById('confirmarContrasena')?.value || '';
 
             if (pass !== confPass) {
                 if (registerAlert) {
@@ -273,77 +296,69 @@ document.addEventListener('DOMContentLoaded', function () {
                     registerAlert.className = 'alert alert-warning mt-3';
                     registerAlert.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Las contraseñas no coinciden.';
                 }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
                 return;
             }
 
-            // ── Validación de contraseña débil ──
-            const commonPasswords = [
-                '12345678', '123456789', '1234567890', 'password', 'contrasena',
-                'contraseña', 'qwerty', 'abcdefgh', '11111111', '00000000',
-                'admin123', 'password1', '12341234', 'abc12345'
-            ];
-            const numDoc = document.getElementById('id_numero_documento') ? document.getElementById('id_numero_documento').value : '';
+            if (pass.length < 8) {
+                if (registerAlert) {
+                    registerAlert.classList.remove('d-none');
+                    registerAlert.className = 'alert alert-danger mt-3';
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña debe tener mínimo 8 caracteres.';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+                return;
+            }
 
-            if (pass.length < 7 || pass.length > 10) {
-                if (registerAlert) {
-                    registerAlert.classList.remove('d-none');
-                    registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña debe tener entre 7 y 10 caracteres.';
-                }
-                return;
-            }
-            if (/^\d+$/.test(pass)) {
-                if (registerAlert) {
-                    registerAlert.classList.remove('d-none');
-                    registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña no puede ser solo números. Incluye letras y/o símbolos.';
-                }
-                return;
-            }
-            if (commonPasswords.includes(pass.toLowerCase())) {
-                if (registerAlert) {
-                    registerAlert.classList.remove('d-none');
-                    registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Esa contraseña es demasiado común. Por favor, elige otra.';
-                }
-                return;
-            }
-            if (numDoc && pass.toLowerCase() === numDoc.toLowerCase()) {
-                if (registerAlert) {
-                    registerAlert.classList.remove('d-none');
-                    registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña no puede ser igual a tu número de documento.';
-                }
-                return;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Procesando registro...';
             }
 
             const formData = new FormData(this);
-            if (registerAlert) {
-                registerAlert.classList.remove('d-none');
-                registerAlert.className = 'alert alert-info mt-3';
-                registerAlert.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando registro...';
-            }
 
             fetch('/registro/', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (registerAlert) {
-                    registerAlert.className = `alert alert-${data.status === 'success' ? 'success' : 'danger'} mt-3`;
-                    registerAlert.innerHTML = data.message;
-                }
-                if (data.status === 'success') {
-                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 1500);
+            .then(response => response.json().then(data => ({ ok: response.ok, status: response.status, data })))
+            .then(({ ok, status, data }) => {
+                if (data.status === 'success' || (ok && data.success)) {
+                    if (registerAlert) {
+                        registerAlert.className = 'alert alert-success mt-3';
+                        registerAlert.innerHTML = '<i class="fas fa-check-circle me-2"></i> ' + (data.message || '¡Registro exitoso! Redirigiendo...');
+                        registerAlert.classList.remove('d-none');
+                    }
+                    setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 1000);
+                } else {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                    if (registerAlert) {
+                        registerAlert.className = 'alert alert-danger mt-3';
+                        registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> ' + (data.message || 'Error al registrar.');
+                        registerAlert.classList.remove('d-none');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error en Registro:', error);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
                 if (registerAlert) {
                     registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i> Error en la conexión.';
+                    registerAlert.innerHTML = '<i class="fas fa-times-circle me-2"></i> Error en la conexión con el servidor.';
+                    registerAlert.classList.remove('d-none');
                 }
             });
         });

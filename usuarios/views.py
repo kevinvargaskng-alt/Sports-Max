@@ -146,8 +146,7 @@ def login_view(request):
                 return redirect('home')
             else:
                 usuario_obj.save(update_fields=['intentos_fallidos'])
-                restantes = 3 - intentos if intentos < 3 else 6 - intentos
-                msg = f'Documento/correo o contraseña incorrectos. Intentos restantes: {restantes}.'
+                msg = 'Documento/correo o contraseña incorrectos.'
                 if is_ajax:
                     return JsonResponse({
                         'status': 'error',
@@ -170,23 +169,29 @@ def login_view(request):
     return redirect('home')
 
 
+@require_POST
 def desbloquear_cuenta_view(request):
-    """Permite desbloquear la cuenta ingresando datos personales de validación."""
-    if request.method == 'POST':
-        doc = request.POST.get('numero_documento', '').strip()
-        correo = request.POST.get('email', '').strip().lower()
-        telefono = request.POST.get('telefono', '').strip()
+    """Permite desbloquear la cuenta ingresando datos de validación."""
+    doc = request.POST.get('numero_documento', '').strip()
+    correo = request.POST.get('email', '').strip().lower()
+    telefono = request.POST.get('telefono', '').strip()
 
-        try:
-            u = Usuario.objects.get(username=doc, email__iexact=correo, telefono=telefono)
-            u.intentos_fallidos = 0
-            u.bloqueado_hasta = None
-            u.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
-            return JsonResponse({'status': 'success', 'message': 'Cuenta desbloqueada. Ya puedes iniciar sesión.'})
-        except Usuario.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Los datos no coinciden con ningún usuario registrado.'}, status=400)
+    if not doc or not correo or not telefono:
+        return JsonResponse({'status': 'error', 'message': 'Todos los campos son obligatorios.'}, status=400)
 
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    try:
+        from django.db.models import Q
+        u = Usuario.objects.get(
+            Q(username=doc) | Q(numero_documento=doc),
+            email__iexact=correo,
+            telefono=telefono
+        )
+        u.intentos_fallidos = 0
+        u.bloqueado_hasta = None
+        u.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
+        return JsonResponse({'status': 'success', 'message': 'Cuenta desbloqueada. Ya puedes iniciar sesión.'})
+    except (Usuario.DoesNotExist, Usuario.MultipleObjectsReturned):
+        return JsonResponse({'status': 'error', 'message': 'Los datos no coinciden con ningún usuario registrado.'}, status=400)
 
 
 @login_required
