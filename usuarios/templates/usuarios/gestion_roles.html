@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+{% load static %}
+{% load rol_tags %}
+
+{% block title %}Gestión de Roles — Sports-Max SENA{% endblock %}
+{% block meta_description %}Panel de administración de roles de usuario. Asigna permisos a aprendices, entrenadores, nutricionistas e instructores.{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── CP-16: Gestión de Roles ─────────────────────────────── */
+.roles-hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 2.5rem 0 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.roles-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(57, 169, 0, 0.15) 0%, transparent 70%);
+}
+.roles-hero h1 { color: #fff; font-weight: 800; position: relative; z-index: 1; }
+.roles-hero p  { color: rgba(255,255,255,.7); position: relative; z-index: 1; }
+
+.role-badge {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .3rem .75rem; border-radius: 2rem; font-size: .8rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.role-badge.aprendiz      { background: rgba(25,135,84,.15); color: #198754; border: 1px solid rgba(25,135,84,.4); }
+.role-badge.entrenador    { background: rgba(13,110,253,.15); color: #0d6efd; border: 1px solid rgba(13,110,253,.4); }
+.role-badge.nutricionista { background: rgba(111,66,193,.15); color: #6f42c1; border: 1px solid rgba(111,66,193,.4); }
+.role-badge.instructor    { background: rgba(255,193,7,.15);  color: #ffc107; border: 1px solid rgba(255,193,7,.4); }
+.role-badge.administrador { background: rgba(220,53,69,.15);  color: #dc3545; border: 1px solid rgba(220,53,69,.4); }
+
+.roles-card {
+  background: var(--bs-body-bg);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+.user-row:hover { background: rgba(57,169,0,.05); }
+.user-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  object-fit: cover; object-position: center;
+}
+.user-avatar-initials {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .95rem; color: #fff;
+  background: linear-gradient(135deg, #39A900, #0d6efd);
+  flex-shrink: 0;
+}
+
+.filter-bar { background: rgba(255,255,255,.03); border-radius: .75rem; padding: 1rem 1.25rem; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1090; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="roles-hero mb-4">
+  <div class="container">
+    <nav aria-label="breadcrumb" class="mb-2">
+      <ol class="breadcrumb mb-0" style="--bs-breadcrumb-divider-color: rgba(255,255,255,.4)">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-success">Inicio</a></li>
+        <li class="breadcrumb-item active text-white-50">Gestión de Roles</li>
+      </ol>
+    </nav>
+    <h1 class="h2 mb-1">
+      <i class="fas fa-shield-halved text-success me-2"></i>Gestión de Roles
+    </h1>
+    <p class="mb-0">Asigna permisos y niveles de acceso a los usuarios de la plataforma.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+
+  <!-- STATS ROW -->
+  <div class="row g-3 mb-4">
+    {% for rol_key, rol_label in roles_disponibles.items %}
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center p-3 border-0 h-100" style="background:rgba(255,255,255,.05);border-radius:.75rem;">
+        <div class="fs-3 fw-bold text-success mb-1">{{ conteo_roles|get_item:rol_key|default:0 }}</div>
+        <div class="text-muted small text-capitalize">{{ rol_label }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filter-bar mb-3 d-flex flex-wrap gap-2 align-items-center">
+    <input id="buscadorUsuarios" type="text" class="form-control form-control-sm" style="max-width:260px"
+           placeholder="🔍 Buscar nombre o documento…">
+    <select id="filtroRol" class="form-select form-select-sm" style="max-width:180px">
+      <option value="">Todos los roles</option>
+      {% for rol_key, rol_label in roles_disponibles.items %}
+      <option value="{{ rol_key }}">{{ rol_label }}</option>
+      {% endfor %}
+    </select>
+    <span class="text-muted small ms-auto" id="contadorVisible">{{ usuarios|length }} usuarios</span>
+  </div>
+
+  <!-- TABLA -->
+  <div class="roles-card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle" id="tablaRoles">
+        <thead style="background:rgba(57,169,0,.1)">
+          <tr>
+            <th class="ps-4">Usuario</th>
+            <th>Documento</th>
+            <th>Ficha</th>
+            <th>Rol actual</th>
+            <th class="text-end pe-4">Cambiar rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+          <tr class="user-row" data-nombre="{{ u.get_full_name|lower }}" data-doc="{{ u.numero_documento }}" data-rol="{{ u.rol }}">
+            <td class="ps-4">
+              <div class="d-flex align-items-center gap-2">
+                {% if u.foto_perfil %}
+                  <img src="{{ u.foto_perfil.url }}" alt="{{ u.iniciales }}" class="user-avatar">
+                {% else %}
+                  <div class="user-avatar-initials">{{ u.iniciales }}</div>
+                {% endif %}
+                <div>
+                  <div class="fw-semibold small">{{ u.get_full_name }}</div>
+                  <div class="text-muted" style="font-size:.75rem">{{ u.email }}</div>
+                  <div class="text-muted d-flex gap-2 flex-wrap mt-1" style="font-size:.68rem;">
+                    <span title="Última actualización de datos"><i class="fas fa-pen-to-square me-1 text-warning"></i>Act: {{ u.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                    {% if u.last_login %}
+                    <span title="Último inicio de sesión"><i class="fas fa-clock me-1 text-info"></i>Acceso: {{ u.last_login|timesince }} atrás</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="text-muted small">{{ u.tipo_documento }} {{ u.numero_documento }}</td>
+            <td class="text-muted small">{{ u.ficha|default:"—" }}</td>
+            <td>
+              <span class="role-badge {{ u.rol }}">
+                <i class="fas {{ u.rol|rol_icono }} fa-xs"></i> {{ u.rol|capfirst }}
+              </span>
+            </td>
+            <td class="text-end pe-4">
+              {% if request.user != u %}
+              <button type="button"
+                      class="btn btn-sm btn-outline-success rounded-pill"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCambiarRol"
+                      data-userid="{{ u.pk }}"
+                      data-username="{{ u.get_full_name }}"
+                      data-rolactual="{{ u.rol }}"
+                      id="btnCambiarRol{{ u.pk }}">
+                <i class="fas fa-pen fa-xs me-1"></i>Cambiar
+              </button>
+              {% else %}
+              <span class="text-muted small">Tú</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-5">
+              <i class="fas fa-users-slash fa-2x mb-2 d-block"></i>No hay usuarios registrados.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR ROL -->
+<div class="modal fade" id="modalCambiarRol" tabindex="-1" aria-labelledby="modalCambiarRolLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#1a1a2e;border:1px solid rgba(57,169,0,.3)">
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-white" id="modalCambiarRolLabel">
+          <i class="fas fa-user-shield text-success me-2"></i>Cambiar Rol
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-white-50 mb-3">
+          Cambiando el rol de <strong class="text-white" id="modalNombreUsuario">—</strong>
+        </p>
+        <div class="mb-3">
+          <label class="form-label text-white-50 small">Rol actual</label>
+          <div id="modalRolActualBadge"></div>
+        </div>
+        <div class="mb-1">
+          <label class="form-label text-white-50 small" for="selectNuevoRol">Nuevo rol</label>
+          <select id="selectNuevoRol" class="form-select" style="background:#0f3460;color:#fff;border-color:rgba(57,169,0,.4)">
+            {% for rol_key, rol_label in roles_disponibles.items %}
+            <option value="{{ rol_key }}">{{ rol_label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="alert alert-warning mt-3 py-2 small mb-0" role="alert">
+          <i class="fas fa-triangle-exclamation me-1"></i>
+          Esta acción modifica los permisos del usuario en la plataforma. Solo el administrador puede revertirla.
+        </div>
+      </div>
+      <div class="modal-footer border-0 gap-2">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success rounded-pill px-4 fw-bold" id="btnConfirmarCambioRol">
+          <i class="fas fa-check me-1"></i>Confirmar cambio
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container">
+  <div id="toastRol" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive">
+    <div class="d-flex">
+      <div class="toast-body" id="toastRolBody">Rol actualizado.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+
+  const CSRF = '{{ csrf_token }}';
+  let userIdPendiente = null;
+
+  // ── Abrir modal ──────────────────────────────────────────
+  document.getElementById('modalCambiarRol').addEventListener('show.bs.modal', function (e) {
+    const btn = e.relatedTarget;
+    userIdPendiente = btn.dataset.userid;
+    const nombre = btn.dataset.username;
+    const rolActual = btn.dataset.rolactual;
+
+    document.getElementById('modalNombreUsuario').textContent = nombre;
+    document.getElementById('modalRolActualBadge').innerHTML =
+      `<span class="role-badge ${rolActual}">${rolActual.charAt(0).toUpperCase() + rolActual.slice(1)}</span>`;
+
+    const select = document.getElementById('selectNuevoRol');
+    select.value = rolActual;
+  });
+
+  // ── Confirmar cambio ─────────────────────────────────────
+  document.getElementById('btnConfirmarCambioRol').addEventListener('click', async function () {
+    const nuevoRol = document.getElementById('selectNuevoRol').value;
+    if (!userIdPendiente) return;
+
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando…';
+
+    try {
+      const resp = await fetch(`/perfil/rol/${userIdPendiente}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': CSRF,
+        },
+        body: `rol=${encodeURIComponent(nuevoRol)}`,
+      });
+
+      const data = await resp.json();
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarRol'));
+      modal.hide();
+
+      if (data.ok || resp.ok) {
+        mostrarToast('✅ Rol actualizado correctamente.', 'success');
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        mostrarToast('❌ Error: ' + (data.error || 'No se pudo cambiar el rol.'), 'danger');
+      }
+    } catch (err) {
+      mostrarToast('❌ Error de red. Intenta de nuevo.', 'danger');
+    } finally {
+      this.disabled = false;
+      this.innerHTML = '<i class="fas fa-check me-1"></i>Confirmar cambio';
+    }
+  });
+
+  // ── Filtros en tiempo real ───────────────────────────────
+  const buscador = document.getElementById('buscadorUsuarios');
+  const filtroRol = document.getElementById('filtroRol');
+  const filas = document.querySelectorAll('#tablaRoles tbody tr.user-row');
+  const contador = document.getElementById('contadorVisible');
+
+  function filtrar() {
+    const texto = buscador.value.toLowerCase();
+    const rol = filtroRol.value;
+    let visible = 0;
+    filas.forEach(fila => {
+      const coincideTexto = fila.dataset.nombre.includes(texto) || fila.dataset.doc.includes(texto);
+      const coincideRol = !rol || fila.dataset.rol === rol;
+      const mostrar = coincideTexto && coincideRol;
+      fila.style.display = mostrar ? '' : 'none';
+      if (mostrar) visible++;
+    });
+    contador.textContent = `${visible} usuario${visible !== 1 ? 's' : ''}`;
+  }
+
+  buscador.addEventListener('input', filtrar);
+  filtroRol.addEventListener('change', filtrar);
+
+  // ── Toast helper ────────────────────────────────────────
+  function mostrarToast(mensaje, tipo = 'success') {
+    const toastEl = document.getElementById('toastRol');
+    toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+    toastEl.classList.add(`bg-${tipo}`);
+    document.getElementById('toastRolBody').textContent = mensaje;
+    bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 }).show();
+  }
+})();
+</script>
+{% endblock %}

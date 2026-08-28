@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Calcular IMC y Calorías — Sports-Max SENA{% endblock %}
+{% block meta_description %}Calcula tu Índice de Masa Corporal (IMC) y tus requerimientos calóricos diarios con la fórmula Mifflin-St Jeor.{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── CP-10: Calculadora IMC ───────────────────────────────── */
+.imc-hero {
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1f2937 100%);
+  padding: 2.5rem 0 1.5rem;
+  position: relative; overflow: hidden;
+}
+.imc-hero::after {
+  content: '';
+  position: absolute;
+  right: -80px; top: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(57,169,0,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.imc-hero h1 { color: #fff; font-weight: 800; }
+.imc-hero p  { color: rgba(255,255,255,.65); }
+
+.calc-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.form-control-glass {
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  color: #e0e0e0 !important;
+  border-radius: .6rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.form-control-glass:focus {
+  border-color: #39A900 !important;
+  box-shadow: 0 0 0 3px rgba(57,169,0,.2) !important;
+  background: rgba(255,255,255,.1) !important;
+}
+.form-label { color: rgba(255,255,255,.75); font-weight: 500; font-size: .9rem; }
+
+/* IMC meter */
+.imc-meter { position: relative; height: 18px; border-radius: 99px; overflow: hidden;
+             background: linear-gradient(90deg, #3b82f6 0%, #22c55e 25%, #f59e0b 55%, #ef4444 80%); }
+.imc-needle {
+  position: absolute; top: -4px; width: 4px; height: 26px;
+  background: #fff; border-radius: 2px;
+  box-shadow: 0 0 8px rgba(0,0,0,.5);
+  transition: left .8s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Result panel */
+.result-panel { display: none; }
+.result-panel.visible { display: block; animation: slideIn .4s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.kpi-box {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: .85rem; padding: 1.25rem; text-align: center;
+}
+.kpi-box .kpi-val { font-size: 2rem; font-weight: 800; }
+.kpi-box .kpi-label { font-size: .78rem; color: rgba(255,255,255,.55); text-transform: uppercase; letter-spacing: .06em; }
+
+/* Radio pills */
+.radio-pill { display: none; }
+.radio-pill + label {
+  cursor: pointer; border: 1px solid rgba(255,255,255,.15);
+  border-radius: 99px; padding: .35rem .9rem; font-size: .85rem;
+  color: rgba(255,255,255,.6); transition: all .2s;
+  display: inline-flex; align-items: center; gap: .35rem;
+}
+.radio-pill:checked + label {
+  background: #39A900; color: #fff; border-color: #39A900;
+  box-shadow: 0 0 12px rgba(57,169,0,.35);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="imc-hero mb-5">
+  <div class="container">
+    <nav aria-label="breadcrumb" class="mb-2">
+      <ol class="breadcrumb mb-0" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.4)">
+        <li class="breadcrumb-item"><a href="{% url 'habitos:inicio' %}" class="text-success">Hábitos</a></li>
+        <li class="breadcrumb-item active text-white-50">Calcular IMC</li>
+      </ol>
+    </nav>
+    <h1 class="h2 mb-1"><i class="fas fa-weight-scale text-success me-2"></i>Calculadora de IMC y Calorías</h1>
+    <p class="mb-0">Conoce tu estado físico actual y adapta tu dieta a tus objetivos.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="row g-4">
+
+    <!-- FORMULARIO -->
+    <div class="col-lg-5">
+      <div class="calc-card p-4">
+        <h2 class="h5 text-white mb-4"><i class="fas fa-sliders text-success me-2"></i>Tus datos</h2>
+
+        <!-- Género -->
+        <div class="mb-3">
+          <label class="form-label">Género biológico</label>
+          <div class="d-flex gap-2 flex-wrap">
+            <input type="radio" class="radio-pill" name="genero" id="genM" value="M" checked>
+            <label for="genM"><i class="fas fa-mars"></i> Masculino</label>
+            <input type="radio" class="radio-pill" name="genero" id="genF" value="F">
+            <label for="genF"><i class="fas fa-venus"></i> Femenino</label>
+          </div>
+        </div>
+
+        <!-- Peso / Estatura / Edad -->
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label" for="inputPeso">Peso (kg)</label>
+            <input type="number" id="inputPeso" class="form-control form-control-glass"
+                   min="20" max="300" step="0.1" placeholder="70.0"
+                   value="{{ ultimo_seguimiento.peso_kg|default:'' }}">
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="inputEstatura">Estatura (cm)</label>
+            <input type="number" id="inputEstatura" class="form-control form-control-glass"
+                   min="100" max="250" step="0.5" placeholder="170"
+                   value="{{ ultimo_seguimiento.estatura_cm|default:'' }}">
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="inputEdad">Edad (años)</label>
+            <input type="number" id="inputEdad" class="form-control form-control-glass"
+                   min="10" max="120" placeholder="25">
+          </div>
+        </div>
+
+        <!-- Nivel de actividad -->
+        <div class="mb-4">
+          <label class="form-label">Nivel de actividad física</label>
+          <select id="selectActividad" class="form-select form-control-glass">
+            <option value="sedentario">🛋️ Sedentario (sin ejercicio)</option>
+            <option value="ligero">🚶 Ligero (1-3 días/semana)</option>
+            <option value="moderado" selected>🏃 Moderado (3-5 días/semana)</option>
+            <option value="activo">⚡ Activo (6-7 días/semana)</option>
+            <option value="muy_activo">🔥 Muy activo (doble sesión)</option>
+          </select>
+        </div>
+
+        <button id="btnCalcular" type="button"
+                class="btn btn-success w-100 fw-bold py-2 rounded-pill shadow">
+          <i class="fas fa-calculator me-2"></i>Calcular ahora
+        </button>
+        <div id="calcError" class="alert alert-danger mt-3 py-2 small d-none"></div>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="col-lg-7">
+      <!-- Skeleton / Estado vacío -->
+      <div id="panelVacio" class="calc-card p-5 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+        <i class="fas fa-chart-pie fa-3x text-success opacity-50 mb-3"></i>
+        <p class="text-muted mb-0">Completa el formulario y presiona <strong>Calcular ahora</strong><br>para ver tus resultados.</p>
+      </div>
+
+      <!-- Panel de resultados -->
+      <div id="resultPanel" class="result-panel">
+        <div class="calc-card p-4 mb-3">
+          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">Índice de Masa Corporal</h2>
+
+          <!-- IMC número + categoría -->
+          <div class="d-flex align-items-baseline gap-3 mb-3">
+            <span id="imcValor" class="display-4 fw-black text-success">—</span>
+            <span id="imcCategoria" class="badge fs-6 rounded-pill bg-success">—</span>
+          </div>
+
+          <!-- Medidor visual -->
+          <div class="imc-meter mb-1">
+            <div id="imcNeedle" class="imc-needle" style="left:0%"></div>
+          </div>
+          <div class="d-flex justify-content-between text-muted" style="font-size:.7rem">
+            <span>Bajo peso</span><span>Normal</span><span>Sobrepeso</span><span>Obesidad</span>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <div class="kpi-box">
+              <div class="kpi-val text-warning" id="kpiTMB">—</div>
+              <div class="kpi-label">TMB (kcal/día)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="kpi-box">
+              <div class="kpi-val text-success" id="kpiCalorias">—</div>
+              <div class="kpi-label">Calorías objetivo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Macros doughnut -->
+        <div class="calc-card p-4">
+          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">Distribución de macros</h2>
+          <div class="row align-items-center">
+            <div class="col-5">
+              <canvas id="chartMacros" height="160"></canvas>
+            </div>
+            <div class="col-7">
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="d-flex align-items-center gap-2"><span style="width:12px;height:12px;border-radius:3px;background:#39A900;display:inline-block"></span><small>Proteínas</small></span>
+                  <strong id="macroProteinas" class="text-success">— g</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="d-flex align-items-center gap-2"><span style="width:12px;height:12px;border-radius:3px;background:#0d6efd;display:inline-block"></span><small>Carbohidratos</small></span>
+                  <strong id="macroCarbos" class="text-primary">— g</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="d-flex align-items-center gap-2"><span style="width:12px;height:12px;border-radius:3px;background:#f59e0b;display:inline-block"></span><small>Grasas</small></span>
+                  <strong id="macroGrasas" class="text-warning">— g</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-muted small mt-3 text-center">
+          <i class="fas fa-circle-info me-1"></i>
+          Los resultados se guardan automáticamente en tu historial de salud.
+        </p>
+      </div><!-- /result-panel -->
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  const CSRF = '{{ csrf_token }}';
+  let chartMacros = null;
+
+  document.getElementById('btnCalcular').addEventListener('click', async function () {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Calculando…';
+    document.getElementById('calcError').classList.add('d-none');
+
+    const payload = {
+      peso_kg:        parseFloat(document.getElementById('inputPeso').value),
+      estatura_cm:    parseFloat(document.getElementById('inputEstatura').value),
+      edad:           parseInt(document.getElementById('inputEdad').value),
+      genero:         document.querySelector('input[name="genero"]:checked').value,
+      nivel_actividad: document.getElementById('selectActividad').value,
+    };
+
+    try {
+      const resp = await fetch('{% url "habitos:calcular_imc_api" %}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        const errores = Array.isArray(data.error) ? data.error.join(' ') : (data.error || 'Error desconocido');
+        document.getElementById('calcError').textContent = errores;
+        document.getElementById('calcError').classList.remove('d-none');
+        return;
+      }
+
+      mostrarResultados(data);
+    } catch (e) {
+      document.getElementById('calcError').textContent = 'Error de red. Verifica tu conexión.';
+      document.getElementById('calcError').classList.remove('d-none');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-calculator me-2"></i>Calcular ahora';
+    }
+  });
+
+  function mostrarResultados(data) {
+    // Ocultar vacío, mostrar resultados
+    document.getElementById('panelVacio').style.display = 'none';
+    const panel = document.getElementById('resultPanel');
+    panel.classList.add('visible');
+
+    // IMC valor y categoría
+    document.getElementById('imcValor').textContent = data.imc.toFixed(1);
+    const catEl = document.getElementById('imcCategoria');
+    catEl.textContent = data.categoria_imc;
+    const colores = { 'Bajo peso': 'info', 'Peso normal': 'success', 'Sobrepeso': 'warning', 'Obesidad': 'danger' };
+    catEl.className = `badge fs-6 rounded-pill bg-${colores[data.categoria_imc] || 'secondary'}`;
+
+    // Aguja del medidor (IMC rango 15-40 → 0-100%)
+    const pct = Math.min(100, Math.max(0, ((data.imc - 15) / 25) * 100));
+    document.getElementById('imcNeedle').style.left = `${pct}%`;
+
+    // KPIs
+    document.getElementById('kpiTMB').textContent = data.calorias_base.toLocaleString('es-CO');
+    document.getElementById('kpiCalorias').textContent = data.calorias_objetivo.toLocaleString('es-CO');
+
+    // Macros
+    const m = data.macros;
+    document.getElementById('macroProteinas').textContent = `${m.proteinas_g} g`;
+    document.getElementById('macroCarbos').textContent    = `${m.carbohidratos_g} g`;
+    document.getElementById('macroGrasas').textContent    = `${m.grasas_g} g`;
+
+    // Gráfico doughnut
+    const ctx = document.getElementById('chartMacros').getContext('2d');
+    if (chartMacros) chartMacros.destroy();
+    chartMacros = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
+        datasets: [{
+          data: [m.proteinas_g, m.carbohidratos_g, m.grasas_g],
+          backgroundColor: ['#39A900', '#0d6efd', '#f59e0b'],
+          borderWidth: 0,
+          hoverOffset: 6,
+        }],
+      },
+      options: {
+        cutout: '72%',
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} g` }
+        }},
+      },
+    });
+  }
+})();
+</script>
+{% endblock %}

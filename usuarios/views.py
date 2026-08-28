@@ -21,6 +21,8 @@ from .models import Usuario, Sugerencia
 from inventario.models import Prestamo
 from gimnasio.models import Reserva, GimnasioConfig
 from interfichas.models import EquipoInterfichas, TorneoInterfichas
+# CP-16: Sistema de permisos y roles
+from core.permisos import es_admin, ROLES, ROL_COLORES, ROL_ICONOS
 
 
 def login_view(request):
@@ -522,23 +524,49 @@ def toggle_usuario_estado(request, user_id):
 @login_required(login_url='home')
 @require_POST
 def cambiar_rol_usuario(request, user_id):
-    if not request.user.is_staff:
-        return redirect('perfil')
-    u = get_object_or_404(Usuario, pk=user_id)
-    nuevo_rol = request.POST.get('rol')
+    """CP-16: Cambia el rol de un usuario. Devuelve JSON para llamadas AJAX."""
+    is_ajax = (
+        request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        or 'application/json' in request.headers.get('Accept', '')
+        or request.content_type == 'application/x-www-form-urlencoded'
+    )
 
-    # ── Protección contra escalación a superuser ──
-    if nuevo_rol == 'admin' and not request.user.is_superuser:
-        log_suspicious_request(request, 'Intento de escalación de rol a admin sin ser superuser')
+    if not (request.user.is_staff or getattr(request.user, 'rol', '') == 'administrador'):
+        if is_ajax:
+            return JsonResponse({'ok': False, 'error': 'Sin permisos.'}, status=403)
+        return redirect('perfil')
+
+    u = get_object_or_404(Usuario, pk=user_id)
+    nuevo_rol = request.POST.get('rol', '').strip()
+
+    # CP-16: Roles válidos del sistema
+    roles_validos = list(ROLES.keys())
+
+    if nuevo_rol not in roles_validos:
+        if is_ajax:
+            return JsonResponse({'ok': False, 'error': f'Rol "{nuevo_rol}" no válido.'}, status=400)
+        messages.error(request, f'Rol no válido.')
+        return redirect('gestionar_usuarios')
+
+    # Protección contra escalación a administrador sin ser superusuario
+    if nuevo_rol == 'administrador' and not request.user.is_superuser:
+        log_suspicious_request(request, 'Intento de escalación de rol a administrador')
+        if is_ajax:
+            return JsonResponse({'ok': False, 'error': 'Solo un superusuario puede asignar el rol de administrador.'}, status=403)
         messages.error(request, 'Solo un superusuario puede asignar el rol de administrador.')
         return redirect('gestionar_usuarios')
 
-    if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
-        u.rol = nuevo_rol
-        u.is_staff = (nuevo_rol == 'admin')
-        u.save()
-        log_admin_action(request, 'CAMBIAR_ROL', 'Usuario', str(user_id),
-                         f'Nuevo rol: {nuevo_rol}')
+    rol_anterior = u.rol
+    u.rol = nuevo_rol
+    u.is_staff = nuevo_rol in ('administrador',)
+    u.save(update_fields=['rol', 'is_staff'])
+    log_admin_action(request, 'CAMBIAR_ROL', 'Usuario', str(user_id),
+                     f'Rol cambiado: {rol_anterior} → {nuevo_rol}')
+
+    if is_ajax:
+        return JsonResponse({'ok': True, 'nuevo_rol': nuevo_rol, 'label': ROLES.get(nuevo_rol, nuevo_rol)})
+
+    messages.success(request, f'Rol de {u.get_full_name()} cambiado a {ROLES.get(nuevo_rol)}.')
     return redirect('gestionar_usuarios')
 
 
@@ -654,3 +682,31 @@ def restore_database_backup(request):
     return redirect('gestionar_usuarios')
 
 
+# ─────────────────────────────────────────────────────────────
+# CP-16: GESTIÓN DE ROLES
+# ─────────────────────────────────────────────────────────────
+@login_required(login_url='home')
+def gestion_roles_view(request):
+    """
+    Vista dedicada para la gestión de roles. Solo accesible por admins.
+    Muestra todos los usuarios con opciones de cambio de rol.
+    """
+    if not (request.user.is_staff or getattr(request.user, 'rol', '') == 'administrador'
+            or request.user.is_superuser):
+        messages.error(request, 'No tienes permisos para gestionar roles.')
+        return redirect('perfil')
+
+    usuarios = Usuario.objects.all().order_by('rol', 'last_name', 'first_name')
+
+    # Conteo de usuarios por rol para las tarjetas de stats
+    from django.db.models import Count
+    conteo_roles_qs = Usuario.objects.values('rol').annotate(total=Count('id'))
+    conteo_roles = {item['rol']: item['total'] for item in conteo_roles_qs}
+
+    return render(request, 'usuarios/gestion_roles.html', {
+        'usuarios': usuarios,
+        'roles_disponibles': ROLES,
+        'conteo_roles': conteo_roles,
+        'rol_colores': ROL_COLORES,
+        'rol_iconos': ROL_ICONOS,
+    })

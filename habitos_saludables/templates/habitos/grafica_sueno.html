@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sueño Semanal — Sports-Max SENA{% endblock %}
+{% block meta_description %}Visualiza tu gráfica de horas de sueño de la última semana y analiza la calidad de tu descanso.{% endblock %}
+
+{% block extra_css %}
+<style>
+.sueno-hero {
+  background: linear-gradient(135deg, #0a0015 0%, #1a0030 50%, #0d1117 100%);
+  padding: 2.5rem 0 1.5rem; position: relative; overflow: hidden;
+}
+.sueno-hero::before {
+  content: '🌙';
+  position: absolute; right: 3rem; top: 50%; transform: translateY(-50%);
+  font-size: 8rem; opacity: .07; user-select: none;
+}
+.sueno-hero h1 { color: #fff; font-weight: 800; }
+.sueno-hero p  { color: rgba(255,255,255,.6); }
+
+.sueno-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1.25rem; box-shadow: 0 8px 32px rgba(0,0,0,.2);
+}
+.stat-box {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09);
+  border-radius: .85rem; padding: 1.25rem; text-align: center;
+}
+.stat-box .stat-val { font-size: 2rem; font-weight: 800; }
+.stat-box .stat-lbl { font-size: .75rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .06em; }
+
+/* Rating estrellas de calidad */
+.star-rating { display: flex; gap: .25rem; justify-content: center; cursor: pointer; }
+.star-rating span { font-size: 1.4rem; transition: transform .1s; cursor: pointer; }
+.star-rating span:hover, .star-rating span.active { transform: scale(1.2); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="sueno-hero mb-4">
+  <div class="container">
+    <h1 class="h2 mb-1"><i class="fas fa-moon text-purple me-2" style="color:#a855f7"></i>Gráfica de Sueño</h1>
+    <p class="mb-0">Analiza tu descanso de la última semana y detecta patrones.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4" id="statsRow">
+    <div class="col-6 col-md-3">
+      <div class="stat-box">
+        <div class="stat-val text-purple" id="statPromedio" style="color:#a855f7">—</div>
+        <div class="stat-lbl">Promedio (h)</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-box">
+        <div class="stat-val text-success" id="statDiasOptimos">—</div>
+        <div class="stat-lbl">Días óptimos</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-box">
+        <div class="stat-val text-info" id="statMejor">—</div>
+        <div class="stat-lbl">Mejor noche (h)</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-box">
+        <div class="stat-val text-warning" id="statPeor">—</div>
+        <div class="stat-lbl">Peor noche (h)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfica -->
+  <div class="sueno-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 text-white mb-0">Últimos 7 días</h2>
+      <button class="btn btn-sm btn-outline-purple rounded-pill" style="border-color:#a855f7;color:#a855f7"
+              data-bs-toggle="modal" data-bs-target="#modalRegistrarSueno">
+        <i class="fas fa-plus me-1"></i>Registrar anoche
+      </button>
+    </div>
+    <div style="position:relative; height:280px;">
+      <canvas id="chartSueno"></canvas>
+    </div>
+    <div id="recomendacion" class="alert alert-dark border-0 mt-3 small text-muted mb-0" role="note"></div>
+  </div>
+
+</div>
+
+<!-- MODAL REGISTRAR SUEÑO -->
+<div class="modal fade" id="modalRegistrarSueno" tabindex="-1" aria-labelledby="modalSuenoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#1a1f2e;border:1px solid rgba(168,85,247,.3)">
+      <div class="modal-header border-0">
+        <h4 class="modal-title text-white" id="modalSuenoLabel">
+          <i class="fas fa-moon me-2" style="color:#a855f7"></i>Registrar Sueño
+        </h4>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label text-white-50 small" for="suenoFecha">Fecha</label>
+            <input type="date" id="suenoFecha" class="form-control"
+                   style="background:#0d1117;color:#e0e0e0;border-color:rgba(168,85,247,.3)">
+          </div>
+          <div class="col-6">
+            <label class="form-label text-white-50 small" for="suenoHoras">Horas dormidas</label>
+            <input type="number" id="suenoHoras" class="form-control" step="0.5" min="0" max="24" placeholder="7.5"
+                   style="background:#0d1117;color:#e0e0e0;border-color:rgba(168,85,247,.3)">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-white-50 small">Calidad del sueño</label>
+          <div class="star-rating" id="starRating">
+            <span data-val="1">⭐</span><span data-val="2">⭐</span>
+            <span data-val="3">⭐</span><span data-val="4">⭐</span><span data-val="5">⭐</span>
+          </div>
+          <input type="hidden" id="suenoCalidad" value="3">
+        </div>
+        <div class="mb-1">
+          <label class="form-label text-white-50 small" for="suenoNota">Observaciones</label>
+          <textarea id="suenoNota" class="form-control" rows="2"
+                    style="background:#0d1117;color:#e0e0e0;border-color:rgba(168,85,247,.3)"
+                    placeholder="¿Dormiste bien?"></textarea>
+        </div>
+        <div id="suenoError" class="alert alert-danger small d-none mt-2"></div>
+      </div>
+      <div class="modal-footer border-0 gap-2">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn rounded-pill fw-bold px-4" id="btnGuardarSueno"
+                style="background:#a855f7;color:#fff">
+          <i class="fas fa-check me-1"></i>Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  const CSRF = '{{ csrf_token }}';
+  let chartSueno = null;
+
+  // Poner fecha de ayer por defecto
+  const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
+  document.getElementById('suenoFecha').value = ayer.toLocaleDateString('en-CA');
+
+  // Cargar datos al entrar
+  cargarDatos();
+
+  async function cargarDatos() {
+    try {
+      const resp = await fetch('{% url "habitos:api_sueno_semanal" %}');
+      const data = await resp.json();
+      renderizarGrafica(data);
+      actualizarStats(data);
+    } catch (e) { console.error('Error cargando sueño:', e); }
+  }
+
+  function renderizarGrafica(data) {
+    const ctx = document.getElementById('chartSueno').getContext('2d');
+    if (chartSueno) chartSueno.destroy();
+
+    const colores = data.horas.map(h => {
+      if (h === null) return 'rgba(255,255,255,.1)';
+      if (h >= 7 && h <= 9) return 'rgba(57,169,0,.8)';
+      if (h >= 5) return 'rgba(245,158,11,.8)';
+      return 'rgba(239,68,68,.8)';
+    });
+
+    chartSueno = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Horas dormidas',
+          data: data.horas,
+          backgroundColor: colores,
+          borderRadius: 8,
+          borderSkipped: false,
+        }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          annotation: {},
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.raw !== null
+                ? ` ${ctx.raw}h — ${ctx.raw >= 7 && ctx.raw <= 9 ? '✅ Óptimo' : ctx.raw >= 5 ? '⚠️ Insuficiente' : '❌ Muy poco'}`
+                : ' Sin registro',
+            },
+          },
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: 'rgba(255,255,255,.6)' } },
+          y: {
+            min: 0, max: 12,
+            grid: { color: 'rgba(255,255,255,.06)' },
+            ticks: { color: 'rgba(255,255,255,.6)', callback: v => v + 'h' },
+          },
+        },
+      },
+      plugins: [{
+        // Líneas de referencia en y=7 y y=9
+        id: 'referenceLines',
+        afterDraw(chart) {
+          const { ctx, chartArea: { left, right }, scales: { y } } = chart;
+          [7, 9].forEach((val, i) => {
+            const yPos = y.getPixelForValue(val);
+            ctx.save();
+            ctx.setLineDash([6, 4]);
+            ctx.strokeStyle = i === 0 ? 'rgba(57,169,0,.5)' : 'rgba(57,169,0,.25)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(left, yPos); ctx.lineTo(right, yPos); ctx.stroke();
+            ctx.restore();
+          });
+        },
+      }],
+    });
+
+    document.getElementById('recomendacion').textContent =
+      '💡 ' + data.recomendacion;
+  }
+
+  function actualizarStats(data) {
+    const validas = data.horas.filter(h => h !== null);
+    const mejor = validas.length ? Math.max(...validas) : 0;
+    const peor  = validas.length ? Math.min(...validas) : 0;
+    document.getElementById('statPromedio').textContent   = data.promedio || '—';
+    document.getElementById('statDiasOptimos').textContent = `${data.dias_optimos}/7`;
+    document.getElementById('statMejor').textContent      = mejor || '—';
+    document.getElementById('statPeor').textContent       = peor  || '—';
+  }
+
+  // ── Estrellas de calidad ────────────────────────────────
+  let calidadVal = 3;
+  const stars = document.querySelectorAll('#starRating span');
+  stars.forEach((s, i) => {
+    s.addEventListener('click', function () {
+      calidadVal = parseInt(this.dataset.val);
+      document.getElementById('suenoCalidad').value = calidadVal;
+      stars.forEach((st, j) => st.classList.toggle('active', j < calidadVal));
+    });
+  });
+  // Activar 3 estrellas por defecto
+  stars.forEach((s, i) => s.classList.toggle('active', i < 3));
+
+  // ── Guardar sueño ────────────────────────────────────────
+  document.getElementById('btnGuardarSueno').addEventListener('click', async function () {
+    const btn = this;
+    const errEl = document.getElementById('suenoError');
+    errEl.classList.add('d-none');
+    btn.disabled = true;
+
+    const payload = {
+      fecha:   document.getElementById('suenoFecha').value,
+      horas:   parseFloat(document.getElementById('suenoHoras').value),
+      calidad: parseInt(document.getElementById('suenoCalidad').value),
+      nota:    document.getElementById('suenoNota').value,
+    };
+
+    try {
+      const resp = await fetch('{% url "habitos:registrar_sueno" %}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('modalRegistrarSueno')).hide();
+        cargarDatos();
+      } else {
+        errEl.textContent = data.error || 'Error al guardar.';
+        errEl.classList.remove('d-none');
+      }
+    } catch (e) {
+      errEl.textContent = 'Error de red.';
+      errEl.classList.remove('d-none');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+{% endblock %}

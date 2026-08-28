@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Formulario Receta — Sports-Max SENA{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="h3 text-white fw-bold mb-4">
+    <i class="fas fa-utensils text-success me-2"></i>{{ accion }} Receta Saludable
+  </h1>
+
+  <div class="card border-0 p-4" style="background:rgba(255,255,255,.04);border-radius:1.1rem;">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label text-white-50 small" for="id_titulo">Título *</label>
+          <input type="text" name="titulo" id="id_titulo" class="form-control"
+                 value="{{ receta.titulo|default:'' }}" required placeholder="Ej: Ensalada de quinoa con aguacate">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label text-white-50 small" for="id_categoria">Categoría *</label>
+          <select name="categoria" id="id_categoria" class="form-select">
+            {% for val, lbl in categorias %}
+            <option value="{{ val }}" {% if receta and receta.categoria == val %}selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label text-white-50 small" for="id_objetivo">Objetivo nutricional *</label>
+          <select name="objetivo" id="id_objetivo" class="form-select">
+            {% for val, lbl in objetivos %}
+            <option value="{{ val }}" {% if receta and receta.objetivo == val %}selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label text-white-50 small" for="id_descripcion">Descripción breve *</label>
+          <textarea name="descripcion" id="id_descripcion" class="form-control" rows="2" required>{{ receta.descripcion|default:'' }}</textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label text-white-50 small" for="id_ingredientes">Ingredientes (uno por línea) *</label>
+          <textarea name="ingredientes" id="id_ingredientes" class="form-control" rows="6" required
+                    placeholder="1 taza de quinoa&#10;1 aguacate maduro&#10;Jugo de 1 limón">{{ receta.ingredientes|default:'' }}</textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label text-white-50 small" for="id_preparacion">Pasos de preparación (uno por línea) *</label>
+          <textarea name="preparacion" id="id_preparacion" class="form-control" rows="6" required
+                    placeholder="Cocinar la quinoa con el doble de agua...&#10;Cortar el aguacate en cubos...">{{ receta.preparacion|default:'' }}</textarea>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white-50 small" for="id_tiempo">Tiempo de prep. (min) *</label>
+          <input type="number" name="tiempo_preparacion_min" id="id_tiempo" class="form-control"
+                 min="1" value="{{ receta.tiempo_preparacion_min|default:30 }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white-50 small" for="id_porciones">Porciones</label>
+          <input type="number" name="porciones" id="id_porciones" class="form-control"
+                 min="1" value="{{ receta.porciones|default:1 }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white-50 small" for="id_calorias">Calorías/porción</label>
+          <input type="number" name="calorias_por_porcion" id="id_calorias" class="form-control"
+                 min="0" value="{{ receta.calorias_por_porcion|default:'' }}" placeholder="Opcional">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white-50 small" for="id_proteinas">Proteínas (g)</label>
+          <input type="number" name="proteinas_g" id="id_proteinas" class="form-control" step="0.1" min="0"
+                 value="{{ receta.proteinas_g|default:'' }}" placeholder="Opcional">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white-50 small" for="id_carbos">Carbohidratos (g)</label>
+          <input type="number" name="carbohidratos_g" id="id_carbos" class="form-control" step="0.1" min="0"
+                 value="{{ receta.carbohidratos_g|default:'' }}" placeholder="Opcional">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label text-white-50 small" for="id_grasas">Grasas (g)</label>
+          <input type="number" name="grasas_g" id="id_grasas" class="form-control" step="0.1" min="0"
+                 value="{{ receta.grasas_g|default:'' }}" placeholder="Opcional">
+        </div>
+        <div class="col-12">
+          <label class="form-label text-white-50 small" for="id_imagen">Imagen de la receta</label>
+          <input type="file" name="imagen" id="id_imagen" class="form-control" accept="image/*">
+          {% if receta and receta.imagen %}<div class="mt-2"><img src="{{ receta.imagen.url }}" alt="Imagen actual" style="height:80px;border-radius:.5rem;"></div>{% endif %}
+        </div>
+        <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+          <a href="{% url 'habitos:lista_recetas' %}" class="btn btn-secondary rounded-pill px-4">Cancelar</a>
+          <button type="submit" class="btn btn-success rounded-pill fw-bold px-4">
+            <i class="fas fa-save me-1"></i>{{ accion }} receta
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

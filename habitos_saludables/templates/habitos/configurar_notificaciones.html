@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notificaciones Push — Sports-Max SENA{% endblock %}
+{% block meta_description %}Activa recordatorios push en tu dispositivo para no olvidar tus hábitos saludables.{% endblock %}
+
+{% block extra_css %}
+<style>
+.notif-hero {
+  background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+  padding: 2.5rem 0 1.5rem;
+}
+.notif-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1.1rem; padding: 2rem; max-width: 560px; margin: auto;
+}
+.push-toggle {
+  width: 60px; height: 32px; border-radius: 16px;
+  background: rgba(255,255,255,.15); cursor: pointer; position: relative;
+  transition: background .3s; border: none; outline: none;
+}
+.push-toggle.on { background: #39A900; box-shadow: 0 0 16px rgba(57,169,0,.4); }
+.push-toggle::after {
+  content: ''; position: absolute; top: 4px; left: 4px;
+  width: 24px; height: 24px; border-radius: 50%; background: #fff;
+  transition: left .3s; box-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+.push-toggle.on::after { left: 32px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="notif-hero mb-5">
+  <div class="container">
+    <h1 class="h2 text-white fw-bold mb-1">
+      <i class="fas fa-bell text-success me-2"></i>Notificaciones Push
+    </h1>
+    <p class="text-white-50 mb-0">Recibe recordatorios de tus hábitos directamente en tu dispositivo.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="notif-card text-center">
+
+    <!-- Icono animado -->
+    <div class="mb-4" style="font-size:4rem">🔔</div>
+
+    <h2 class="h4 text-white fw-bold mb-2">Recordatorios inteligentes</h2>
+    <p class="text-muted mb-4">Activa las notificaciones push para recibir recordatorios de tus hábitos, rutinas y registro de sueño directamente en este dispositivo.</p>
+
+    <!-- Estado actual -->
+    <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+      <span class="text-white-50">Notificaciones</span>
+      <button id="togglePush" class="push-toggle {% if suscripcion_activa %}on{% endif %}" aria-label="Activar/desactivar notificaciones push">
+      </button>
+      <span id="pushEstado" class="fw-semibold {% if suscripcion_activa %}text-success{% else %}text-muted{% endif %}">
+        {% if suscripcion_activa %}Activadas{% else %}Desactivadas{% endif %}
+      </span>
+    </div>
+
+    <div id="pushMensaje" class="alert {% if suscripcion_activa %}alert-success{% else %}alert-dark{% endif %} small mb-0" role="status">
+      {% if suscripcion_activa %}
+        ✅ Tus notificaciones están activas en este dispositivo.
+      {% else %}
+        Activa las notificaciones para no perder ningún recordatorio.
+      {% endif %}
+    </div>
+
+    <!-- Tipos de recordatorios -->
+    <hr class="border-secondary my-4">
+    <h3 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">¿Qué recibirás?</h3>
+    <div class="d-flex flex-column gap-2 text-start">
+      <div class="d-flex align-items-center gap-3 p-2">
+        <span style="font-size:1.5rem">🏋️</span>
+        <div>
+          <div class="text-white small fw-semibold">Recordatorio de rutina</div>
+          <div class="text-muted" style="font-size:.78rem">Notificación diaria para que no saltes tu sesión.</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3 p-2">
+        <span style="font-size:1.5rem">🌙</span>
+        <div>
+          <div class="text-white small fw-semibold">Registro de sueño</div>
+          <div class="text-muted" style="font-size:.78rem">Recuerda registrar tus horas de descanso.</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3 p-2">
+        <span style="font-size:1.5rem">💧</span>
+        <div>
+          <div class="text-white small fw-semibold">Hidratación</div>
+          <div class="text-muted" style="font-size:.78rem">Recordatorios para mantener tu hidratación óptima.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  const CSRF = '{{ csrf_token }}';
+  const btn = document.getElementById('togglePush');
+  const estadoEl = document.getElementById('pushEstado');
+  const msgEl = document.getElementById('pushMensaje');
+  let activo = {% if suscripcion_activa %}true{% else %}false{% endif %};
+
+  btn.addEventListener('click', async function () {
+    // Verificar soporte
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+      msgEl.textContent = '❌ Tu navegador no soporta notificaciones push.';
+      msgEl.className = 'alert alert-danger small mb-0';
+      return;
+    }
+
+    if (!activo) {
+      // Solicitar permiso
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') {
+        msgEl.textContent = '⚠️ Permiso denegado. Habilita las notificaciones en la configuración de tu navegador.';
+        msgEl.className = 'alert alert-warning small mb-0';
+        return;
+      }
+      await activarPush();
+    } else {
+      desactivar();
+    }
+  });
+
+  async function activarPush() {
+    try {
+      const reg = await navigator.serviceWorker.register('/static/js/sw.js');
+      await navigator.serviceWorker.ready;
+
+      // VAPID_PUBLIC_KEY: en un entorno de producción esto vendría del servidor
+      // Por ahora, registramos sin VAPID (notificaciones locales del SW)
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: null,
+      });
+
+      // Enviar al servidor
+      const resp = await fetch('{% url "habitos:guardar_suscripcion" %}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+        body: JSON.stringify(sub.toJSON()),
+      });
+      const data = await resp.json();
+
+      if (data.ok) {
+        setActivo(true);
+        // Notificación de bienvenida
+        reg.showNotification('¡Sports-Max SENA! 🏋️', {
+          body: 'Notificaciones activadas. ¡Listo para alcanzar tus metas!',
+          icon: '/static/img/logo.png',
+          badge: '/static/img/badge.png',
+        });
+      }
+    } catch (e) {
+      // Notificaciones locales (sin servidor push)
+      setActivo(true);
+      new Notification('¡Sports-Max SENA! 🏋️', {
+        body: 'Notificaciones activadas. ¡Listo para alcanzar tus metas!',
+      });
+    }
+  }
+
+  function desactivar() {
+    setActivo(false);
+    msgEl.textContent = 'Notificaciones desactivadas. Puedes reactivarlas cuando quieras.';
+    msgEl.className = 'alert alert-dark small mb-0';
+  }
+
+  function setActivo(val) {
+    activo = val;
+    btn.classList.toggle('on', val);
+    estadoEl.textContent = val ? 'Activadas' : 'Desactivadas';
+    estadoEl.className = `fw-semibold ${val ? 'text-success' : 'text-muted'}`;
+    if (val) {
+      msgEl.textContent = '✅ Tus notificaciones están activas en este dispositivo.';
+      msgEl.className = 'alert alert-success small mb-0';
+    }
+  }
+})();
+</script>
+{% endblock %}
