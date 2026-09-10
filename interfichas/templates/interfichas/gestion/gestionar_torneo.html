@@ -892,6 +892,50 @@
                             El ganador de sets se calcula automáticamente
                         </small>
                     </div>
+                    <!-- ── BLOQUE AJEDREZ ── -->
+                    <div id="bloque-ajedrez" style="display:none;">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-chess fa-2x text-warning mb-2 d-block"></i>
+                            <div class="text-white-50 small fw-bold text-uppercase mb-3">
+                                <i class="fas fa-chess-king me-1 text-warning"></i>Resultado del Tablero (Ajedrez)
+                            </div>
+                            <p class="text-white-50 small mb-3">
+                                En ajedrez no se registra puntaje numérico. Selecciona quién ganó la partida.
+                            </p>
+                        </div>
+                        <div class="d-flex flex-column gap-2 px-3">
+                            <label class="ajedrez-radio-label d-flex align-items-center gap-3 p-3 rounded border border-secondary"
+                                   style="cursor:pointer; transition: all 0.2s;"
+                                   onmouseover="this.style.borderColor='#f0c040'" onmouseout="this.style.borderColor='#21262d'">
+                                <input type="radio" name="ganador_ajedrez" value="local" class="form-check-input">
+                                <div>
+                                    <div class="text-white fw-bold" id="ajedrez-label-local">Local</div>
+                                    <small class="text-white-50">Ganó la partida</small>
+                                </div>
+                                <i class="fas fa-crown text-warning ms-auto" style="opacity:0.5"></i>
+                            </label>
+                            <label class="ajedrez-radio-label d-flex align-items-center gap-3 p-3 rounded border border-secondary"
+                                   style="cursor:pointer; transition: all 0.2s;"
+                                   onmouseover="this.style.borderColor='#f0c040'" onmouseout="this.style.borderColor='#21262d'">
+                                <input type="radio" name="ganador_ajedrez" value="visitante" class="form-check-input">
+                                <div>
+                                    <div class="text-white fw-bold" id="ajedrez-label-visitante">Visitante</div>
+                                    <small class="text-white-50">Ganó la partida</small>
+                                </div>
+                                <i class="fas fa-crown text-warning ms-auto" style="opacity:0.5"></i>
+                            </label>
+                            <label class="ajedrez-radio-label d-flex align-items-center gap-3 p-3 rounded border border-secondary"
+                                   style="cursor:pointer; transition: all 0.2s;"
+                                   onmouseover="this.style.borderColor='#58a6ff'" onmouseout="this.style.borderColor='#21262d'">
+                                <input type="radio" name="ganador_ajedrez" value="empate" class="form-check-input">
+                                <div>
+                                    <div class="text-white fw-bold">Empate / Tablas</div>
+                                    <small class="text-white-50">Ningún jugador ganó</small>
+                                </div>
+                                <i class="fas fa-handshake text-info ms-auto" style="opacity:0.5"></i>
+                            </label>
+                        </div>
+                    </div>
                     <div class="row g-3 mt-1">
                         <div class="col-7">
                             <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-39">
@@ -1202,19 +1246,30 @@ function abrirModalResultado(partidoId, local, visitante, fecha, hora,
     if (azV) azV.value = azulesV || 0;
     document.getElementById('detalles-sanciones').value = detallesSanciones || '';
 
-    const esSet    = TIPO_MARCADOR === 'sets';
-    const esPuntos = TIPO_MARCADOR === 'puntos';
-    const esGoles  = TIPO_MARCADOR === 'goles';
+    const esSet       = TIPO_MARCADOR === 'sets';
+    const esPuntos    = TIPO_MARCADOR === 'puntos';
+    const esGoles     = TIPO_MARCADOR === 'goles';
+    const esNoAplica  = TIPO_MARCADOR === 'no_aplica';
 
-    document.getElementById('bloque-normal').style.display    = esSet ? 'none' : '';
-    document.getElementById('bloque-sets').style.display      = esSet ? ''     : 'none';
-    document.getElementById('bloque-sanciones').style.display = esGoles ? ''   : 'none';
+    // Mostrar/ocultar bloques según tipo
+    document.getElementById('bloque-normal').style.display    = (esSet || esNoAplica) ? 'none' : '';
+    document.getElementById('bloque-sets').style.display      = esSet ? '' : 'none';
+    document.getElementById('bloque-ajedrez').style.display   = esNoAplica ? '' : 'none';
+    document.getElementById('bloque-sanciones').style.display = esGoles ? '' : 'none';
 
     const NOMBRE_DISCIPLINA = "{{ torneo.disciplina.nombre_disciplina|escapejs }}";
     const esFutsal = NOMBRE_DISCIPLINA.toLowerCase().includes('futsal') || NOMBRE_DISCIPLINA.toLowerCase().includes('fútsal');
     document.getElementById('bloque-azules').style.display = esFutsal ? '' : 'none';
 
-    if (esPuntos) {
+    if (esNoAplica) {
+        document.getElementById('modal-tipo-label').textContent = 'Resultado (Ajedrez)';
+        document.getElementById('modal-icono').className = 'fas fa-chess text-warning me-2';
+        // Establecer nombres en las etiquetas de ajedrez
+        document.getElementById('ajedrez-label-local').textContent = local;
+        document.getElementById('ajedrez-label-visitante').textContent = visitante;
+        // Limpiar selección previa
+        document.querySelectorAll('input[name="ganador_ajedrez"]').forEach(r => r.checked = false);
+    } else if (esPuntos) {
         document.getElementById('modal-tipo-label').textContent = 'Resultado (Puntos)';
         document.getElementById('modal-icono').className = 'fas fa-basketball-ball text-warning me-2';
     } else if (esSet) {

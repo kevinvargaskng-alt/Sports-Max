@@ -181,14 +181,76 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // LOGIN AJAX
+    // ── HELPERS DE VALIDACIÓN Y MANEJO VISUAL DE ERRORES ──
+    function clearFormErrors(form) {
+        if (!form) return;
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback').forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none';
+        });
+    }
+
+    function setFieldError(form, fieldName, message) {
+        if (!form) return;
+        let input = form.querySelector(`[name="${fieldName}"]`);
+        if (!input) input = form.querySelector(`#id_${fieldName}`) || form.querySelector(`#login_${fieldName}`);
+        if (!input && fieldName === 'confirmar_contrasena') input = form.querySelector('#confirmarContrasena');
+
+        if (input) {
+            input.classList.add('is-invalid');
+            let feedback = input.closest('.has-validation')?.querySelector('.invalid-feedback')
+                        || input.closest('.mb-3, .mb-4, .col-md-6, .col-md-12')?.querySelector('.invalid-feedback')
+                        || form.querySelector(`#err_${fieldName}`)
+                        || form.querySelector(`#err_id_${fieldName}`);
+            if (feedback) {
+                feedback.textContent = message;
+                feedback.style.display = 'block';
+            }
+
+            // Limpiar error tan pronto el usuario escriba en el campo
+            input.addEventListener('input', function onInputClear() {
+                input.classList.remove('is-invalid');
+                if (feedback) {
+                    feedback.textContent = '';
+                    feedback.style.display = 'none';
+                }
+            }, { once: true });
+        }
+    }
+
+    // LOGIN AJAX CON MANEJO DE ERRORES ESPECÍFICOS
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            clearFormErrors(this);
+
             const loginAlert = document.getElementById('loginAlert');
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn ? submitBtn.innerHTML : 'Ingresar al sistema';
+
+            const usernameInput = this.querySelector('[name="username"]');
+            const passwordInput = this.querySelector('[name="password"]');
+
+            let hasClientErrors = false;
+            if (!usernameInput || !usernameInput.value.trim()) {
+                setFieldError(this, 'username', 'El número de documento o correo es obligatorio.');
+                hasClientErrors = true;
+            }
+            if (!passwordInput || !passwordInput.value) {
+                setFieldError(this, 'password', 'La contraseña es obligatoria.');
+                hasClientErrors = true;
+            }
+
+            if (hasClientErrors) {
+                if (loginAlert) {
+                    loginAlert.className = 'alert alert-danger';
+                    loginAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Por favor completa los campos señalados.';
+                    loginAlert.classList.remove('d-none');
+                }
+                return;
+            }
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -218,11 +280,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                     setTimeout(() => { window.location.href = data.redirect || '/perfil/'; }, 500);
                 } else {
-                    // Restaurar botón inmediatamente
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalText;
                     }
+
+                    // Renderizar errores campo por campo
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([field, msg]) => {
+                            setFieldError(loginForm, field, msg);
+                        });
+                    }
+
                     if (data.status === 'blocked' || data.bloqueado) {
                         if (loginAlert) {
                             loginAlert.className = 'alert alert-warning';
@@ -263,55 +332,111 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // REGISTRO AJAX CON VALIDACIÓN DE SEGURIDAD
+    // REGISTRO AJAX CON VALIDACIÓN ESPECÍFICA Y RESALTADO DE CAMPOS
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            clearFormErrors(this);
+
             const form = e.target;
             const registerAlert = document.getElementById('registerAlert');
             const submitBtn = document.getElementById('btnSubmitRegistro') || form.querySelector('button[type="submit"]');
             const originalText = submitBtn ? submitBtn.innerHTML : 'Finalizar Registro';
 
-            if (!form.checkValidity()) {
-                e.stopPropagation();
-                if (registerAlert) {
-                    registerAlert.classList.remove('d-none');
-                    registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Por favor, completa todos los campos obligatorios (*).';
-                }
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-                return;
+            let clientErrors = false;
+
+            // Validar campos obligatorios uno por uno para retroalimentación precisa
+            const tipoDoc = form.querySelector('[name="tipo_documento"]');
+            if (!tipoDoc || !tipoDoc.value) {
+                setFieldError(form, 'tipo_documento', 'Selecciona el tipo de documento.');
+                clientErrors = true;
+            }
+
+            const numDoc = form.querySelector('[name="numero_documento"]');
+            if (!numDoc || !numDoc.value.trim()) {
+                setFieldError(form, 'numero_documento', 'El número de documento es obligatorio.');
+                clientErrors = true;
+            } else if (!/^\d{5,20}$/.test(numDoc.value.trim())) {
+                setFieldError(form, 'numero_documento', 'El documento debe contener entre 5 y 20 dígitos numéricos.');
+                clientErrors = true;
+            }
+
+            const nombres = form.querySelector('[name="nombres"]');
+            if (!nombres || nombres.value.trim().length < 2) {
+                setFieldError(form, 'nombres', 'Los nombres deben contener al menos 2 caracteres.');
+                clientErrors = true;
+            }
+
+            const apellidos = form.querySelector('[name="apellidos"]');
+            if (!apellidos || apellidos.value.trim().length < 2) {
+                setFieldError(form, 'apellidos', 'Los apellidos deben contener al menos 2 caracteres.');
+                clientErrors = true;
+            }
+
+            const genero = form.querySelector('[name="genero"]');
+            if (!genero || !genero.value) {
+                setFieldError(form, 'genero', 'Selecciona tu género.');
+                clientErrors = true;
+            }
+
+            const telefono = form.querySelector('[name="telefono"]');
+            if (!telefono || !telefono.value.trim()) {
+                setFieldError(form, 'telefono', 'El teléfono es obligatorio.');
+                clientErrors = true;
+            } else if (!/^\d{7,15}$/.test(telefono.value.trim())) {
+                setFieldError(form, 'telefono', 'El teléfono debe contener entre 7 y 15 dígitos numéricos.');
+                clientErrors = true;
+            }
+
+            const programa = form.querySelector('[name="programa_formacion"]');
+            if (!programa || !programa.value) {
+                setFieldError(form, 'programa_formacion', 'Selecciona tu programa de formación.');
+                clientErrors = true;
+            }
+
+            const email = form.querySelector('[name="email"]');
+            if (!email || !email.value.trim()) {
+                setFieldError(form, 'email', 'El correo electrónico es obligatorio.');
+                clientErrors = true;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+                setFieldError(form, 'email', 'El correo no tiene un formato válido (ej. usuario@sena.edu.co).');
+                clientErrors = true;
+            }
+
+            const ficha = form.querySelector('[name="ficha"]');
+            if (!ficha || !ficha.value.trim()) {
+                setFieldError(form, 'ficha', 'El número de ficha es obligatorio.');
+                clientErrors = true;
+            } else if (!/^\d{5,20}$/.test(ficha.value.trim())) {
+                setFieldError(form, 'ficha', 'La ficha debe contener entre 5 y 20 dígitos numéricos.');
+                clientErrors = true;
             }
 
             const pass = document.getElementById('id_contrasena')?.value || '';
             const confPass = document.getElementById('confirmarContrasena')?.value || '';
 
-            if (pass !== confPass) {
-                if (registerAlert) {
-                    registerAlert.classList.remove('d-none');
-                    registerAlert.className = 'alert alert-warning mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Las contraseñas no coinciden.';
-                }
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-                return;
+            if (!pass) {
+                setFieldError(form, 'contrasena', 'La contraseña es obligatoria.');
+                clientErrors = true;
+            } else if (pass.length < 8) {
+                setFieldError(form, 'contrasena', 'La contraseña debe tener mínimo 8 caracteres.');
+                clientErrors = true;
             }
 
-            if (pass.length < 8) {
+            if (!confPass) {
+                setFieldError(form, 'confirmar_contrasena', 'Confirma tu contraseña.');
+                clientErrors = true;
+            } else if (pass !== confPass) {
+                setFieldError(form, 'confirmar_contrasena', 'Las contraseñas no coinciden.');
+                clientErrors = true;
+            }
+
+            if (clientErrors) {
                 if (registerAlert) {
                     registerAlert.classList.remove('d-none');
                     registerAlert.className = 'alert alert-danger mt-3';
-                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>La contraseña debe tener mínimo 8 caracteres.';
-                }
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
+                    registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Por favor revisa y corrige los campos resaltados en rojo.';
                 }
                 return;
             }
@@ -319,6 +444,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Procesando registro...';
+            }
+            if (registerAlert) {
+                registerAlert.classList.add('d-none');
             }
 
             const formData = new FormData(this);
@@ -342,9 +470,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalText;
                     }
+
+                    // Renderizar errores específicos devueltos por el backend
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([field, msg]) => {
+                            setFieldError(registerForm, field, msg);
+                        });
+                    }
+
                     if (registerAlert) {
                         registerAlert.className = 'alert alert-danger mt-3';
-                        registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> ' + (data.message || 'Error al registrar.');
+                        registerAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> ' + (data.message || 'Corrige los errores señalados en el formulario.');
                         registerAlert.classList.remove('d-none');
                     }
                 }

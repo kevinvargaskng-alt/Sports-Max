@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion
 from datetime import datetime, date, timedelta
-from usuarios.models import Usuario
+from usuarios.models import Usuario, Notificacion
 from django.core.exceptions import ValidationError
 from core.security.file_upload import validate_uploaded_file
 
@@ -255,7 +255,7 @@ def devoluciones_list(request):
                 return redirect('devoluciones')
 
             # Registrar devolución
-            Devolucion.objects.create(
+            devolucion_creada = Devolucion.objects.create(
                 prestamo=prestamo,
                 cantidad_devuelta=cantidad_devuelta,
                 fecha_devolucion=date.today(),
@@ -270,6 +270,27 @@ def devoluciones_list(request):
             elemento = prestamo.elemento
             elemento.cantidad_total += cantidad_devuelta
             elemento.save()
+
+            # ── Notificación automática a Administradores (BD y campana) ──
+            admins_activos = Usuario.objects.filter(is_staff=True, is_active=True)
+            novedad_txt = f" (Novedad: {tipo_novedad} - {observaciones})" if tiene_novedad and tipo_novedad else ""
+            notif_tipo = 'warning' if tiene_novedad else 'info'
+            notif_icono = 'fa-exclamation-triangle' if tiene_novedad else 'fa-undo'
+            notif_titulo = f"Devolución: {elemento.tipo_maquina}"
+            notif_mensaje = (
+                f"El usuario {prestamo.usuario.get_full_name()} ({prestamo.usuario.numero_documento}) "
+                f"ha registrado la devolución de {cantidad_devuelta} unidad(es) de '{elemento.tipo_maquina}'. "
+                f"Estado: {estado_elemento or 'Bueno'}.{novedad_txt}"
+            )
+            for admin_user in admins_activos:
+                Notificacion.objects.create(
+                    usuario=admin_user,
+                    titulo=notif_titulo,
+                    mensaje=notif_mensaje,
+                    tipo=notif_tipo,
+                    icono=notif_icono,
+                    enlace='/inventario/devoluciones/'
+                )
 
             # Sanción automática por daño o pérdida
             if tiene_novedad and tipo_novedad in ['Daño', 'Pérdida']:

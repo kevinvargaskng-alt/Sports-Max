@@ -276,19 +276,21 @@
               {% csrf_token %}
               <div class="mb-4">
                 <label class="form-label fw-semibold text-white small text-uppercase ini-u-38">Número de Documento o Correo</label>
-                <div class="input-group">
+                <div class="input-group has-validation">
                   <span class="input-group-text bg-transparent custom-input ini-u-39"><i class="fas fa-user-circle text-white-50"></i></span>
-                  <input type="text" name="username" class="form-control custom-input" placeholder="Ej: 1052345678 o usuario@sena.edu.co" required autocomplete="username ini-u-40">
+                  <input type="text" name="username" id="login_username" class="form-control custom-input" placeholder="Ej: 1052345678 o usuario@sena.edu.co" required maxlength="254" autocomplete="username">
+                  <div class="invalid-feedback text-danger small mt-1" id="err_login_username"></div>
                 </div>
               </div>
               <div class="mb-4">
                 <label class="form-label fw-semibold text-white small text-uppercase ini-u-41">Contraseña</label>
-                <div class="input-group">
+                <div class="input-group has-validation">
                   <span class="input-group-text bg-transparent custom-input ini-u-42"><i class="fas fa-lock text-white-50"></i></span>
-                  <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu contraseña secreta" required minlength="8" maxlength="128" autocomplete="current-password ini-u-43">
+                  <input type="password" id="id_password" name="password" class="form-control custom-input" placeholder="Tu contraseña secreta" required minlength="8" maxlength="128" autocomplete="current-password">
                   <button class="btn btn-outline-secondary custom-input ini-u-44" type="button" id="togglePassword">
                     <i class="fas fa-eye text-white-50"></i>
                   </button>
+                  <div class="invalid-feedback text-danger small mt-1" id="err_id_password"></div>
                 </div>
                 <div class="text-end mt-3">
                   <a href="{% url 'password_reset' %}" class="small text-decoration-none fw-bold ini-u-45">¿Olvidaste tu contraseña?</a>
@@ -351,41 +353,45 @@
               <div class="row g-4">
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-48">Tipo Documento <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-49"><i class="fas fa-id-card-alt text-white-50"></i></span>
-                    <select class="form-select custom-input" name="tipo_documento" id="id_tipo_documento" required class="ini-u-50">
+                    <select class="form-select custom-input" name="tipo_documento" id="id_tipo_documento" required>
                       <option value="" selected disabled>-- Selecciona --</option>
                       <option value="CC">Cédula de Ciudadanía</option>
                       <option value="TI">Tarjeta de Identidad</option>
                       <option value="CE">Cédula de Extranjería</option>
                       <option value="PA">Pasaporte</option>
                     </select>
+                    <div class="invalid-feedback text-danger small mt-1" id="err_tipo_documento"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-51">Número Documento <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-52"><i class="fas fa-hashtag text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="numero_documento" id="id_numero_documento" required pattern="\d{5,20}" maxlength="20" autocomplete="username ini-u-53">
+                    <input type="text" class="form-control custom-input" name="numero_documento" id="id_numero_documento" required minlength="5" maxlength="20" placeholder="Ej: 1052345678" autocomplete="username">
+                    <div class="invalid-feedback text-danger small mt-1" id="err_numero_documento"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-54">Nombres <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-55"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" autocomplete="given-name ini-u-56">
+                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" placeholder="Tus nombres" autocomplete="given-name">
+                    <div class="invalid-feedback text-danger small mt-1" id="err_nombres"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-57">Apellidos <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-58"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" autocomplete="family-name ini-u-59">
+                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" placeholder="Tus apellidos" autocomplete="family-name">
+                    <div class="invalid-feedback text-danger small mt-1" id="err_apellidos"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-60">Género <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-61"><i class="fas fa-venus-mars text-white-50"></i></span>
                     <select class="form-select custom-input" name="genero" id="id_genero" required>
                       <option value="" selected disabled>-- Selecciona --</option>
@@ -394,20 +400,22 @@
                       <option value="O">Otro</option>
                       <option value="NR">Prefiero no decirlo</option>
                     </select>
+                    <div class="invalid-feedback text-danger small mt-1" id="err_genero"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-63">Teléfono <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-64"><i class="fas fa-phone text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="telefono" required pattern="\d{7,15}" maxlength="15" autocomplete="tel ini-u-65">
+                    <input type="text" class="form-control custom-input" name="telefono" id="id_telefono" required minlength="7" maxlength="15" placeholder="Ej: 3101234567" autocomplete="tel">
+                    <div class="invalid-feedback text-danger small mt-1" id="err_telefono"></div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-66">Programa de Formación <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-67"><i class="fas fa-graduation-cap text-white-50"></i></span>
-                    <select class="form-select custom-input" name="programa_formacion" id="id_programa_formacion" required class="ini-u-68">
+                    <select class="form-select custom-input" name="programa_formacion" id="id_programa_formacion" required>
                       <option value="" selected disabled>-- Selecciona tu programa --</option>
                       <option value="ADSO">Análisis y Desarrollo de Software (ADSO)</option>
                       <option value="MINERIA">Supervisión de Procesos Mineros</option>
@@ -419,20 +427,23 @@
                       <option value="MAQUINARIA_PESADA">Operación de Maquinaria Pesada para Excavación</option>
                       <option value="MANTENIMIENTO_EQUIPO">Mantenimiento de Equipo Pesado</option>
                     </select>
+                    <div class="invalid-feedback text-danger small mt-1" id="err_programa_formacion"></div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-69">Correo Electrónico <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-70"><i class="fas fa-envelope text-white-50"></i></span>
-                    <input type="email" class="form-control custom-input" name="email" required autocomplete="email ini-u-71">
+                    <input type="email" class="form-control custom-input" name="email" id="id_email" required maxlength="254" placeholder="ejemplo@sena.edu.co" autocomplete="email">
+                    <div class="invalid-feedback text-danger small mt-1" id="err_email"></div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-72">Número de Ficha <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-73"><i class="fas fa-users text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required pattern="\d{5,20}" maxlength="20" autocomplete="off ini-u-74">
+                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required minlength="5" maxlength="20" placeholder="Ej: 2826489" autocomplete="off">
+                    <div class="invalid-feedback text-danger small mt-1" id="err_ficha"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -442,22 +453,24 @@
                       <i class="fas fa-magic"></i> Sugerir clave
                     </button>
                   </div>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-76"><i class="fas fa-lock text-white-50"></i></span>
-                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" placeholder="Mínimo 8 caracteres seguros" required minlength="8" maxlength="128" autocomplete="new-password ini-u-77">
+                    <input type="password" name="contrasena" id="id_contrasena" class="form-control custom-input" placeholder="Mínimo 8 caracteres seguros" required minlength="8" maxlength="128" autocomplete="new-password">
                     <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword2"><i class="fas fa-eye text-white-50"></i></button>
+                    <div class="invalid-feedback text-danger small mt-1" id="err_contrasena"></div>
                   </div>
                   <div class="progress mt-2 ini-u-79">
-                    <div id="passwordStrengthBar" class="progress-bar" role="progressbar ini-u-80"></div>
+                    <div id="passwordStrengthBar" class="progress-bar" role="progressbar"></div>
                   </div>
                   <small id="passwordStrengthText" class="text-white-50"></small>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-81">Confirmar Clave <span class="text-danger">*</span></label>
-                  <div class="input-group">
+                  <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-82"><i class="fas fa-check-circle text-white-50"></i></span>
-                    <input type="password" id="confirmarContrasena" class="form-control custom-input" placeholder="Repite tu contraseña" required minlength="8" maxlength="128" autocomplete="new-password ini-u-83">
+                    <input type="password" name="confirmar_contrasena" id="confirmarContrasena" class="form-control custom-input" placeholder="Repite tu contraseña" required minlength="8" maxlength="128" autocomplete="new-password">
                     <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
+                    <div class="invalid-feedback text-danger small mt-1" id="err_confirmar_contrasena"></div>
                   </div>
                 </div>
               </div>

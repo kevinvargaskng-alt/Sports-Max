@@ -379,12 +379,35 @@ def interfichas_list(request):
                 disciplina=torneo_obj.disciplina,
                 usuario_registra=request.user
             )
-            for nombre in request.POST.getlist('jugadores[]'):
+
+            # Guardar planilla de inscripción (archivo)
+            planilla_file = request.FILES.get('planilla_inscripcion')
+            if planilla_file:
+                nuevo_equipo.planilla_inscripcion = planilla_file
+                nuevo_equipo.save()
+
+            # Guardar jugadores con documento y consentimiento
+            nombres_jugadores = request.POST.getlist('jugadores[]')
+            documentos_jugadores = request.POST.getlist('documentos[]')
+
+            for idx, nombre in enumerate(nombres_jugadores):
                 if nombre.strip():
-                    JugadorEquipo.objects.create(
+                    doc = ''
+                    if idx < len(documentos_jugadores):
+                        doc = documentos_jugadores[idx].strip()
+
+                    jugador = JugadorEquipo.objects.create(
                         nombre_completo=nombre.strip(),
+                        numero_documento=doc,
                         equipo=nuevo_equipo
                     )
+
+                    # Consentimiento informado individual
+                    consent_key = f'consentimiento_{idx}'
+                    consent_file = request.FILES.get(consent_key)
+                    if consent_file:
+                        jugador.consentimiento_informado = consent_file
+                        jugador.save()
 
             messages.success(
                 request,
@@ -725,7 +748,37 @@ def registrar_resultado(request, partido_id):
     if hora:
         partido.hora_partido = hora
 
-    if tipo == 'sets':
+    # ── Regla de integridad: "No aplica" es EXCLUSIVO para Ajedrez ──
+    es_ajedrez = (tipo == 'no_aplica')
+    intento_no_aplica = request.POST.get('no_aplica') == 'on'
+
+    if intento_no_aplica and not es_ajedrez:
+        messages.error(
+            request,
+            "⛔ La opción 'No aplica' es exclusiva para Ajedrez. "
+            "Debes registrar el puntaje numérico correspondiente para esta disciplina."
+        )
+        return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+    if es_ajedrez:
+        # Ajedrez: el resultado se marca indicando quién ganó (local/visitante/empate)
+        ganador = request.POST.get('ganador_ajedrez', '').strip()
+        partido.no_aplica = True
+        if ganador == 'local':
+            partido.goles_local = 1
+            partido.goles_visitante = 0
+            partido.jugado = True
+        elif ganador == 'visitante':
+            partido.goles_local = 0
+            partido.goles_visitante = 1
+            partido.jugado = True
+        elif ganador == 'empate':
+            partido.goles_local = 0
+            partido.goles_visitante = 0
+            partido.jugado = True
+        # Si no eligió ganador, solo guarda fecha/hora
+
+    elif tipo == 'sets':
         sl_raw = request.POST.getlist('sets_local[]')
         sv_raw = request.POST.getlist('sets_visitante[]')
         try:
@@ -742,6 +795,7 @@ def registrar_resultado(request, partido_id):
             partido.goles_visitante = sum(1 for a, b in zip(sl, sv) if b > a)
             partido.jugado = True
     else:
+        # Goles / Puntos — requiere puntaje numérico obligatorio
         gl = request.POST.get('goles_local', '').strip()
         gv = request.POST.get('goles_visitante', '').strip()
         if gl != '' and gv != '':
@@ -750,10 +804,11 @@ def registrar_resultado(request, partido_id):
                 partido.goles_visitante = int(gv)
                 partido.jugado = True
             except ValueError:
-                messages.error(request, "Resultado inválido.")
+                messages.error(request, "Resultado inválido. Ingresa valores numéricos.")
                 return redirect('gestionar_torneo', torneo_id=torneo_id)
 
-    if partido.tipo_marcador == 'goles':
+    # Tarjetas y sanciones solo para disciplinas con goles (fútbol, fútsal)
+    if tipo == 'goles':
         try:
             partido.tarjetas_amarillas_local = int(
                 request.POST.get('amarillas_local', 0) or 0)
@@ -1000,3 +1055,129 @@ def asignar_paises_torneo(request, torneo_id):
     messages.success(
         request, "Nombres de países asignados a los equipos en orden.")
     return redirect('gestionar_torneo', torneo_id=torneo_id)
+
+
+# ============================================================
+#  API: OCR DE PLANILLA DE INSCRIPCIÓN (Gemini Vision)
+# ============================================================
+import os
+import json as json_stdlib
+import base64
+import requests as http_requests
+
+
+@login_required
+@require_POST
+def ocr_planilla_api(request):
+    """
+    Recibe una imagen o PDF de planilla de inscripción y usa Gemini 2.5 Flash
+    para extraer nombres y documentos de los jugadores vía OCR multimodal.
+    Retorna JSON: { "jugadores": [ { "nombre": "...", "documento": "..." }, ... ] }
+    """
+    archivo = request.FILES.get('planilla')
+    if not archivo:
+        return JsonResponse({'error': 'No se recibió ningún archivo.'}, status=400)
+
+    # Validar tipo de archivo
+    tipos_permitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+    if archivo.content_type not in tipos_permitidos:
+        return JsonResponse({
+            'error': 'Formato no soportado. Sube una imagen (JPG, PNG, WEBP) o PDF.'
+        }, status=400)
+
+    # Validar tamaño (máx. 10MB)
+    if archivo.size > 10 * 1024 * 1024:
+        return JsonResponse({'error': 'El archivo supera el límite de 10MB.'}, status=400)
+
+    api_key = os.environ.get('GEMINI_API_KEY')
+    if not api_key:
+        return JsonResponse({'error': 'API Key de Gemini no configurada en el servidor.'}, status=500)
+
+    try:
+        # Leer y codificar en base64
+        contenido = archivo.read()
+        b64_data = base64.b64encode(contenido).decode('utf-8')
+
+        # Determinar MIME type
+        mime_type = archivo.content_type
+
+        # Construir prompt estructurado para Gemini
+        prompt_ocr = """Eres un sistema OCR especializado. Analiza esta imagen/documento de planilla de inscripción deportiva.
+
+EXTRAE todos los nombres de jugadores y sus números de documento de identidad que aparezcan.
+
+REGLAS:
+- Si un campo está ilegible, coloca "ILEGIBLE" como valor.
+- Si no hay número de documento visible para un jugador, coloca cadena vacía "".
+- Devuelve ÚNICAMENTE un JSON válido, sin texto adicional, sin markdown.
+
+FORMATO DE RESPUESTA (JSON estricto):
+{
+  "jugadores": [
+    {"nombre": "Nombre Completo del Jugador", "documento": "1234567890"},
+    {"nombre": "Otro Jugador", "documento": ""}
+  ]
+}
+
+Si no puedes identificar ningún jugador, devuelve: {"jugadores": []}"""
+
+        # Llamada a Gemini 2.5 Flash con contenido multimodal
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"text": prompt_ocr},
+                    {
+                        "inline_data": {
+                            "mime_type": mime_type,
+                            "data": b64_data
+                        }
+                    }
+                ]
+            }],
+            "generationConfig": {
+                "temperature": 0.1,
+                "maxOutputTokens": 2048,
+            }
+        }
+
+        resp = http_requests.post(url, json=payload, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+
+        # Extraer texto de respuesta
+        texto_respuesta = ''
+        try:
+            texto_respuesta = data['candidates'][0]['content']['parts'][0]['text']
+        except (KeyError, IndexError):
+            return JsonResponse({'error': 'Gemini no devolvió una respuesta válida.'}, status=500)
+
+        # Limpiar posibles bloques markdown
+        texto_limpio = texto_respuesta.strip()
+        if texto_limpio.startswith('```'):
+            lineas = texto_limpio.split('\n')
+            # Remover primera y última línea (```json y ```)
+            lineas = [l for l in lineas if not l.strip().startswith('```')]
+            texto_limpio = '\n'.join(lineas)
+
+        resultado = json_stdlib.loads(texto_limpio)
+
+        # Validar estructura
+        if 'jugadores' not in resultado:
+            resultado = {'jugadores': []}
+
+        return JsonResponse(resultado)
+
+    except json_stdlib.JSONDecodeError:
+        return JsonResponse({
+            'error': 'No se pudo interpretar la respuesta del OCR. Intenta con una imagen más clara.'
+        }, status=500)
+    except http_requests.RequestException as e:
+        return JsonResponse({
+            'error': f'Error al comunicarse con el servicio OCR: {str(e)}'
+        }, status=500)
+    except Exception as e:
+        return JsonResponse({
+            'error': f'Error inesperado al procesar la planilla: {str(e)}'
+        }, status=500)
+

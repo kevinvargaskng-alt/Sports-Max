@@ -17,7 +17,8 @@ from core.security.file_upload import validate_uploaded_file
 from core.security.decorators import role_required, allowed_fields
 
 # Importaciones de modelos de otras apps
-from .models import Usuario, Sugerencia
+from .models import Usuario, Sugerencia, Notificacion
+from .forms import LoginForm, RegistroUsuarioForm
 from inventario.models import Prestamo
 from gimnasio.models import Reserva, GimnasioConfig
 from interfichas.models import EquipoInterfichas, TorneoInterfichas
@@ -26,19 +27,20 @@ from interfichas.models import EquipoInterfichas, TorneoInterfichas
 def login_view(request):
     """Procesa el inicio de sesión con soporte para documento o correo, AJAX y POST estándar."""
     if request.method == 'POST':
-        doc = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
-        next_url = request.POST.get(
-            'next') or request.GET.get('next') or '/perfil/'
-
+        login_form = LoginForm(request.POST)
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
+        next_url = request.POST.get('next') or request.GET.get('next') or '/perfil/'
 
-        if not doc or not password:
-            msg = 'Por favor ingrese su documento/correo y contraseña.'
+        if not login_form.is_valid():
+            field_errors = {f: errs[0] for f, errs in login_form.errors.items()}
+            msg = next(iter(field_errors.values())) if field_errors else 'Por favor ingrese su documento/correo y contraseña.'
             if is_ajax:
-                return JsonResponse({'status': 'error', 'success': False, 'message': msg}, status=400)
+                return JsonResponse({'status': 'error', 'success': False, 'message': msg, 'errors': field_errors}, status=400)
             messages.error(request, msg)
             return redirect('home')
+
+        doc = login_form.cleaned_data['username']
+        password = login_form.cleaned_data['password']
 
         # Intentar obtener el usuario por username, numero_documento o email
         from django.utils import timezone as _tz
@@ -151,7 +153,11 @@ def login_view(request):
                     return JsonResponse({
                         'status': 'error',
                         'success': False,
-                        'message': msg
+                        'message': msg,
+                        'errors': {
+                            'username': 'Verifica tu documento o correo.',
+                            'password': 'La contraseña no coincide con la cuenta.'
+                        }
                     }, status=401)
                 messages.error(request, msg)
                 return redirect('home')
@@ -161,7 +167,11 @@ def login_view(request):
             return JsonResponse({
                 'status': 'error',
                 'success': False,
-                'message': msg
+                'message': msg,
+                'errors': {
+                    'username': 'Verifica tu documento o correo.',
+                    'password': 'La contraseña no coincide con la cuenta.'
+                }
             }, status=401)
         messages.error(request, msg)
         return redirect('home')
@@ -279,78 +289,71 @@ def gimnasio_list(request):
 
 
 def registro_view(request):
-    """Procesa el registro con validaciones de seguridad"""
-    CLAVES_COMUNES = [
-        '12345678', '123456789', '1234567890', 'password', 'contrasena',
-        'contraseña', 'qwerty', 'abcdefgh', '11111111', '00000000',
-        'admin123', 'password1', '12341234', 'abc12345',
-    ]
-
+    """Procesa el registro unificado con RegistroUsuarioForm y validaciones de seguridad."""
     if request.method == 'POST':
-        numero_documento = request.POST.get('numero_documento', '').strip()
-        nombres = request.POST.get('nombres', '').strip().title()
-        apellidos = request.POST.get('apellidos', '').strip().title()
-        contrasena = request.POST.get('contrasena', '').strip()
-        correo = request.POST.get('email', '').strip()
-        tipo_doc = request.POST.get('tipo_documento', '').strip()
-        telefono = request.POST.get('telefono', '').strip()
-        ficha = request.POST.get('ficha', '').strip()
-        programa = request.POST.get('programa_formacion', '').strip()
-        genero = request.POST.get('genero', '').strip()
+        form = RegistroUsuarioForm(request.POST)
+        if not form.is_valid():
+            field_errors = {f: errs[0] for f, errs in form.errors.items()}
+            first_msg = next(iter(field_errors.values())) if field_errors else 'Por favor corrige los campos señalados.'
+            return JsonResponse({
+                'status': 'error',
+                'message': first_msg,
+                'errors': field_errors
+            }, status=400)
 
-        if not genero:
-            return JsonResponse({'status': 'error', 'message': 'El campo género es obligatorio.'}, status=400)
-
-        # ── Validación de email estricta ──
-        try:
-            validate_email_strict(correo)
-        except ValidationError as e:
-            return JsonResponse({'status': 'error', 'message': str(e.message)}, status=400)
-
-        # ── Validación de contraseña robusta (12+ caracteres, complejidad, breached list) ──
-        # Crear usuario temporal para que los validadores puedan verificar datos personales
-        temp_user = Usuario(username=numero_documento, email=correo,
-                            first_name=nombres, last_name=apellidos,
-                            numero_documento=numero_documento)
-        try:
-            validate_password(contrasena, user=temp_user)
-        except ValidationError as e:
-            # Retornar el primer error de validación
-            return JsonResponse({'status': 'error', 'message': e.messages[0]}, status=400)
-
-        # ── Sanitización de campos de texto ──
-        nombres = validate_text_safe(nombres, 'nombre', max_length=100)
-        apellidos = validate_text_safe(apellidos, 'apellidos', max_length=100)
-
-        if Usuario.objects.filter(numero_documento=numero_documento).exists():
-            return JsonResponse({'status': 'error', 'message': 'El documento ya existe'}, status=400)
-
+        cd = form.cleaned_data
         try:
             user = Usuario(
-                username=numero_documento,
-                email=correo,
-                first_name=nombres,
-                last_name=apellidos,
-                numero_documento=numero_documento,
-                tipo_documento=tipo_doc,
-                telefono=telefono,
-                genero=genero,
-                ficha=ficha,
-                programa_formacion=programa,
+                username=cd['numero_documento'],
+                email=cd['email'],
+                first_name=cd['nombres'],
+                last_name=cd['apellidos'],
+                numero_documento=cd['numero_documento'],
+                tipo_documento=cd['tipo_documento'],
+                telefono=cd['telefono'],
+                genero=cd['genero'],
+                ficha=cd['ficha'],
+                programa_formacion=cd['programa_formacion'],
                 rol='aprendiz'
             )
-            user.set_password(contrasena)
+            user.set_password(cd['contrasena'])
             user.save()
 
             login(request, user)
-            return JsonResponse({'status': 'success', 'redirect': '/perfil/', 'message': 'Registro exitoso'})
+            return JsonResponse({
+                'status': 'success',
+                'redirect': '/perfil/',
+                'message': '¡Registro exitoso! Bienvenido al sistema deportivo.'
+            })
 
         except IntegrityError:
-            return JsonResponse({'status': 'error', 'message': 'Error de integridad en base de datos.'}, status=400)
-        except Exception:
-            return JsonResponse({'status': 'error', 'message': 'Ocurrió un error inesperado.'}, status=500)
+            return JsonResponse({
+                'status': 'error',
+                'message': 'El documento o correo ya se encuentra registrado en el sistema.',
+                'errors': {
+                    'numero_documento': 'Documento o correo ya registrado.',
+                    'email': 'Documento o correo ya registrado.'
+                }
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Ocurrió un error inesperado al procesar el registro: {str(e)}'
+            }, status=500)
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+@require_POST
+def marcar_notificaciones_leidas(request):
+    """Marca todas las notificaciones pendientes del usuario como leídas."""
+    request.user.notificaciones.filter(leida=False).update(leida=True)
+    return JsonResponse({
+        'status': 'success',
+        'message': 'Todas las notificaciones han sido marcadas como leídas.'
+    })
+
 
 
 def logout_view(request):

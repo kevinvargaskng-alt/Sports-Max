@@ -1,27 +1,37 @@
 <!-- MODAL NOTIFICACIONES DEL SISTEMA -->
 <div class="modal fade" id="modalNotificacionesSistema" tabindex="-1" aria-labelledby="modalNotificacionesLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal text-white notif-modal-content">
-            <div class="modal-header border-0 pb-0">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content custom-modal text-white notif-modal-content" style="background: #181c24; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px;">
+            <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
                 <h5 class="modal-title fw-bold text-cap" id="modalNotificacionesLabel">
-                     <i class="fas fa-bell text-warning me-2 animate-bounce"></i>Notificaciones de Mi Cuenta
+                     <i class="fas fa-bell text-warning me-2 animate-bounce"></i>Notificaciones del Sistema
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body py-4">
+            <div class="modal-body py-3">
                 <div class="d-flex flex-column gap-3">
                     {% for notif in notificaciones_sistema %}
-                        <div class="p-3 rounded border notif-border-{% if notif.tipo == 'warning' %}warning{% else %}info{% endif %}">
+                        <div class="p-3 rounded border notif-item-box {% if not notif.leida %}border-warning bg-warning bg-opacity-10{% else %}border-secondary bg-dark bg-opacity-40{% endif %}">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="fas {{ notif.icono }} {% if notif.tipo == 'warning' %}text-warning{% else %}text-info{% endif %}"></i>
-                                    <h6 class="mb-0 fw-bold text-white">{{ notif.titulo }}</h6>
+                                    <i class="fas {{ notif.icono }} {% if notif.tipo == 'warning' or notif.tipo == 'danger' %}text-warning{% else %}text-info{% endif %}"></i>
+                                    <h6 class="mb-0 fw-bold text-white small">{{ notif.titulo }}</h6>
                                 </div>
-                                <span class="badge {% if notif.tipo == 'warning' %}bg-warning text-dark{% else %}bg-info text-white{% endif %} font-monospace notif-badge-size">
+                                <span class="badge {% if notif.badge == 'Nueva' or notif.badge == 'Vencido' %}bg-danger text-white{% elif notif.tipo == 'warning' %}bg-warning text-dark{% else %}bg-info text-white{% endif %} font-monospace notif-badge-size">
                                     {{ notif.badge }}
                                 </span>
                             </div>
-                            <p class="text-white-50 small mb-0">{{ notif.mensaje }}</p>
+                            <p class="text-white-50 small mb-2">{{ notif.mensaje }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                {% if notif.fecha %}
+                                    <small class="text-white-50 font-monospace" style="font-size: 0.72rem;"><i class="far fa-clock me-1"></i>{{ notif.fecha }}</small>
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                                {% if notif.enlace %}
+                                    <a href="{{ notif.enlace }}" class="btn btn-sm btn-outline-light py-0 px-2 rounded-pill" style="font-size: 0.75rem;">Ver detalle <i class="fas fa-arrow-right ms-1"></i></a>
+                                {% endif %}
+                            </div>
                         </div>
                     {% empty %}
                         <div class="text-center py-4 text-white-50">
@@ -31,7 +41,10 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0 justify-content-center">
+            <div class="modal-footer border-0 pt-0 justify-content-between">
+                <button type="button" class="btn btn-sm btn-link text-warning text-decoration-none fw-semibold p-0" id="btnMarcarLeidas" onclick="marcarTodasNotificacionesLeidas()">
+                    <i class="fas fa-check-double me-1"></i>Marcar todas como leídas
+                </button>
                 <button type="button" class="btn btn-outline-info btn-sm fw-bold px-4 rounded-pill" data-bs-dismiss="modal">
                     Entendido
                 </button>
@@ -39,3 +52,37 @@
         </div>
     </div>
 </div>
+
+<script>
+function marcarTodasNotificacionesLeidas() {
+    const csrftoken = typeof getCookie === 'function' ? getCookie('csrftoken') : (document.querySelector('[name=csrfmiddlewaretoken]')?.value || '');
+    fetch('/notificaciones/marcar-leidas/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const badges = document.querySelectorAll('#modalNotificacionesSistema .badge.bg-danger');
+            badges.forEach(b => {
+                b.className = 'badge bg-secondary text-white font-monospace notif-badge-size';
+                b.textContent = 'Leída';
+            });
+            const unreadItems = document.querySelectorAll('#modalNotificacionesSistema .notif-item-box.border-warning');
+            unreadItems.forEach(i => {
+                i.classList.remove('border-warning', 'bg-warning', 'bg-opacity-10');
+                i.classList.add('border-secondary', 'bg-dark', 'bg-opacity-40');
+            });
+            const bellBadge = document.querySelector('.fa-bell + .badge, [data-notif-count]');
+            if (bellBadge) {
+                bellBadge.style.display = 'none';
+            }
+        }
+    })
+    .catch(err => console.error('Error al marcar notificaciones:', err));
+}
+</script>
+

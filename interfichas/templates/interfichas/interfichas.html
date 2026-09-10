@@ -596,7 +596,8 @@
             <select name="tipo_marcador" class="custom-input form-control form-select" required>
               <option value="goles">⚽ Goles (Fútbol, etc.)</option>
               <option value="puntos">🏀 Puntos (Baloncesto)</option>
-              <option value="sets">🏐 Sets (Voleibol, Pimpón)</option>
+              <option value="sets">🏐 Sets (Voleibol, Tenis de Mesa)</option>
+              <option value="no_aplica">♟️ No aplica / Tableros (Ajedrez)</option>
             </select>
           </div>
           <button type="submit" class="btn w-100 fw-bold py-2 int-u-47">
@@ -745,7 +746,7 @@
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <form method="POST" id="formEquipo">
+      <form method="POST" id="formEquipo" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="accion_tipo" value="inscribir_equipo">
         <input type="hidden" name="torneo_id" id="equipo-torneo-id">
@@ -806,23 +807,80 @@
             </div>
           </div>
 
+          <!-- ── PLANILLA DE INSCRIPCIÓN (Archivo) ── -->
+          <div class="mb-3 p-3 rounded border border-secondary" style="background: rgba(88,166,255,0.05);">
+            <label class="form-label small fw-bold text-muted text-uppercase">
+              <i class="fas fa-file-alt text-info me-1"></i>Planilla de Inscripción (opcional)
+            </label>
+            <input type="file" name="planilla_inscripcion" id="planilla-inscripcion"
+                   class="form-control form-control-sm bg-dark text-white border-secondary"
+                   accept="image/*,.pdf">
+            <small class="text-white-50 d-block mt-1">
+              <i class="fas fa-info-circle me-1"></i>Sube la imagen o PDF de la planilla física firmada.
+            </small>
+          </div>
+
+          <!-- ── ESCANEO OCR DE PLANILLA ── -->
+          <div class="mb-3 p-3 rounded border border-secondary" style="background: rgba(240,192,64,0.05);">
+            <label class="form-label small fw-bold text-muted text-uppercase">
+              <i class="fas fa-robot text-warning me-1"></i>Escanear Planilla con IA (OCR)
+            </label>
+            <div class="d-flex gap-2 align-items-center">
+              <input type="file" id="ocr-planilla-file"
+                     class="form-control form-control-sm bg-dark text-white border-secondary flex-fill"
+                     accept="image/*,.pdf">
+              <button type="button" class="btn btn-sm btn-warning fw-bold text-nowrap" id="btn-ocr-scan"
+                      onclick="escanearPlanillaOCR()">
+                <i class="fas fa-search me-1"></i>Escanear
+              </button>
+            </div>
+            <div id="ocr-status" class="mt-2 small" style="display:none;">
+              <div class="d-flex align-items-center gap-2">
+                <div class="spinner-border spinner-border-sm text-warning" role="status" id="ocr-spinner"></div>
+                <span class="text-warning" id="ocr-msg">Analizando planilla con IA...</span>
+              </div>
+            </div>
+            <small class="text-white-50 d-block mt-1">
+              <i class="fas fa-magic me-1"></i>Sube una foto de la planilla y la IA extraerá automáticamente los nombres y documentos de los jugadores.
+            </small>
+          </div>
+
+          <!-- ── JUGADORES ── -->
           <div class="mb-3">
             <label class="form-label small fw-bold text-muted text-uppercase int-u-67">
               Jugadores <span class="text-muted fw-normal">(opcional)</span>
             </label>
             <div id="jugadores-container">
-              <div class="jugador-row">
-                <input type="text" name="jugadores[]" class="custom-input form-control"
-                       placeholder="Nombre completo jugador 1">
-                <button type="button" class="btn btn-outline-danger border-0"
-                        onclick="this.parentElement.remove()">
-                  <i class="fas fa-times"></i>
-                </button>
+              <div class="jugador-row mb-2">
+                <div class="d-flex gap-2 align-items-start">
+                  <div class="flex-fill">
+                    <input type="text" name="jugadores[]" class="custom-input form-control form-control-sm mb-1"
+                           placeholder="Nombre completo jugador 1">
+                    <div class="d-flex gap-2">
+                      <input type="text" name="documentos[]" class="custom-input form-control form-control-sm"
+                             placeholder="Nº Documento" style="max-width: 160px;">
+                      <div class="flex-fill">
+                        <input type="file" name="consentimiento_0"
+                               class="form-control form-control-sm bg-dark text-white border-secondary"
+                               accept="image/*,.pdf" title="Consentimiento informado">
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-outline-danger border-0 mt-1"
+                          onclick="this.closest('.jugador-row').remove(); reindexarConsentimientos()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
               </div>
             </div>
-            <button type="button" class="btn-accion btn-info-a mt-2" onclick="agregarJugador()">
-              <i class="fas fa-plus"></i> Agregar jugador
-            </button>
+            <div class="d-flex gap-2 mt-2">
+              <button type="button" class="btn-accion btn-info-a" onclick="agregarJugador()">
+                <i class="fas fa-plus"></i> Agregar jugador
+              </button>
+            </div>
+            <small class="text-white-50 d-block mt-1">
+              <i class="fas fa-shield-alt text-success me-1"></i>Cada jugador debe tener su consentimiento informado firmado.
+            </small>
           </div>
 
           <button type="submit" id="btn-submit-equipo"
@@ -1154,19 +1212,112 @@
   }
 
   let jugNum = 1;
-  function agregarJugador() {
+
+  function crearFilaJugador(num, nombre, documento) {
+    nombre = nombre || '';
+    documento = documento || '';
+    const row = document.createElement('div');
+    row.className = 'jugador-row mb-2';
+    row.innerHTML = `
+      <div class="d-flex gap-2 align-items-start">
+        <div class="flex-fill">
+          <input type="text" name="jugadores[]" class="custom-input form-control form-control-sm mb-1"
+                 placeholder="Nombre completo jugador ${num}" value="${nombre.replace(/"/g, '&quot;')}">
+          <div class="d-flex gap-2">
+            <input type="text" name="documentos[]" class="custom-input form-control form-control-sm"
+                   placeholder="Nº Documento" style="max-width: 160px;" value="${documento.replace(/"/g, '&quot;')}">
+            <div class="flex-fill">
+              <input type="file" name="consentimiento_${num - 1}"
+                     class="form-control form-control-sm bg-dark text-white border-secondary"
+                     accept="image/*,.pdf" title="Consentimiento informado">
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-danger border-0 mt-1"
+                onclick="this.closest('.jugador-row').remove(); reindexarConsentimientos()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>`;
+    return row;
+  }
+
+  function agregarJugador(nombre, documento) {
     jugNum++;
     const container = document.getElementById('jugadores-container');
-    const row = document.createElement('div');
-    row.className = 'jugador-row';
-    row.innerHTML = `
-      <input type="text" name="jugadores[]" class="custom-input form-control"
-             placeholder="Nombre completo jugador ${jugNum}">
-      <button type="button" class="btn btn-outline-danger border-0"
-              onclick="this.parentElement.remove()">
-        <i class="fas fa-times"></i>
-      </button>`;
-    container.appendChild(row);
+    container.appendChild(crearFilaJugador(jugNum, nombre, documento));
+  }
+
+  function reindexarConsentimientos() {
+    const rows = document.querySelectorAll('#jugadores-container .jugador-row');
+    rows.forEach((row, idx) => {
+      const fileInput = row.querySelector('input[type="file"]');
+      if (fileInput) fileInput.name = `consentimiento_${idx}`;
+    });
+  }
+
+  // ── OCR Planilla con Gemini Vision ──
+  async function escanearPlanillaOCR() {
+    const fileInput = document.getElementById('ocr-planilla-file');
+    const statusDiv = document.getElementById('ocr-status');
+    const spinnerEl = document.getElementById('ocr-spinner');
+    const msgEl = document.getElementById('ocr-msg');
+    const btnScan = document.getElementById('btn-ocr-scan');
+
+    if (!fileInput.files || !fileInput.files[0]) {
+      smaxDialog.alert('Selecciona un archivo de planilla para escanear.', {title: 'Sin archivo', icon: 'warning'});
+      return;
+    }
+
+    // Mostrar spinner
+    statusDiv.style.display = '';
+    spinnerEl.style.display = '';
+    msgEl.textContent = 'Analizando planilla con IA...';
+    msgEl.className = 'text-warning';
+    btnScan.disabled = true;
+
+    try {
+      const formData = new FormData();
+      formData.append('planilla', fileInput.files[0]);
+
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      const resp = await fetch('{% url "ocr_planilla_api" %}', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+        body: formData
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        throw new Error(data.error || 'Error al procesar OCR');
+      }
+
+      if (data.jugadores && data.jugadores.length > 0) {
+        // Limpiar jugadores existentes y agregar los extraídos por OCR
+        const container = document.getElementById('jugadores-container');
+        container.innerHTML = '';
+        jugNum = 0;
+
+        data.jugadores.forEach(j => {
+          jugNum++;
+          container.appendChild(crearFilaJugador(jugNum, j.nombre || '', j.documento || ''));
+        });
+
+        spinnerEl.style.display = 'none';
+        msgEl.textContent = `✅ ${data.jugadores.length} jugador(es) encontrado(s) y auto-completado(s).`;
+        msgEl.className = 'text-success';
+      } else {
+        spinnerEl.style.display = 'none';
+        msgEl.textContent = '⚠️ No se encontraron jugadores en la planilla. Intenta con una imagen más clara.';
+        msgEl.className = 'text-warning';
+      }
+    } catch (err) {
+      spinnerEl.style.display = 'none';
+      msgEl.textContent = '❌ ' + err.message;
+      msgEl.className = 'text-danger';
+    } finally {
+      btnScan.disabled = false;
+    }
   }
 
   document.getElementById('modalEquipo').addEventListener('hidden.bs.modal', function() {
@@ -1187,16 +1338,19 @@
       ayudaNombre.innerHTML = `<i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.`;
     }
 
+    // Reset jugadores
     jugNum = 1;
-    document.getElementById('jugadores-container').innerHTML = `
-      <div class="jugador-row">
-        <input type="text" name="jugadores[]" class="custom-input form-control"
-               placeholder="Nombre completo jugador 1">
-        <button type="button" class="btn btn-outline-danger border-0"
-                onclick="this.parentElement.remove()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>`;
+    const container = document.getElementById('jugadores-container');
+    container.innerHTML = '';
+    container.appendChild(crearFilaJugador(1));
+
+    // Reset OCR status
+    const statusDiv = document.getElementById('ocr-status');
+    if (statusDiv) statusDiv.style.display = 'none';
+    const ocrFile = document.getElementById('ocr-planilla-file');
+    if (ocrFile) ocrFile.value = '';
+    const planillaFile = document.getElementById('planilla-inscripcion');
+    if (planillaFile) planillaFile.value = '';
   });
 </script>
 {% endblock %}

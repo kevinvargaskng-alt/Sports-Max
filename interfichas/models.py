@@ -8,9 +8,10 @@ from django.conf import settings
 # ================================================================
 class Disciplina(models.Model):
     TIPO_MARCADOR_CHOICES = [
-        ('goles',   'Goles (Fútbol, Fútsal, etc.)'),
-        ('puntos',  'Puntos (Baloncesto, Voleibol americano)'),
-        ('sets',    'Sets (Voleibol, Pimpón, Bádminton)'),
+        ('goles',     'Goles (Fútbol, Fútsal, etc.)'),
+        ('puntos',    'Puntos (Baloncesto, Voleibol americano)'),
+        ('sets',      'Sets (Voleibol, Tenis de Mesa / Pimpón)'),
+        ('no_aplica', 'No aplica / Tableros (Ajedrez)'),
     ]
     nombre_disciplina = models.CharField(max_length=50, unique=True)
     icono = models.CharField(max_length=60, default='fa-medal')
@@ -69,6 +70,9 @@ class EquipoInterfichas(models.Model):
     )
     fecha_inscripcion = models.DateField(auto_now_add=True)
     estado = models.CharField(max_length=20, default='Inscrito')
+    planilla_inscripcion = models.FileField(
+        upload_to='planillas_inscripciones/', null=True, blank=True, verbose_name="Planilla de Inscripción"
+    )
 
     def __str__(self):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
@@ -79,12 +83,16 @@ class EquipoInterfichas(models.Model):
 # ================================================================
 class JugadorEquipo(models.Model):
     nombre_completo = models.CharField(max_length=150)
+    numero_documento = models.CharField(max_length=30, blank=True, default='', verbose_name="Número de Documento")
+    consentimiento_informado = models.FileField(
+        upload_to='consentimientos_jugadores/', null=True, blank=True, verbose_name="Consentimiento Informado"
+    )
     equipo = models.ForeignKey(
         EquipoInterfichas, on_delete=models.CASCADE, related_name='jugadores'
     )
 
     def __str__(self):
-        return self.nombre_completo
+        return f"{self.nombre_completo} ({self.numero_documento})" if self.numero_documento else self.nombre_completo
 
 
 # ================================================================
@@ -141,6 +149,9 @@ class PartidoInterfichas(models.Model):
     # Detalle de sets para voleibol / pimpón  [25, 23, 15]
     sets_local = models.JSONField(null=True, blank=True)
     sets_visitante = models.JSONField(null=True, blank=True)
+
+    # Modalidad exclusiva Ajedrez
+    no_aplica = models.BooleanField(default=False, verbose_name="Marcador No Aplica (Ajedrez)")
 
     # Tarjetas y Sanciones Disciplinarias
     tarjetas_amarillas_local = models.IntegerField(

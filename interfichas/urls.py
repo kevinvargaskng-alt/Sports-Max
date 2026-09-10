@@ -40,4 +40,8 @@ urlpatterns = [
          views.editar_equipo,         name='editar_equipo'),
     path('equipo/<int:equipo_id>/eliminar/',
          views.eliminar_equipo,       name='eliminar_equipo'),
+
+    # ── API OCR Planilla ───────────────────────────────────────
+    path('api/ocr-planilla/',
+         views.ocr_planilla_api,      name='ocr_planilla_api'),
 ]
