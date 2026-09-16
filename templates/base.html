@@ -167,6 +167,38 @@
             }
         });
     });
+
+    // Detección de Red Global
+    document.addEventListener('DOMContentLoaded', () => {
+        const networkAlert = document.getElementById('networkAlert');
+        if (!networkAlert) return;
+        const textEl = document.getElementById('networkAlertText');
+        const iconEl = document.getElementById('networkAlertIcon');
+
+        function updateNetworkStatus() {
+            if (!navigator.onLine) {
+                networkAlert.style.opacity = '1';
+                networkAlert.style.transform = 'translateY(0)';
+                networkAlert.style.background = '#dc3545';
+                iconEl.className = 'fas fa-wifi-slash me-2';
+                textEl.textContent = 'Se perdió la conexión a internet';
+            } else {
+                if (networkAlert.style.opacity === '1') {
+                    networkAlert.style.background = '#198754';
+                    iconEl.className = 'fas fa-wifi me-2';
+                    textEl.textContent = 'Vuelves a estar en línea';
+                    
+                    setTimeout(() => {
+                        networkAlert.style.opacity = '0';
+                        networkAlert.style.transform = 'translateY(-10px)';
+                    }, 4000);
+                }
+            }
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+    });
     </script>
     
     {% block extra_js %}{% endblock %}
