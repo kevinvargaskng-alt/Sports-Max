@@ -1,0 +1,203 @@
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>{{ torneo.nombre_torneo }}</h1>
+            <p class="text-muted mb-0">Reporte del torneo</p>
+        </div>
+
+        <button onclick="window.print()" class="btn btn-primary">
+            Imprimir / Guardar PDF
+        </button>
+    </div>
+
+    {% for item in grupos_con_tabla %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    Grupo {{ item.grupo.nombre }}
+                </h3>
+            </div>
+
+            <div class="card-body">
+                {% if item.tabla %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Equipo</th>
+                                    <th>PJ</th>
+                                    <th>PG</th>
+                                    <th>PE</th>
+                                    <th>PP</th>
+                                    <th>GF</th>
+                                    <th>GC</th>
+                                    <th>DG</th>
+                                    <th>PTS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for fila in item.tabla %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            {{ fila.equipo.nombre_equipo }}
+                                        </td>
+                                        <td>{{ fila.pj }}</td>
+                                        <td>{{ fila.pg }}</td>
+                                        <td>{{ fila.pe }}</td>
+                                        <td>{{ fila.pp }}</td>
+                                        <td>{{ fila.gf }}</td>
+                                        <td>{{ fila.gc }}</td>
+                                        <td>{{ fila.dg }}</td>
+                                        <td><strong>{{ fila.pts }}</strong></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        No hay equipos registrados en este grupo.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">
+            Este torneo todavía no tiene grupos registrados.
+        </div>
+    {% endfor %}
+
+
+    {% if partidos_cuartos %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">Cuartos de final</h3>
+            </div>
+
+            <div class="card-body">
+                {% for partido in partidos_cuartos %}
+                    <div class="border-bottom py-3">
+                        <strong>
+                            {{ partido.equipo_local.nombre_equipo }}
+                        </strong>
+
+                        <span class="mx-2">vs</span>
+
+                        <strong>
+                            {{ partido.equipo_visitante.nombre_equipo }}
+                        </strong>
+
+                        {% if partido.jugado %}
+                            <span class="ms-3">
+                                {{ partido.goles_local }}
+                                -
+                                {{ partido.goles_visitante }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted ms-3">
+                                Pendiente
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+
+    {% if partidos_semifinal %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">Semifinal</h3>
+            </div>
+
+            <div class="card-body">
+                {% for partido in partidos_semifinal %}
+                    <div class="border-bottom py-3">
+                        <strong>
+                            {{ partido.equipo_local.nombre_equipo }}
+                        </strong>
+
+                        <span class="mx-2">vs</span>
+
+                        <strong>
+                            {{ partido.equipo_visitante.nombre_equipo }}
+                        </strong>
+
+                        {% if partido.jugado %}
+                            <span class="ms-3">
+                                {{ partido.goles_local }}
+                                -
+                                {{ partido.goles_visitante }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted ms-3">
+                                Pendiente
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+
+    {% if partidos_final %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">Final</h3>
+            </div>
+
+            <div class="card-body">
+                {% for partido in partidos_final %}
+                    <div class="border-bottom py-3">
+                        <strong>
+                            {{ partido.equipo_local.nombre_equipo }}
+                        </strong>
+
+                        <span class="mx-2">vs</span>
+
+                        <strong>
+                            {{ partido.equipo_visitante.nombre_equipo }}
+                        </strong>
+
+                        {% if partido.jugado %}
+                            <span class="ms-3">
+                                {{ partido.goles_local }}
+                                -
+                                {{ partido.goles_visitante }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted ms-3">
+                                Pendiente
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+<style>
+@media print {
+    .btn {
+        display: none !important;
+    }
+
+    .card {
+        break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}
+```

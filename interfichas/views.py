@@ -54,7 +54,7 @@ def _calcular_tabla(grupo):
     partidos_jugados = grupo.partidos.filter(jugado=True).select_related('equipo_local', 'equipo_visitante')
 
     stats_map = {
-        eq.id: {
+        eq.pk: {
             'equipo': eq,
             'pj': 0, 'pg': 0, 'pe': 0, 'pp': 0,
             'gf': 0, 'gc': 0, 'dg': 0, 'pts': 0

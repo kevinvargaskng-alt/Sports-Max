@@ -167,7 +167,7 @@ LOGOUT_REDIRECT_URL = 'home'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 7200                        # 2 horas
 SESSION_COOKIE_HTTPONLY = True                    # No accesible por JavaScript
-SESSION_COOKIE_SECURE = not DEBUG                 # Solo HTTPS en producción
+SESSION_COOKIE_SECURE = False            # Solo HTTPS en producción
 SESSION_COOKIE_SAMESITE = 'Lax'                  # Protección CSRF
 SESSION_SAVE_EVERY_REQUEST = True                 # Renovar expiración con actividad
 
@@ -185,7 +185,7 @@ SECURE_BROWSER_XSS_FILTER = True
 #  HTTPS / HSTS (solo producción)
 # ═══════════════════════════════════════════════════════════
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = False
     SECURE_HSTS_SECONDS = 31536000                # 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
