@@ -1,14 +1,43 @@
 {% if messages %}
-<div class="toast-container position-fixed top-0 end-0 p-3 custom-toast-container">
+<div class="toast-container position-fixed top-0 end-0 p-3 custom-toast-container" style="z-index: 9999;">
     {% for msg in messages %}
-        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show shadow-lg border-0 custom-toast-alert toast-msg-{% if 'info' in msg.tags %}info{% elif 'error' in msg.tags or 'danger' in msg.tags %}error{% elif 'warning' in msg.tags %}warning{% else %}default{% endif %}"
-             role="alert">
+        <div class="alert alert-{{ msg.tags|default:'info' }} fade show shadow-lg border-0 custom-toast-alert toast-msg-{% if 'info' in msg.tags %}info{% elif 'error' in msg.tags or 'danger' in msg.tags %}error{% elif 'warning' in msg.tags %}warning{% else %}default{% endif %}" 
+             role="alert" 
+             style="position: relative; padding-right: 45px;">
             <i class="fas {% if 'info' in msg.tags %}fa-check-circle text-info{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle text-danger{% elif 'warning' in msg.tags %}fa-exclamation-triangle text-warning{% else %}fa-info-circle text-info{% endif %} me-2 fs-5 custom-toast-icon"></i>
             {{ msg }}
-            <button type="button" class="custom-toast-close" data-bs-dismiss="alert" aria-label="Cerrar" style="background: transparent; border: none; color: #fff; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; line-height: 1; cursor: pointer; opacity: 0.7; transition: opacity 0.15s;">
-                <i class="fas fa-times"></i>
+            
+            <button type="button" 
+                    class="custom-toast-close" 
+                    aria-label="Cerrar" 
+                    style="background: transparent; border: none; color: #fff; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; cursor: pointer; opacity: 0.8; z-index: 9999; pointer-events: auto;">
+                <i class="fas fa-times" style="pointer-events: none;"></i>
             </button>
         </div>
     {% endfor %}
 </div>
 {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.custom-toast-alert').forEach(function(toast) {
+        // Temporizador para auto-eliminar a los 4 segundos
+        var timer = setTimeout(function() {
+            if (toast && toast.parentNode) {
+                toast.remove();
+            }
+        }, 3000);
+
+        // Evento manual para el botón de cerrar
+        var closeBtn = toast.querySelector('.custom-toast-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                clearTimeout(timer); // Detiene el temporizador
+                toast.remove();      // Elimina la alerta inmediatamente
+            });
+        }
+    });
+});
+</script>
