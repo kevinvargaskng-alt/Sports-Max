@@ -165,6 +165,19 @@ canvas { width: 100% !important; max-height: 220px !important; }
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;
 }
 
+/* ── GAMIFICATION & WIDGETS ── */
+.streak-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 87, 34, 0.1); color: #FF5722; padding: 6px 14px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(255, 87, 34, 0.2); }
+.interactive-widget { background: var(--surface3); border: 1px solid var(--border); border-radius: 18px; padding: 1.5rem; height: 100%; transition: transform 0.2s, border-color 0.2s; }
+.interactive-widget:hover { border-color: rgba(200, 255, 0, 0.3); transform: translateY(-3px); }
+.water-cups { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.water-cup { font-size: 1.5rem; cursor: pointer; opacity: 0.3; transition: all 0.2s; filter: grayscale(1); }
+.water-cup.filled { opacity: 1; filter: grayscale(0); transform: scale(1.1); }
+.zen-timer { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--acid); text-align: center; margin: 15px 0; font-variant-numeric: tabular-nums; }
+.imc-slider-container { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+.range-slider { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 5px; background: rgba(255, 255, 255, 0.1); outline: none; }
+.range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--acid); cursor: pointer; border: 2px solid #000; }
+.imc-result-live { text-align: center; font-size: 1.8rem; font-weight: 800; margin-top: 10px; transition: color 0.3s; }
+
 /* ── ANIMATIONS ── */
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -294,6 +307,63 @@ canvas { width: 100% !important; max-height: 220px !important; }
   <!-- ══════════════════════════════════════════
        VISTA USUARIO
   ══════════════════════════════════════════ -->
+  
+  <!-- INTERACTIVE WIDGETS (Always visible) -->
+  <div class="row g-3 mb-4 reveal">
+    <!-- Agua -->
+    <div class="col-lg-4">
+      <div class="interactive-widget">
+        <div class="panel-title text-info"><i class="fas fa-tint"></i> Meta de Hidratación</div>
+        <p class="text-muted small mb-2">Haz clic para registrar tus vasos diarios (Meta: 8 vasos)</p>
+        <div class="water-cups" id="waterCupsContainer">
+          <span class="water-cup" onclick="toggleWater(0)">💧</span>
+          <span class="water-cup" onclick="toggleWater(1)">💧</span>
+          <span class="water-cup" onclick="toggleWater(2)">💧</span>
+          <span class="water-cup" onclick="toggleWater(3)">💧</span>
+          <span class="water-cup" onclick="toggleWater(4)">💧</span>
+          <span class="water-cup" onclick="toggleWater(5)">💧</span>
+          <span class="water-cup" onclick="toggleWater(6)">💧</span>
+          <span class="water-cup" onclick="toggleWater(7)">💧</span>
+        </div>
+        <div class="mt-3 text-end">
+          <span class="streak-badge"><i class="fas fa-fire"></i> Racha: <span id="waterStreak">3</span> días</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Calculadora IMC en vivo -->
+    <div class="col-lg-4">
+      <div class="interactive-widget">
+        <div class="panel-title" style="color: var(--acid);"><i class="fas fa-calculator"></i> Calculadora Rápida IMC</div>
+        <div class="imc-slider-container">
+          <div>
+            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Peso (kg)</span> <strong id="valPeso">70</strong></label>
+            <input type="range" min="30" max="150" value="70" class="range-slider" id="sliderPeso" oninput="calcularIMCLive()">
+          </div>
+          <div>
+            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Estatura (cm)</span> <strong id="valEstatura">170</strong></label>
+            <input type="range" min="120" max="220" value="170" class="range-slider" id="sliderEstatura" oninput="calcularIMCLive()">
+          </div>
+          <div class="imc-result-live" id="imcResultLive">24.2</div>
+          <div class="text-center small fw-bold" id="imcStatusLive" style="color: var(--teal);">Normal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modo Zen -->
+    <div class="col-lg-4">
+      <div class="interactive-widget text-center">
+        <div class="panel-title justify-content-center text-warning"><i class="fas fa-headphones"></i> Pausa Activa / Zen</div>
+        <div class="zen-timer" id="zenTimerDisplay">25:00</div>
+        <p class="small text-muted mb-3" id="zenMessage">Tiempo para enfocarte.</p>
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-outline-sm text-warning border-warning" onclick="startZenTimer()"><i class="fas fa-play"></i> Iniciar</button>
+          <button class="btn btn-outline-sm text-secondary border-secondary" onclick="resetZenTimer()"><i class="fas fa-stop"></i> Detener</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   {% if ultimo %}
   <!-- KPI Cards -->
   <div class="stats-grid reveal">
@@ -413,7 +483,10 @@ canvas { width: 100% !important; max-height: 220px !important; }
     <p>Registra tu primer seguimiento de salud y empieza a visualizar tu evolución.</p>
     <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid">
       <i class="fas fa-plus-circle"></i> Registrar ahora
+    </a>
   </div>
+  {% endif %}
+  {% endif %}
 </div>
 {% endblock %}
 
@@ -506,5 +579,90 @@ canvas { width: 100% !important; max-height: 220px !important; }
     });
   }
   {% endif %}
+
+  // WIDGETS LOGIC
+  
+  // 1. Water Tracker
+  let savedWater = parseInt(localStorage.getItem('waterCount') || '0');
+  function updateWaterUI() {
+    const cups = document.querySelectorAll('.water-cup');
+    cups.forEach((cup, idx) => {
+      if(idx < savedWater) cup.classList.add('filled');
+      else cup.classList.remove('filled');
+    });
+  }
+  function toggleWater(index) {
+    if (savedWater === index + 1) savedWater = index; // toggle last one off
+    else savedWater = index + 1;
+    localStorage.setItem('waterCount', savedWater);
+    updateWaterUI();
+  }
+  updateWaterUI();
+
+  // 2. IMC Live Calculator
+  function calcularIMCLive() {
+    const peso = parseFloat(document.getElementById('sliderPeso').value);
+    const est = parseFloat(document.getElementById('sliderEstatura').value);
+    document.getElementById('valPeso').innerText = peso;
+    document.getElementById('valEstatura').innerText = est;
+    
+    if(est > 0) {
+      const imc = peso / Math.pow(est / 100, 2);
+      const res = imc.toFixed(1);
+      const resEl = document.getElementById('imcResultLive');
+      const statEl = document.getElementById('imcStatusLive');
+      resEl.innerText = res;
+      
+      if(imc < 18.5) { resEl.style.color = '#5c9eff'; statEl.style.color = '#5c9eff'; statEl.innerText = 'Bajo peso'; }
+      else if(imc < 25) { resEl.style.color = 'var(--teal)'; statEl.style.color = 'var(--teal)'; statEl.innerText = 'Normal'; }
+      else if(imc < 30) { resEl.style.color = '#ffc107'; statEl.style.color = '#ffc107'; statEl.innerText = 'Sobrepeso'; }
+      else { resEl.style.color = '#f87171'; statEl.style.color = '#f87171'; statEl.innerText = 'Obesidad'; }
+    }
+  }
+  calcularIMCLive();
+
+  // 3. Zen Timer
+  let zenInterval;
+  let zenTimeLeft = 25 * 60;
+  let isZenRunning = false;
+  
+  function updateZenDisplay() {
+    const m = Math.floor(zenTimeLeft / 60).toString().padStart(2, '0');
+    const s = (zenTimeLeft % 60).toString().padStart(2, '0');
+    document.getElementById('zenTimerDisplay').innerText = `${m}:${s}`;
+  }
+  
+  function startZenTimer() {
+    if(isZenRunning) return;
+    isZenRunning = true;
+    document.getElementById('zenMessage').innerText = "Respiración profunda. Concéntrate.";
+    zenInterval = setInterval(() => {
+      if(zenTimeLeft > 0) {
+        zenTimeLeft--;
+        updateZenDisplay();
+      } else {
+        clearInterval(zenInterval);
+        isZenRunning = false;
+        document.getElementById('zenMessage').innerText = "¡Tiempo de Pausa Activa! Estírate 5 min.";
+        document.getElementById('zenMessage').className = "small text-acid mb-3 fw-bold";
+        // Notificación visual en lugar de audio
+        document.querySelector('.zen-timer').style.color = "#fff";
+        document.querySelector('.zen-timer').style.textShadow = "0 0 20px var(--acid)";
+      }
+    }, 1000);
+  }
+  
+  function resetZenTimer() {
+    clearInterval(zenInterval);
+    isZenRunning = false;
+    zenTimeLeft = 25 * 60;
+    updateZenDisplay();
+    document.getElementById('zenMessage').innerText = "Tiempo para enfocarte.";
+    document.getElementById('zenMessage').className = "small text-muted mb-3";
+    document.querySelector('.zen-timer').style.color = "var(--acid)";
+    document.querySelector('.zen-timer').style.textShadow = "none";
+  }
+  updateZenDisplay();
+
 </script>
 {% endblock %}
