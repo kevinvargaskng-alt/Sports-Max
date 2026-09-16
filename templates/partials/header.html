@@ -146,6 +146,12 @@
                     <li><hr class="dropdown-divider border-secondary"></li>
                     <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                 </ul>
+                
+                <!-- ALERTA DE CONEXIÓN -->
+                <div id="networkAlert" class="position-absolute" style="top: 100%; right: 0; margin-top: 12px; background: #dc3545; color: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1050; white-space: nowrap; font-weight: bold; font-size: 0.9rem; transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: translateY(-10px);">
+                    <i id="networkAlertIcon" class="fas fa-wifi-slash me-2"></i>
+                    <span id="networkAlertText">Se perdió la conexión a internet</span>
+                </div>
             </div>
             {% else %}
             <button class="btn-ingresar btn-sm py-2 px-3" data-bs-toggle="modal" data-bs-target="#modalForm">
