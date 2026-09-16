@@ -47,6 +47,14 @@ class TorneoInterfichas(models.Model):
     def __str__(self):
         return f"{self.nombre_torneo} ({self.disciplina})"
 
+    @property
+    def id(self):
+        return self.pk
+
+    @id.setter
+    def id(self, value):
+        self.pk = value
+
 
 # ================================================================
 # 3. EQUIPOS
@@ -76,6 +84,15 @@ class EquipoInterfichas(models.Model):
 
     def __str__(self):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
+
+    @property
+    def id(self):
+        return self.pk
+
+    @id.setter
+    def id(self, value):
+        self.pk = value
+
 
 
 # ================================================================

@@ -94,3 +94,39 @@ class UsuariosAppTests(TestCase):
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(resp.json().get('status'), 'error')
+
+    def test_cp16_restriccion_accesos_segun_rol(self):
+        """CP-16: Validar restricción de accesos y rutas según rol de usuario."""
+        admin = self.User.objects.create_superuser(
+            username="admin_cp16",
+            password="adminpassword123",
+            email="admin_cp16@sena.edu.co",
+            numero_documento="87654321",
+            rol="admin"
+        )
+
+        # Aprendiz (usuario normal) no puede acceder a /usuarios/
+        self.client.login(username="aprendiz_test", password="password123")
+        resp_aprendiz = self.client.get('/usuarios/')
+        self.assertEqual(resp_aprendiz.status_code, 302)
+        self.client.logout()
+
+        # Administrador puede configurar rol a profesional
+        self.client.login(username="admin_cp16", password="adminpassword123")
+        resp_cambio = self.client.post(f'/perfil/rol/{self.usuario.id}/', {'rol': 'profesional'})
+        self.assertEqual(resp_cambio.status_code, 302)
+        self.usuario.refresh_from_db()
+        self.assertEqual(self.usuario.rol, 'profesional')
+
+        # Administrador configura rol a admin y habilita accesos
+        resp_admin = self.client.post(f'/perfil/rol/{self.usuario.id}/', {'rol': 'admin'})
+        self.assertEqual(resp_admin.status_code, 302)
+        self.usuario.refresh_from_db()
+        self.assertEqual(self.usuario.rol, 'admin')
+        self.assertTrue(self.usuario.is_staff)
+
+        # Con rol admin ahora puede acceder a /usuarios/
+        self.client.logout()
+        self.client.login(username="aprendiz_test", password="password123")
+        resp_acceso = self.client.get('/usuarios/')
+        self.assertEqual(resp_acceso.status_code, 200)

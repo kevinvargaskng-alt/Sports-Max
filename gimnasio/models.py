@@ -23,10 +23,35 @@ class Reserva(models.Model):
         help_text="Tiempo en minutos", default=60)
     hora_salida = models.TimeField()
     fecha_salida = models.DateField()
+    franja_horaria = models.ForeignKey(
+        'FranjaHoraria',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reservas'
+    )
     estado = models.CharField(max_length=20, default='Pendiente')
 
     def __str__(self):
         return f"{self.usuario_solicitante.get_full_name()} - {self.fecha_entrada}"
+
+
+class FranjaHoraria(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+    dia_semana = models.CharField(max_length=20, default='Lunes')
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    aforo_maximo = models.PositiveIntegerField(default=30)
+    habilitada = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['dia_semana', 'hora_inicio']
+        verbose_name = 'Franja Horaria'
+        verbose_name_plural = 'Franjas Horarias'
+
+    def __str__(self):
+        return f"{self.dia_semana} {self.hora_inicio} - {self.hora_fin} (Aforo: {self.aforo_maximo})"
 
 
 class GimnasioConfig(models.Model):

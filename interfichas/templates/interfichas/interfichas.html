@@ -95,7 +95,7 @@
             <th>Disciplina</th>
             <th>Lugar</th>
             <th>Fecha</th>
-            <th>Estado</th>
+            <th class="col-estado text-center">Estado</th>
             <th>Equipos</th>
             <th class="text-center">Acciones</th>
           </tr>
@@ -121,7 +121,7 @@
             </td>
             <td class="text-muted">{{ t.lugar }}</td>
             <td class="text-warning">{{ t.fecha_torneo_fichas|date:"d/m/Y" }}</td>
-            <td>
+            <td class="col-estado text-center">
               {% if t.estado == 'cerrado' %}
                 <span class="badge-cerrado">Cerrado</span>
               {% else %}
@@ -251,6 +251,14 @@
                   <i class="fas fa-graduation-cap text-success me-1"></i>
                   <span class="text-truncate">{{ eq.programa|truncatechars:35 }}</span>
                 </div>
+                {% if eq.planilla_inscripcion %}
+                <div class="team-info-item w-100 mt-1">
+                  <i class="fas fa-file-pdf text-danger me-1"></i>
+                  <a href="{{ eq.planilla_inscripcion.url }}" target="_blank" class="text-info text-decoration-none small fw-semibold">
+                    Ver planilla adjunta <i class="fas fa-external-link-alt ms-1" style="font-size:0.68rem;"></i>
+                  </a>
+                </div>
+                {% endif %}
               </div>
 
               <div class="mt-2 pt-2 border-top border-secondary">

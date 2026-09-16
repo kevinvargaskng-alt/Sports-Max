@@ -61,9 +61,26 @@
   }
   .badge-goles  { background: rgba(218,54,51,.15); color: #ff7b72; border: 1px solid rgba(218,54,51,.3); }
   .badge-puntos { background: rgba(121,192,255,.12); color: #79c0ff; border: 1px solid rgba(121,192,255,.3); }
-  .badge-sets   { background: rgba(210,153,34,.12); color: #f0b429; border: 1px solid rgba(210,153,34,.3); }
-  .badge-abierto { background: rgba(35,134,54,.15); color: #56d364; border: 1px solid rgba(35,134,54,.3); padding: 2px 8px; border-radius: 20px; font-size:.7rem; font-weight:700; }
-  .badge-cerrado { background: rgba(48,54,61,.6); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; font-size:.7rem; font-weight:700; }
+  .badge-abierto,
+  .badge-cerrado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+  .badge-abierto { background: rgba(35,134,54,.15); color: #56d364; border: 1px solid rgba(35,134,54,.35); }
+  .badge-cerrado { background: rgba(48,54,61,.6); color: var(--muted); border: 1px solid var(--border); }
+
+  .table-torneos th.col-estado,
+  .table-torneos td.col-estado {
+    white-space: nowrap !important;
+    min-width: 95px;
+    text-align: center;
+  }
 
   .btn-accion {
     display: inline-flex; align-items: center; gap: 6px;

@@ -1,0 +1,892 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Informe Oficial de Torneo — {{ torneo.nombre_torneo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════
+   ESTILOS GENERALES (PANTALLA)
+   ═══════════════════════════════════════════ */
+.reporte-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reporte-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.reporte-header-banner {
+    background: linear-gradient(135deg, #0D1B2A 0%, #1A237E 55%, #0277BD 100%) !important;
+    padding: 2.2rem 2.5rem;
+    border-bottom: 2px solid rgba(88, 166, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.reporte-header-banner::after {
+    content: '\f091';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 20px;
+    bottom: -30px;
+    font-size: 11rem;
+    opacity: 0.08;
+    color: #fff;
+    pointer-events: none;
+}
+
+/* Grilla y Cajas KPI */
+.kpi-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+@media (max-width: 768px) {
+    .kpi-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.kpi-stat-box {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 1.1rem 0.8rem;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.kpi-equipos  { border-top: 4px solid #0284c7; }
+.kpi-partidos { border-top: 4px solid #f59e0b; }
+.kpi-jugados  { border-top: 4px solid #10b981; }
+.kpi-campeon  { border-top: 4px solid #eab308; }
+
+.kpi-stat-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    line-height: 1.2;
+    text-align: center;
+    width: 100%;
+}
+.kpi-stat-num {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 4px 0;
+    text-align: center;
+    width: 100%;
+}
+.kpi-stat-sub {
+    font-size: 0.72rem;
+    line-height: 1.2;
+    text-align: center;
+    width: 100%;
+    margin-top: 2px;
+}
+
+.reporte-section-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #58a6ff;
+    border-bottom: 2px solid rgba(88, 166, 255, 0.25);
+    padding-bottom: 0.6rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.table-reporte {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+.table-reporte thead th {
+    background: #161b22;
+    color: #8b949e;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #30363d;
+}
+.table-reporte tbody tr {
+    border-bottom: 1px solid #21262d;
+    transition: background 0.15s;
+}
+.table-reporte tbody tr:hover {
+    background: rgba(88, 166, 255, 0.04);
+}
+.table-reporte td {
+    padding: 10px 14px;
+    vertical-align: middle;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.badge-pos {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+.badge-pos-1 { background: #f0c040; color: #000; }
+.badge-pos-2 { background: #c0c0c0; color: #000; }
+.badge-pos-3 { background: #cd7f32; color: #fff; }
+.badge-pos-n { background: #21262d; color: #8b949e; }
+
+.partido-row-reporte {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 0.75rem 1.2rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════
+   ESTILOS DE IMPRESIÓN (PDF / PRINT CON COLOR VIBRANTE)
+   ═══════════════════════════════════════════ */
+@media print {
+    *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    @page {
+        size: letter;
+        margin: 8mm 10mm;
+    }
+    
+    /* ── ELIMINAR FONDO DE BALÓN Y FONDOS GLOBALES EN IMPRESIÓN ── */
+    body::before,
+    body::after,
+    html::before,
+    html::after,
+    main::before,
+    main::after {
+        display: none !important;
+        content: none !important;
+        background: none !important;
+        background-image: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+    }
+
+    body, html, main, #main-content {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+        color: #0f172a !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+        font-size: 10pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* ── OCULTAR ABSOLUTAMENTE AYUDA, ACCESIBILIDAD, IA, FOOTER Y MODALES ── */
+    #help-toggle,
+    #acc-toggle,
+    #acc-panel,
+    .acc-badge,
+    svg.acc-u-1,
+    #tux-pet,
+    .tux-pet,
+    #tux-pet-img,
+    .tux-sprite,
+    .tux-ia-badge,
+    .chat-window,
+    #chat-window,
+    #smax-cookie-banner,
+    .asistente-ia-fab,
+    #asistente-ia-container,
+    footer,
+    .footer,
+    footer *,
+    #modalCreditosReferencias,
+    .modal,
+    .modal-backdrop,
+    .navbar,
+    .no-print,
+    .btn-regresar,
+    .btn-print-action {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        left: -99999px !important;
+        top: -99999px !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    .reporte-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .reporte-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .reporte-card > .p-4 {
+        padding: 0.6rem 0 !important;
+    }
+    
+    /* 1. Header Banner Oficial a Todo Color */
+    .reporte-header-banner {
+        background: linear-gradient(135deg, #0b192c 0%, #1a237e 60%, #0277bd 100%) !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+        padding: 1.3rem 1.6rem !important;
+        margin-bottom: 1.1rem !important;
+        border: 2px solid #1e3a8a !important;
+        box-shadow: 0 4px 14px rgba(2, 119, 189, 0.3) !important;
+        page-break-inside: avoid;
+    }
+    .reporte-header-banner * {
+        color: #ffffff !important;
+    }
+    .reporte-header-banner .badge.bg-success {
+        background-color: #39A900 !important;
+        color: #ffffff !important;
+    }
+    .reporte-header-banner .badge-torneo-code {
+        background-color: rgba(255, 255, 255, 0.18) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    .reporte-header-banner .text-info {
+        color: #38bdf8 !important;
+    }
+    .reporte-header-banner .text-warning {
+        color: #fbbf24 !important;
+    }
+    .reporte-header-banner .text-danger {
+        color: #f87171 !important;
+    }
+    
+    /* 2. Cajas KPI Cuadradas, Centradas y Alineadas */
+    .kpi-grid-container {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 1.2rem !important;
+        width: 100% !important;
+    }
+    .kpi-stat-box {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 12px 6px !important;
+        min-height: 98px !important;
+        border-radius: 10px !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
+        page-break-inside: avoid;
+    }
+    .kpi-equipos {
+        background: #f0f9ff !important;
+        border: 1px solid #bae6fd !important;
+        border-top: 4px solid #0284c7 !important;
+    }
+    .kpi-equipos .kpi-stat-num {
+        color: #0284c7 !important;
+    }
+    .kpi-partidos {
+        background: #fffbeb !important;
+        border: 1px solid #fde68a !important;
+        border-top: 4px solid #f59e0b !important;
+    }
+    .kpi-partidos .kpi-stat-num {
+        color: #d97706 !important;
+    }
+    .kpi-jugados {
+        background: #ecfdf5 !important;
+        border: 1px solid #a7f3d0 !important;
+        border-top: 4px solid #10b981 !important;
+    }
+    .kpi-jugados .kpi-stat-num {
+        color: #059669 !important;
+    }
+    .kpi-campeon {
+        background: #fefce8 !important;
+        border: 1px solid #fef08a !important;
+        border-top: 4px solid #eab308 !important;
+    }
+    .kpi-campeon .kpi-stat-num {
+        color: #ca8a04 !important;
+    }
+    
+    .kpi-stat-label {
+        font-size: 0.72rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 4px !important;
+        line-height: 1.1 !important;
+        color: #334155 !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    .kpi-stat-num {
+        font-size: 2.1rem !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        margin: 4px 0 !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    .kpi-stat-num.fs-5 {
+        font-size: 1.1rem !important;
+        line-height: 1.2 !important;
+    }
+    .kpi-stat-sub {
+        font-size: 0.7rem !important;
+        color: #64748b !important;
+        font-weight: 600 !important;
+        margin-top: 3px !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    /* 3. Títulos de Sección */
+    .reporte-section-title {
+        color: #0f172a !important;
+        border-bottom: 2.5px solid #0284c7 !important;
+        padding-bottom: 0.4rem !important;
+        margin-top: 1.2rem !important;
+        margin-bottom: 0.9rem !important;
+        font-size: 1.12rem !important;
+        page-break-after: avoid;
+    }
+    .reporte-section-title i {
+        color: #0284c7 !important;
+    }
+    
+    /* 4. Tablas de Posiciones por Grupo */
+    .card.bg-dark {
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+        page-break-inside: avoid;
+        margin-bottom: 1rem !important;
+    }
+    .card-header.bg-secondary {
+        background: linear-gradient(90deg, #1e3a8a 0%, #0284c7 100%) !important;
+        color: #ffffff !important;
+        border-bottom: none !important;
+        padding: 0.55rem 1rem !important;
+    }
+    .card-header * {
+        color: #ffffff !important;
+    }
+    
+    .table-reporte thead th {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+        font-weight: 800 !important;
+    }
+    .table-reporte tbody tr {
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .table-reporte tbody tr:nth-child(even) {
+        background: #f8fafc !important;
+    }
+    .table-reporte td {
+        color: #1e293b !important;
+        padding: 7px 10px !important;
+    }
+    .table-reporte td .text-white {
+        color: #0f172a !important;
+        font-weight: 700 !important;
+    }
+    .table-reporte td .text-white-50 {
+        color: #64748b !important;
+    }
+    .table-reporte td.fw-bold.text-warning {
+        color: #d97706 !important;
+        font-weight: 900 !important;
+    }
+    
+    /* Badges de posiciones en PDF */
+    .badge-pos-1 { background: #f59e0b !important; color: #ffffff !important; font-weight: 900 !important; }
+    .badge-pos-2 { background: #94a3b8 !important; color: #ffffff !important; font-weight: 900 !important; }
+    .badge-pos-3 { background: #ea580c !important; color: #ffffff !important; font-weight: 900 !important; }
+    .badge-pos-n { background: #e2e8f0 !important; color: #475569 !important; font-weight: 700 !important; }
+    
+    /* 5. Fase Eliminatoria */
+    .fase-box-cuartos {
+        background: #f0f9ff !important;
+        border: 1.5px solid #7dd3fc !important;
+        border-radius: 10px !important;
+        padding: 0.9rem !important;
+        page-break-inside: avoid;
+    }
+    .fase-box-semifinal {
+        background: #fffbeb !important;
+        border: 1.5px solid #fcd34d !important;
+        border-radius: 10px !important;
+        padding: 0.9rem !important;
+        page-break-inside: avoid;
+    }
+    .fase-box-final {
+        background: #fef2f2 !important;
+        border: 2px solid #f87171 !important;
+        border-radius: 10px !important;
+        padding: 0.9rem !important;
+        page-break-inside: avoid;
+    }
+    .fase-box-cuartos h6 { color: #0284c7 !important; }
+    .fase-box-semifinal h6 { color: #d97706 !important; }
+    .fase-box-final h6 { color: #dc2626 !important; }
+
+    .partido-row-reporte {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        page-break-inside: avoid;
+    }
+    .partido-row-reporte .text-white {
+        color: #0f172a !important;
+    }
+    .partido-row-reporte .badge.bg-primary {
+        background-color: #0284c7 !important;
+        color: #ffffff !important;
+    }
+    .partido-row-reporte .badge.bg-warning {
+        background-color: #f59e0b !important;
+        color: #ffffff !important;
+    }
+    .partido-row-reporte .badge.bg-danger {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+    }
+    .partido-row-reporte .badge.bg-secondary {
+        background-color: #94a3b8 !important;
+        color: #ffffff !important;
+    }
+
+    /* 6. Equipos y Planillas */
+    .tabla-equipos-reporte {
+        page-break-inside: auto;
+    }
+    .tabla-equipos-reporte tr {
+        page-break-inside: avoid;
+    }
+    .tabla-equipos-reporte thead th {
+        background: #1e293b !important;
+        color: #ffffff !important;
+    }
+    .badge-planilla-ok {
+        background: #dcfce7 !important;
+        color: #166534 !important;
+        border: 1px solid #86efac !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+    }
+    .badge-sin-planilla {
+        background: #f1f5f9 !important;
+        color: #64748b !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+    }
+    .badge-ficha-print {
+        background: #e0f2fe !important;
+        color: #0369a1 !important;
+        border: 1px solid #bae6fd !important;
+        padding: 2px 8px !important;
+        border-radius: 4px !important;
+        font-weight: 700 !important;
+    }
+
+    /* 7. Firmas Institucionales */
+    .firmas-reporte {
+        border-top: 3px solid #39A900 !important;
+        margin-top: 2rem !important;
+        padding-top: 1.2rem !important;
+        page-break-inside: avoid;
+    }
+    .firmas-reporte p {
+        color: #0f172a !important;
+        font-weight: 800 !important;
+    }
+    .firmas-reporte small {
+        color: #475569 !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 py-4 reporte-container">
+
+    <!-- BOTONES DE ACCIÓN (NO IMPRIMIR) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print flex-wrap gap-2">
+        <a href="{% url 'gestionar_torneo' torneo_id=torneo.pk %}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Volver a Gestión del Torneo
+        </a>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-success fw-bold d-inline-flex align-items-center gap-2 btn-print-action shadow-sm">
+                <i class="fas fa-print"></i> Imprimir / Guardar en PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- TARJETA PRINCIPAL DE REPORTE -->
+    <div class="reporte-card">
+        
+        <!-- HEADER OFICIAL -->
+        <div class="reporte-header-banner">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                        <span class="badge bg-success text-white px-3 py-1 fw-bold text-uppercase" style="letter-spacing: 0.5px;">
+                            <i class="fas fa-certificate me-1"></i>Reporte Oficial SENA
+                        </span>
+                        <span class="badge badge-torneo-code bg-dark border border-secondary text-white-50">
+                            Torneo #{{ torneo.codigo_torneo_fichas }}
+                        </span>
+                        {% if torneo.disciplina %}
+                        <span class="badge bg-primary text-white">
+                            <i class="fas fa-medal me-1"></i>{{ torneo.disciplina.nombre_disciplina }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h1 class="display-6 fw-bold text-white mb-1">
+                        <i class="fas fa-trophy text-warning me-2"></i>{{ torneo.nombre_torneo }}
+                    </h1>
+                    <p class="text-white-50 mb-0 small">
+                        <i class="fas fa-running text-info me-1"></i>Modalidad: <strong>{{ torneo.disciplina.get_tipo_marcador_display|default:torneo.disciplina.tipo_marcador }}</strong>
+                        &nbsp;·&nbsp;
+                        <i class="fas fa-map-marker-alt text-danger me-1"></i>Lugar: <strong>{{ torneo.lugar }}</strong>
+                        &nbsp;·&nbsp;
+                        <i class="fas fa-calendar-alt text-warning me-1"></i>Fecha: <strong>{{ torneo.fecha_torneo_fichas|date:"d \d\e F \d\e Y" }}</strong>
+                    </p>
+                </div>
+                <div class="text-md-end text-white-50 small">
+                    <div>Generado el: <strong class="text-white">{{ ahora|date:"d/m/Y H:i" }}</strong></div>
+                    <div>Plataforma: <strong class="text-info">Sports-Max SENA</strong></div>
+                    <div class="mt-1">
+                        Estado:
+                        <span class="badge {% if torneo.estado == 'cerrado' %}bg-secondary{% else %}bg-success{% endif %} px-2 py-1">
+                            {{ torneo.estado|upper }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4">
+            
+            <!-- RESUMEN EJECUTIVO (KPIS CUADRADOS Y CENTRADOS) -->
+            <div class="kpi-grid-container mb-4">
+                <div class="kpi-stat-box kpi-equipos">
+                    <div class="kpi-stat-label text-white-50">Equipos Inscritos</div>
+                    <div class="kpi-stat-num text-info">{{ total_equipos }}</div>
+                    <div class="kpi-stat-sub text-white-50">Comunidad SENA</div>
+                </div>
+                <div class="kpi-stat-box kpi-partidos">
+                    <div class="kpi-stat-label text-white-50">Partidos Totales</div>
+                    <div class="kpi-stat-num text-warning">{{ total_partidos }}</div>
+                    <div class="kpi-stat-sub text-white-50">Calendario Oficial</div>
+                </div>
+                <div class="kpi-stat-box kpi-jugados">
+                    <div class="kpi-stat-label text-white-50">Partidos Jugados</div>
+                    <div class="kpi-stat-num text-success">{{ partidos_jugados }}</div>
+                    <div class="kpi-stat-sub text-white-50">Resultados Registrados</div>
+                </div>
+                <div class="kpi-stat-box kpi-campeon">
+                    <div class="kpi-stat-label text-white-50">Campeón / Ganador</div>
+                    <div class="kpi-stat-num text-warning fs-5 text-truncate" title="{{ campeon.nombre_equipo|default:'Por Definir' }}">
+                        {% if campeon %}
+                            <i class="fas fa-crown text-warning me-1"></i>{{ campeon.nombre_equipo }}
+                        {% else %}
+                            <span class="text-warning">En disputa</span>
+                        {% endif %}
+                    </div>
+                    <div class="kpi-stat-sub text-white-50">{% if campeon %}Ficha: {{ campeon.ficha }}{% else %}Fase Activa{% endif %}</div>
+                </div>
+            </div>
+
+            <!-- TABLAS DE POSICIONES POR GRUPO -->
+            {% if grupos_con_tabla %}
+            <div class="mb-5">
+                <div class="reporte-section-title">
+                    <i class="fas fa-layer-group"></i> Tablas de Posiciones — Fase de Grupos
+                </div>
+
+                <div class="row g-4">
+                    {% for item in grupos_con_tabla %}
+                    <div class="col-12 col-xl-6">
+                        <div class="card bg-dark border-secondary h-100">
+                            <div class="card-header bg-secondary py-2 d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-white">Grupo {{ item.grupo.nombre_grupo }}</span>
+                                <span class="badge bg-dark bg-opacity-50 text-white small">{{ item.tabla|length }} Equipos</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table-reporte">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35px;">#</th>
+                                            <th>Equipo</th>
+                                            <th class="text-center" title="Partidos Jugados">PJ</th>
+                                            <th class="text-center" title="Partidos Ganados">PG</th>
+                                            <th class="text-center" title="Partidos Empatados">PE</th>
+                                            <th class="text-center" title="Partidos Perdidos">PP</th>
+                                            <th class="text-center" title="A Favor">GF</th>
+                                            <th class="text-center" title="En Contra">GC</th>
+                                            <th class="text-center" title="Diferencia">DG</th>
+                                            <th class="text-center fw-bold text-warning" title="Puntos">PTS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for st in item.tabla %}
+                                        <tr>
+                                            <td>
+                                                <span class="badge-pos {% if forloop.counter == 1 %}badge-pos-1{% elif forloop.counter == 2 %}badge-pos-2{% elif forloop.counter == 3 %}badge-pos-3{% else %}badge-pos-n{% endif %}">
+                                                    {{ forloop.counter }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-white">{{ st.equipo.nombre_equipo }}</div>
+                                                <small class="text-white-50">Ficha: {{ st.equipo.ficha }}</small>
+                                            </td>
+                                            <td class="text-center">{{ st.pj }}</td>
+                                            <td class="text-center">{{ st.pg }}</td>
+                                            <td class="text-center">{{ st.pe }}</td>
+                                            <td class="text-center">{{ st.pp }}</td>
+                                            <td class="text-center">{{ st.gf }}</td>
+                                            <td class="text-center">{{ st.gc }}</td>
+                                            <td class="text-center {% if st.dg > 0 %}text-success{% elif st.dg < 0 %}text-danger{% endif %} fw-semibold">
+                                                {% if st.dg > 0 %}+{% endif %}{{ st.dg }}
+                                            </td>
+                                            <td class="text-center fw-bold text-warning fs-6">{{ st.pts }}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="10" class="text-center text-white-50 py-3">Sin equipos en este grupo</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- FASE ELIMINATORIA -->
+            {% if partidos_cuartos or partidos_semifinal or partidos_final %}
+            <div class="mb-5">
+                <div class="reporte-section-title">
+                    <i class="fas fa-sitemap"></i> Fase Eliminatoria
+                </div>
+
+                <div class="row g-3">
+                    <!-- CUARTOS -->
+                    {% if partidos_cuartos %}
+                    <div class="col-12 col-md-4">
+                        <div class="fase-box-cuartos bg-dark h-100 p-3 rounded border border-secondary">
+                            <h6 class="fw-bold text-info text-uppercase small mb-3 border-bottom border-secondary pb-2">
+                                <i class="fas fa-shield-alt me-1"></i>Cuartos de Final
+                            </h6>
+                            {% for p in partidos_cuartos %}
+                            <div class="partido-row-reporte">
+                                <div class="text-truncate" style="max-width: 140px;">
+                                    <div class="fw-bold text-white text-truncate">{{ p.equipo_local.nombre_equipo }}</div>
+                                    <div class="fw-bold text-white text-truncate">{{ p.equipo_visitante.nombre_equipo }}</div>
+                                </div>
+                                <div class="text-center">
+                                    {% if p.jugado %}
+                                    <span class="badge bg-primary fs-6">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary text-white-50 small">Pendiente</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- SEMIFINAL -->
+                    {% if partidos_semifinal %}
+                    <div class="col-12 col-md-4">
+                        <div class="fase-box-semifinal bg-dark h-100 p-3 rounded border border-secondary">
+                            <h6 class="fw-bold text-warning text-uppercase small mb-3 border-bottom border-secondary pb-2">
+                                <i class="fas fa-bolt me-1"></i>Semifinales
+                            </h6>
+                            {% for p in partidos_semifinal %}
+                            <div class="partido-row-reporte">
+                                <div class="text-truncate" style="max-width: 140px;">
+                                    <div class="fw-bold text-white text-truncate">{{ p.equipo_local.nombre_equipo }}</div>
+                                    <div class="fw-bold text-white text-truncate">{{ p.equipo_visitante.nombre_equipo }}</div>
+                                </div>
+                                <div class="text-center">
+                                    {% if p.jugado %}
+                                    <span class="badge bg-warning text-dark fs-6 fw-bold">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary text-white-50 small">Pendiente</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- FINAL -->
+                    {% if partidos_final %}
+                    <div class="col-12 col-md-4">
+                        <div class="fase-box-final bg-dark h-100 p-3 rounded border border-warning">
+                            <h6 class="fw-bold text-danger text-uppercase small mb-3 border-bottom border-warning pb-2">
+                                <i class="fas fa-star me-1 text-warning"></i>Gran Final
+                            </h6>
+                            {% for p in partidos_final %}
+                            <div class="partido-row-reporte border-warning">
+                                <div class="text-truncate" style="max-width: 140px;">
+                                    <div class="fw-bold text-white text-truncate">{{ p.equipo_local.nombre_equipo }}</div>
+                                    <div class="fw-bold text-white text-truncate">{{ p.equipo_visitante.nombre_equipo }}</div>
+                                </div>
+                                <div class="text-center">
+                                    {% if p.jugado %}
+                                    <span class="badge bg-danger fs-6 fw-bold">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary text-white-50 small">Por Jugar</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- EQUIPOS PARTICIPANTES Y PLANILLAS -->
+            <div class="mb-4">
+                <div class="reporte-section-title">
+                    <i class="fas fa-users"></i> Equipos Inscritos y Planillas Físicas
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-reporte tabla-equipos-reporte">
+                        <thead>
+                            <tr>
+                                <th>Equipo</th>
+                                <th>Ficha</th>
+                                <th>Capitán</th>
+                                <th>Programa de Formación</th>
+                                <th class="text-center">Jugadores</th>
+                                <th class="text-center">Planilla de Inscripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eq in equipos %}
+                            <tr>
+                                <td class="fw-bold text-white">
+                                    <i class="fas fa-shield-alt text-info me-2"></i>{{ eq.nombre_equipo }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white badge-ficha-print">{{ eq.ficha }}</span>
+                                </td>
+                                <td><strong class="text-white">{{ eq.capitan }}</strong></td>
+                                <td class="text-white-50 small">{{ eq.programa }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-dark border border-secondary text-info fw-bold">
+                                        {{ eq.jugadores.count }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    {% if eq.planilla_inscripcion %}
+                                    <a href="{{ eq.planilla_inscripcion.url }}" target="_blank" class="badge-planilla-ok btn btn-sm btn-outline-success py-1 px-3 fw-bold text-decoration-none">
+                                        <i class="fas fa-file-pdf text-danger"></i> Planilla Adjunta
+                                    </a>
+                                    {% else %}
+                                    <span class="badge-sin-planilla badge bg-dark border border-secondary text-white-50">
+                                        Sin planilla física
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-white-50 py-4">No hay equipos inscritos en este torneo.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FIRMAS INSTITUCIONALES (A TODO COLOR EN IMPRESIÓN) -->
+            <div class="firmas-reporte row g-4 text-center">
+                <div class="col-6">
+                    <div class="border-top border-secondary pt-2 mx-auto" style="max-width: 260px;">
+                        <p class="mb-0 fw-bold small text-white">Coordinación de Deportes</p>
+                        <small class="text-white-50">Bienestar al Aprendiz SENA</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border-top border-secondary pt-2 mx-auto" style="max-width: 260px;">
+                        <p class="mb-0 fw-bold small text-white">Administrador del Torneo</p>
+                        <small class="text-white-50">Plataforma Sports-Max</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

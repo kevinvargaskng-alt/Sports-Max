@@ -20,4 +20,8 @@ urlpatterns = [
 
     # Sanciones
     path('sanciones/', views.sanciones_list, name='sanciones'),
+
+    # CP-21: Reportes de morosos y ejecución de bloqueos
+    path('reportes/morosos/', views.reporte_prestamos_vencidos, name='reporte_morosos'),
+    path('reportes/bloquear-morosos/', views.bloquear_morosos, name='bloquear_morosos'),
 ]

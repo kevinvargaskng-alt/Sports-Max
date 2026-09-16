@@ -36,14 +36,14 @@ import threading
 
 
 def es_admin(user):
-    return user.is_authenticated and user.is_staff
+    return user.is_authenticated and (user.is_staff or user.is_superuser or getattr(user, 'rol', '') in ['admin', 'instructor'])
 
 
 def solo_admin(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not (request.user.is_authenticated and request.user.is_staff):
-            raise PermissionDenied("Acceso denegado. Se requieren permisos de administración.")
+        if not (request.user.is_authenticated and (request.user.is_staff or user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
+            raise PermissionDenied("Acceso denegado. Se requieren permisos de administración o instructor.")
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
@@ -54,7 +54,7 @@ def _calcular_tabla(grupo):
     partidos_jugados = grupo.partidos.filter(jugado=True).select_related('equipo_local', 'equipo_visitante')
 
     stats_map = {
-        eq.id: {
+        eq.pk: {
             'equipo': eq,
             'pj': 0, 'pg': 0, 'pe': 0, 'pp': 0,
             'gf': 0, 'gc': 0, 'dg': 0, 'pts': 0
@@ -131,15 +131,16 @@ def _reordenar_partidos_con_descanso(partidos_lista):
     while partidos_restantes and intentos_fallidos < max_intentos:
         ultimo_partido = resultado[-1]
         equipos_ultimo_partido = {
-            ultimo_partido['local'].id, ultimo_partido['visitante'].id}
+            ultimo_partido['local'].pk, ultimo_partido['visitante'].pk}
 
         encontrado = False
         for i, partido in enumerate(partidos_restantes):
             # Comprobamos si el partido no comparte equipos con el último que se jugó
-            if partido['local'].id not in equipos_ultimo_partido and partido['visitante'].id not in equipos_ultimo_partido:
+            if partido['local'].pk not in equipos_ultimo_partido and partido['visitante'].pk not in equipos_ultimo_partido:
                 resultado.append(partidos_restantes.pop(i))
                 encontrado = True
                 break
+
 
         if not encontrado:
             # Si no hay ningún partido ideal disponible, sacamos uno de los restantes al azar
@@ -309,12 +310,26 @@ def interfichas_list(request):
                 messages.error(request, "La fecha del torneo es obligatoria.")
                 return redirect('interfichas')
 
-            TorneoInterfichas.objects.create(
+            estado_torneo = request.POST.get('estado', 'activo').strip() or 'activo'
+            horario_torneo = request.POST.get('horario', '08:00').strip() or '08:00'
+            torneo_nuevo = TorneoInterfichas.objects.create(
                 nombre_torneo=request.POST.get('nombre'),
                 fecha_torneo_fichas=fecha_val,
+                horario_torneo_fichas=horario_torneo,
                 lugar=request.POST.get('lugar'),
-                disciplina=disc_obj
+                disciplina=disc_obj,
+                estado=estado_torneo
             )
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Torneo programado correctamente.',
+                    'torneo_id': torneo_nuevo.pk,
+                    'nombre': torneo_nuevo.nombre_torneo,
+                    'fecha': str(torneo_nuevo.fecha_torneo_fichas),
+                    'horario': str(torneo_nuevo.horario_torneo_fichas),
+                    'estado': torneo_nuevo.estado
+                }, status=201)
             messages.success(request, "Torneo programado correctamente.")
             return redirect('interfichas')
 
@@ -992,16 +1007,47 @@ def reporte_torneo(request, torneo_id):
     grupos = torneo.grupos.prefetch_related('equipos').all()
 
     grupos_con_tabla = [
-        {'grupo': g, 'tabla': _calcular_tabla(g)}
+        {
+            'grupo': g,
+            'tabla': _calcular_tabla(g),
+            'partidos': g.partidos.select_related('equipo_local', 'equipo_visitante').order_by('fecha_partido', 'hora_partido', 'id')
+        }
         for g in grupos
     ]
 
+    equipos = torneo.equipos.prefetch_related('jugadores').all().order_by('nombre_equipo')
+    partidos_todos = torneo.partidos.select_related('equipo_local', 'equipo_visitante').all()
+    partidos_jugados = [p for p in partidos_todos if p.jugado]
+
+    campeon = None
+    try:
+        if hasattr(torneo, 'resultado') and torneo.resultado.ganador:
+            campeon = torneo.resultado.ganador
+    except Exception:
+        pass
+
+    if not campeon:
+        final_p = torneo.partidos.filter(fase='final', jugado=True).select_related('equipo_local', 'equipo_visitante').first()
+        if final_p and final_p.goles_local is not None and final_p.goles_visitante is not None:
+            if final_p.goles_local > final_p.goles_visitante:
+                campeon = final_p.equipo_local
+            elif final_p.goles_visitante > final_p.goles_local:
+                campeon = final_p.equipo_visitante
+
+    from django.utils import timezone
     context = {
         'torneo':             torneo,
         'grupos_con_tabla':   grupos_con_tabla,
+        'equipos':            equipos,
+        'total_equipos':      equipos.count(),
+        'total_partidos':     len(partidos_todos),
+        'partidos_jugados':   len(partidos_jugados),
         'partidos_cuartos':   torneo.partidos.filter(fase='cuartos').select_related('equipo_local', 'equipo_visitante'),
         'partidos_semifinal': torneo.partidos.filter(fase='semifinal').select_related('equipo_local', 'equipo_visitante'),
         'partidos_final':     torneo.partidos.filter(fase='final').select_related('equipo_local', 'equipo_visitante'),
+        'campeon':            campeon,
+        'tipo_marcador':      torneo.disciplina.tipo_marcador if torneo.disciplina else 'goles',
+        'ahora':              timezone.now(),
     }
     return render(request, 'interfichas/reporte_torneo.html', context)
 
@@ -1017,17 +1063,23 @@ def editar_equipo(request, equipo_id):
         equipo.ficha = request.POST.get('ficha',         equipo.ficha)
         equipo.programa = request.POST.get(
             'programa',      equipo.programa).strip()
+        # Guardar / actualizar planilla de inscripción
+        planilla_file = request.FILES.get('planilla_inscripcion')
+        if planilla_file:
+            equipo.planilla_inscripcion = planilla_file
+
         equipo.save()
         messages.success(
             request, f"Equipo '{equipo.nombre_equipo}' actualizado correctamente.")
         return redirect('gestionar_torneo', torneo_id=equipo.torneo.pk)
 
     return JsonResponse({
-        'id':            equipo.pk,
-        'nombre_equipo': equipo.nombre_equipo,
-        'capitan':       equipo.capitan,
-        'ficha':         equipo.ficha,
-        'programa':      equipo.programa,
+        'id':                   equipo.pk,
+        'nombre_equipo':        equipo.nombre_equipo,
+        'capitan':              equipo.capitan,
+        'ficha':                equipo.ficha,
+        'programa':             equipo.programa,
+        'planilla_inscripcion': equipo.planilla_inscripcion.url if equipo.planilla_inscripcion else None,
     })
 
 

@@ -1450,7 +1450,7 @@ html, body {
 }
 
 /* Enfoque accesible de alto contraste */
-:focus-visible {
+:focus-visible:not(.chat-input):not(.chat-window *):not(.attach-btn):not(.mic-btn):not(.send-btn) {
     outline: 3px solid #39A900 !important;
     outline-offset: 2px !important;
     border-radius: 4px;
@@ -1490,5 +1490,63 @@ html, body {
 .hover-underline:hover {
     text-decoration: underline !important;
     color: #ffffff !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REGLA GLOBAL DE IMPRESIÓN (PDF / PRINT)
+   Ocultar widgets flotantes (Ayuda, Accesibilidad, IA Tux, etc.)
+   ══════════════════════════════════════════════════════════════ */
+@media print {
+    body::before,
+    body::after,
+    html::before,
+    html::after,
+    main::before,
+    main::after {
+        display: none !important;
+        content: none !important;
+        background: none !important;
+        background-image: none !important;
+    }
+
+    body, html, main, #main-content {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+    }
+
+    footer,
+    .footer,
+    .modal,
+    .modal-backdrop,
+    #modalCreditosReferencias,
+    #help-toggle,
+    #acc-toggle,
+    #acc-panel,
+    .acc-badge,
+    svg.acc-u-1,
+    #tux-pet,
+    .tux-pet,
+    #tux-pet-img,
+    .tux-sprite,
+    .tux-ia-badge,
+    .chat-window,
+    #chat-window,
+    #smax-cookie-banner,
+    .asistente-ia-fab,
+    #asistente-ia-container,
+    .navbar,
+    .no-print {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        left: -99999px !important;
+        top: -99999px !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
 }
 

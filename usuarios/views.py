@@ -536,7 +536,7 @@ def cambiar_rol_usuario(request, user_id):
         messages.error(request, 'Solo un superusuario puede asignar el rol de administrador.')
         return redirect('gestionar_usuarios')
 
-    if nuevo_rol in ['aprendiz', 'instructor', 'admin']:
+    if nuevo_rol in ['aprendiz', 'instructor', 'profesional', 'admin']:
         u.rol = nuevo_rol
         u.is_staff = (nuevo_rol == 'admin')
         u.save()
