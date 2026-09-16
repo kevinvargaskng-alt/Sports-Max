@@ -187,7 +187,7 @@ class AuditMiddleware:
                 'path': request.path,
                 'status': response.status_code,
                 'ip': self._get_client_ip(request),
-                'user': str(getattr(request.user, 'username', 'anonymous')),
+                'user': str(getattr(getattr(request, 'user', None), 'username', 'anonymous')),
                 'user_agent': request.META.get('HTTP_USER_AGENT', '')[:200],
                 'duration_ms': duration_ms,
             }

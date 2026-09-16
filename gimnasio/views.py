@@ -4,8 +4,9 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from core.security.file_upload import validate_uploaded_file
-from .models import Reserva, GimnasioConfig, FechaIngreso, Maquina
+from .models import Reserva, GimnasioConfig, FechaIngreso, Maquina, FranjaHoraria, Machine
 import json
 
 
@@ -546,3 +547,235 @@ class MachineListView(ListView):
         context['selected_tipo'] = self.request.GET.get('tipo', '')
         context['search_q'] = self.request.GET.get('q', '')
         return context
+
+
+# ══════════════════════════════════════════════════════════════════════
+# CP-17: ENDPOINT DE AFORO Y TURNOS EN TIEMPO REAL
+# ══════════════════════════════════════════════════════════════════════
+@login_required
+def api_aforo_turnos(request):
+    """
+    CP-17: Permite a los aprendices y usuarios consultar en tiempo real el aforo,
+    capacidad máxima, cupos disponibles y turnos organizados por franjas.
+    """
+    config = GimnasioConfig.get_config()
+    ahora = timezone.localtime(timezone.now())
+    hoy = ahora.date()
+
+    reservas_activas_hoy = Reserva.objects.filter(
+        fecha_entrada=hoy,
+        estado__in=['Activa', 'Confirmada', 'Pendiente']
+    )
+    ocupacion_actual = reservas_activas_hoy.count()
+    capacidad = config.capacidad_maxima or 40
+    cupos_disponibles = max(0, capacidad - ocupacion_actual)
+    porcentaje = round((ocupacion_actual / capacidad) * 100, 1) if capacidad > 0 else 0.0
+
+    franjas = FranjaHoraria.objects.filter(habilitada=True)
+    turnos_data = []
+    for f in franjas:
+        ocupados_franja = reservas_activas_hoy.filter(franja_horaria=f).count()
+        cupos_f = max(0, f.aforo_maximo - ocupados_franja)
+        turnos_data.append({
+            'id': f.id,
+            'dia_semana': f.dia_semana,
+            'hora_inicio': f.hora_inicio.strftime('%H:%M'),
+            'hora_fin': f.hora_fin.strftime('%H:%M'),
+            'aforo_maximo': f.aforo_maximo,
+            'ocupados': ocupados_franja,
+            'cupos_disponibles': cupos_f,
+            'disponible': cupos_f > 0
+        })
+
+    data = {
+        'status': 'success',
+        'fecha': hoy.isoformat(),
+        'hora_actual': ahora.strftime('%H:%M'),
+        'estado_gimnasio': config.estado,
+        'capacidad_maxima': capacidad,
+        'ocupacion_actual': ocupacion_actual,
+        'cupos_disponibles': cupos_disponibles,
+        'porcentaje_ocupacion': porcentaje,
+        'turnos': turnos_data
+    }
+    return JsonResponse(data)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# CP-18: CRUD DE FRANJAS HORARIAS (SOLO ADMINISTRADOR)
+# ══════════════════════════════════════════════
+@login_required
+@user_passes_test(es_admin)
+def admin_franjas_list_create(request):
+    """
+    CP-18: Gestionar (CRUD) franjas horarias y su límite de aforo.
+    """
+    if request.method == 'POST':
+        dia = request.POST.get('dia_semana', 'Lunes').strip()
+        h_inicio = request.POST.get('hora_inicio')
+        h_fin = request.POST.get('hora_fin')
+        aforo = int(request.POST.get('aforo_maximo', 30))
+        habilitada = request.POST.get('habilitada', 'true').lower() in ['true', '1', 'on']
+
+        if not h_inicio or not h_fin:
+            return JsonResponse({'status': 'error', 'message': 'Las horas de inicio y fin son obligatorias.'}, status=400)
+        if h_inicio >= h_fin:
+            return JsonResponse({'status': 'error', 'message': 'La hora de inicio debe ser anterior a la hora de fin.'}, status=400)
+
+        franja = FranjaHoraria.objects.create(
+            dia_semana=dia,
+            hora_inicio=h_inicio,
+            hora_fin=h_fin,
+            aforo_maximo=aforo,
+            habilitada=habilitada
+        )
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Franja horaria creada correctamente.',
+                'franja': {
+                    'id': franja.id,
+                    'dia_semana': franja.dia_semana,
+                    'hora_inicio': str(franja.hora_inicio),
+                    'hora_fin': str(franja.hora_fin),
+                    'aforo_maximo': franja.aforo_maximo
+                }
+            }, status=201)
+        messages.success(request, 'Franja horaria creada correctamente.')
+        return redirect('gimnasio')
+
+    # GET: Listado
+    franjas = list(FranjaHoraria.objects.values('id', 'dia_semana', 'hora_inicio', 'hora_fin', 'aforo_maximo', 'habilitada'))
+    return JsonResponse({'status': 'success', 'franjas': franjas})
+
+
+@login_required
+@user_passes_test(es_admin)
+@require_POST
+def admin_franja_editar(request, pk):
+    """
+    CP-18: Actualizar franja horaria y límite de aforo.
+    """
+    franja = get_object_or_404(FranjaHoraria, pk=pk)
+    if 'dia_semana' in request.POST:
+        franja.dia_semana = request.POST.get('dia_semana').strip()
+    if 'hora_inicio' in request.POST:
+        franja.hora_inicio = request.POST.get('hora_inicio')
+    if 'hora_fin' in request.POST:
+        franja.hora_fin = request.POST.get('hora_fin')
+    if 'aforo_maximo' in request.POST:
+        franja.aforo_maximo = int(request.POST.get('aforo_maximo'))
+    if 'habilitada' in request.POST:
+        franja.habilitada = request.POST.get('habilitada', 'true').lower() in ['true', '1', 'on']
+
+    franja.save()
+    return JsonResponse({'status': 'success', 'message': 'Franja horaria actualizada.', 'aforo_maximo': franja.aforo_maximo})
+
+
+@login_required
+@user_passes_test(es_admin)
+@require_POST
+def admin_franja_eliminar(request, pk):
+    """
+    CP-18: Eliminar franja horaria.
+    """
+    franja = get_object_or_404(FranjaHoraria, pk=pk)
+    franja.delete()
+    return JsonResponse({'status': 'success', 'message': 'Franja horaria eliminada correctamente.'})
+
+
+# ══════════════════════════════════════════════════════════════════════
+# CP-19: RESERVA CON INTEGRIDAD Y CONTROL DE SOBRECUPO
+# ══════════════════════════════════════════════════════════════════════
+@login_required
+@require_POST
+def crear_reserva_turno(request):
+    """
+    CP-19: Solicitud POST de reserva de turno por parte del Aprendiz,
+    garantizando integridad referencial y validando sobrecupo a nivel de backend.
+    """
+    from django.db import transaction
+    from datetime import datetime as dt_cls, timedelta as td_cls
+
+    fecha_str = request.POST.get('fecha_reserva')
+    franja_id = request.POST.get('franja_id')
+    hora_str = request.POST.get('hora_entrada', '08:00')
+
+    ahora = timezone.localtime(timezone.now())
+    try:
+        fecha_reserva = dt_cls.strptime(fecha_str, '%Y-%m-%d').date() if fecha_str else ahora.date()
+    except ValueError:
+        return JsonResponse({'status': 'error', 'message': 'Formato de fecha inválido.'}, status=400)
+
+    if fecha_reserva < ahora.date():
+        return JsonResponse({'status': 'error', 'message': 'No puedes reservar turnos en fechas pasadas.'}, status=400)
+
+    config = GimnasioConfig.get_config()
+    if config.estado != 'abierta':
+        return JsonResponse({'status': 'error', 'message': 'El gimnasio no se encuentra disponible para reservas.'}, status=400)
+
+    with transaction.atomic():
+        franja = None
+        limite_aforo = config.capacidad_maxima
+
+        if franja_id:
+            try:
+                franja = FranjaHoraria.objects.select_for_update().get(pk=int(franja_id), habilitada=True)
+                limite_aforo = franja.aforo_maximo
+                hora_reserva = franja.hora_inicio
+                hora_salida = franja.hora_fin
+            except (FranjaHoraria.DoesNotExist, ValueError):
+                return JsonResponse({'status': 'error', 'message': 'Franja horaria no válida o inhabilitada.'}, status=400)
+        else:
+            try:
+                hora_reserva = dt_cls.strptime(hora_str, '%H:%M').time()
+            except ValueError:
+                hora_reserva = ahora.time()
+            hora_salida = (dt_cls.combine(fecha_reserva, hora_reserva) + td_cls(hours=1)).time()
+
+        # Validación estricta de sobrecupo con select_for_update
+        filtro_ocupacion = {'fecha_entrada': fecha_reserva, 'estado__in': ['Activa', 'Confirmada', 'Pendiente']}
+        if franja:
+            filtro_ocupacion['franja_horaria'] = franja
+        else:
+            filtro_ocupacion['hora_entrada'] = hora_reserva
+
+        ocupacion_actual = Reserva.objects.select_for_update().filter(**filtro_ocupacion).count()
+
+        if ocupacion_actual >= limite_aforo:
+            return JsonResponse({
+                'status': 'error',
+                'codigo': 'SOBRECUPO',
+                'message': f'Sobrecupo: La capacidad máxima permitida ({limite_aforo}) para este turno ha sido alcanzada.'
+            }, status=400)
+
+        # Evitar reservas duplicadas del mismo usuario en el mismo turno
+        ya_reservo = Reserva.objects.filter(
+            usuario_solicitante=request.user,
+            fecha_entrada=fecha_reserva,
+            hora_entrada=hora_reserva,
+            estado__in=['Activa', 'Confirmada', 'Pendiente']
+        ).exists()
+        if ya_reservo:
+            return JsonResponse({'status': 'error', 'message': 'Ya cuentas con una reserva activa para este turno.'}, status=400)
+
+        # Garantizar integridad referencial vinculando al usuario autenticado
+        reserva = Reserva.objects.create(
+            usuario_solicitante=request.user,
+            fecha_entrada=fecha_reserva,
+            hora_entrada=hora_reserva,
+            tiempo_permanencia=60,
+            hora_salida=hora_salida,
+            fecha_salida=fecha_reserva,
+            franja_horaria=franja,
+            estado='Activa'
+        )
+
+    return JsonResponse({
+        'status': 'success',
+        'message': 'Reserva de turno registrada exitosamente.',
+        'reserva_id': reserva.codigo_registro,
+        'fecha': str(reserva.fecha_entrada),
+        'hora': str(reserva.hora_entrada),
+        'cupos_restantes': max(0, limite_aforo - (ocupacion_actual + 1))
+    }, status=201)

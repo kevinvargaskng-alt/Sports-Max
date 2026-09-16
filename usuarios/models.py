@@ -125,3 +125,39 @@ class HistorialAccion(models.Model):
         usr = self.usuario.username if self.usuario else "Anónimo/Sistema"
         return f"[{self.fecha.strftime('%d/%m/%Y %H:%M')}] {usr} -> {self.accion} ({self.modulo})"
 
+
+# ═══════════════════════════════════════════════════════════
+#  NOTIFICACIONES DEL SISTEMA
+# ═══════════════════════════════════════════════════════════
+class Notificacion(models.Model):
+    TIPO_CHOICES = [
+        ('info', 'Informativa'),
+        ('success', 'Éxito'),
+        ('warning', 'Advertencia / Alerta'),
+        ('danger', 'Urgente / Peligro'),
+    ]
+
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notificaciones',
+        verbose_name="Destinatario"
+    )
+    titulo = models.CharField(max_length=150, verbose_name="Título")
+    mensaje = models.TextField(verbose_name="Contenido de la notificación")
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='info')
+    icono = models.CharField(max_length=60, default='fa-bell')
+    leida = models.BooleanField(default=False, db_index=True)
+    enlace = models.CharField(max_length=200, blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'notificaciones'
+        verbose_name = 'Notificación'
+        verbose_name_plural = 'Notificaciones'
+        ordering = ['-fecha_creacion']
+
+    def __str__(self):
+        return f"[{self.get_tipo_display()}] {self.titulo} -> {self.usuario.username}"
+

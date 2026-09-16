@@ -9,6 +9,7 @@ urlpatterns = [
     path('logout/',   views.logout_view,   name='logout'),
     path('perfil/',   views.perfil_view,   name='perfil'),
     path('desbloquear/', views.desbloquear_cuenta_view, name='desbloquear_cuenta'),
+    path('notificaciones/marcar-leidas/', views.marcar_notificaciones_leidas, name='marcar_notificaciones_leidas'),
 
     # ─── GESTIÓN DE USUARIOS (página propia, solo admin) ───────────────────────
     path('usuarios/', views.gestionar_usuarios_view, name='gestionar_usuarios'),

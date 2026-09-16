@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.http import JsonResponse
+from django.utils import timezone
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion
 from datetime import datetime, date, timedelta
-from usuarios.models import Usuario
+from usuarios.models import Usuario, Notificacion
 from django.core.exceptions import ValidationError
 from core.security.file_upload import validate_uploaded_file
 
@@ -255,7 +257,7 @@ def devoluciones_list(request):
                 return redirect('devoluciones')
 
             # Registrar devolución
-            Devolucion.objects.create(
+            devolucion_creada = Devolucion.objects.create(
                 prestamo=prestamo,
                 cantidad_devuelta=cantidad_devuelta,
                 fecha_devolucion=date.today(),
@@ -270,6 +272,27 @@ def devoluciones_list(request):
             elemento = prestamo.elemento
             elemento.cantidad_total += cantidad_devuelta
             elemento.save()
+
+            # ── Notificación automática a Administradores (BD y campana) ──
+            admins_activos = Usuario.objects.filter(is_staff=True, is_active=True)
+            novedad_txt = f" (Novedad: {tipo_novedad} - {observaciones})" if tiene_novedad and tipo_novedad else ""
+            notif_tipo = 'warning' if tiene_novedad else 'info'
+            notif_icono = 'fa-exclamation-triangle' if tiene_novedad else 'fa-undo'
+            notif_titulo = f"Devolución: {elemento.tipo_maquina}"
+            notif_mensaje = (
+                f"El usuario {prestamo.usuario.get_full_name()} ({prestamo.usuario.numero_documento}) "
+                f"ha registrado la devolución de {cantidad_devuelta} unidad(es) de '{elemento.tipo_maquina}'. "
+                f"Estado: {estado_elemento or 'Bueno'}.{novedad_txt}"
+            )
+            for admin_user in admins_activos:
+                Notificacion.objects.create(
+                    usuario=admin_user,
+                    titulo=notif_titulo,
+                    mensaje=notif_mensaje,
+                    tipo=notif_tipo,
+                    icono=notif_icono,
+                    enlace='/inventario/devoluciones/'
+                )
 
             # Sanción automática por daño o pérdida
             if tiene_novedad and tipo_novedad in ['Daño', 'Pérdida']:
@@ -451,3 +474,125 @@ def eliminar_prestamo(request, id):
     prestamo.delete()
     messages.info(request, "Préstamo eliminado y stock restaurado.")
     return redirect('inventario')
+
+
+# ══════════════════════════════════════════════════════════════════════
+# CP-21: REPORTE DE PRÉSTAMOS VENCIDOS Y EJECUCIÓN DE BLOQUEOS A MOROSOS
+# ══════════════════════════════════════════════════════════════════════
+@login_required
+def reporte_prestamos_vencidos(request):
+    """
+    CP-21: Como Administrador, consultar un reporte cruzando las tablas
+    Prestamos y Usuarios para detectar morosos con préstamos vencidos.
+    """
+    if not request.user.is_staff:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+            return JsonResponse({'status': 'error', 'message': 'Acceso denegado. Se requieren permisos de administrador.'}, status=403)
+        messages.error(request, "Acceso denegado. Se requieren permisos de administrador.")
+        return redirect('inventario')
+
+    hoy = timezone.localdate()
+    # Cruce relacional explícito entre Prestamo y Usuario
+    prestamos_vencidos = Prestamo.objects.filter(
+        estado_prestamo='Activo',
+        fecha_devolucion__lt=hoy
+    ).select_related('usuario', 'elemento').order_by('fecha_devolucion')
+
+    morosos_data = []
+    for p in prestamos_vencidos:
+        u = p.usuario
+        dias_mora = (hoy - p.fecha_devolucion).days if p.fecha_devolucion else 0
+        morosos_data.append({
+            'prestamo_id': p.codigo_prestamo,
+            'usuario_id': u.id,
+            'nombre_completo': u.get_full_name() or u.username,
+            'documento': u.numero_documento,
+            'email': u.email,
+            'rol': getattr(u, 'rol', ''),
+            'estado_usuario': u.estado,
+            'elemento': p.elemento.tipo_maquina if p.elemento else 'Implemento deportivo',
+            'cantidad': p.cantidad_prestada,
+            'fecha_prestamo': str(p.fecha_prestamo),
+            'fecha_limite': str(p.fecha_devolucion),
+            'dias_mora': dias_mora,
+        })
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+        return JsonResponse({
+            'status': 'success',
+            'total_morosos': len(morosos_data),
+            'fecha_corte': str(hoy),
+            'morosos': morosos_data
+        })
+
+    context = {
+        'morosos': morosos_data,
+        'total_morosos': len(morosos_data),
+        'fecha_corte': hoy
+    }
+    return render(request, 'inventario/sanciones.html', context)
+
+
+@login_required
+@require_POST
+def bloquear_morosos(request):
+    """
+    CP-21: Como Administrador, ejecutar una acción para aplicar bloqueos
+    a los usuarios morosos generando sanciones y suspendiendo su acceso.
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'status': 'error', 'message': 'Acceso denegado.'}, status=403)
+
+    hoy = timezone.localdate()
+    usuario_especifico_id = request.POST.get('usuario_id')
+    prestamo_especifico_id = request.POST.get('prestamo_id')
+
+    qs = Prestamo.objects.filter(
+        estado_prestamo='Activo',
+        fecha_devolucion__lt=hoy
+    ).select_related('usuario', 'elemento')
+
+    if usuario_especifico_id:
+        qs = qs.filter(usuario_id=usuario_especifico_id)
+    elif prestamo_especifico_id:
+        qs = qs.filter(codigo_prestamo=prestamo_especifico_id)
+
+    bloqueados_count = 0
+    for p in qs:
+        u = p.usuario
+        # 1. Crear sanción disciplinaria en la base de datos
+        sancion_existente = Sancion.objects.filter(
+            usuario=u,
+            estado_sancion='Activa',
+            tipo_sancion__icontains='Mora'
+        ).exists()
+
+        if not sancion_existente:
+            Sancion.objects.create(
+                usuario=u,
+                tipo_sancion='Mora en devolución de implementos',
+                fecha_inicio_sancion=hoy,
+                fecha_fin_sancion=hoy + timedelta(days=15),
+                estado_sancion='Activa',
+                descripcion_sancion=f'Bloqueo por mora de { (hoy - p.fecha_devolucion).days } días en entrega de {p.elemento.tipo_maquina if p.elemento else "implemento"}.'
+            )
+
+        # 2. Bloquear usuario
+        if u.estado != 'inactivo':
+            u.estado = 'inactivo'
+            u.save(update_fields=['estado'])
+
+        # 3. Notificación al usuario
+        Notificacion.objects.create(
+            usuario=u,
+            titulo='Cuenta bloqueada por devolución pendiente',
+            mensaje='Has sido bloqueado por no entregar a tiempo los elementos deportivos solicitados. Acércate a la oficina de deportes.',
+            enlace='/perfil/'
+        )
+        bloqueados_count += 1
+
+    return JsonResponse({
+        'status': 'success',
+        'message': f'Se aplicaron bloqueos y sanciones a {bloqueados_count} moroso(s) correctamente.',
+        'bloqueados_count': bloqueados_count
+    })

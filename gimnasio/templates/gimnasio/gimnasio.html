@@ -1013,6 +1013,7 @@
 <!-- ════════════════════════════════════════
      SCRIPTS
 ════════════════════════════════════════ -->
+{{ dias_activos|default:"[]"|json_script:"dias-activos-data" }}
 <script>
 /* Reloj aprendiz */
 const clockEl = document.getElementById('clock');
@@ -1065,7 +1066,6 @@ function selEstado(btn) {
 }
 
 /* Días (admin) */
-{{ dias_activos|default:"[]"|json_script:"dias-activos-data" }}
 const diasActivos = new Set(JSON.parse(document.getElementById('dias-activos-data')?.textContent || '[]'));
 /**
  * Agrega o remueve un día de la semana del conjunto de días activos en que abre el gimnasio.

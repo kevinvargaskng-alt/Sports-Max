@@ -7,7 +7,7 @@ def programas_context(request):
         'PROGRAMAS_GLOBALES': LISTA_PROGRAMAS
     }
     if request.user and request.user.is_authenticated:
-        from usuarios.models import Sugerencia
+        from usuarios.models import Sugerencia, Notificacion
         from inventario.models import Prestamo
         from django.utils import timezone
         from datetime import timedelta
@@ -16,10 +16,31 @@ def programas_context(request):
             usuario=request.user
         ).order_by('-fecha')
         
-        # Generar notificaciones dinámicas de préstamos activos
         notifs = []
+        unread_count = 0
+
+        # 1. Notificaciones persistentes en base de datos (ej. devoluciones para admin, avisos del sistema)
+        try:
+            notificaciones_bd = Notificacion.objects.filter(usuario=request.user).order_by('-fecha_creacion')[:20]
+            unread_count += Notificacion.objects.filter(usuario=request.user, leida=False).count()
+            for n in notificaciones_bd:
+                badge_text = 'Nueva' if not n.leida else 'Leída'
+                notifs.append({
+                    'id': n.id,
+                    'tipo': n.tipo,
+                    'icono': n.icono or 'fa-bell',
+                    'titulo': n.titulo,
+                    'mensaje': n.mensaje,
+                    'badge': badge_text,
+                    'leida': n.leida,
+                    'enlace': n.enlace,
+                    'fecha': timezone.localtime(n.fecha_creacion).strftime('%d/%m/%Y %H:%M')
+                })
+        except Exception:
+            pass
+
+        # 2. Notificaciones dinámicas de préstamos activos (plazos y vencimientos)
         prestamos_activos = Prestamo.objects.filter(usuario=request.user, estado_prestamo='Activo')
-        overdue_count = 0
         ahora_date = timezone.localdate()
         
         for p in prestamos_activos:
@@ -28,7 +49,7 @@ def programas_context(request):
                 es_vencido = ahora_date > limite
                 
                 if es_vencido:
-                    overdue_count += 1
+                    unread_count += 1
                     tipo = 'danger'
                     icono = 'fa-exclamation-triangle'
                     badge = 'Vencido'
@@ -44,7 +65,8 @@ def programas_context(request):
                     'icono': icono,
                     'titulo': f'Préstamo de {p.elemento.tipo_maquina} activo',
                     'mensaje': mensaje,
-                    'badge': badge
+                    'badge': badge,
+                    'leida': False
                 })
         
         if not notifs:
@@ -52,10 +74,11 @@ def programas_context(request):
                 'tipo': 'info',
                 'icono': 'fa-info-circle',
                 'titulo': '¡Todo al día!',
-                'mensaje': 'No tienes implementos deportivos pendientes por devolver. ¡Buen trabajo!',
-                'badge': 'Al día'
+                'mensaje': 'No tienes notificaciones pendientes ni implementos por devolver.',
+                'badge': 'Al día',
+                'leida': True
             })
             
         context['notificaciones_sistema'] = notifs
-        context['notificaciones_count'] = overdue_count
+        context['notificaciones_count'] = unread_count
     return context

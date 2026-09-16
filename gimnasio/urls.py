@@ -34,4 +34,15 @@ urlpatterns = [
          views.eliminar_maquina, name='eliminar_maquina'),
     path('gimnasio/admin/maquinas/estado/<int:pk>/',
          views.toggle_estado_maquina, name='toggle_estado_maquina'),
+
+    # ── CP-17: Endpoint de aforo y turnos en tiempo real ──
+    path('aforo/', views.api_aforo_turnos, name='gimnasio_aforo'),
+
+    # ── CP-18: CRUD de franjas horarias (Solo Admin) ──
+    path('gimnasio/admin/franjas/', views.admin_franjas_list_create, name='admin_franjas'),
+    path('gimnasio/admin/franjas/editar/<int:pk>/', views.admin_franja_editar, name='admin_franja_editar'),
+    path('gimnasio/admin/franjas/eliminar/<int:pk>/', views.admin_franja_eliminar, name='admin_franja_eliminar'),
+
+    # ── CP-19: Reserva de turno con control de sobrecupo ──
+    path('reserva/turno/', views.crear_reserva_turno, name='crear_reserva_turno'),
 ]

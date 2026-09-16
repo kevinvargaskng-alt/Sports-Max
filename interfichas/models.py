@@ -8,9 +8,10 @@ from django.conf import settings
 # ================================================================
 class Disciplina(models.Model):
     TIPO_MARCADOR_CHOICES = [
-        ('goles',   'Goles (Fútbol, Fútsal, etc.)'),
-        ('puntos',  'Puntos (Baloncesto, Voleibol americano)'),
-        ('sets',    'Sets (Voleibol, Pimpón, Bádminton)'),
+        ('goles',     'Goles (Fútbol, Fútsal, etc.)'),
+        ('puntos',    'Puntos (Baloncesto, Voleibol americano)'),
+        ('sets',      'Sets (Voleibol, Tenis de Mesa / Pimpón)'),
+        ('no_aplica', 'No aplica / Tableros (Ajedrez)'),
     ]
     nombre_disciplina = models.CharField(max_length=50, unique=True)
     icono = models.CharField(max_length=60, default='fa-medal')
@@ -46,6 +47,14 @@ class TorneoInterfichas(models.Model):
     def __str__(self):
         return f"{self.nombre_torneo} ({self.disciplina})"
 
+    @property
+    def id(self):
+        return self.pk
+
+    @id.setter
+    def id(self, value):
+        self.pk = value
+
 
 # ================================================================
 # 3. EQUIPOS
@@ -69,13 +78,21 @@ class EquipoInterfichas(models.Model):
     )
     fecha_inscripcion = models.DateField(auto_now_add=True)
     estado = models.CharField(max_length=20, default='Inscrito')
-    # CP-09: foto del equipo
-    foto_equipo = models.ImageField(
-        upload_to='equipos/fotos/', null=True, blank=True,
-        verbose_name='Foto del equipo')
+    planilla_inscripcion = models.FileField(
+        upload_to='planillas_inscripciones/', null=True, blank=True, verbose_name="Planilla de Inscripción"
+    )
 
     def __str__(self):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
+
+    @property
+    def id(self):
+        return self.pk
+
+    @id.setter
+    def id(self, value):
+        self.pk = value
+
 
 
 # ================================================================
@@ -83,12 +100,16 @@ class EquipoInterfichas(models.Model):
 # ================================================================
 class JugadorEquipo(models.Model):
     nombre_completo = models.CharField(max_length=150)
+    numero_documento = models.CharField(max_length=30, blank=True, default='', verbose_name="Número de Documento")
+    consentimiento_informado = models.FileField(
+        upload_to='consentimientos_jugadores/', null=True, blank=True, verbose_name="Consentimiento Informado"
+    )
     equipo = models.ForeignKey(
         EquipoInterfichas, on_delete=models.CASCADE, related_name='jugadores'
     )
 
     def __str__(self):
-        return self.nombre_completo
+        return f"{self.nombre_completo} ({self.numero_documento})" if self.numero_documento else self.nombre_completo
 
 
 # ================================================================
@@ -145,6 +166,9 @@ class PartidoInterfichas(models.Model):
     # Detalle de sets para voleibol / pimpón  [25, 23, 15]
     sets_local = models.JSONField(null=True, blank=True)
     sets_visitante = models.JSONField(null=True, blank=True)
+
+    # Modalidad exclusiva Ajedrez
+    no_aplica = models.BooleanField(default=False, verbose_name="Marcador No Aplica (Ajedrez)")
 
     # Tarjetas y Sanciones Disciplinarias
     tarjetas_amarillas_local = models.IntegerField(
@@ -220,32 +244,3 @@ class ResultadoTorneo(models.Model):
 
     def __str__(self):
         return f"Resultado de {self.torneo.nombre_torneo}"
-
-
-# ================================================================
-# 8. CP-09: ESTADÍSTICAS DE JUGADORES
-# ================================================================
-class EstadisticaJugador(models.Model):
-    """
-    Registra estadísticas individuales por jugador en cada partido.
-    """
-    jugador = models.ForeignKey(
-        JugadorEquipo, on_delete=models.CASCADE,
-        related_name='estadisticas', verbose_name='Jugador'
-    )
-    partido = models.ForeignKey(
-        PartidoInterfichas, on_delete=models.CASCADE,
-        related_name='estadisticas', verbose_name='Partido'
-    )
-    goles = models.PositiveIntegerField(default=0, verbose_name='Goles / Puntos')
-    asistencias = models.PositiveIntegerField(default=0, verbose_name='Asistencias')
-    tarjetas_amarillas = models.PositiveIntegerField(default=0, verbose_name='Tarjetas Amarillas')
-    tarjetas_rojas = models.PositiveIntegerField(default=0, verbose_name='Tarjetas Rojas')
-
-    class Meta:
-        verbose_name = 'Estadística de Jugador'
-        verbose_name_plural = 'Estadísticas de Jugadores'
-        unique_together = [('jugador', 'partido')]
-
-    def __str__(self):
-        return f"{self.jugador} en {self.partido} — Goles: {self.goles}"
