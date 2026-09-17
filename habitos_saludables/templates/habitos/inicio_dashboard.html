@@ -165,6 +165,28 @@ canvas { width: 100% !important; max-height: 220px !important; }
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;
 }
 
+/* ── GAMIFICATION & WIDGETS ── */
+.streak-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 87, 34, 0.1); color: #FF5722; padding: 6px 14px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(255, 87, 34, 0.2); }
+.interactive-widget { background: var(--surface3); border: 1px solid var(--border); border-radius: 18px; padding: 1.5rem; height: 100%; transition: transform 0.2s, border-color 0.2s; }
+.interactive-widget:hover { border-color: rgba(200, 255, 0, 0.3); transform: translateY(-3px); }
+.water-cups { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 15px; justify-content: space-between; }
+.water-cup { font-size: 1.6rem; cursor: pointer; opacity: 0.3; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: grayscale(1); user-select: none; }
+.water-cup:hover { transform: scale(1.1); opacity: 0.7; }
+.water-cup.filled { opacity: 1; filter: grayscale(0); transform: scale(1.15) translateY(-2px); }
+.water-cup.filled:active { transform: scale(0.95); }
+.water-cup.locked { opacity: 0.4 !important; filter: grayscale(0.85) !important; transform: scale(1) translateY(0) !important; cursor: not-allowed !important; }
+.goal-reached-anim { animation: pulseGoal 0.6s ease-in-out; }
+@keyframes pulseGoal {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(32, 201, 151, 0.3); border-color: rgba(32, 201, 151, 0.5); }
+  100% { transform: scale(1); }
+}
+.zen-timer { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--acid); text-align: center; margin: 15px 0; font-variant-numeric: tabular-nums; }
+.imc-slider-container { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+.range-slider { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 5px; background: rgba(255, 255, 255, 0.1); outline: none; }
+.range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--acid); cursor: pointer; border: 2px solid #000; }
+.imc-result-live { text-align: center; font-size: 1.8rem; font-weight: 800; margin-top: 10px; transition: color 0.3s; }
+
 /* ── ANIMATIONS ── */
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -294,6 +316,119 @@ canvas { width: 100% !important; max-height: 220px !important; }
   <!-- ══════════════════════════════════════════
        VISTA USUARIO
   ══════════════════════════════════════════ -->
+  
+  <!-- INTERACTIVE WIDGETS (Always visible) -->
+  <div class="row g-3 mb-4 reveal">
+    <!-- Agua -->
+    <div class="col-lg-4">
+      <div class="interactive-widget" id="waterWidget">
+        <div class="panel-title text-info d-flex justify-content-between align-items-center">
+          <span><i class="fas fa-tint"></i> Meta de Hidratación</span>
+          <span class="text-info small fw-bold"><span id="waterCountText">0</span> / 8 Vasos</span>
+        </div>
+        <p class="text-muted small mb-2" id="waterMessage">Haz clic para registrar tus vasos diarios</p>
+        
+        <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+           <div id="waterProgress" class="progress-bar bg-info" role="progressbar" style="width: 0%; transition: width 0.4s ease;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+
+        <div class="water-cups" id="waterCupsContainer">
+          <span class="water-cup" onclick="toggleWater(0)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(1)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(2)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(3)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(4)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(5)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(6)">🥛</span>
+          <span class="water-cup" onclick="toggleWater(7)">🥛</span>
+        </div>
+        <div class="mt-3 d-flex justify-content-between align-items-center">
+          <span class="btn-outline-sm text-info border-info" style="font-size: 0.7rem; padding: 4px 8px; cursor: pointer;" onclick="document.getElementById('waterInfo').classList.toggle('d-none')">
+            <i class="fas fa-info-circle"></i> Beneficios
+          </span>
+          <span class="streak-badge"><i class="fas fa-fire"></i> Racha: <span id="waterStreak">0</span> días</span>
+        </div>
+        
+        <div id="waterInfo" class="mt-3 p-3 rounded d-none" style="background: rgba(32,201,151,0.08); border: 1px solid rgba(32,201,151,0.2); font-size: 0.8rem;">
+          <strong class="text-info  d-block mb-2"><i class="fas fa-check-circle"></i> Beneficios de tomar agua:</strong>
+          <ul class="mb-0 ps-3" style="line-height: 1.6; color: rgba(255,255,255,0.9);">
+            <li>Mejora el rendimiento físico y mental.</li>
+            <li>Ayuda a la digestión y previene el estreñimiento.</li>
+            <li>Mantiene la piel sana e hidratada.</li>
+            <li>Ayuda a regular la temperatura corporal.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Calculadora Macros/Calorías -->
+    <div class="col-lg-4">
+      <div class="interactive-widget">
+        <div class="panel-title" style="color: var(--acid);"><i class="fas fa-fire-alt"></i> Calculadora de Macros</div>
+        <div class="imc-slider-container">
+          <div>
+            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Peso (kg)</span> <strong id="valPesoMacros">70</strong></label>
+            <input type="range" min="40" max="150" value="{% if ultimo %}{{ ultimo.peso_kg|stringformat:"i" }}{% else %}70{% endif %}" class="range-slider" id="sliderPesoMacros" oninput="calcularMacros()">
+          </div>
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="small text-muted mb-1">Objetivo</label>
+              <select id="selectObjetivo" class="form-select form-select-sm" style="background: var(--surface2); color: #fff; border: 1px solid var(--border);" onchange="calcularMacros()">
+                <option value="perder">Perder Peso</option>
+                <option value="mantener" selected>Mantener</option>
+                <option value="ganar">Ganar Masa</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="small text-muted mb-1">Actividad</label>
+              <select id="selectActividad" class="form-select form-select-sm" style="background: var(--surface2); color: #fff; border: 1px solid var(--border);" onchange="calcularMacros()">
+                <option value="sedentario">Sedentario</option>
+                <option value="moderado" selected>Moderado</option>
+                <option value="activo">Activo</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="text-center mt-2 mb-1">
+            <div style="font-size: 1.8rem; font-weight: 800; line-height: 1;"><span id="macrosCalories">2100</span> <small style="font-size: 0.8rem; color: var(--muted); font-weight: 600;">kcal/día</small></div>
+          </div>
+          
+          <div class="d-flex justify-content-between text-center mt-2 p-2 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
+            <div>
+              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Carbs</div>
+              <div style="color: #5c9eff; font-weight: 700; font-size: 0.9rem;"><span id="macrosCarbs">210</span>g</div>
+            </div>
+            <div>
+              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Proteína</div>
+              <div style="color: var(--teal); font-weight: 700; font-size: 0.9rem;"><span id="macrosProtein">157</span>g</div>
+            </div>
+            <div>
+              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Grasas</div>
+              <div style="color: #ffc107; font-weight: 700; font-size: 0.9rem;"><span id="macrosFat">70</span>g</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Motivación Diaria -->
+    <div class="col-lg-4">
+      <div class="interactive-widget text-center d-flex flex-column justify-content-center" style="min-height: 250px;">
+        <div class="panel-title justify-content-center text-warning mb-3"><i class="fas fa-bolt"></i> Motivación Diaria</div>
+        <div class="mb-3 px-2">
+          <i class="fas fa-quote-left mb-2" style="color: #ffc107; opacity: 0.5; font-size: 1.2rem;"></i>
+          <p id="motivationalQuote" style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; line-height: 1.4; color: #fff; margin-bottom: 0.5rem; transition: opacity 0.4s ease;"></p>
+          <div id="motivationalAuthor" class="small text-muted" style="font-style: italic; transition: opacity 0.4s ease;"></div>
+        </div>
+        <div class="mt-auto">
+          <button class="btn btn-outline-sm text-warning border-warning" onclick="cambiarFrase()">
+            <i class="fas fa-sync-alt"></i> Siguiente frase
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   {% if ultimo %}
   <!-- KPI Cards -->
   <div class="stats-grid reveal">
@@ -413,7 +548,10 @@ canvas { width: 100% !important; max-height: 220px !important; }
     <p>Registra tu primer seguimiento de salud y empieza a visualizar tu evolución.</p>
     <a href="{% url 'habitos:registrar_seguimiento' %}" class="btn-acid">
       <i class="fas fa-plus-circle"></i> Registrar ahora
+    </a>
   </div>
+  {% endif %}
+  {% endif %}
 </div>
 {% endblock %}
 
@@ -506,5 +644,173 @@ canvas { width: 100% !important; max-height: 220px !important; }
     });
   }
   {% endif %}
+
+  // WIDGETS LOGIC
+  
+  // 1. Water Tracker
+  const getTodayStr = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
+  const getYesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
+
+  let todayStr = getTodayStr();
+  let yesterdayStr = getYesterdayStr();
+
+  let savedWaterDate = localStorage.getItem('waterDate') || '';
+  let savedWaterCount = parseInt(localStorage.getItem('waterCount') || '0');
+  let waterStreak = parseInt(localStorage.getItem('waterStreak') || '0');
+  let lastGoalDate = localStorage.getItem('lastGoalDate') || '';
+
+  // Reset daily count if it's a new day
+  if (savedWaterDate !== todayStr) {
+     savedWaterCount = 0;
+     localStorage.setItem('waterCount', 0);
+     localStorage.setItem('waterDate', todayStr);
+  }
+
+  // Break streak if goal was not met yesterday and not met today
+  if (lastGoalDate !== todayStr && lastGoalDate !== yesterdayStr && lastGoalDate !== '') {
+     waterStreak = 0;
+     localStorage.setItem('waterStreak', 0);
+  }
+
+  function updateWaterUI() {
+    const cups = document.querySelectorAll('.water-cup');
+    cups.forEach((cup, idx) => {
+      if(idx < savedWaterCount) cup.classList.add('filled');
+      else cup.classList.remove('filled');
+      // Bloquear interacción si se completó la meta
+      if (savedWaterCount === 8) {
+         cup.classList.add('locked');
+      } else {
+         cup.classList.remove('locked');
+      }
+    });
+    
+    document.getElementById('waterCountText').innerText = savedWaterCount;
+    document.getElementById('waterStreak').innerText = waterStreak;
+    
+    const progressPercent = (savedWaterCount / 8) * 100;
+    document.getElementById('waterProgress').style.width = `${progressPercent}%`;
+
+    const msgEl = document.getElementById('waterMessage');
+    const widgetEl = document.getElementById('waterWidget');
+    
+    if (savedWaterCount === 8) {
+       msgEl.innerText = "Nos vemos el día de mañana con tu nueva meta de hidratación 🌟";
+       msgEl.className = "text-info small mb-2 fw-bold";
+       widgetEl.classList.add('goal-reached-anim');
+    } else {
+       msgEl.innerText = `Haz clic para registrar tus vasos diarios`;
+       msgEl.className = "text-muted small mb-2";
+       widgetEl.classList.remove('goal-reached-anim');
+    }
+  }
+
+  function toggleWater(index) {
+    if (savedWaterCount === 8) return; // Bloqueado por hoy
+
+    if (savedWaterCount === index + 1) savedWaterCount = index; // toggle off
+    else savedWaterCount = index + 1;
+    
+    localStorage.setItem('waterCount', savedWaterCount);
+    
+    // Streak logic
+    if (savedWaterCount === 8) {
+       if (lastGoalDate !== todayStr) {
+          waterStreak++;
+          lastGoalDate = todayStr;
+          localStorage.setItem('waterStreak', waterStreak);
+          localStorage.setItem('lastGoalDate', todayStr);
+       }
+    } else {
+       if (lastGoalDate === todayStr) {
+          waterStreak = Math.max(0, waterStreak - 1);
+          lastGoalDate = yesterdayStr; // Hack to rollback
+          localStorage.setItem('waterStreak', waterStreak);
+          localStorage.setItem('lastGoalDate', lastGoalDate);
+       }
+    }
+    updateWaterUI();
+  }
+  updateWaterUI();
+
+  // 2. Calculadora de Macros
+  function calcularMacros() {
+    const peso = parseFloat(document.getElementById('sliderPesoMacros').value);
+    document.getElementById('valPesoMacros').innerText = peso;
+    
+    const obj = document.getElementById('selectObjetivo').value;
+    const act = document.getElementById('selectActividad').value;
+    
+    // Multiplicador de actividad (estimación simplificada)
+    let factorActividad = 30; // Moderado
+    if (act === 'sedentario') factorActividad = 26;
+    else if (act === 'activo') factorActividad = 35;
+    
+    let caloriasMantenimiento = peso * factorActividad;
+    let caloriasObjetivo = caloriasMantenimiento;
+    
+    let pCarbs = 0.4, pProt = 0.3, pFat = 0.3; // Mantener
+    
+    if (obj === 'perder') {
+        caloriasObjetivo -= 500;
+        pCarbs = 0.3; pProt = 0.4; pFat = 0.3;
+    } else if (obj === 'ganar') {
+        caloriasObjetivo += 400;
+        pCarbs = 0.5; pProt = 0.3; pFat = 0.2;
+    }
+    
+    // Limitar calorías mínimas saludables
+    if (caloriasObjetivo < 1200) caloriasObjetivo = 1200;
+    
+    // Calorías a gramos (Carbs: 4kcal, Prot: 4kcal, Grasas: 9kcal)
+    const gCarbs = Math.round((caloriasObjetivo * pCarbs) / 4);
+    const gProt = Math.round((caloriasObjetivo * pProt) / 4);
+    const gFat = Math.round((caloriasObjetivo * pFat) / 9);
+    
+    document.getElementById('macrosCalories').innerText = Math.round(caloriasObjetivo);
+    document.getElementById('macrosCarbs').innerText = gCarbs;
+    document.getElementById('macrosProtein').innerText = gProt;
+    document.getElementById('macrosFat').innerText = gFat;
+  }
+  calcularMacros();
+
+  // 3. Frases de Motivación
+  const frasesMotivacionales = [
+    { text: "El único mal entrenamiento es el que no sucedió.", author: "Anónimo" },
+    { text: "No te detengas cuando estés cansado. Detente cuando hayas terminado.", author: "David Goggins" },
+    { text: "La disciplina es el puente entre las metas y los logros.", author: "Jim Rohn" },
+    { text: "El cuerpo logra lo que la mente cree.", author: "Anónimo" },
+    { text: "Cuida tu cuerpo, es el único lugar que tienes para vivir.", author: "Jim Rohn" },
+    { text: "Un viaje de mil millas comienza con un solo paso.", author: "Lao Tsé" },
+    { text: "No intentes ser mejor que nadie, intenta ser mejor de lo que eras ayer.", author: "Anónimo" },
+    { text: "El dolor que sientes hoy, será la fuerza que sientas mañana.", author: "Anónimo" },
+    { text: "La motivación te hace empezar. El hábito te hace continuar.", author: "Jim Ryun" },
+    { text: "Roma no se construyó en un día, pero trabajaban en ella todos los días.", author: "Anónimo" }
+  ];
+
+  function cambiarFrase() {
+    const quoteEl = document.getElementById('motivationalQuote');
+    const authorEl = document.getElementById('motivationalAuthor');
+    
+    // Fade out
+    quoteEl.style.opacity = 0;
+    authorEl.style.opacity = 0;
+    
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * frasesMotivacionales.length);
+      const frase = frasesMotivacionales[randomIndex];
+      
+      quoteEl.innerText = `"${frase.text}"`;
+      authorEl.innerText = `- ${frase.author}`;
+      
+      // Fade in
+      quoteEl.style.opacity = 1;
+      authorEl.style.opacity = 1;
+    }, 400);
+  }
+  
+  // Set initial quote
+  cambiarFrase();
+
 </script>
 {% endblock %}
