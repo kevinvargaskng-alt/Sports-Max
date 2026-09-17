@@ -368,7 +368,7 @@ canvas { width: 100% !important; max-height: 220px !important; }
         <div class="imc-slider-container">
           <div>
             <label class="small text-muted mb-1 d-flex justify-content-between"><span>Peso (kg)</span> <strong id="valPesoMacros">70</strong></label>
-            <input type="range" min="40" max="150" value="{% if ultimo %}{{ ultimo.peso_kg|stringformat:"i" }}{% else %}70{% endif %}" class="range-slider" id="sliderPesoMacros" oninput="calcularMacros()">
+            <input type="range" min="40" max="150" value="{% if ultimo %}{{ ultimo.peso_kg|floatformat:'0' }}{% else %}70{% endif %}" class="range-slider" id="sliderPesoMacros" oninput="calcularMacros()">
           </div>
           <div class="row g-2 mb-2">
             <div class="col-6">

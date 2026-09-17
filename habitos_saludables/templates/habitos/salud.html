@@ -58,9 +58,10 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 
 /* Table */
 .table-dark-glass { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-.table-dark-glass th { background-color: var(--surface3); color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; }
-.table-dark-glass td { border-color: var(--border) !important; color: white; vertical-align: middle; padding: 1rem 1.5rem; }
-.table-hover tbody tr:hover { background-color: rgba(255,255,255,0.02) !important; }
+.table-dark-glass table { --bs-table-bg: transparent; --bs-table-color: white; --bs-table-hover-bg: rgba(255,255,255,0.03); background: transparent !important; color: white !important; }
+.table-dark-glass th { background-color: var(--surface3) !important; color: var(--muted) !important; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border) !important; padding: 1rem 1.5rem; }
+.table-dark-glass td, .table-dark-glass tr { background-color: transparent !important; border-color: var(--border) !important; color: white !important; vertical-align: middle; padding: 1rem 1.5rem; }
+.table-hover tbody tr:hover td { background-color: rgba(255,255,255,0.03) !important; }
 
 /* Badges */
 .badge-acid { background: rgba(200,255,0,0.1); color: var(--acid); border: 1px solid rgba(200,255,0,0.2); }
