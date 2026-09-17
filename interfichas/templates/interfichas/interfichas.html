@@ -356,11 +356,7 @@
       </div>
       <div class="hero-stat">
         <div>
-          <div class="hero-stat-num int-u-20">
-            {% with total=0 %}
-              {% for t in torneos %}{{ t.equipos.count }}{% if not forloop.last %}+{% endif %}{% endfor %}
-            {% endwith %}
-          </div>
+          <div class="hero-stat-num">{{ total_equipos_inscritos }}</div>
           <div class="hero-stat-lbl">Equipos inscritos</div>
         </div>
       </div>

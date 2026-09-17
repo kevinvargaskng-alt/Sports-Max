@@ -458,6 +458,7 @@ def interfichas_list(request):
 
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
         torneos_disponibles = torneos.exclude(pk__in=torneos_con_equipo)
+        total_equipos_inscritos = sum(t.equipos.count() for t in torneos)
 
     context = {
         'torneos':             torneos,
@@ -469,6 +470,7 @@ def interfichas_list(request):
         'mis_equipos':         mis_equipos,
         'mis_partidos':        mis_partidos,
         'torneos_disponibles': torneos_disponibles,
+        'total_equipos_inscritos': total_equipos_inscritos,
     }
     return render(request, 'interfichas/interfichas.html', context)
 
