@@ -223,9 +223,13 @@
             <div class="team-card-sport">
               <div class="team-card-header">
                 <div class="d-flex align-items-center gap-2">
-                  <div class="team-crest-wrap">
-                    <i class="fas fa-shield-alt"></i>
-                  </div>
+                  <span class="team-crest-wrap" style="width:28px; height:28px; font-size:0.8rem;">
+                    {% if eq.escudo %}
+                      <img src="{{ eq.escudo.url }}" alt="Escudo de {{ eq.nombre_equipo }}">
+                    {% else %}
+                      <i class="fas fa-shield-alt text-info"></i>
+                    {% endif %}
+                  </span>
                   <div>
                     <div class="team-title-name">{{ eq.nombre_equipo }}</div>
                     <div class="small text-muted">{{ eq.torneo.nombre_torneo }}</div>
@@ -785,6 +789,21 @@
                 <input type="text" name="nombre_equipo" id="campo-nombre-equipo" class="custom-input form-control"
                        placeholder="Ej. Los Halcones, Ficha 250...">
               </div>
+              <div class="mb-3 mt-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">
+                  <i class="fas fa-shield-alt text-info me-1"></i>
+                  Escudo del equipo
+                </label>
+
+                <input type="file"
+                      name="escudo"
+                      class="form-control form-control-sm bg-dark text-white border-secondary"
+                      accept="image/*">
+
+                <small class="text-white-50 d-block mt-1">
+                  Sube el escudo del equipo en formato PNG, JPG o WEBP.
+                </small>
+              </div>
               <small class="text-white-50 mt-2 d-block" id="ayuda-nombre-equipo">
                 <i class="fas fa-info-circle text-info me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.
               </small>
@@ -814,6 +833,25 @@
               </select>
             </div>
           </div>
+          <!-- ── ESCUDO DEL EQUIPO ── -->
+<div class="mb-3 p-3 rounded border border-secondary"
+     style="background: rgba(88,166,255,0.06);">
+
+    <label class="form-label small text-info fw-bold text-uppercase mb-2">
+        <i class="fas fa-shield-alt me-1"></i>
+        Escudo del Equipo
+    </label>
+
+    <input type="file"
+           name="escudo"
+           id="edit-equipo-escudo-file"
+           class="form-control form-control-sm bg-dark text-white border-secondary"
+           accept="image/*">
+
+    <small class="text-white-50 d-block mt-1">
+        Selecciona una imagen para subir o cambiar el escudo.
+    </small>
+</div>
 
           <!-- ── PLANILLA DE INSCRIPCIÓN (Archivo) ── -->
           <div class="mb-3 p-3 rounded border border-secondary" style="background: rgba(88,166,255,0.05);">
@@ -934,6 +972,143 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL EDITAR EQUIPO -->
+<div class="modal fade" id="modalEditarEquipo" tabindex="-1"
+     aria-labelledby="modalEditarEquipoTitulo" aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal text-white border-0 rounded-4 shadow-lg"
+         style="background: #0f172a; border: 1px solid rgba(56,189,248,0.3) !important;">
+
+      <div class="modal-header modal-sport-header">
+        <h5 class="modal-title fw-bold text-white" id="modalEditarEquipoTitulo">
+          <i class="fas fa-edit text-info me-2"></i>
+          Editar equipo
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"></button>
+      </div>
+
+      <form method="POST"
+            id="formEditarEquipo"
+            enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <div class="modal-body p-4">
+
+          <!-- NOMBRE -->
+          <div class="mb-3">
+            <label for="edit-equipo-nombre" class="form-label fw-bold">
+              Nombre del equipo
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-nombre"
+                   name="nombre_equipo"
+                   required>
+          </div>
+
+          <!-- CAPITÁN -->
+          <div class="mb-3">
+            <label for="edit-equipo-capitan" class="form-label fw-bold">
+              Capitán
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-capitan"
+                   name="capitan">
+          </div>
+
+          <!-- FICHA -->
+          <div class="mb-3">
+            <label for="edit-equipo-ficha" class="form-label fw-bold">
+              Ficha
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-ficha"
+                   name="ficha">
+          </div>
+
+          <!-- PROGRAMA -->
+          <div class="mb-3">
+            <label for="edit-equipo-programa" class="form-label fw-bold">
+              Programa
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-programa"
+                   name="programa">
+          </div>
+
+          <!-- ESCUDO ACTUAL -->
+          <div class="mb-3 text-center"
+               id="edit-equipo-escudo-actual-container"
+               style="display: none;">
+
+            <label class="form-label fw-bold d-block">
+              Escudo actual
+            </label>
+
+            <img id="edit-equipo-escudo-preview"
+                 src=""
+                 alt="Escudo actual"
+                 style="width: 110px;
+                        height: 110px;
+                        object-fit: contain;
+                        border-radius: 15px;
+                        background: #1e293b;
+                        padding: 8px;
+                        border: 1px solid rgba(56,189,248,0.3);">
+          </div>
+
+          <!-- NUEVO ESCUDO -->
+          <div class="mb-3">
+            <label for="edit-equipo-escudo-file"
+                   class="form-label fw-bold">
+              Cambiar escudo
+            </label>
+
+            <input type="file"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-escudo-file"
+                   name="escudo"
+                   accept="image/*">
+
+            <div class="form-text text-secondary">
+              Selecciona una imagen para reemplazar el escudo actual.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-top border-secondary">
+
+          <button type="button"
+                  class="btn btn-outline-secondary rounded-pill px-4"
+                  data-bs-dismiss="modal">
+            Cancelar
+          </button>
+
+          <button type="submit"
+                  class="btn btn-info rounded-pill px-4 fw-bold">
+            <i class="fas fa-save me-1"></i>
+            Guardar cambios
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+<!-- FIN MODAL EDITAR EQUIPO -->
 {% endblock %}
 
 {% block extra_js %}
@@ -951,6 +1126,7 @@
       torneo_id: "{{ eq.torneo_id }}",
       torneo_nombre: "{{ eq.torneo.nombre_torneo|escapejs }}",
       nombre_equipo: "{{ eq.nombre_equipo|escapejs }}",
+      escudo: "{% if eq.escudo %}{{ eq.escudo.url|escapejs }}{% endif %}",
       capitan: "{{ eq.capitan|escapejs }}",
       ficha: "{{ eq.ficha }}",
       programa: "{{ eq.programa|escapejs }}",
@@ -1012,9 +1188,10 @@
           <div class="team-card-sport">
             <div class="team-card-header">
               <div class="d-flex align-items-center gap-2">
-                <div class="team-crest-wrap">
-                  <i class="fas fa-shield-alt"></i>
-                </div>
+              <div class="team-crest-wrap">
+                ${eq.escudo? `<img src="${eq.escudo}" alt="Escudo de ${eq.nombre_equipo}">`: 
+                '<i class="fas fa-shield-alt"></i>'}
+              </div>
                 <div>
                   <div class="team-title-name">${eq.nombre_equipo}</div>
                   <div class="small text-muted">${eq.torneo_nombre}</div>
@@ -1046,10 +1223,71 @@
                 ${jugadoresHtml}
               </div>
             </div>
-          </div>
-        </div>`;
+
+            {% if es_admin %}
+            <div class="mt-3">
+              <button type="button"
+                  class="btn btn-sm btn-outline-info w-100"
+                  onclick="abrirEditarEquipoModal('${eq.id}')">
+                <i class="fas fa-edit me-1"></i> Editar equipo
+              </button>
+            </div>
+            {% endif %}
+            </div>`;
     }).join('');
   }
+  function abrirEditarEquipoModal(id) {
+  const equipo = DATOS_EQUIPOS_TODOS.find(
+    eq => String(eq.id) === String(id)
+  );
+
+  if (!equipo) {
+    console.error('No se encontró el equipo:', id);
+    return;
+  }
+
+  // Cargar datos del equipo
+  document.getElementById('edit-equipo-nombre').value =
+    equipo.nombre_equipo || '';
+
+  document.getElementById('edit-equipo-capitan').value =
+    equipo.capitan || '';
+
+  document.getElementById('edit-equipo-ficha').value =
+    equipo.ficha || '';
+
+  document.getElementById('edit-equipo-programa').value =
+    equipo.programa || '';
+
+  // Limpiar el selector de archivo
+  document.getElementById('edit-equipo-escudo-file').value = '';
+
+  // Mostrar el escudo actual si existe
+  const contenedorEscudo =
+    document.getElementById('edit-equipo-escudo-actual-container');
+
+  const previewEscudo =
+    document.getElementById('edit-equipo-escudo-preview');
+
+  if (equipo.escudo) {
+    previewEscudo.src = equipo.escudo;
+    contenedorEscudo.style.display = 'block';
+  } else {
+    previewEscudo.src = '';
+    contenedorEscudo.style.display = 'none';
+  }
+
+  // URL para guardar los cambios
+  document.getElementById('formEditarEquipo').action =
+    `/interfichas/equipo/${equipo.id}/editar/`;
+
+  // Abrir modal
+  const modal = new bootstrap.Modal(
+    document.getElementById('modalEditarEquipo')
+  );
+
+  modal.show();
+}
 
   function filtrarEquiposModal(q) {
     q = q.toLowerCase();

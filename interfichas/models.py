@@ -66,6 +66,12 @@ class EquipoInterfichas(models.Model):
     ficha = models.IntegerField()
     programa = models.CharField(max_length=150)
     nombre_equipo = models.CharField(max_length=100)
+    escudo = models.ImageField(
+        upload_to='escudos_equipos/',
+        null=True,
+        blank=True,
+        verbose_name='Escudo del equipo'
+    )
     capitan = models.CharField(max_length=100)
     torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='equipos'

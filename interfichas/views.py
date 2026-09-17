@@ -392,8 +392,10 @@ def interfichas_list(request):
                 ficha=ficha,
                 programa=request.POST.get('programa', '').strip(),
                 disciplina=torneo_obj.disciplina,
-                usuario_registra=request.user
+                usuario_registra=request.user,
+                escudo = request.FILES.get('escudo')
             )
+            
 
             # Guardar planilla de inscripción (archivo)
             planilla_file = request.FILES.get('planilla_inscripcion')
@@ -1068,10 +1070,11 @@ def editar_equipo(request, equipo_id):
         if planilla_file:
             equipo.planilla_inscripcion = planilla_file
 
+        escudo_file = request.FILES.get('escudo')
+        if escudo_file:
+            equipo.escudo = escudo_file
+
         equipo.save()
-        messages.success(
-            request, f"Equipo '{equipo.nombre_equipo}' actualizado correctamente.")
-        return redirect('gestionar_torneo', torneo_id=equipo.torneo.pk)
 
     return JsonResponse({
         'id':                   equipo.pk,
