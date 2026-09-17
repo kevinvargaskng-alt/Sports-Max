@@ -361,34 +361,69 @@ canvas { width: 100% !important; max-height: 220px !important; }
       </div>
     </div>
     
-    <!-- Calculadora IMC en vivo -->
+    <!-- Calculadora Macros/Calorías -->
     <div class="col-lg-4">
       <div class="interactive-widget">
-        <div class="panel-title" style="color: var(--acid);"><i class="fas fa-calculator"></i> Calculadora Rápida IMC</div>
+        <div class="panel-title" style="color: var(--acid);"><i class="fas fa-fire-alt"></i> Calculadora de Macros</div>
         <div class="imc-slider-container">
           <div>
-            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Peso (kg)</span> <strong id="valPeso">70</strong></label>
-            <input type="range" min="30" max="150" value="70" class="range-slider" id="sliderPeso" oninput="calcularIMCLive()">
+            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Peso (kg)</span> <strong id="valPesoMacros">70</strong></label>
+            <input type="range" min="40" max="150" value="{% if ultimo %}{{ ultimo.peso_kg|stringformat:"i" }}{% else %}70{% endif %}" class="range-slider" id="sliderPesoMacros" oninput="calcularMacros()">
           </div>
-          <div>
-            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Estatura (cm)</span> <strong id="valEstatura">170</strong></label>
-            <input type="range" min="120" max="220" value="170" class="range-slider" id="sliderEstatura" oninput="calcularIMCLive()">
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="small text-muted mb-1">Objetivo</label>
+              <select id="selectObjetivo" class="form-select form-select-sm" style="background: var(--surface2); color: #fff; border: 1px solid var(--border);" onchange="calcularMacros()">
+                <option value="perder">Perder Peso</option>
+                <option value="mantener" selected>Mantener</option>
+                <option value="ganar">Ganar Masa</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="small text-muted mb-1">Actividad</label>
+              <select id="selectActividad" class="form-select form-select-sm" style="background: var(--surface2); color: #fff; border: 1px solid var(--border);" onchange="calcularMacros()">
+                <option value="sedentario">Sedentario</option>
+                <option value="moderado" selected>Moderado</option>
+                <option value="activo">Activo</option>
+              </select>
+            </div>
           </div>
-          <div class="imc-result-live" id="imcResultLive">24.2</div>
-          <div class="text-center small fw-bold" id="imcStatusLive" style="color: var(--teal);">Normal</div>
+          
+          <div class="text-center mt-2 mb-1">
+            <div style="font-size: 1.8rem; font-weight: 800; line-height: 1;"><span id="macrosCalories">2100</span> <small style="font-size: 0.8rem; color: var(--muted); font-weight: 600;">kcal/día</small></div>
+          </div>
+          
+          <div class="d-flex justify-content-between text-center mt-2 p-2 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
+            <div>
+              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Carbs</div>
+              <div style="color: #5c9eff; font-weight: 700; font-size: 0.9rem;"><span id="macrosCarbs">210</span>g</div>
+            </div>
+            <div>
+              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Proteína</div>
+              <div style="color: var(--teal); font-weight: 700; font-size: 0.9rem;"><span id="macrosProtein">157</span>g</div>
+            </div>
+            <div>
+              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Grasas</div>
+              <div style="color: #ffc107; font-weight: 700; font-size: 0.9rem;"><span id="macrosFat">70</span>g</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Modo Zen -->
+    <!-- Motivación Diaria -->
     <div class="col-lg-4">
-      <div class="interactive-widget text-center">
-        <div class="panel-title justify-content-center text-warning"><i class="fas fa-headphones"></i> Pausa Activa / Zen</div>
-        <div class="zen-timer" id="zenTimerDisplay">25:00</div>
-        <p class="small text-muted mb-3" id="zenMessage">Tiempo para enfocarte.</p>
-        <div class="d-flex justify-content-center gap-2">
-          <button class="btn btn-outline-sm text-warning border-warning" onclick="startZenTimer()"><i class="fas fa-play"></i> Iniciar</button>
-          <button class="btn btn-outline-sm text-secondary border-secondary" onclick="resetZenTimer()"><i class="fas fa-stop"></i> Detener</button>
+      <div class="interactive-widget text-center d-flex flex-column justify-content-center" style="min-height: 250px;">
+        <div class="panel-title justify-content-center text-warning mb-3"><i class="fas fa-bolt"></i> Motivación Diaria</div>
+        <div class="mb-3 px-2">
+          <i class="fas fa-quote-left mb-2" style="color: #ffc107; opacity: 0.5; font-size: 1.2rem;"></i>
+          <p id="motivationalQuote" style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; line-height: 1.4; color: #fff; margin-bottom: 0.5rem; transition: opacity 0.4s ease;"></p>
+          <div id="motivationalAuthor" class="small text-muted" style="font-style: italic; transition: opacity 0.4s ease;"></div>
+        </div>
+        <div class="mt-auto">
+          <button class="btn btn-outline-sm text-warning border-warning" onclick="cambiarFrase()">
+            <i class="fas fa-sync-alt"></i> Siguiente frase
+          </button>
         </div>
       </div>
     </div>
@@ -698,70 +733,84 @@ canvas { width: 100% !important; max-height: 220px !important; }
   }
   updateWaterUI();
 
-  // 2. IMC Live Calculator
-  function calcularIMCLive() {
-    const peso = parseFloat(document.getElementById('sliderPeso').value);
-    const est = parseFloat(document.getElementById('sliderEstatura').value);
-    document.getElementById('valPeso').innerText = peso;
-    document.getElementById('valEstatura').innerText = est;
+  // 2. Calculadora de Macros
+  function calcularMacros() {
+    const peso = parseFloat(document.getElementById('sliderPesoMacros').value);
+    document.getElementById('valPesoMacros').innerText = peso;
     
-    if(est > 0) {
-      const imc = peso / Math.pow(est / 100, 2);
-      const res = imc.toFixed(1);
-      const resEl = document.getElementById('imcResultLive');
-      const statEl = document.getElementById('imcStatusLive');
-      resEl.innerText = res;
-      
-      if(imc < 18.5) { resEl.style.color = '#5c9eff'; statEl.style.color = '#5c9eff'; statEl.innerText = 'Bajo peso'; }
-      else if(imc < 25) { resEl.style.color = 'var(--teal)'; statEl.style.color = 'var(--teal)'; statEl.innerText = 'Normal'; }
-      else if(imc < 30) { resEl.style.color = '#ffc107'; statEl.style.color = '#ffc107'; statEl.innerText = 'Sobrepeso'; }
-      else { resEl.style.color = '#f87171'; statEl.style.color = '#f87171'; statEl.innerText = 'Obesidad'; }
+    const obj = document.getElementById('selectObjetivo').value;
+    const act = document.getElementById('selectActividad').value;
+    
+    // Multiplicador de actividad (estimación simplificada)
+    let factorActividad = 30; // Moderado
+    if (act === 'sedentario') factorActividad = 26;
+    else if (act === 'activo') factorActividad = 35;
+    
+    let caloriasMantenimiento = peso * factorActividad;
+    let caloriasObjetivo = caloriasMantenimiento;
+    
+    let pCarbs = 0.4, pProt = 0.3, pFat = 0.3; // Mantener
+    
+    if (obj === 'perder') {
+        caloriasObjetivo -= 500;
+        pCarbs = 0.3; pProt = 0.4; pFat = 0.3;
+    } else if (obj === 'ganar') {
+        caloriasObjetivo += 400;
+        pCarbs = 0.5; pProt = 0.3; pFat = 0.2;
     }
+    
+    // Limitar calorías mínimas saludables
+    if (caloriasObjetivo < 1200) caloriasObjetivo = 1200;
+    
+    // Calorías a gramos (Carbs: 4kcal, Prot: 4kcal, Grasas: 9kcal)
+    const gCarbs = Math.round((caloriasObjetivo * pCarbs) / 4);
+    const gProt = Math.round((caloriasObjetivo * pProt) / 4);
+    const gFat = Math.round((caloriasObjetivo * pFat) / 9);
+    
+    document.getElementById('macrosCalories').innerText = Math.round(caloriasObjetivo);
+    document.getElementById('macrosCarbs').innerText = gCarbs;
+    document.getElementById('macrosProtein').innerText = gProt;
+    document.getElementById('macrosFat').innerText = gFat;
   }
-  calcularIMCLive();
+  calcularMacros();
 
-  // 3. Zen Timer
-  let zenInterval;
-  let zenTimeLeft = 25 * 60;
-  let isZenRunning = false;
-  
-  function updateZenDisplay() {
-    const m = Math.floor(zenTimeLeft / 60).toString().padStart(2, '0');
-    const s = (zenTimeLeft % 60).toString().padStart(2, '0');
-    document.getElementById('zenTimerDisplay').innerText = `${m}:${s}`;
+  // 3. Frases de Motivación
+  const frasesMotivacionales = [
+    { text: "El único mal entrenamiento es el que no sucedió.", author: "Anónimo" },
+    { text: "No te detengas cuando estés cansado. Detente cuando hayas terminado.", author: "David Goggins" },
+    { text: "La disciplina es el puente entre las metas y los logros.", author: "Jim Rohn" },
+    { text: "El cuerpo logra lo que la mente cree.", author: "Anónimo" },
+    { text: "Cuida tu cuerpo, es el único lugar que tienes para vivir.", author: "Jim Rohn" },
+    { text: "Un viaje de mil millas comienza con un solo paso.", author: "Lao Tsé" },
+    { text: "No intentes ser mejor que nadie, intenta ser mejor de lo que eras ayer.", author: "Anónimo" },
+    { text: "El dolor que sientes hoy, será la fuerza que sientas mañana.", author: "Anónimo" },
+    { text: "La motivación te hace empezar. El hábito te hace continuar.", author: "Jim Ryun" },
+    { text: "Roma no se construyó en un día, pero trabajaban en ella todos los días.", author: "Anónimo" }
+  ];
+
+  function cambiarFrase() {
+    const quoteEl = document.getElementById('motivationalQuote');
+    const authorEl = document.getElementById('motivationalAuthor');
+    
+    // Fade out
+    quoteEl.style.opacity = 0;
+    authorEl.style.opacity = 0;
+    
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * frasesMotivacionales.length);
+      const frase = frasesMotivacionales[randomIndex];
+      
+      quoteEl.innerText = `"${frase.text}"`;
+      authorEl.innerText = `- ${frase.author}`;
+      
+      // Fade in
+      quoteEl.style.opacity = 1;
+      authorEl.style.opacity = 1;
+    }, 400);
   }
   
-  function startZenTimer() {
-    if(isZenRunning) return;
-    isZenRunning = true;
-    document.getElementById('zenMessage').innerText = "Respiración profunda. Concéntrate.";
-    zenInterval = setInterval(() => {
-      if(zenTimeLeft > 0) {
-        zenTimeLeft--;
-        updateZenDisplay();
-      } else {
-        clearInterval(zenInterval);
-        isZenRunning = false;
-        document.getElementById('zenMessage').innerText = "¡Tiempo de Pausa Activa! Estírate 5 min.";
-        document.getElementById('zenMessage').className = "small text-acid mb-3 fw-bold";
-        // Notificación visual en lugar de audio
-        document.querySelector('.zen-timer').style.color = "#fff";
-        document.querySelector('.zen-timer').style.textShadow = "0 0 20px var(--acid)";
-      }
-    }, 1000);
-  }
-  
-  function resetZenTimer() {
-    clearInterval(zenInterval);
-    isZenRunning = false;
-    zenTimeLeft = 25 * 60;
-    updateZenDisplay();
-    document.getElementById('zenMessage').innerText = "Tiempo para enfocarte.";
-    document.getElementById('zenMessage').className = "small text-muted mb-3";
-    document.querySelector('.zen-timer').style.color = "var(--acid)";
-    document.querySelector('.zen-timer').style.textShadow = "none";
-  }
-  updateZenDisplay();
+  // Set initial quote
+  cambiarFrase();
 
 </script>
 {% endblock %}
