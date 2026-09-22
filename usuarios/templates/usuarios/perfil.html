@@ -27,7 +27,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
+                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|title }}</h2>
                     <span class="badge {% if usuario.is_staff or usuario.rol == 'admin' %}bg-warning{% elif usuario.rol == 'instructor' %}bg-info{% else %}bg-info{% endif %} text-dark px-3 py-1 mb-3">
                         <i class="fas {% if usuario.is_staff or usuario.rol == 'admin' %}fa-user-shield{% elif usuario.rol == 'instructor' %}fa-chalkboard-teacher{% else %}fa-user-graduate{% endif %} me-1"></i>
                         {% if usuario.is_staff or usuario.rol == 'admin' %}Administrador{% elif usuario.rol == 'instructor' %}Instructor{% else %}Aprendiz sena{% endif %}
@@ -245,7 +245,7 @@
                             <tbody>
                                 {% for s in reportes_todos %}
                                 <tr class="prf-u-5">
-                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|lower }}</td>
+                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|title }}</td>
                                     <td><div class="small text-white-50 text-truncate prf-u-6">{{ s.comentario }}</div></td>
                                     <td>
                                         {% if s.imagen %}
@@ -338,7 +338,7 @@
                     <div class="row g-3">
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Nombre completo</label>
-                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|lower }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|title }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Tipo de identificación</label>
