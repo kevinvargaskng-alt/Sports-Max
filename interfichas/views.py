@@ -1,9 +1,12 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.files.base import ContentFile
+from django.contrib.staticfiles import finders
 import random
 from itertools import combinations
 from .models import (
@@ -28,6 +31,78 @@ PROGRAMAS_GLOBALES = [
     "Salud Ocupacional",
     "Otro",
 ]
+
+# ================================================================
+# BANDERAS DEL MUNDIAL
+# ================================================================
+# IMPORTANTE: estas rutas son relativas a cualquier carpeta 'static/'
+# de tus apps (o STATICFILES_DIRS). Debes colocar los archivos de
+# imagen en: static/interfichas/banderas/<archivo>
+# Ajusta los nombres de archivo si los tuyos son distintos.
+BANDERAS_MUNDIAL = {
+    "Argentina":      "interfichas/static/img/banderas/argentina.png",
+    "Brasil":         "interfichas/static/img/banderas/brasil.png",
+    "Francia":        "interfichas/static/img/banderas/francia.png",
+    "España":         "interfichas/static/img/banderas/espana.png",
+    "Inglaterra":     "interfichas/static/img/banderas/inglaterra.png",
+    "Alemania":       "interfichas/static/img/banderas/alemania.png",
+    "Portugal":       "interfichas/static/img/banderas/portugal.png",
+    "Países Bajos":   "interfichas/static/img/banderas/paises_bajos.png",
+    "Colombia":       "interfichas/static/img/banderas/colombia.png",
+    "Uruguay":        "interfichas/static/img/banderas/uruguay.png",
+    "Croacia":        "interfichas/static/img/banderas/croacia.png",
+    "Bélgica":        "interfichas/static/img/banderas/belgica.png",
+    "Noruega":        "interfichas/static/img/banderas/noruega.png",
+    "Japón":          "interfichas/static/img/banderas/japon.png",
+    "Estados Unidos": "interfichas/static/img/banderas/estados_unidos.png",
+    "México":         "interfichas/static/img/banderas/mexico.png",
+}
+
+
+def asignar_escudo_por_pais(equipo, nombre_pais, forzar=False):
+    """
+    Busca la imagen de bandera correspondiente al país (usando los
+    archivos estáticos del proyecto) y la guarda en el campo `escudo`
+    del equipo.
+    """
+    if equipo.escudo and not forzar:
+        return False
+
+    ruta_relativa = BANDERAS_MUNDIAL.get(nombre_pais)
+    if not ruta_relativa:
+        return False
+
+    # Probamos varias variantes de la ruta, porque finders.find() busca
+    # DENTRO de la carpeta static/ de cada app (no incluye "static/" en
+    # el argumento). Así evitamos que un typo en la ruta rompa todo en
+    # silencio.
+    candidatos = [
+        ruta_relativa,
+        ruta_relativa.replace('interfichas/static/', ''),
+        ruta_relativa.replace('interfichas/', ''),
+        ruta_relativa.split('/')[-1] and f"img/banderas/{os.path.basename(ruta_relativa)}",
+    ]
+
+    ruta_absoluta = None
+    ruta_encontrada = ruta_relativa
+    for candidato in candidatos:
+        if not candidato:
+            continue
+        ruta_absoluta = finders.find(candidato)
+        if ruta_absoluta:
+            ruta_encontrada = candidato
+            break
+
+    if not ruta_absoluta:
+        return False
+
+    with open(ruta_absoluta, 'rb') as f:
+        contenido = f.read()
+
+    nombre_archivo = os.path.basename(ruta_encontrada)
+    equipo.escudo.save(nombre_archivo, ContentFile(contenido), save=True)
+    return True
+
 
 
 from functools import wraps
@@ -229,9 +304,18 @@ def interfichas_list(request):
         for eq in g.equipos.all():
             equipo_grupo_map[eq.pk] = g.nombre_grupo
 
-    todos_equipos_list = list(todos_equipos_qs)
+        todos_equipos_list = list(todos_equipos_qs)
     for eq in todos_equipos_list:
         eq.nombre_grupo = equipo_grupo_map.get(eq.pk, '')
+
+    # Reparación automática: si un equipo representa un país mundial y
+    # todavía no tiene escudo (por ejemplo, quedó inscrito antes de
+    # arreglar la ruta de banderas), se le asigna aquí mismo al cargar
+    # el panel — sin necesidad de acción manual.
+    for eq in todos_equipos_list:
+        if not eq.escudo and eq.nombre_equipo in BANDERAS_MUNDIAL:
+            asignar_escudo_por_pais(eq, eq.nombre_equipo)
+        
 
     # Agrupar los equipos por Grupo para la visualización en bloques
     grupos_dict = {}
@@ -385,7 +469,7 @@ def interfichas_list(request):
                 if not nombre_equipo:
                     nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
 
-            nuevo_equipo = EquipoInterfichas.objects.create(
+            nuevo_equipo = EquipoInterfichas.objects.create (
                 torneo=torneo_obj,
                 nombre_equipo=nombre_equipo,
                 capitan=request.POST.get('capitan', '').strip(),
@@ -393,6 +477,7 @@ def interfichas_list(request):
                 programa=request.POST.get('programa', '').strip(),
                 disciplina=torneo_obj.disciplina,
                 usuario_registra=request.user
+                usuario_registra=request.user,
             )
 
             # Guardar planilla de inscripción (archivo)
@@ -400,6 +485,11 @@ def interfichas_list(request):
             if planilla_file:
                 nuevo_equipo.planilla_inscripcion = planilla_file
                 nuevo_equipo.save()
+
+            # Asignación automática del escudo (bandera del país) para
+            # torneos temática mundial. Ya no se sube manualmente.
+            if es_mundial:
+                asignar_escudo_por_pais(nuevo_equipo, nombre_equipo)
 
             # Guardar jugadores con documento y consentimiento
             nombres_jugadores = request.POST.getlist('jugadores[]')
@@ -1057,33 +1147,39 @@ def reporte_torneo(request, torneo_id):
 @solo_admin
 def editar_equipo(request, equipo_id):
     equipo = get_object_or_404(EquipoInterfichas, pk=equipo_id)
+    
     if request.method == 'POST':
-        equipo.nombre_equipo = request.POST.get(
-            'nombre_equipo', equipo.nombre_equipo).strip()
-        equipo.capitan = request.POST.get(
-            'capitan',       equipo.capitan).strip()
-        equipo.ficha = request.POST.get('ficha',         equipo.ficha)
-        equipo.programa = request.POST.get(
-            'programa',      equipo.programa).strip()
-        # Guardar / actualizar planilla de inscripción
-        planilla_file = request.FILES.get('planilla_inscripcion')
-        if planilla_file:
-            equipo.planilla_inscripcion = planilla_file
+        equipo.nombre_equipo = request.POST.get('nombre_equipo', equipo.nombre_equipo).strip()
+        equipo.capitan = request.POST.get('capitan', equipo.capitan).strip()
+        
+        ficha_val = request.POST.get('ficha')
+        if ficha_val is not None:
+            equipo.ficha = ficha_val.strip() if isinstance(ficha_val, str) else ficha_val
+            
+        equipo.programa = request.POST.get('programa', equipo.programa).strip()
+        
+        # Guardar / actualizar archivos si vienen en la petición
+        if 'planilla_inscripcion' in request.FILES:
+            equipo.planilla_inscripcion = request.FILES['planilla_inscripcion']
 
+        if 'escudo' in request.FILES:
+            equipo.escudo = request.FILES['escudo']
+
+        # ¡CRÍTICO: Faltaba persistir los cambios!
         equipo.save()
         messages.success(
             request, f"Equipo '{equipo.nombre_equipo}' actualizado correctamente.")
         return redirect('gestionar_torneo', torneo_id=equipo.torneo.pk)
 
     return JsonResponse({
-        'id':                   equipo.pk,
-        'nombre_equipo':        equipo.nombre_equipo,
-        'capitan':              equipo.capitan,
-        'ficha':                equipo.ficha,
-        'programa':             equipo.programa,
+        'id': equipo.pk,
+        'nombre_equipo': equipo.nombre_equipo,
+        'capitan': equipo.capitan,
+        'ficha': equipo.ficha,
+        'programa': equipo.programa,
+        'escudo': equipo.escudo.url if equipo.escudo else None,
         'planilla_inscripcion': equipo.planilla_inscripcion.url if equipo.planilla_inscripcion else None,
     })
-
 
 @solo_admin
 @require_POST
@@ -1106,15 +1202,43 @@ def asignar_paises_torneo(request, torneo_id):
         eq.nombre_equipo = PAISES_TORNEO[i] if i < len(
             PAISES_TORNEO) else f"Equipo {i + 1}"
         eq.save()
+        # Mantener el escudo sincronizado con el nuevo nombre de país asignado
+        asignar_escudo_por_pais(eq, eq.nombre_equipo, forzar=True)
     messages.success(
         request, "Nombres de países asignados a los equipos en orden.")
     return redirect('gestionar_torneo', torneo_id=torneo_id)
 
 
+@solo_admin
+@require_POST
+def asignar_escudos_faltantes(request, torneo_id=None):
+    """
+    Recorre los equipos (opcionalmente filtrados por torneo) cuyo
+    nombre coincide con un país mapeado en BANDERAS_MUNDIAL y que
+    todavía no tienen escudo, y les asigna la bandera correspondiente.
+    Útil para "reparar" equipos inscritos antes de esta funcionalidad.
+    """
+    equipos_qs = EquipoInterfichas.objects.filter(
+        nombre_equipo__in=BANDERAS_MUNDIAL.keys()
+    ).filter(Q(escudo='') | Q(escudo__isnull=True))
+
+    if torneo_id:
+        equipos_qs = equipos_qs.filter(torneo_id=torneo_id)
+
+    total = 0
+    for eq in equipos_qs:
+        if asignar_escudo_por_pais(eq, eq.nombre_equipo):
+            total += 1
+
+    messages.success(request, f"Se asignaron {total} escudo(s) automáticamente.")
+    if torneo_id:
+        return redirect('gestionar_torneo', torneo_id=torneo_id)
+    return redirect('interfichas')
+
+
 # ============================================================
 #  API: OCR DE PLANILLA DE INSCRIPCIÓN (Gemini Vision)
 # ============================================================
-import os
 import json as json_stdlib
 import base64
 import requests as http_requests
@@ -1234,4 +1358,3 @@ Si no puedes identificar ningún jugador, devuelve: {"jugadores": []}"""
         return JsonResponse({
             'error': f'Error inesperado al procesar la planilla: {str(e)}'
         }, status=500)
-

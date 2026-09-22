@@ -810,6 +810,25 @@
               </select>
             </div>
           </div>
+          <!-- ── ESCUDO DEL EQUIPO ── -->
+<div class="mb-3 p-3 rounded border border-secondary"
+     style="background: rgba(88,166,255,0.06);">
+
+    <label class="form-label small text-info fw-bold text-uppercase mb-2">
+        <i class="fas fa-shield-alt me-1"></i>
+        Escudo del Equipo
+    </label>
+
+    <input type="file"
+           name="escudo"
+           id="edit-equipo-escudo-file"
+           class="form-control form-control-sm bg-dark text-white border-secondary"
+           accept="image/*">
+
+    <small class="text-white-50 d-block mt-1">
+        Selecciona una imagen para subir o cambiar el escudo.
+    </small>
+</div>
 
           <!-- ── PLANILLA DE INSCRIPCIÓN (Archivo) ── -->
           <div class="mb-3 p-3 rounded border border-secondary" style="background: rgba(88,166,255,0.05);">
@@ -823,6 +842,7 @@
               <i class="fas fa-info-circle me-1"></i>Sube la imagen o PDF de la planilla física firmada.
             </small>
           </div>
+          
 
           <!-- ── ESCANEO OCR DE PLANILLA ── -->
           <div class="mb-3 p-3 rounded border border-secondary" style="background: rgba(240,192,64,0.05);">
@@ -930,10 +950,165 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL EDITAR EQUIPO -->
+<div class="modal fade" id="modalEditarEquipo" tabindex="-1"
+     aria-labelledby="modalEditarEquipoTitulo" aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal text-white border-0 rounded-4 shadow-lg"
+         style="background: #0f172a; border: 1px solid rgba(56,189,248,0.3) !important;">
+
+      <div class="modal-header modal-sport-header">
+        <h5 class="modal-title fw-bold text-white" id="modalEditarEquipoTitulo">
+          <i class="fas fa-edit text-info me-2"></i>
+          Editar equipo
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"></button>
+      </div>
+
+      <form method="POST"
+            id="formEditarEquipo"
+            enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <div class="modal-body p-4">
+
+          <!-- NOMBRE -->
+          <div class="mb-3">
+            <label for="edit-equipo-nombre" class="form-label fw-bold">
+              Nombre del equipo
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-nombre"
+                   name="nombre_equipo"
+                   required>
+          </div>
+
+          <!-- CAPITÁN -->
+          <div class="mb-3">
+            <label for="edit-equipo-capitan" class="form-label fw-bold">
+              Capitán
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-capitan"
+                   name="capitan">
+          </div>
+
+          <!-- FICHA -->
+          <div class="mb-3">
+            <label for="edit-equipo-ficha" class="form-label fw-bold">
+              Ficha
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-ficha"
+                   name="ficha">
+          </div>
+
+          <!-- PROGRAMA -->
+          <div class="mb-3">
+            <label for="edit-equipo-programa" class="form-label fw-bold">
+              Programa
+            </label>
+            <input type="text"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-programa"
+                   name="programa">
+          </div>
+
+          <!-- ESCUDO ACTUAL -->
+          <div class="mb-3 text-center"
+               id="edit-equipo-escudo-actual-container"
+               style="display: none;">
+
+            <label class="form-label fw-bold d-block">
+              Escudo actual
+            </label>
+
+            <img id="edit-equipo-escudo-preview"
+                 src=""
+                 alt="Escudo actual"
+                 style="width: 110px;
+                        height: 110px;
+                        object-fit: contain;
+                        border-radius: 15px;
+                        background: #1e293b;
+                        padding: 8px;
+                        border: 1px solid rgba(56,189,248,0.3);">
+          </div>
+
+          <!-- NUEVO ESCUDO -->
+          <div class="mb-3">
+            <label for="edit-equipo-escudo-file"
+                   class="form-label fw-bold">
+              Cambiar escudo
+            </label>
+
+            <input type="file"
+                   class="form-control bg-dark text-white border-secondary"
+                   id="edit-equipo-escudo-file"
+                   name="escudo"
+                   accept="image/*">
+
+            <div class="form-text text-secondary">
+              Selecciona una imagen para reemplazar el escudo actual.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-top border-secondary">
+
+          <button type="button"
+                  class="btn btn-outline-secondary rounded-pill px-4"
+                  data-bs-dismiss="modal">
+            Cancelar
+          </button>
+
+          <button type="submit"
+                  class="btn btn-info rounded-pill px-4 fw-bold">
+            <i class="fas fa-save me-1"></i>
+            Guardar cambios
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+<!-- FIN MODAL EDITAR EQUIPO -->
 {% endblock %}
 
 {% block extra_js %}
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const inputFileEscudo = document.getElementById('edit-equipo-escudo-file');
+  if (inputFileEscudo) {
+    inputFileEscudo.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const preview = document.getElementById('edit-equipo-escudo-preview');
+          const container = document.getElementById('edit-equipo-escudo-actual-container');
+          if (preview) preview.src = evt.target.result;
+          if (container) container.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
   const FICHAS_POR_TORNEO = {
     {% for t in torneos %}
     "{{ t.pk }}": [{% for eq in t.equipos.all %}"{{ eq.ficha }}"{% if not forloop.last %},{% endif %}{% endfor %}]{% if not forloop.last %},{% endif %}
@@ -1046,6 +1221,58 @@
         </div>`;
     }).join('');
   }
+  function abrirEditarEquipoModal(id) {
+  const equipo = DATOS_EQUIPOS_TODOS.find(
+    eq => String(eq.id) === String(id)
+  );
+
+  if (!equipo) {
+    console.error('No se encontró el equipo:', id);
+    return;
+  }
+
+  // Cargar datos del equipo
+  document.getElementById('edit-equipo-nombre').value =
+    equipo.nombre_equipo || '';
+
+  document.getElementById('edit-equipo-capitan').value =
+    equipo.capitan || '';
+
+  document.getElementById('edit-equipo-ficha').value =
+    equipo.ficha || '';
+
+  document.getElementById('edit-equipo-programa').value =
+    equipo.programa || '';
+
+  // Limpiar el selector de archivo
+  document.getElementById('edit-equipo-escudo-file').value = '';
+
+  // Mostrar el escudo actual si existe
+  const contenedorEscudo =
+    document.getElementById('edit-equipo-escudo-actual-container');
+
+  const previewEscudo =
+    document.getElementById('edit-equipo-escudo-preview');
+
+  if (equipo.escudo) {
+    previewEscudo.src = equipo.escudo;
+    contenedorEscudo.style.display = 'block';
+  } else {
+    previewEscudo.src = '';
+    contenedorEscudo.style.display = 'none';
+  }
+
+  // URL para guardar los cambios
+  document.getElementById('formEditarEquipo').action =
+    `/interfichas/equipo/${equipo.id}/editar/`;
+
+  // Abrir modal
+  const modal = new bootstrap.Modal(
+    document.getElementById('modalEditarEquipo')
+  );
+
+  modal.show();
+}
 
   function filtrarEquiposModal(q) {
     q = q.toLowerCase();
