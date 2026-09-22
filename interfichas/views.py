@@ -304,7 +304,7 @@ def interfichas_list(request):
         for eq in g.equipos.all():
             equipo_grupo_map[eq.pk] = g.nombre_grupo
 
-        todos_equipos_list = list(todos_equipos_qs)
+    todos_equipos_list = list(todos_equipos_qs)
     for eq in todos_equipos_list:
         eq.nombre_grupo = equipo_grupo_map.get(eq.pk, '')
 
@@ -476,7 +476,6 @@ def interfichas_list(request):
                 ficha=ficha,
                 programa=request.POST.get('programa', '').strip(),
                 disciplina=torneo_obj.disciplina,
-                usuario_registra=request.user
                 usuario_registra=request.user,
             )
 
@@ -896,8 +895,15 @@ def registrar_resultado(request, partido_id):
             return redirect('gestionar_torneo', torneo_id=torneo_id)
 
         if sl and sv and len(sl) == len(sv):
+            # CP-27.2: Validar exigencia de diferencia mínima de dos puntos en cierre de cada set
+            for i, (a, b) in enumerate(zip(sl, sv)):
+                if abs(a - b) < 2:
+                    messages.error(request, f"Error en el Set {i+1}: Debe haber una diferencia mínima de 2 puntos para cerrar el set ({a}-{b}).")
+                    return redirect('gestionar_torneo', torneo_id=torneo_id)
+
             partido.sets_local = sl
             partido.sets_visitante = sv
+            # CP-27.1: Cálculo automático de ganador por mayoría de sets
             partido.goles_local = sum(1 for a, b in zip(sl, sv) if a > b)
             partido.goles_visitante = sum(1 for a, b in zip(sl, sv) if b > a)
             partido.jugado = True
@@ -1062,6 +1068,9 @@ def cerrar_torneo(request, codigo_torneo):
 
     if request.method == 'POST':
         ganador_id = request.POST.get('ganador_id')
+        subcampeon_id = request.POST.get('subcampeon_id')
+        valla_id = request.POST.get('valla_menos_vencida_id')
+        juego_limpio_id = request.POST.get('balance_juego_limpio_id')
         accion = request.POST.get('accion')
 
         if not ganador_id:
@@ -1069,14 +1078,23 @@ def cerrar_torneo(request, codigo_torneo):
             return redirect('interfichas')
 
         try:
-            ganador = get_object_or_404(
-                EquipoInterfichas, id=int(ganador_id), torneo=torneo)
+            ganador = get_object_or_404(EquipoInterfichas, id=int(ganador_id), torneo=torneo)
+            subcampeon = EquipoInterfichas.objects.filter(id=int(subcampeon_id), torneo=torneo).first() if subcampeon_id else None
+            valla = EquipoInterfichas.objects.filter(id=int(valla_id), torneo=torneo).first() if valla_id else None
+            juego_limpio = EquipoInterfichas.objects.filter(id=int(juego_limpio_id), torneo=torneo).first() if juego_limpio_id else None
         except (ValueError, EquipoInterfichas.DoesNotExist):
-            messages.error(request, "Equipo ganador inválido.")
+            messages.error(request, "Datos de equipos inválidos.")
             return redirect('interfichas')
 
+        defaults = {
+            'ganador': ganador,
+            'subcampeon': subcampeon,
+            'valla_menos_vencida': valla,
+            'balance_juego_limpio': juego_limpio
+        }
+
         resultado, _ = ResultadoTorneo.objects.update_or_create(
-            torneo=torneo, defaults={'ganador': ganador}
+            torneo=torneo, defaults=defaults
         )
 
         if accion == 'archivar':

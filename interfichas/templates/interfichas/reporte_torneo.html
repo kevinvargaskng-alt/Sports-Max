@@ -656,6 +656,57 @@
                 </div>
             </div>
 
+            <!-- CUADRO DE HONOR (Si el torneo está cerrado y tiene resultados) -->
+            {% if torneo.estado == 'cerrado' and torneo.resultado %}
+            <div class="mb-5">
+                <div class="reporte-section-title">
+                    <i class="fas fa-medal text-warning"></i> Cuadro de Honor
+                </div>
+                <div class="row g-4">
+                    {% if torneo.resultado.ganador %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-dark border-warning h-100 text-center py-4">
+                            <div class="text-warning mb-2"><i class="fas fa-trophy fa-3x"></i></div>
+                            <h5 class="text-white fw-bold mb-1">Campeón</h5>
+                            <p class="text-warning fs-5 fw-bold mb-0">{{ torneo.resultado.ganador.nombre_equipo }}</p>
+                            <small class="text-white-50">Ficha: {{ torneo.resultado.ganador.ficha }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if torneo.resultado.subcampeon %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-dark border-secondary h-100 text-center py-4">
+                            <div class="text-secondary mb-2"><i class="fas fa-medal fa-3x"></i></div>
+                            <h5 class="text-white fw-bold mb-1">Subcampeón</h5>
+                            <p class="text-secondary fs-5 fw-bold mb-0">{{ torneo.resultado.subcampeon.nombre_equipo }}</p>
+                            <small class="text-white-50">Ficha: {{ torneo.resultado.subcampeon.ficha }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if torneo.resultado.valla_menos_vencida %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-dark border-info h-100 text-center py-4">
+                            <div class="text-info mb-2"><i class="fas fa-shield-alt fa-3x"></i></div>
+                            <h5 class="text-white fw-bold mb-1">Valla Menos Vencida</h5>
+                            <p class="text-info fs-5 fw-bold mb-0">{{ torneo.resultado.valla_menos_vencida.nombre_equipo }}</p>
+                            <small class="text-white-50">Ficha: {{ torneo.resultado.valla_menos_vencida.ficha }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if torneo.resultado.balance_juego_limpio %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-dark border-success h-100 text-center py-4">
+                            <div class="text-success mb-2"><i class="fas fa-handshake fa-3x"></i></div>
+                            <h5 class="text-white fw-bold mb-1">Juego Limpio</h5>
+                            <p class="text-success fs-5 fw-bold mb-0">{{ torneo.resultado.balance_juego_limpio.nombre_equipo }}</p>
+                            <small class="text-white-50">Ficha: {{ torneo.resultado.balance_juego_limpio.ficha }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
             <!-- TABLAS DE POSICIONES POR GRUPO -->
             {% if grupos_con_tabla %}
             <div class="mb-5">
@@ -749,6 +800,9 @@
                                 <div class="text-center">
                                     {% if p.jugado %}
                                     <span class="badge bg-primary fs-6">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                                    {% if p.tipo_marcador == 'sets' and p.sets_str %}
+                                    <div class="small text-white-50 mt-1" style="font-size: 0.65rem;">({{ p.sets_str }})</div>
+                                    {% endif %}
                                     {% else %}
                                     <span class="badge bg-secondary text-white-50 small">Pendiente</span>
                                     {% endif %}
@@ -775,6 +829,9 @@
                                 <div class="text-center">
                                     {% if p.jugado %}
                                     <span class="badge bg-warning text-dark fs-6 fw-bold">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                                    {% if p.tipo_marcador == 'sets' and p.sets_str %}
+                                    <div class="small text-white-50 mt-1" style="font-size: 0.65rem;">({{ p.sets_str }})</div>
+                                    {% endif %}
                                     {% else %}
                                     <span class="badge bg-secondary text-white-50 small">Pendiente</span>
                                     {% endif %}
@@ -801,6 +858,9 @@
                                 <div class="text-center">
                                     {% if p.jugado %}
                                     <span class="badge bg-danger fs-6 fw-bold">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                                    {% if p.tipo_marcador == 'sets' and p.sets_str %}
+                                    <div class="small text-white-50 mt-1" style="font-size: 0.65rem;">({{ p.sets_str }})</div>
+                                    {% endif %}
                                     {% else %}
                                     <span class="badge bg-secondary text-white-50 small">Por Jugar</span>
                                     {% endif %}

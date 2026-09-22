@@ -433,7 +433,12 @@
 
       <div class="p-vs">
         {% if p.jugado %}
-          <div class="p-resultado">{{ p.goles_local }}–{{ p.goles_visitante }}</div>
+          <div class="p-resultado">
+            {{ p.goles_local }}–{{ p.goles_visitante }}
+            {% if p.tipo_marcador == 'sets' and p.sets_str %}
+            <br><small class="text-muted" style="font-size: 0.65rem;">({{ p.sets_str }})</small>
+            {% endif %}
+          </div>
         {% else %}
           VS
         {% endif %}
@@ -710,10 +715,37 @@
         {% csrf_token %}
         <div class="modal-body p-4">
           <p class="text-muted small mb-3">Selecciona el equipo ganador de <strong id="cierre-nombre" class="text-white"></strong>.</p>
-          <div class="mb-4">
-            <label class="form-label small fw-bold text-muted text-uppercase int-u-58">Equipo ganador</label>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted text-uppercase int-u-58">Equipo campeón <span class="text-danger">*</span></label>
             <select name="ganador_id" id="cierre-equipos" class="custom-input form-control form-select" required>
-              <option value="">— Selecciona —</option>
+              <option value="">— Selecciona Campeón —</option>
+              {% for eq in equipos %}
+              <option value="{{ eq.pk }}" data-torneo="{{ eq.torneo_id }}">{{ eq.nombre_equipo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted text-uppercase">Equipo Subcampeón</label>
+            <select name="subcampeon_id" id="cierre-subcampeon" class="custom-input form-control form-select">
+              <option value="">— Selecciona Subcampeón —</option>
+              {% for eq in equipos %}
+              <option value="{{ eq.pk }}" data-torneo="{{ eq.torneo_id }}">{{ eq.nombre_equipo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted text-uppercase">Valla Menos Vencida</label>
+            <select name="valla_menos_vencida_id" id="cierre-valla" class="custom-input form-control form-select">
+              <option value="">— Selecciona Valla Menos Vencida —</option>
+              {% for eq in equipos %}
+              <option value="{{ eq.pk }}" data-torneo="{{ eq.torneo_id }}">{{ eq.nombre_equipo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-muted text-uppercase">Juego Limpio</label>
+            <select name="balance_juego_limpio_id" id="cierre-juego-limpio" class="custom-input form-control form-select">
+              <option value="">— Selecciona Juego Limpio —</option>
               {% for eq in equipos %}
               <option value="{{ eq.pk }}" data-torneo="{{ eq.torneo_id }}">{{ eq.nombre_equipo }}</option>
               {% endfor %}
@@ -1357,12 +1389,17 @@
   function abrirCierre(torneoId, nombre) {
     document.getElementById('cierre-nombre').textContent = nombre;
     document.getElementById('formCierre').action = `/interfichas/torneo/${torneoId}/cerrar/`;
-    const sel = document.getElementById('cierre-equipos');
-    [...sel.options].forEach(opt => {
-      if (opt.value === "") return;
-      opt.style.display = opt.dataset.torneo === String(torneoId) ? '' : 'none';
+    const selects = ['cierre-equipos', 'cierre-subcampeon', 'cierre-valla', 'cierre-juego-limpio'];
+    selects.forEach(selId => {
+      const sel = document.getElementById(selId);
+      if (sel) {
+        [...sel.options].forEach(opt => {
+          if (opt.value === "") return;
+          opt.style.display = opt.dataset.torneo === String(torneoId) ? '' : 'none';
+        });
+        sel.value = "";
+      }
     });
-    sel.value = "";
     new bootstrap.Modal(document.getElementById('modalCierre')).show();
   }
 

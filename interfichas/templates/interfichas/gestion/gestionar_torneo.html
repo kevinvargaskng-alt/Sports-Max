@@ -726,7 +726,10 @@
                                     <div class="text-center torneo-u-24">
                                         {% if partido.jugado %}
                                             {% if tipo_marcador == 'sets' %}
-                                                <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                                <span class="resultado-display resultado-sets" title="{{ partido.sets_str }}">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
+                                                {% if partido.sets_str %}
+                                                <div class="small text-white-50 lh-1" style="font-size: 0.6rem; margin-top: 2px;">({{ partido.sets_str }})</div>
+                                                {% endif %}
                                             {% elif tipo_marcador == 'puntos' %}
                                                 <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
                                             {% else %}

@@ -81,6 +81,7 @@ class EquipoInterfichas(models.Model):
     planilla_inscripcion = models.FileField(
         upload_to='planillas_inscripciones/', null=True, blank=True, verbose_name="Planilla de Inscripción"
     )
+    escudo = models.ImageField(upload_to='escudos/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
@@ -238,6 +239,15 @@ class ResultadoTorneo(models.Model):
     )
     ganador = models.ForeignKey(
         EquipoInterfichas, on_delete=models.SET_NULL, null=True, related_name='torneos_ganados'
+    )
+    subcampeon = models.ForeignKey(
+        EquipoInterfichas, on_delete=models.SET_NULL, null=True, blank=True, related_name='torneos_subcampeon'
+    )
+    valla_menos_vencida = models.ForeignKey(
+        EquipoInterfichas, on_delete=models.SET_NULL, null=True, blank=True, related_name='torneos_valla'
+    )
+    balance_juego_limpio = models.ForeignKey(
+        EquipoInterfichas, on_delete=models.SET_NULL, null=True, blank=True, related_name='torneos_juego_limpio'
     )
     fecha_cierre = models.DateTimeField(auto_now_add=True)
     archivado = models.BooleanField(default=False)
