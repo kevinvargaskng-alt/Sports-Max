@@ -163,10 +163,12 @@
   background:rgba(10,132,255,.1);
 }
 
-.typing-bubble{background:var(--surface3);border:0.5px solid var(--border);border-radius:16px 16px 16px 3px;padding:12px 16px;display:flex;gap:5px;align-items:center}
-.typing-bubble span{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;animation:bounce 1.2s ease-in-out infinite}
-.typing-bubble span:nth-child(2){animation-delay:.18s}
-.typing-bubble span:nth-child(3){animation-delay:.36s}
+.typing-bubble{background:var(--surface3);border:0.5px solid var(--border);border-radius:16px 16px 16px 3px;padding:10px 14px;display:inline-flex;align-items:center;gap:8px;max-width:85%}
+.typing-dots{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;animation:bounce 1.2s ease-in-out infinite}
+.typing-dots span:nth-child(2){animation-delay:.18s}
+.typing-dots span:nth-child(3){animation-delay:.36s}
+.typing-label{font-size:11.5px;color:#93C5FD;font-weight:500;white-space:nowrap;display:inline-block}
 @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.42}40%{transform:translateY(-5px);opacity:1}}
 
 .input-area{padding:11px 13px 13px;background:var(--surface2);border-top:0.5px solid var(--border)}
@@ -303,6 +305,187 @@
 @keyframes tts-pulse{0%{height:8px;opacity:.5}100%{height:20px;opacity:1}}
 
 /* ══════════════════════════════════════════════
+   GENERADOR DE IMÁGENES CON IA (ADMINISTRADOR)
+══════════════════════════════════════════════ */
+.gen-img-btn{
+  width:36px;height:36px;border-radius:11px;
+  background:linear-gradient(135deg, rgba(10,132,255,0.2), rgba(168,85,247,0.25));
+  border:0.5px solid rgba(168,85,247,0.45);
+  color:#C084FC;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;flex-shrink:0;
+}
+.gen-img-btn:hover{
+  background:linear-gradient(135deg, rgba(10,132,255,0.35), rgba(168,85,247,0.45));
+  border-color:#A855F7;
+  color:#fff;
+  transform:scale(1.05);
+}
+.gen-img-btn:active{transform:scale(.92);}
+
+.image-gen-panel{
+  position:absolute;
+  inset:0;
+  background:rgba(20,20,24,0.97);
+  backdrop-filter:blur(16px);
+  z-index:60;
+  display:flex;
+  flex-direction:column;
+  padding:16px;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(24px);
+  transition:opacity 0.22s cubic-bezier(0.16,1,0.3,1), transform 0.22s cubic-bezier(0.16,1,0.3,1);
+  overflow-y:auto;
+}
+.image-gen-panel.open{
+  opacity:1;
+  pointer-events:all;
+  transform:translateY(0);
+}
+.img-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:10px;border-bottom:0.5px solid var(--border);
+  margin-bottom:12px;
+}
+.img-panel-title{
+  font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--text);
+  display:flex;align-items:center;gap:6px;
+}
+.admin-badge{
+  background:linear-gradient(135deg, #0A84FF, #7C3AED);
+  color:#fff;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:0.04em;
+}
+.img-panel-close{
+  background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:3px 7px;border-radius:6px;transition:all .15s;
+}
+.img-panel-close:hover{background:rgba(255,255,255,0.1);color:#fff;}
+
+.img-panel-section{margin-bottom:11px;}
+.img-panel-label{
+  font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px;display:block;
+}
+.img-panel-textarea{
+  width:100%;height:60px;background:var(--surface3);border:0.5px solid var(--border);
+  border-radius:10px;padding:8px 10px;color:var(--text);font-family:var(--font);font-size:12px;
+  resize:none;outline:none;transition:border-color .15s;
+}
+.img-panel-textarea:focus{border-color:var(--brand);}
+
+.prompt-suggestions{
+  display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;
+}
+.prompt-chip{
+  background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);
+  color:var(--muted);font-size:9.5px;padding:3px 7px;border-radius:10px;cursor:pointer;
+  transition:all .15s;
+}
+.prompt-chip:hover{
+  background:rgba(10,132,255,0.15);color:#60A5FA;border-color:rgba(10,132,255,0.3);
+}
+
+.options-grid{
+  display:grid;grid-template-columns:repeat(2, 1fr);gap:5px;
+}
+.opt-btn{
+  background:var(--surface3);border:0.5px solid var(--border);
+  border-radius:8px;padding:6px 8px;color:var(--text);font-size:10.5px;font-weight:500;
+  text-align:left;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;
+}
+.opt-btn:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.2);}
+.opt-btn.active{
+  background:rgba(10,132,255,0.18);border-color:var(--brand);color:#93C5FD;font-weight:600;
+}
+
+.toggle-wrap{
+  display:flex;align-items:center;justify-content:space-between;padding:7px 9px;
+  background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:9px;margin-bottom:11px;
+}
+.toggle-text{font-size:11px;color:var(--text);}
+.toggle-sub{font-size:9px;color:var(--muted);display:block;}
+
+.btn-generate-submit{
+  width:100%;padding:9px;border-radius:11px;
+  background:linear-gradient(135deg, #0A84FF, #7C3AED);
+  border:none;color:#fff;font-family:var(--font);font-size:12px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .18s;box-shadow:0 4px 14px rgba(10,132,255,0.3);
+}
+.btn-generate-submit:hover{
+  filter:brightness(1.1);box-shadow:0 6px 20px rgba(124,58,237,0.45);transform:translateY(-1px);
+}
+.btn-generate-submit:disabled{
+  opacity:0.55;cursor:not-allowed;transform:none;
+}
+
+/* Tarjeta de imagen generada en el chat */
+.gen-img-card{
+  border-radius:13px;overflow:hidden;background:rgba(0,0,0,0.35);border:0.5px solid rgba(255,255,255,0.12);
+  margin-top:6px;max-width:100%;
+}
+.gen-img-wrapper{
+  position:relative;width:100%;overflow:hidden;background:#0d0d10;cursor:pointer;
+}
+.gen-img-tag{
+  width:100%;max-height:240px;object-fit:cover;display:block;transition:transform 0.25s;
+}
+.gen-img-tag:hover{transform:scale(1.02);}
+.gen-img-meta{
+  padding:8px 10px;display:flex;flex-direction:column;gap:5px;
+}
+.gen-badges-row{
+  display:flex;gap:5px;align-items:center;flex-wrap:wrap;
+}
+.gen-badge{
+  font-size:9px;font-weight:600;padding:2px 6px;border-radius:5px;
+  background:rgba(255,255,255,0.07);color:var(--muted);border:0.5px solid rgba(255,255,255,0.1);
+}
+.gen-badge.brand{
+  background:rgba(10,132,255,0.15);color:#60A5FA;border-color:rgba(10,132,255,0.3);
+}
+.gen-badge.purple{
+  background:rgba(168,85,247,0.15);color:#C084FC;border-color:rgba(168,85,247,0.3);
+}
+.gen-actions-row{
+  display:flex;gap:6px;margin-top:3px;
+}
+.gen-act-btn{
+  flex:1;padding:5px 8px;border-radius:7px;font-size:10.5px;font-weight:600;
+  border:0.5px solid var(--border);background:var(--surface3);color:var(--text);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;
+  transition:all .15s;text-decoration:none;
+}
+.gen-act-btn:hover{
+  background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25);color:#fff;
+}
+.gen-act-btn.primary{
+  background:rgba(10,132,255,0.2);border-color:rgba(10,132,255,0.4);color:#93C5FD;
+}
+.gen-act-btn.primary:hover{
+  background:rgba(10,132,255,0.35);color:#fff;
+}
+
+/* Modal Lightbox para pantalla completa */
+.lightbox-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);
+  z-index:99999;display:none;align-items:center;justify-content:center;padding:20px;
+}
+.lightbox-modal.open{display:flex;}
+.lightbox-content{
+  position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;
+}
+.lightbox-img{
+  max-width:100%;max-height:80vh;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.8);
+  object-fit:contain;
+}
+.lightbox-close{
+  position:absolute;top:-36px;right:0;background:rgba(255,255,255,0.15);border:none;
+  color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ══════════════════════════════════════════════
    ASISTENTE IA VIRTUAL TUX
 ══════════════════════════════════════════════ */
 .tux-pet {
@@ -437,6 +620,9 @@
   </div>
 
   <div class="modules">
+    {% if user.is_authenticated and user.is_staff or user.is_superuser or user.rol == 'admin' %}
+    <button class="chip" onclick="openImageGenPanel()" style="background:rgba(10,132,255,0.18); border-color:rgba(168,85,247,0.45); color:#C084FC; font-weight:600;">🎨 Generar Imagen</button>
+    {% endif %}
     <button class="chip" onclick="sendQuick('¿Estado y horarios del gimnasio?')">🏋️ Gimnasio</button>
     <button class="chip" onclick="sendQuick('¿Qué elementos hay en el inventario deportivo?')">📦 Inventario</button>
     <button class="chip" onclick="sendQuick('¿Cuáles son los torneos de interfichas?')">📋 Interfichas</button>
@@ -444,6 +630,82 @@
     <button class="chip" onclick="sendQuick('¿Qué hábitos saludables y consejos hay?')">🥗 Nutrición</button>
     <button class="chip" onclick="sendQuick('¿Cómo funcionan las sanciones por préstamos?')">⚠️ Sanciones</button>
   </div>
+
+  {% if user.is_authenticated and user.is_staff or user.is_superuser or user.rol == 'admin' %}
+  <!-- PANEL FLOTANTE DE GENERACIÓN DE IMÁGENES (ADMINISTRADOR) -->
+  <div class="image-gen-panel" id="imageGenPanel">
+    <div class="img-panel-header">
+      <div class="img-panel-title">
+        <span>🎨 Generar Imagen IA</span>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <button type="button" class="img-panel-close" onclick="closeImageGenPanel()" title="Cerrar panel">✕</button>
+    </div>
+
+    <div class="img-panel-section">
+      <label class="img-panel-label" for="imgGenPrompt">Descripción / Idea de la Imagen</label>
+      <textarea id="imgGenPrompt" class="img-panel-textarea" placeholder="Ej: Afiche deportivo de fútbol sala en cancha del SENA Centro Minero con iluminación épica..."></textarea>
+      <div class="prompt-suggestions">
+        <button type="button" class="prompt-chip" onclick="applyPromptSuggestion('Afiche oficial para torneo interfichas de fútbol sala')">⚽ Fútbol Sala</button>
+        <button type="button" class="prompt-chip" onclick="applyPromptSuggestion('Torneo de voleibol mixto interfichas con balón iluminado')">🏐 Voleibol</button>
+        <button type="button" class="prompt-chip" onclick="applyPromptSuggestion('Mascota Tux del SENA Centro Minero con medalla de oro')">🐱 Tux Campeón</button>
+        <button type="button" class="prompt-chip" onclick="applyPromptSuggestion('Entrenamiento funcional con pesas en el gimnasio del SENA')">🏋️ Gimnasio</button>
+        <button type="button" class="prompt-chip" onclick="applyPromptSuggestion('Trofeo dorado deportivo institucional con escudo del SENA')">🏆 Trofeo SENA</button>
+      </div>
+    </div>
+
+    <div class="img-panel-section">
+      <label class="img-panel-label">Formato / Relación de Aspecto</label>
+      <div class="options-grid" id="aspectGrid">
+        <button type="button" class="opt-btn active" data-aspect="1:1" onclick="selectAspect(this, '1:1')">
+          <span>⬛</span> 1:1 Cuadrado
+        </button>
+        <button type="button" class="opt-btn" data-aspect="16:9" onclick="selectAspect(this, '16:9')">
+          <span>🖥️</span> 16:9 Banner
+        </button>
+        <button type="button" class="opt-btn" data-aspect="9:16" onclick="selectAspect(this, '9:16')">
+          <span>📱</span> 9:16 Móvil
+        </button>
+        <button type="button" class="opt-btn" data-aspect="4:3" onclick="selectAspect(this, '4:3')">
+          <span>📷</span> 4:3 Estándar
+        </button>
+      </div>
+    </div>
+
+    <div class="img-panel-section">
+      <label class="img-panel-label">Estilo Visual</label>
+      <div class="options-grid" id="styleGrid">
+        <button type="button" class="opt-btn active" data-style="fotorealista" onclick="selectStyle(this, 'fotorealista')">
+          <span>📸</span> Fotorealista HD
+        </button>
+        <button type="button" class="opt-btn" data-style="deportivo_sena" onclick="selectStyle(this, 'deportivo_sena')">
+          <span>🏆</span> Afiche SENA
+        </button>
+        <button type="button" class="opt-btn" data-style="ilustracion_3d" onclick="selectStyle(this, 'ilustracion_3d')">
+          <span>🎨</span> Ilustración 3D
+        </button>
+        <button type="button" class="opt-btn" data-style="arte_digital" onclick="selectStyle(this, 'arte_digital')">
+          <span>⚡</span> Arte Digital
+        </button>
+        <button type="button" class="opt-btn" data-style="minimalista" onclick="selectStyle(this, 'minimalista')">
+          <span>📐</span> Minimalista
+        </button>
+      </div>
+    </div>
+
+    <div class="toggle-wrap">
+      <div>
+        <span class="toggle-text">✨ Optimizar con Gemini</span>
+        <span class="toggle-sub">Enriquece detalles visuales automáticamente</span>
+      </div>
+      <input type="checkbox" id="chkOptimizarPrompt" checked style="accent-color:var(--brand); cursor:pointer; width:16px; height:16px;">
+    </div>
+
+    <button type="button" id="btnSubmitGenImg" class="btn-generate-submit" onclick="submitGenerateImage()">
+      <span>🎨 Generar Imagen con IA</span>
+    </button>
+  </div>
+  {% endif %}
 
   <div class="messages" id="msgs">
     <div class="date-div">HOY</div>
@@ -482,6 +744,15 @@
         </svg>
       </button>
 
+      {% if user.is_authenticated and user.is_staff or user.is_superuser or user.rol == 'admin' %}
+      <!-- Botón Generar Imagen IA (Exclusivo Administrador) -->
+      <button type="button" class="gen-img-btn" id="genImgBtn" onclick="openImageGenPanel()" title="Generar Imagen con IA (Administrador)" aria-label="Generar Imagen con IA">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4L2 9.4h7.6z"/>
+        </svg>
+      </button>
+      {% endif %}
+
       <input class="chat-input" id="chatIn" type="text" placeholder="Pregúntame o pega imagen (Ctrl+V)..." onkeydown="if(event.key==='Enter')send()"/>
 
       <!-- Botón micrófono -->
@@ -502,6 +773,18 @@
     <div class="input-footer">
       Tux · IA Asistente · Multimodal 🖼️ 🎙️
       <span class="voice-support-badge" id="voiceBadge ai-u-1">· Voz y Visión</span>
+    </div>
+</div>
+
+<!-- Modal Lightbox para pantalla completa de imágenes -->
+<div id="tuxLightbox" class="lightbox-modal" onclick="closeLightbox(event)">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <button type="button" class="lightbox-close" onclick="closeLightbox()" title="Cerrar vista">✕</button>
+    <img id="lightboxImg" class="lightbox-img" src="" alt="Imagen ampliada">
+    <div style="margin-top:14px; display:flex; gap:10px; width:100%; justify-content:center;">
+      <a id="lightboxDownloadBtn" href="" download class="gen-act-btn primary" style="padding:9px 20px; font-size:12px; max-width:260px;">
+        📥 Descargar en Alta Calidad
+      </a>
     </div>
   </div>
 </div>
@@ -842,7 +1125,7 @@ function addTyping(){
     const row=document.createElement('div');
     row.className='msg-row appear';
     row.id='typing-row';
-    row.innerHTML=`${catAv()}<div class="typing-bubble"><span></span><span></span><span></span></div>`;
+    row.innerHTML=`${catAv()}<div class="typing-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
     msgs.appendChild(row);
     msgs.scrollTop=msgs.scrollHeight;
 }
@@ -1012,6 +1295,10 @@ async function send(){
             .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,0.1);padding:2px 5px;border-radius:4px;">$1</code>')
             .replace(/\n/g,'<br>');
 
+        if (data.image_generated && window.buildGeneratedImageCardHtml) {
+            formatted += window.buildGeneratedImageCardHtml(data.image_generated);
+        }
+
         history.push({"role":"assistant","content":reply});
         addMsg(formatted,'bot',now(),reply);
 
@@ -1026,3 +1313,5 @@ async function send(){
 }
 
 </script>
+
+<script src="{% static 'js/tux_image_gen.js' %}"></script>

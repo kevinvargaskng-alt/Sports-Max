@@ -35,6 +35,8 @@ urlpatterns = [
          views.asignar_fecha_partido, name='asignar_fecha_partido'),
     path('torneo/<int:torneo_id>/grupos/manual/',
          views.generar_grupos_manual, name='generar_grupos_manual'),
+    path('torneo/<int:torneo_id>/cronograma/',
+         views.generar_cronograma,   name='generar_cronograma'),
     # ── Equipos ────────────────────────────────────────────────────
     path('equipo/<int:equipo_id>/editar/',
          views.editar_equipo,         name='editar_equipo'),
