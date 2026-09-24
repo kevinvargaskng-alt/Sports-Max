@@ -405,12 +405,14 @@ def perfil_view(request):
         if 'comentario' in request.POST:
             tipo = request.POST.get('tipo', 'otro')
             comentario = request.POST.get('comentario')
+            anonimo_flag = request.POST.get('anonimo') == 'on'
+            sugerencia_usuario = None if anonimo_flag else usuario
 
             sugerencia = Sugerencia.objects.create(
-                usuario=usuario,
+                usuario=sugerencia_usuario,
                 tipo=tipo,
                 comentario=sanitize_html(sanitize_input(comentario, max_length=2000)),
-                anonimo=False,
+                anonimo=anonimo_flag,
                 imagen=validate_uploaded_file(request.FILES.get('imagen_error'), allowed_types='image') if request.FILES.get('imagen_error') else None
             )
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -656,4 +658,8 @@ def restore_database_backup(request):
 
     return redirect('gestionar_usuarios')
 
+@login_required(login_url='home')
+def manual_usuario_view(request):
+    """Vista para mostrar el manual de usuario en HTML."""
+    return render(request, 'usuarios/manual.html', {'usuario': request.user})
 
