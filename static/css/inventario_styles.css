@@ -235,3 +235,10 @@
 .accion-card-green  { --ac-accent:#20d692; --ac-soft:rgba(32,214,146,0.12); --ac-shadow:rgba(32,214,146,0.3); }
 .accion-card-red    { --ac-accent:#ff5468; --ac-soft:rgba(255,84,104,0.12); --ac-shadow:rgba(255,84,104,0.3); }
 .accion-card-warning{ --ac-accent:#ffc107; --ac-soft:rgba(255,193,7,0.12); --ac-shadow:rgba(255,193,7,0.3); }
+
+.accion-btn-solid-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #d69e00 100%);
+    color: #1a1400 !important;
+    box-shadow: 0 10px 24px -10px rgba(255,193,7,0.5);
+    border: none;
+}

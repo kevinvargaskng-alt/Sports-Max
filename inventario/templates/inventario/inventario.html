@@ -26,33 +26,39 @@
              NAVEGACIÓN — diferenciada por rol
         ══════════════════════════════════════════ -->
         <nav class="row g-4 mb-5 justify-content-center">
-            {% if user.is_staff %}
+                        {% if user.is_staff %}
             <div class="col-6 col-md-3">
-                <div class="sport-card text-center p-3">
-                    <i class="fas fa-plus-circle fa-2x mb-3 text-warning"></i>
+                <div class="accion-card accion-card-warning">
+                    <div class="accion-icon-badge">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
                     <h6 class="fw-bold text-white small">NUEVO ELEMENTO</h6>
-                    <button class="btn btn-warning btn-sm mt-2 w-100 fw-bold"
+                    <button class="accion-btn accion-btn-solid-warning"
                             data-bs-toggle="modal" data-bs-target="#modalElemento"
                             onclick="abrirModalCrear()">
-                        <i class="fas fa-plus me-1"></i>AGREGAR
+                        <i class="fas fa-plus"></i>AGREGAR
                     </button>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="sport-card text-center p-3">
-                    <i class="fas fa-undo fa-2x mb-3 text-success"></i>
+                <div class="accion-card accion-card-green">
+                    <div class="accion-icon-badge">
+                        <i class="fas fa-undo"></i>
+                    </div>
                     <h6 class="fw-bold text-white small">DEVOLUCIONES</h6>
-                    <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm mt-2 w-100 fw-bold">
-                        <i class="fas fa-eye me-1"></i>VER TODAS
+                    <a href="{% url 'devoluciones' %}" class="accion-btn accion-btn-outline-green">
+                        <i class="fas fa-eye"></i>VER TODAS
                     </a>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="sport-card text-center p-3">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3 text-danger"></i>
+                <div class="accion-card accion-card-red">
+                    <div class="accion-icon-badge">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
                     <h6 class="fw-bold text-white small">SANCIONES</h6>
-                    <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm mt-2 w-100 fw-bold">
-                        <i class="fas fa-eye me-1"></i>VER TODAS
+                    <a href="{% url 'sanciones' %}" class="accion-btn accion-btn-outline-red">
+                        <i class="fas fa-eye"></i>VER TODAS
                     </a>
                 </div>
             </div>
