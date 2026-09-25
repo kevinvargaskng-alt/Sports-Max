@@ -125,14 +125,31 @@ def solo_admin(view_func):
 
 def _calcular_tabla(grupo):
     equipos = grupo.equipos.all()
-    # 1 sola consulta SQL precargando equipos locales y visitantes para eliminar el problema N+1
-    partidos_jugados = grupo.partidos.filter(jugado=True).select_related('equipo_local', 'equipo_visitante')
+
+    # Partidos jugados del grupo
+    partidos_jugados = grupo.partidos.filter(
+        jugado=True
+    ).select_related(
+        'equipo_local',
+        'equipo_visitante'
+    )
 
     stats_map = {
         eq.pk: {
             'equipo': eq,
-            'pj': 0, 'pg': 0, 'pe': 0, 'pp': 0,
-            'gf': 0, 'gc': 0, 'dg': 0, 'pts': 0
+            'pj': 0,
+            'pg': 0,
+            'pe': 0,
+            'pp': 0,
+            'gf': 0,
+            'gc': 0,
+            'dg': 0,
+            'pts': 0,
+
+            # CP-24: acumulación de tarjetas
+            'amarillas': 0,
+            'rojas': 0,
+            'azules': 0,
         }
         for eq in equipos
     }
@@ -141,11 +158,16 @@ def _calcular_tabla(grupo):
         local_id = p.equipo_local_id
         visit_id = p.equipo_visitante_id
 
+        # ============================================================
+        # EQUIPO LOCAL
+        # ============================================================
         if local_id in stats_map:
             st = stats_map[local_id]
+
             st['pj'] += 1
             st['gf'] += p.goles_local
             st['gc'] += p.goles_visitante
+
             if p.goles_local > p.goles_visitante:
                 st['pg'] += 1
                 st['pts'] += 3
@@ -155,11 +177,21 @@ def _calcular_tabla(grupo):
             else:
                 st['pp'] += 1
 
+            # CP-24: tarjetas recibidas como local
+            st['amarillas'] += p.tarjetas_amarillas_local or 0
+            st['rojas'] += p.tarjetas_rojas_local or 0
+            st['azules'] += p.tarjetas_azules_local or 0
+
+        # ============================================================
+        # EQUIPO VISITANTE
+        # ============================================================
         if visit_id in stats_map:
             st = stats_map[visit_id]
+
             st['pj'] += 1
             st['gf'] += p.goles_visitante
             st['gc'] += p.goles_local
+
             if p.goles_visitante > p.goles_local:
                 st['pg'] += 1
                 st['pts'] += 3
@@ -169,11 +201,25 @@ def _calcular_tabla(grupo):
             else:
                 st['pp'] += 1
 
+            # CP-24: tarjetas recibidas como visitante
+            st['amarillas'] += p.tarjetas_amarillas_visitante or 0
+            st['rojas'] += p.tarjetas_rojas_visitante or 0
+            st['azules'] += p.tarjetas_azules_visitante or 0
+
+    # Diferencia de goles
     for st in stats_map.values():
         st['dg'] = st['gf'] - st['gc']
 
     tabla = list(stats_map.values())
-    tabla.sort(key=lambda x: (-x['pts'], -x['dg'], -x['gf']))
+
+    tabla.sort(
+        key=lambda x: (
+            -x['pts'],
+            -x['dg'],
+            -x['gf']
+        )
+    )
+
     return tabla
 
 
@@ -523,6 +569,7 @@ def interfichas_list(request):
     mis_equipos = []
     mis_partidos = PartidoInterfichas.objects.none()
     torneos_disponibles = torneos
+    total_equipos_inscritos = sum(t.equipos.count() for t in torneos)
 
     if not admin:
         mis_equipos_qs = (
@@ -547,7 +594,7 @@ def interfichas_list(request):
 
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
         torneos_disponibles = torneos.exclude(pk__in=torneos_con_equipo)
-        total_equipos_inscritos = sum(t.equipos.count() for t in torneos)
+        
 
     context = {
         'torneos':             torneos,
@@ -846,6 +893,7 @@ def registrar_resultado(request, partido_id):
     partido = get_object_or_404(PartidoInterfichas, pk=partido_id)
     torneo_id = partido.torneo.codigo_torneo_fichas
     tipo = partido.tipo_marcador
+    print("TIPO MARCADOR:", repr(tipo))
 
     fecha = request.POST.get('fecha_partido')
     hora = request.POST.get('hora_partido')
