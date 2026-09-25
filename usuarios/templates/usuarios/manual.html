@@ -63,12 +63,17 @@
         transform: translateY(-5px);
     }
     
-    .border-gimnasio { border-left-color: #ffc107 !important; }
-    .border-prestamos { border-left-color: #198754 !important; }
-    .border-torneos { border-left-color: #0d6efd !important; }
-    .border-habitos { border-left-color: #dc3545 !important; }
-    .border-perfil { border-left-color: #0dcaf0 !important; }
+    /* Paleta de Colores Alineada con los Módulos */
+    .border-perfil    { border-left-color: #0dcaf0 !important; } /* Cyan / Info */
+    .border-gimnasio  { border-left-color: #dc3545 !important; } /* Rojo / Danger (Energía) */
+    .border-prestamos { border-left-color: #ffc107 !important; } /* Amarillo / Warning (Inventario) */
+    .border-torneos   { border-left-color: #0d6efd !important; } /* Azul / Primary (Competencia) */
+    .border-habitos   { border-left-color: #39A900 !important; } /* Verde SENA / Success (Salud) */
+    .border-admin     { border-left-color: #6f42c1 !important; } /* Morado (Seguridad) */
     
+    .text-sena-green { color: #39A900 !important; }
+    .text-admin-purple { color: #d63384 !important; }
+
     .step-badge {
         width: 30px;
         height: 30px;
@@ -104,13 +109,13 @@
             <div class="manual-sidebar p-3 bg-dark rounded-4 shadow border border-secondary">
                 <h5 class="text-white fw-bold mb-4 ms-2"><i class="fas fa-list-ul me-2"></i>Índice Temático</h5>
                 <nav class="nav flex-column" id="manual-navbar">
-                    <a class="manual-nav-link" href="#seccion-perfil"><i class="fas fa-user-circle"></i> 1. Mi Perfil y Cuenta</a>
-                    <a class="manual-nav-link" href="#seccion-gimnasio"><i class="fas fa-dumbbell"></i> 2. Gimnasio</a>
-                    <a class="manual-nav-link" href="#seccion-prestamos"><i class="fas fa-volleyball-ball"></i> 3. Préstamos de Material</a>
-                    <a class="manual-nav-link" href="#seccion-torneos"><i class="fas fa-trophy"></i> 4. Torneos Interfichas</a>
-                    <a class="manual-nav-link" href="#seccion-habitos"><i class="fas fa-heartbeat"></i> 5. Hábitos Saludables</a>
+                    <a class="manual-nav-link" href="#seccion-perfil"><i class="fas fa-user-circle text-info"></i> 1. Mi Perfil y Cuenta</a>
+                    <a class="manual-nav-link" href="#seccion-gimnasio"><i class="fas fa-dumbbell text-danger"></i> 2. Gimnasio</a>
+                    <a class="manual-nav-link" href="#seccion-prestamos"><i class="fas fa-volleyball-ball text-warning"></i> 3. Préstamos</a>
+                    <a class="manual-nav-link" href="#seccion-torneos"><i class="fas fa-trophy text-primary"></i> 4. Torneos Interfichas</a>
+                    <a class="manual-nav-link" href="#seccion-habitos"><i class="fas fa-heartbeat text-sena-green"></i> 5. Hábitos Saludables</a>
                     {% if user.is_staff %}
-                    <a class="manual-nav-link text-warning" href="#seccion-admin"><i class="fas fa-shield-alt"></i> 6. Administración</a>
+                    <a class="manual-nav-link text-admin-purple" href="#seccion-admin"><i class="fas fa-shield-alt text-admin-purple"></i> 6. Administración</a>
                     {% endif %}
                 </nav>
                 <div class="mt-4 pt-3 border-top border-secondary text-center">
@@ -133,19 +138,12 @@
                             <div class="manual-feature-card border-perfil">
                                 <h5 class="text-white fw-bold"><i class="fas fa-user-edit text-info me-2"></i>Editar Datos Personales</h5>
                                 <p class="text-white-50 small">Tus datos académicos (Ficha, Programa, Documento) son fijos por motivos institucionales. Sin embargo, puedes actualizar tu <strong>Correo Electrónico</strong>, <strong>Número Celular</strong> y tu <strong>Foto de Perfil</strong> haciendo clic en "Editar perfil".</p>
-                                <p class="text-white-50 small mb-0">💡 <em>Tip: Al subir tu foto, puedes arrastrarla para encuadrar tu rostro perfectamente dentro del círculo.</em></p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="manual-feature-card border-perfil">
                                 <h5 class="text-white fw-bold"><i class="fas fa-chart-line text-info me-2"></i>Test de Rendimiento Inicial</h5>
-                                <p class="text-white-50 small">Antes de empezar a entrenar, te recomendamos hacer el Test de Biometría. Registra tu Peso, Estatura, y resultados de pruebas físicas (flexiones, abdominales) para que el sistema calcule tu IMC y guarde un punto de partida de tu estado físico.</p>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="manual-feature-card border-perfil">
-                                <h5 class="text-white fw-bold"><i class="fas fa-bug text-danger me-2"></i>Buzón de Sugerencias y Reportes</h5>
-                                <p class="text-white-50 small mb-0">Si encuentras un error en la plataforma, un implemento dañado, o tienes una sugerencia de mejora, usa el botón <strong>"Reportar Error"</strong> en tu perfil. Puedes subir una captura de pantalla. Un administrador leerá tu reporte y te enviará una respuesta que aparecerá directamente en tu perfil.</p>
+                                <p class="text-white-50 small">Antes de empezar a entrenar, te recomendamos hacer el Test de Biometría. Registra tu Peso, Estatura, y resultados de pruebas físicas para que el sistema guarde un punto de partida de tu estado físico.</p>
                             </div>
                         </div>
                     </div>
@@ -153,8 +151,8 @@
 
                 <!-- 2. GIMNASIO -->
                 <section id="seccion-gimnasio" class="manual-section">
-                    <h2 class="text-warning fw-bold"><i class="fas fa-dumbbell me-2"></i>2. Módulo de Gimnasio</h2>
-                    <p class="text-white-50 mb-4">El gimnasio del Centro Minero ahora cuenta con un sistema de reservas digitales para evitar aglomeraciones y garantizar que todos puedan entrenar cómodamente.</p>
+                    <h2 class="text-danger fw-bold"><i class="fas fa-dumbbell me-2"></i>2. Módulo de Gimnasio</h2>
+                    <p class="text-white-50 mb-4">El gimnasio del Centro Minero cuenta con un sistema de reservas digitales (Aforo controlado).</p>
                     
                     <div class="row g-4">
                         <div class="col-md-12">
@@ -163,21 +161,14 @@
                                     <span class="step-badge">1</span>
                                     <div>
                                         <h5 class="text-white fw-bold mb-1">Explorar las Máquinas</h5>
-                                        <p class="text-white-50 small mb-0">Accede a la pestaña de Gimnasio para ver el inventario de máquinas disponibles, divididas por categorías: Cardio, Fuerza, Funcional. El sistema te mostrará qué músculos se trabajan y si la máquina está operativa o en mantenimiento.</p>
+                                        <p class="text-white-50 small mb-0">Accede a la pestaña de Gimnasio para ver el inventario de máquinas disponibles, divididas por categorías: Cardio, Fuerza, Funcional. </p>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-start mb-3">
                                     <span class="step-badge">2</span>
                                     <div>
                                         <h5 class="text-white fw-bold mb-1">Hacer una Reserva</h5>
-                                        <p class="text-white-50 small mb-0">Para ingresar, debes agendarte. El sistema evaluará el aforo actual (capacidad máxima de personas). Si hay cupo, se registrará tu <strong>Hora de Entrada</strong> y se calculará automáticamente tu <strong>Hora límite de Salida</strong> (usualmente 60 minutos).</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start">
-                                    <span class="step-badge">3</span>
-                                    <div>
-                                        <h5 class="text-white fw-bold mb-1">Historial de Visitas</h5>
-                                        <p class="text-white-50 small mb-0">En tu perfil de usuario, en la pestaña "Gimnasio", podrás ver una tabla con todo tu historial de ingresos: fechas, hora de llegada y salida.</p>
+                                        <p class="text-white-50 small mb-0">Para ingresar, debes agendarte. El sistema registrará tu <strong>Hora de Entrada</strong> y calculará tu <strong>Hora límite de Salida</strong> (usualmente 60 minutos).</p>
                                     </div>
                                 </div>
                             </div>
@@ -187,27 +178,27 @@
 
                 <!-- 3. PRÉSTAMOS -->
                 <section id="seccion-prestamos" class="manual-section">
-                    <h2 class="text-success fw-bold"><i class="fas fa-volleyball-ball me-2"></i>3. Préstamo de Material Deportivo</h2>
-                    <p class="text-white-50 mb-4">Olvídate del papeleo. Ahora todo el inventario de bodega está digitalizado.</p>
+                    <h2 class="text-warning fw-bold"><i class="fas fa-volleyball-ball me-2"></i>3. Préstamo de Material Deportivo</h2>
+                    <p class="text-white-50 mb-4">Solicita el material desde tu celular antes de ir a bodega.</p>
                     
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="manual-feature-card border-prestamos text-center p-4">
-                                <i class="fas fa-search-plus fa-3x text-success mb-3"></i>
+                                <i class="fas fa-search-plus fa-3x text-warning mb-3"></i>
                                 <h5 class="text-white fw-bold">Buscar Elementos</h5>
-                                <p class="text-white-50 small">Explora balones (Fútbol, Baloncesto), raquetas, petos y conos. Verifica cuántas unidades quedan disponibles en bodega antes de solicitar.</p>
+                                <p class="text-white-50 small">Explora balones, raquetas, petos y conos. Verifica cuántas unidades quedan disponibles en bodega antes de solicitar.</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="manual-feature-card border-prestamos text-center p-4">
-                                <i class="fas fa-hand-holding-heart fa-3x text-success mb-3"></i>
+                                <i class="fas fa-hand-holding-heart fa-3x text-warning mb-3"></i>
                                 <h5 class="text-white fw-bold">Solicitar y Devolver</h5>
-                                <p class="text-white-50 small">Genera la solicitud indicando la cantidad. Tienes un límite de días para devolverlo. Entrégalo en la bodega e informa que vas a hacer la devolución en el sistema.</p>
+                                <p class="text-white-50 small">Genera la solicitud indicando la cantidad. Tienes un límite de días para devolverlo.</p>
                             </div>
                         </div>
                         <div class="col-12 mt-3">
                             <div class="alert alert-danger bg-dark border-danger text-white small mb-0">
-                                <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>¡Atención! Sistema de Sanciones:</strong> Si un implemento deportivo no es devuelto a tiempo, o si es devuelto con daños o averías, el administrador registrará una "Novedad". Esto puede generar una sanción automática que bloqueará tu cuenta impidiéndote solicitar nuevos préstamos temporalmente. ¡Cuida los elementos de formación!
+                                <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>¡Atención! Sistema de Sanciones:</strong> Si un implemento deportivo no es devuelto a tiempo, o si es devuelto con daños, se generará una "Novedad" que puede bloquear tu cuenta impidiéndote solicitar préstamos temporalmente.
                             </div>
                         </div>
                     </div>
@@ -222,9 +213,8 @@
                         <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Si eres Capitán (Inscripción de Equipos)</h5>
                         <ul class="text-white-50 small lh-lg mb-0">
                             <li>Ve al módulo de Torneos y haz clic en <strong>"Inscribir Equipo"</strong>.</li>
-                            <li>Selecciona el torneo activo, la disciplina (Fútbol, Voleibol, Ajedrez, etc.), digita el número de tu Ficha y el Programa de Formación.</li>
-                            <li><strong>Requisitos obligatorios:</strong> Debes subir la imagen del Escudo de tu equipo y cargar la planilla oficial de inscripción en formato PDF/Word.</li>
-                            <li>Una vez creado el equipo, podrás administrar la plantilla agregando a cada jugador junto con su <strong>Consentimiento Informado</strong> firmado.</li>
+                            <li><strong>Requisitos obligatorios:</strong> Debes subir la imagen del Escudo de tu equipo y cargar la planilla oficial de inscripción en PDF/Word.</li>
+                            <li>Una vez creado el equipo, podrás agregar a cada jugador junto con su <strong>Consentimiento Informado</strong>.</li>
                         </ul>
                     </div>
 
@@ -232,37 +222,36 @@
                         <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Seguimiento de la Competición</h5>
                         <ul class="text-white-50 small lh-lg mb-0">
                             <li><strong>Fase de Grupos:</strong> Revisa el fixture (calendario) para saber contra qué ficha juegas, la fecha, la hora y en qué escenario deportivo.</li>
-                            <li><strong>Resultados Adaptativos:</strong> Los marcadores se adaptan a la disciplina. Verás goles (fútbol), puntos (baloncesto) o el resultado detallado por Sets (voleibol/pimpón).</li>
+                            <li><strong>Resultados Adaptativos:</strong> Los marcadores se adaptan a la disciplina. Verás goles (fútbol), puntos (baloncesto) o Sets (voleibol/pimpón).</li>
                             <li><strong>Tabla de Posiciones:</strong> El sistema calcula automáticamente los puntos (3 por ganar, 1 por empatar) y ordena la tabla.</li>
-                            <li><strong>Tarjetas y Disciplina:</strong> Monitorea en tiempo real las amonestaciones (Rojas, Amarillas, o Azules en fútsal) de tu equipo.</li>
                         </ul>
                     </div>
                 </section>
 
                 <!-- 5. HÁBITOS -->
                 <section id="seccion-habitos" class="manual-section">
-                    <h2 class="text-danger fw-bold"><i class="fas fa-apple-alt me-2"></i>5. Hábitos Saludables y Bienestar</h2>
+                    <h2 class="text-sena-green fw-bold"><i class="fas fa-apple-alt me-2"></i>5. Hábitos Saludables y Bienestar</h2>
                     <p class="text-white-50 mb-4">Un deportista del SENA se cuida integralmente. Este módulo te ayuda a monitorear y mejorar tu estilo de vida.</p>
 
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="manual-feature-card border-habitos">
-                                <h5 class="text-white fw-bold"><i class="fas fa-lock text-danger me-2"></i>Privacidad y Habeas Data</h5>
-                                <p class="text-white-50 small">Por ley, al registrar información médica o corporal, debes aceptar primero la Política de Tratamiento de Datos Personales de la plataforma. Solo tú y el personal autorizado de bienestar tendrán acceso a estos datos confidenciales.</p>
+                                <h5 class="text-white fw-bold"><i class="fas fa-lock text-sena-green me-2"></i>Privacidad y Habeas Data</h5>
+                                <p class="text-white-50 small">Por ley, al registrar información médica o corporal, debes aceptar primero la Política de Tratamiento de Datos Personales de la plataforma.</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="manual-feature-card border-habitos">
-                                <h5 class="text-white fw-bold"><i class="fas fa-running text-danger me-2"></i>Rutinas y Nutrición</h5>
-                                <p class="text-white-50 small">Descubre rutinas físicas adaptadas a niveles (Principiante, Medio, Alto) y navega por la <strong>Pirámide Nutricional Interactiva</strong> para aprender sobre raciones adecuadas de proteínas, carbohidratos y vegetales.</p>
+                                <h5 class="text-white fw-bold"><i class="fas fa-running text-sena-green me-2"></i>Rutinas y Nutrición</h5>
+                                <p class="text-white-50 small">Descubre rutinas físicas adaptadas a niveles y navega por la <strong>Pirámide Nutricional Interactiva</strong>.</p>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="manual-feature-card border-habitos d-flex align-items-center gap-4">
-                                <i class="fas fa-notes-medical fa-4x text-danger opacity-50 d-none d-md-block"></i>
+                                <i class="fas fa-notes-medical fa-4x text-sena-green opacity-50 d-none d-md-block"></i>
                                 <div>
                                     <h5 class="text-white fw-bold">Seguimiento Biométrico a Largo Plazo</h5>
-                                    <p class="text-white-50 small mb-0">A diferencia del test de rendimiento inicial, aquí puedes registrar mediciones periódicas (peso mensual, presión arterial, horas promedio de sueño, vasos de agua al día). El sistema graficará tu evolución y te categorizará según tu IMC (Bajo peso, Normal, Sobrepeso).</p>
+                                    <p class="text-white-50 small mb-0">Aquí puedes registrar mediciones periódicas (peso mensual, presión arterial, horas promedio de sueño, vasos de agua al día). El sistema te categorizará según tu IMC.</p>
                                 </div>
                             </div>
                         </div>
@@ -271,37 +260,25 @@
 
                 <!-- 6. ADMINISTRACIÓN -->
                 {% if user.is_staff %}
-                <section id="seccion-admin" class="manual-section border-warning">
-                    <h2 class="text-warning fw-bold"><i class="fas fa-user-shield me-2"></i>6. Herramientas de Administración</h2>
+                <section id="seccion-admin" class="manual-section">
+                    <h2 class="text-admin-purple fw-bold"><i class="fas fa-user-shield me-2"></i>6. Herramientas de Administración</h2>
                     <p class="text-white-50 mb-4">Sección exclusiva para Instructores y Administradores de la plataforma.</p>
                     
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <div class="manual-feature-card" style="border-left-color: #ffc107;">
-                                <h5 class="text-white fw-bold"><i class="fas fa-users-cog text-warning me-2"></i>Gestión de Usuarios</h5>
+                            <div class="manual-feature-card border-admin">
+                                <h5 class="text-white fw-bold"><i class="fas fa-users-cog text-admin-purple me-2"></i>Gestión de Usuarios</h5>
                                 <ul class="text-white-50 small lh-lg mb-0 ps-3">
                                     <li>Bloquea o desbloquea el acceso a aprendices.</li>
-                                    <li>Asigna roles (Aprendiz, Profesional de Apoyo, Administrador).</li>
-                                    <li>Corrige nombres mal ingresados o correos electrónicos.</li>
+                                    <li>Asigna roles (Aprendiz, Administrador).</li>
                                 </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="manual-feature-card" style="border-left-color: #ffc107;">
-                                <h5 class="text-white fw-bold"><i class="fas fa-database text-warning me-2"></i>Auditoría y Backups</h5>
+                            <div class="manual-feature-card border-admin">
+                                <h5 class="text-white fw-bold"><i class="fas fa-database text-admin-purple me-2"></i>Auditoría y Backups</h5>
                                 <ul class="text-white-50 small lh-lg mb-0 ps-3">
                                     <li>Realiza copias de seguridad de la base de datos (Exportación en JSON).</li>
-                                    <li>Restaura el sistema en caso de pérdida de datos.</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="manual-feature-card" style="border-left-color: #ffc107;">
-                                <h5 class="text-white fw-bold"><i class="fas fa-tasks text-warning me-2"></i>Administración de Módulos</h5>
-                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
-                                    <li><strong>Gimnasio:</strong> Cierra el gimnasio por mantenimiento general, crea nuevas franjas horarias y modifica el catálogo de máquinas.</li>
-                                    <li><strong>Torneos:</strong> Aprueba los equipos inscritos, organiza los grupos (A, B, C, D) y carga los resultados oficiales y las tarjetas de cada partido jugado.</li>
-                                    <li><strong>Reportes (Sugerencias):</strong> Responde directamente a las fallas reportadas por los aprendices (ej. "La caminadora está rota" -> "Reparación programada para mañana").</li>
                                 </ul>
                             </div>
                         </div>
