@@ -482,6 +482,7 @@ def perfil_view(request):
             'todos_usuarios': todos_usuarios,
             'total_usuarios': todos_usuarios.count(),
             'total_torneos_activos': TorneoInterfichas.objects.exclude(estado='cerrado').count(),
+            'equipos_interfichas': EquipoInterfichas.objects.filter(usuario_registra=usuario),
         }
 
     else:
