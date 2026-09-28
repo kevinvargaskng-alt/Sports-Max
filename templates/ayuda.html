@@ -3,86 +3,405 @@
 
 {% block title %}Centro de Ayuda y Manual de Usuario{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Estilos personalizados para el Manual y Ayuda */
+    .manual-sidebar {
+        position: sticky;
+        top: 20px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+    
+    .manual-nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    
+    .manual-nav-link:hover, .manual-nav-link.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #0dcaf0; /* text-info */
+        transform: translateX(5px);
+    }
+    
+    .manual-nav-link i {
+        width: 25px;
+        text-align: center;
+    }
+    
+    .manual-section {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .manual-section h2 {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .manual-feature-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        padding: 20px;
+        height: 100%;
+        border-left: 4px solid transparent;
+        transition: transform 0.3s ease;
+    }
+    
+    .manual-feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Paleta de Colores Alineada con los Módulos */
+    .border-perfil    { border-left-color: #0dcaf0 !important; }
+    .border-gimnasio  { border-left-color: #dc3545 !important; }
+    .border-prestamos { border-left-color: #ffc107 !important; }
+    .border-torneos   { border-left-color: #0d6efd !important; }
+    .border-habitos   { border-left-color: #39A900 !important; }
+    .border-admin     { border-left-color: #6f42c1 !important; }
+    
+    .text-sena-green { color: #39A900 !important; }
+    .text-admin-purple { color: #d63384 !important; }
+
+    .step-badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 10px;
+        color: #fff;
+    }
+    
+    .manual-sidebar::-webkit-scrollbar { width: 6px; }
+    .manual-sidebar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+</style>
+<!-- Html2Pdf para generación de PDF desde cliente -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5 text-white">
-    <!-- Encabezado Principal -->
-    <div class="text-center mb-5 fade-in-up">
-        <i class="fas fa-question-circle fa-4x text-info mb-3"></i>
-        <h1 class="fw-bold text-cap">Centro de Ayuda y Soporte</h1>
-        <p class="text-white-50 max-width-600 mx-auto">Encuentra guías de usuario, respuestas a preguntas frecuentes y aprende a utilizar todos los módulos de la plataforma de Gestión Deportiva.</p>
-        <div class="mt-4">
-            <a href="https://github.com/kevinvargaskng-alt/Sports-Max/raw/main/docs/manual_usuario.pdf" target="_blank" class="btn btn-warning btn-lg fw-bold px-4 shadow">
-                <i class="fas fa-file-pdf me-2"></i>Descargar Manual de Usuario (PDF)
-            </a>
+    <div class="row">
+        <!-- Barra de Navegación Lateral (Índice) -->
+        <div class="col-lg-3 d-none d-lg-block" data-html2canvas-ignore="true">
+            <div class="manual-sidebar p-3 bg-dark rounded-4 shadow border border-secondary">
+                <h5 class="text-white fw-bold mb-4 ms-2"><i class="fas fa-list-ul me-2"></i>Índice Temático</h5>
+                <nav class="nav flex-column" id="manual-navbar">
+                    <a class="manual-nav-link" href="#seccion-inicio"><i class="fas fa-home text-white"></i> Ayuda y Soporte</a>
+                    <a class="manual-nav-link" href="#seccion-faq"><i class="fas fa-question-circle text-warning"></i> Preguntas Frecuentes</a>
+                    <a class="manual-nav-link" href="#seccion-perfil"><i class="fas fa-user-circle text-info"></i> 1. Mi Perfil y Cuenta</a>
+                    <a class="manual-nav-link" href="#seccion-gimnasio"><i class="fas fa-dumbbell text-danger"></i> 2. Gimnasio</a>
+                    <a class="manual-nav-link" href="#seccion-prestamos"><i class="fas fa-volleyball-ball text-warning"></i> 3. Préstamos</a>
+                    <a class="manual-nav-link" href="#seccion-torneos"><i class="fas fa-trophy text-primary"></i> 4. Torneos Interfichas</a>
+                    <a class="manual-nav-link" href="#seccion-habitos"><i class="fas fa-heartbeat text-sena-green"></i> 5. Hábitos Saludables</a>
+                    {% if user.is_staff %}
+                    <a class="manual-nav-link text-admin-purple" href="#seccion-admin"><i class="fas fa-shield-alt text-admin-purple"></i> 6. Administración</a>
+                    {% endif %}
+                </nav>
+            </div>
         </div>
-    </div>
 
-    <!-- Módulos de Ayuda -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-6 col-lg-4">
-            <div class="sport-card h-100 p-4 ayu-u-1">
-                <i class="fas fa-home fa-2x text-info mb-3"></i>
-                <h5 class="fw-bold mb-2">Módulo de Inicio</h5>
-                <p class="text-white-50 small mb-0">Aprende a registrar tu carnet SENA mediante código QR, consultar notificaciones generales y personalizar tus datos de perfil.</p>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="sport-card h-100 p-4 ayu-u-2">
-                <i class="fas fa-dumbbell fa-2x text-success mb-3"></i>
-                <h5 class="fw-bold mb-2">Módulo Gimnasio</h5>
-                <p class="text-white-50 small mb-0">Cómo reservar tu ingreso al gimnasio, consultar horarios de apertura/cierre y revisar tus asistencias anteriores.</p>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="sport-card h-100 p-4 ayu-u-3">
-                <i class="fas fa-box fa-2x text-warning mb-3"></i>
-                <h5 class="fw-bold mb-2">Módulo de Inventario</h5>
-                <p class="text-white-50 small mb-0">Guía para solicitar préstamos de balones, mancuernas y aros, consultar stock disponible y realizar devoluciones a tiempo.</p>
-            </div>
-        </div>
-    </div>
+        <!-- Contenido Principal -->
+        <div class="col-lg-9">
+            <div data-bs-spy="scroll" data-bs-target="#manual-navbar" data-bs-offset="100" tabindex="0" id="contenido-manual-pdf">
+                
+                <!-- Encabezado Principal -->
+                <section id="seccion-inicio" class="text-center mb-5 fade-in-up">
+                    <i class="fas fa-book-reader fa-4x text-info mb-3"></i>
+                    <h1 class="fw-bold text-cap">Centro de Ayuda y Manual de Usuario</h1>
+                    <p class="text-white-50 max-width-600 mx-auto">Encuentra guías de usuario, respuestas a preguntas frecuentes y aprende a utilizar todos los módulos de la plataforma de Gestión Deportiva.</p>
+                    <div class="mt-4" data-html2canvas-ignore="true">
+                        <button onclick="descargarPDF()" class="btn btn-warning btn-lg fw-bold px-4 shadow" id="btn-descargar-pdf">
+                            <i class="fas fa-file-pdf me-2"></i>Descargar Manual de Usuario (PDF)
+                        </button>
+                    </div>
+                </section>
 
-    <!-- Preguntas Frecuentes (FAQ) -->
-    <div class="sport-card p-4 mb-5 ayu-u-4">
-        <h3 class="fw-bold mb-4 text-warning"><i class="fas fa-question me-2"></i>Preguntas Frecuentes</h3>
-        <div class="accordion accordion-dark" id="faqAccordion">
-            <div class="accordion-item bg-transparent border-secondary text-white mb-2">
-                <h2 class="accordion-header">
-                    <button class="accordion-button bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                        ¿Qué hago si mi cuenta se encuentra bloqueada?
-                    </button>
-                </h2>
-                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-white-50">
-                        Si tu cuenta se bloquea tras múltiples intentos fallidos, el bloqueo durará 5 minutos (primer nivel) o 24 horas (segundo nivel). Puedes desbloquearla inmediatamente usando la opción de "Desbloqueo Urgente" en el formulario de inicio de sesión ingresando tu documento, correo y teléfono registrados.
+                <!-- Módulos de Ayuda -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="sport-card h-100 p-4 ayu-u-1">
+                            <i class="fas fa-home fa-2x text-info mb-3"></i>
+                            <h5 class="fw-bold mb-2">Módulo de Inicio</h5>
+                            <p class="text-white-50 small mb-0">Aprende a registrar tu carnet SENA mediante código QR, consultar notificaciones generales y personalizar tus datos de perfil.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="sport-card h-100 p-4 ayu-u-2">
+                            <i class="fas fa-dumbbell fa-2x text-success mb-3"></i>
+                            <h5 class="fw-bold mb-2">Módulo Gimnasio</h5>
+                            <p class="text-white-50 small mb-0">Cómo reservar tu ingreso al gimnasio, consultar horarios de apertura/cierre y revisar tus asistencias anteriores.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="sport-card h-100 p-4 ayu-u-3">
+                            <i class="fas fa-box fa-2x text-warning mb-3"></i>
+                            <h5 class="fw-bold mb-2">Módulo de Inventario</h5>
+                            <p class="text-white-50 small mb-0">Guía para solicitar préstamos de balones, mancuernas y aros, consultar stock disponible y realizar devoluciones a tiempo.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="accordion-item bg-transparent border-secondary text-white mb-2">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                        ¿Cómo puedo reportar un fallo en el sistema?
-                    </button>
-                </h2>
-                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-white-50">
-                        En la parte superior derecha de tu pantalla verás una campana de notificaciones. Haz clic en ella y selecciona "Enviar Reporte" para detallar cualquier error que encuentres. También puedes adjuntar una captura de pantalla.
+
+                <!-- Preguntas Frecuentes (FAQ) -->
+                <section id="seccion-faq" class="manual-section">
+                    <h2 class="fw-bold mb-4 text-warning"><i class="fas fa-question me-2"></i>Preguntas Frecuentes</h2>
+                    <div class="accordion accordion-dark" id="faqAccordion">
+                        <div class="accordion-item bg-transparent border-secondary text-white mb-2">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    ¿Qué hago si mi cuenta se encuentra bloqueada?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white-50">
+                                    Si tu cuenta se bloquea tras múltiples intentos fallidos, el bloqueo durará 5 minutos (primer nivel) o 24 horas (segundo nivel). Puedes desbloquearla inmediatamente usando la opción de "Desbloqueo Urgente" en el formulario de inicio de sesión ingresando tu documento, correo y teléfono registrados.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item bg-transparent border-secondary text-white mb-2">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    ¿Cómo puedo reportar un fallo en el sistema?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white-50">
+                                    En la parte superior derecha de tu pantalla verás una campana de notificaciones. Haz clic en ella y selecciona "Enviar Reporte" para detallar cualquier error que encuentres. También puedes adjuntar una captura de pantalla.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item bg-transparent border-secondary text-white">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    ¿Por qué no puedo solicitar un préstamo de implementos?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white-50">
+                                    Esto puede ocurrir por dos razones principales: no hay suficiente stock del elemento seleccionado, o tienes una sanción activa en el sistema debido a una devolución tardía anterior. Puedes verificar tu estado en el apartado de Sanciones de tu Perfil.
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="accordion-item bg-transparent border-secondary text-white">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed bg-transparent text-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                        ¿Por qué no puedo solicitar un préstamo de implementos?
-                    </button>
-                </h2>
-                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-white-50">
-                        Esto puede ocurrir por dos razones principales: no hay suficiente stock del elemento seleccionado, o tienes una sanción activa en el sistema debido a una devolución tardía anterior. Puedes verificar tu estado en el apartado de Sanciones de tu Perfil.
+                </section>
+                
+                <hr class="border-secondary my-5">
+
+                <!-- 1. PERFIL Y CUENTA -->
+                <section id="seccion-perfil" class="manual-section">
+                    <h2 class="text-info fw-bold"><i class="fas fa-user-circle me-2"></i>1. Mi Perfil y Configuración de Cuenta</h2>
+                    <p class="text-white-50 mb-4">El módulo de perfil es tu centro de control personal. Desde aquí gestionas tus datos y puedes ver un resumen de toda tu actividad en la plataforma.</p>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-perfil">
+                                <h5 class="text-white fw-bold"><i class="fas fa-user-edit text-info me-2"></i>Editar Datos Personales</h5>
+                                <p class="text-white-50 small">Tus datos académicos (Ficha, Programa, Documento) son fijos por motivos institucionales. Sin embargo, puedes actualizar tu <strong>Correo Electrónico</strong>, <strong>Número Celular</strong> y tu <strong>Foto de Perfil</strong> haciendo clic en "Editar perfil".</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-perfil">
+                                <h5 class="text-white fw-bold"><i class="fas fa-chart-line text-info me-2"></i>Test de Rendimiento Inicial</h5>
+                                <p class="text-white-50 small">Antes de empezar a entrenar, te recomendamos hacer el Test de Biometría. Registra tu Peso, Estatura, y resultados de pruebas físicas para que el sistema guarde un punto de partida de tu estado físico.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <!-- 2. GIMNASIO -->
+                <section id="seccion-gimnasio" class="manual-section">
+                    <h2 class="text-danger fw-bold"><i class="fas fa-dumbbell me-2"></i>2. Módulo de Gimnasio</h2>
+                    <p class="text-white-50 mb-4">El gimnasio del Centro Minero cuenta con un sistema de reservas digitales (Aforo controlado).</p>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <div class="manual-feature-card border-gimnasio">
+                                <div class="d-flex align-items-start mb-3">
+                                    <span class="step-badge">1</span>
+                                    <div>
+                                        <h5 class="text-white fw-bold mb-1">Explorar las Máquinas</h5>
+                                        <p class="text-white-50 small mb-0">Accede a la pestaña de Gimnasio para ver el inventario de máquinas disponibles, divididas por categorías: Cardio, Fuerza, Funcional. </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start mb-3">
+                                    <span class="step-badge">2</span>
+                                    <div>
+                                        <h5 class="text-white fw-bold mb-1">Hacer una Reserva</h5>
+                                        <p class="text-white-50 small mb-0">Para ingresar, debes agendarte. El sistema registrará tu <strong>Hora de Entrada</strong> y calculará tu <strong>Hora límite de Salida</strong> (usualmente 60 minutos).</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. PRÉSTAMOS -->
+                <section id="seccion-prestamos" class="manual-section">
+                    <h2 class="text-warning fw-bold"><i class="fas fa-volleyball-ball me-2"></i>3. Préstamo de Material Deportivo</h2>
+                    <p class="text-white-50 mb-4">Solicita el material desde tu celular antes de ir a bodega.</p>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-prestamos text-center p-4">
+                                <i class="fas fa-search-plus fa-3x text-warning mb-3"></i>
+                                <h5 class="text-white fw-bold">Buscar Elementos</h5>
+                                <p class="text-white-50 small">Explora balones, raquetas, petos y conos. Verifica cuántas unidades quedan disponibles en bodega antes de solicitar.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-prestamos text-center p-4">
+                                <i class="fas fa-hand-holding-heart fa-3x text-warning mb-3"></i>
+                                <h5 class="text-white fw-bold">Solicitar y Devolver</h5>
+                                <p class="text-white-50 small">Genera la solicitud indicando la cantidad. Tienes un límite de días para devolverlo.</p>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-danger bg-dark border-danger text-white small mb-0">
+                                <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>¡Atención! Sistema de Sanciones:</strong> Si un implemento deportivo no es devuelto a tiempo, o si es devuelto con daños, se generará una "Novedad" que puede bloquear tu cuenta impidiéndote solicitar préstamos temporalmente.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. TORNEOS -->
+                <section id="seccion-torneos" class="manual-section">
+                    <h2 class="text-primary fw-bold"><i class="fas fa-trophy me-2"></i>4. Torneos Interfichas e Intercentros</h2>
+                    <p class="text-white-50 mb-4">El corazón competitivo de Sports-Max. Podrás gestionar campeonatos desde la inscripción hasta la gran final.</p>
+
+                    <div class="manual-feature-card border-torneos mb-4">
+                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Si eres Capitán (Inscripción de Equipos)</h5>
+                        <ul class="text-white-50 small lh-lg mb-0">
+                            <li>Ve al módulo de Torneos y haz clic en <strong>"Inscribir Equipo"</strong>.</li>
+                            <li><strong>Requisitos obligatorios:</strong> Debes subir la imagen del Escudo de tu equipo y cargar la planilla oficial de inscripción en PDF/Word.</li>
+                            <li>Una vez creado el equipo, podrás agregar a cada jugador junto con su <strong>Consentimiento Informado</strong>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="manual-feature-card border-torneos">
+                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Seguimiento de la Competición</h5>
+                        <ul class="text-white-50 small lh-lg mb-0">
+                            <li><strong>Fase de Grupos:</strong> Revisa el fixture (calendario) para saber contra qué ficha juegas, la fecha, la hora y en qué escenario deportivo.</li>
+                            <li><strong>Resultados Adaptativos:</strong> Los marcadores se adaptan a la disciplina. Verás goles (fútbol), puntos (baloncesto) o Sets (voleibol/pimpón).</li>
+                            <li><strong>Tabla de Posiciones:</strong> El sistema calcula automáticamente los puntos (3 por ganar, 1 por empatar) y ordena la tabla.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 5. HÁBITOS -->
+                <section id="seccion-habitos" class="manual-section">
+                    <h2 class="text-sena-green fw-bold"><i class="fas fa-apple-alt me-2"></i>5. Hábitos Saludables y Bienestar</h2>
+                    <p class="text-white-50 mb-4">Un deportista del SENA se cuida integralmente. Este módulo te ayuda a monitorear y mejorar tu estilo de vida.</p>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-habitos">
+                                <h5 class="text-white fw-bold"><i class="fas fa-lock text-sena-green me-2"></i>Privacidad y Habeas Data</h5>
+                                <p class="text-white-50 small">Por ley, al registrar información médica o corporal, debes aceptar primero la Política de Tratamiento de Datos Personales de la plataforma.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-habitos">
+                                <h5 class="text-white fw-bold"><i class="fas fa-running text-sena-green me-2"></i>Rutinas y Nutrición</h5>
+                                <p class="text-white-50 small">Descubre rutinas físicas adaptadas a niveles y navega por la <strong>Pirámide Nutricional Interactiva</strong>.</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="manual-feature-card border-habitos d-flex align-items-center gap-4">
+                                <i class="fas fa-notes-medical fa-4x text-sena-green opacity-50 d-none d-md-block"></i>
+                                <div>
+                                    <h5 class="text-white fw-bold">Seguimiento Biométrico a Largo Plazo</h5>
+                                    <p class="text-white-50 small mb-0">Aquí puedes registrar mediciones periódicas (peso mensual, presión arterial, horas promedio de sueño, vasos de agua al día). El sistema te categorizará según tu IMC.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. ADMINISTRACIÓN -->
+                {% if user.is_staff %}
+                <section id="seccion-admin" class="manual-section">
+                    <h2 class="text-admin-purple fw-bold"><i class="fas fa-user-shield me-2"></i>6. Herramientas de Administración</h2>
+                    <p class="text-white-50 mb-4">Sección exclusiva para Instructores y Administradores de la plataforma.</p>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-admin">
+                                <h5 class="text-white fw-bold"><i class="fas fa-users-cog text-admin-purple me-2"></i>Gestión de Usuarios</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Bloquea o desbloquea el acceso a aprendices.</li>
+                                    <li>Asigna roles (Aprendiz, Administrador).</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="manual-feature-card border-admin">
+                                <h5 class="text-white fw-bold"><i class="fas fa-database text-admin-purple me-2"></i>Auditoría y Backups</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Realiza copias de seguridad de la base de datos (Exportación en JSON).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function descargarPDF() {
+        const elemento = document.getElementById('contenido-manual-pdf');
+        const btnDescargar = document.getElementById('btn-descargar-pdf');
+        
+        // Efecto de carga
+        const textoOriginal = btnDescargar.innerHTML;
+        btnDescargar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generando PDF...';
+        btnDescargar.disabled = true;
+
+        // Opciones de html2pdf
+        const opt = {
+            margin:       [10, 10, 10, 10], // top, left, bottom, right
+            filename:     'Manual_Usuario_SportsMax.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#212529',
+                scrollY: 0, 
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Generar y guardar
+        html2pdf().set(opt).from(elemento).save().then(() => {
+            // Restaurar botón
+            btnDescargar.innerHTML = textoOriginal;
+            btnDescargar.disabled = false;
+        }).catch(err => {
+            console.error('Error al generar PDF: ', err);
+            btnDescargar.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error al descargar';
+            setTimeout(() => {
+                btnDescargar.innerHTML = textoOriginal;
+                btnDescargar.disabled = false;
+            }, 3000);
+        });
+    }
+</script>
 {% endblock %}
