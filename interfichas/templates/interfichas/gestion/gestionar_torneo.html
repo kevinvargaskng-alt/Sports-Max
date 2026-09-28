@@ -231,6 +231,14 @@
     margin: 0.75rem 0 0.4rem;
     color: #8b949e; font-size: 0.78rem; font-style: italic;
 }
+
+#bloque-sanciones {
+    display: block !important;
+}
+
+#bloque-azules {
+    display: block !important;
+}
 </style>
 {% endblock %}
 
@@ -628,16 +636,32 @@
                             <table class="tabla-posiciones">
                                 <thead>
                                     <tr>
-                                        <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th>
+                                        <th>#</th>
+                                        <th>Equipo</th>
+                                        <th>PJ</th>
+                                        <th>PG</th>
+                                        <th>PE</th>
                                         <th>PP</th>
+
                                         {% if tipo_marcador == 'sets' %}
-                                            <th>SF</th><th>SC</th>
+                                            <th>SF</th>
+                                            <th>SC</th>
                                         {% elif tipo_marcador == 'puntos' %}
-                                            <th>PF</th><th>PC</th>
+                                            <th>PF</th>
+                                            <th>PC</th>
                                         {% else %}
-                                            <th>GF</th><th>GC</th>
+                                            <th>GF</th>
+                                            <th>GC</th>
                                         {% endif %}
-                                        <th>DIF</th><th>PTS</th>
+
+                                        <th>DIF</th>
+
+                                        <!-- TARJETAS -->
+                                        <th>🟨</th>
+                                        <th>🟥</th>
+                                        <th>🟦</th>
+
+                                        <th>PTS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -655,7 +679,24 @@
                                         <td class="{% if fila.dg > 0 %}text-success{% elif fila.dg < 0 %}text-danger{% endif %}">
                                             {% if fila.dg > 0 %}+{% endif %}{{ fila.dg }}
                                         </td>
-                                        <td class="fw-bold text-warning">{{ fila.pts }}</td>
+
+                                        <!-- TARJETAS ACUMULADAS -->
+                                        <td class="text-warning fw-bold">
+                                            {{ fila.amarillas }}
+                                        </td>
+
+                                        <td class="text-danger fw-bold">
+                                            {{ fila.rojas }}
+                                        </td>
+
+                                        <td class="text-info fw-bold">      
+                                            {{ fila.azules }}
+                                        </td>
+
+                                        <td class="fw-bold text-warning">
+                                            {{ fila.pts }}
+                                        </td>
+                                        
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -1023,7 +1064,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2 mb-3" id="bloque-azules torneo-u-51">
+                        <div class="row g-2 mb-3" id="bloque-azules">
                             <div class="col-12">
                                 <label class="form-label small text-white-50 mb-1 torneo-u-52">🟦 Tarjetas Azules (Local / Visitante)</label>
                                 <div class="input-group input-group-sm">
@@ -1315,65 +1356,133 @@ function validarGruposRemanual() {
 // ════════════════════════════════════════════════
 function abrirModalResultado(partidoId, local, visitante, fecha, hora,
                               amarillasL, amarillasV, rojasL, rojasV, azulesL, azulesV, detallesSanciones) {
-    document.getElementById('label-local').textContent          = local;
-    document.getElementById('label-visitante').textContent      = visitante;
-    document.getElementById('sets-label-local').textContent     = local;
+
+    document.getElementById('label-local').textContent = local;
+    document.getElementById('label-visitante').textContent = visitante;
+    document.getElementById('sets-label-local').textContent = local;
     document.getElementById('sets-label-visitante').textContent = visitante;
     document.getElementById('modal-partido-nombres').textContent = local + ' vs ' + visitante;
-    document.getElementById('formResultado').action = '/interfichas/partido/' + partidoId + '/resultado/';
-    document.getElementById('goles-local').value     = '';
+
+    document.getElementById('formResultado').action =
+        '/interfichas/partido/' + partidoId + '/resultado/';
+
+    document.getElementById('goles-local').value = '';
     document.getElementById('goles-visitante').value = '';
-    document.getElementById('fecha-partido').value   = fecha || '';
-    document.getElementById('hora-partido').value    = hora  || '';
-    document.getElementById('amarillas-local').value    = amarillasL || 0;
+
+    document.getElementById('fecha-partido').value = fecha || '';
+    document.getElementById('hora-partido').value = hora || '';
+
+    document.getElementById('amarillas-local').value = amarillasL || 0;
     document.getElementById('amarillas-visitante').value = amarillasV || 0;
-    document.getElementById('rojas-local').value         = rojasL    || 0;
-    document.getElementById('rojas-visitante').value     = rojasV    || 0;
+
+    document.getElementById('rojas-local').value = rojasL || 0;
+    document.getElementById('rojas-visitante').value = rojasV || 0;
+
     const azL = document.getElementById('azules-local');
     const azV = document.getElementById('azules-visitante');
+
     if (azL) azL.value = azulesL || 0;
     if (azV) azV.value = azulesV || 0;
-    document.getElementById('detalles-sanciones').value = detallesSanciones || '';
 
-    const esSet       = TIPO_MARCADOR === 'sets';
-    const esPuntos    = TIPO_MARCADOR === 'puntos';
-    const esGoles     = TIPO_MARCADOR === 'goles';
-    const esNoAplica  = TIPO_MARCADOR === 'no_aplica';
+    document.getElementById('detalles-sanciones').value =
+        detallesSanciones || '';
 
-    // Mostrar/ocultar bloques según tipo
-    document.getElementById('bloque-normal').style.display    = (esSet || esNoAplica) ? 'none' : '';
-    document.getElementById('bloque-sets').style.display      = esSet ? '' : 'none';
-    document.getElementById('bloque-ajedrez').style.display   = esNoAplica ? '' : 'none';
-    document.getElementById('bloque-sanciones').style.display = esGoles ? '' : 'none';
+    const esSet = TIPO_MARCADOR === 'sets';
+    const esPuntos = TIPO_MARCADOR === 'puntos';
+    const esGoles = TIPO_MARCADOR === 'goles';
+    const esNoAplica = TIPO_MARCADOR === 'no_aplica';
 
-    const NOMBRE_DISCIPLINA = "{{ torneo.disciplina.nombre_disciplina|escapejs }}";
-    const esFutsal = NOMBRE_DISCIPLINA.toLowerCase().includes('futsal') || NOMBRE_DISCIPLINA.toLowerCase().includes('fútsal');
-    document.getElementById('bloque-azules').style.display = esFutsal ? '' : 'none';
+    // Identificar la disciplina
+    const NOMBRE_DISCIPLINA =
+        "{{ torneo.disciplina.nombre_disciplina|escapejs }}".toLowerCase();
+
+    const esFutsal =
+        NOMBRE_DISCIPLINA.includes('fútsal') ||
+        NOMBRE_DISCIPLINA.includes('fútbol sala') ||
+        NOMBRE_DISCIPLINA.includes('futbol sala') ||
+        NOMBRE_DISCIPLINA.includes('fútbol de salón') ||
+        NOMBRE_DISCIPLINA.includes('futbol de salon');
+
+            // Mostrar / ocultar bloques
+        document.getElementById('bloque-normal').style.display =
+            (esSet || esNoAplica) ? 'none' : '';
+
+        document.getElementById('bloque-sets').style.display =
+            esSet ? '' : 'none';
+
+        document.getElementById('bloque-ajedrez').style.display =
+            esNoAplica ? '' : 'none';
+
+    // TARJETAS: fútbol y futsal
+    const bloqueSanciones = document.getElementById('bloque-sanciones');
+
+    if (esGoles || esFutsal) {
+        bloqueSanciones.style.setProperty('display', 'block', 'important');
+    } else {
+        bloqueSanciones.style.setProperty('display', 'none', 'important');
+    }
+
+    // TARJETAS AZULES: únicamente futsal
+    const bloqueAzules = document.getElementById('bloque-azules');
+
+    if (esFutsal) {
+            bloqueAzules.style.setProperty('display', 'block', 'important');
+    } else {
+        bloqueAzules.style.setProperty('display', 'none', 'important');
+    }
 
     if (esNoAplica) {
-        document.getElementById('modal-tipo-label').textContent = 'Resultado (Ajedrez)';
-        document.getElementById('modal-icono').className = 'fas fa-chess text-warning me-2';
-        // Establecer nombres en las etiquetas de ajedrez
+
+        document.getElementById('modal-tipo-label').textContent =
+            'Resultado (Ajedrez)';
+
+        document.getElementById('modal-icono').className =
+            'fas fa-chess text-warning me-2';
+
         document.getElementById('ajedrez-label-local').textContent = local;
         document.getElementById('ajedrez-label-visitante').textContent = visitante;
-        // Limpiar selección previa
-        document.querySelectorAll('input[name="ganador_ajedrez"]').forEach(r => r.checked = false);
-    } else if (esPuntos) {
-        document.getElementById('modal-tipo-label').textContent = 'Resultado (Puntos)';
-        document.getElementById('modal-icono').className = 'fas fa-basketball-ball text-warning me-2';
-    } else if (esSet) {
-        document.getElementById('modal-tipo-label').textContent = 'Resultado por Sets';
-        document.getElementById('modal-icono').className = 'fas fa-table-tennis text-info me-2';
-        numSets = 0;
-        document.getElementById('sets-container').innerHTML = '';
-        agregarSet(); agregarSet(); agregarSet();
-    } else {
-        document.getElementById('modal-tipo-label').textContent = 'Resultado del Partido';
-        document.getElementById('modal-icono').className = 'fas fa-futbol text-success me-2';
-    }
-    new bootstrap.Modal(document.getElementById('modalResultado')).show();
-}
 
+        document.querySelectorAll(
+            'input[name="ganador_ajedrez"]'
+        ).forEach(r => r.checked = false);
+
+    } else if (esPuntos) {
+
+        document.getElementById('modal-tipo-label').textContent =
+            'Resultado (Puntos)';
+
+        document.getElementById('modal-icono').className =
+            'fas fa-basketball-ball text-warning me-2';
+
+    } else if (esSet) {
+
+        document.getElementById('modal-tipo-label').textContent =
+            'Resultado por Sets';
+
+        document.getElementById('modal-icono').className =
+            'fas fa-table-tennis text-info me-2';
+
+        numSets = 0;
+
+        document.getElementById('sets-container').innerHTML = '';
+
+        agregarSet();
+        agregarSet();
+        agregarSet();
+
+    } else {
+
+        document.getElementById('modal-tipo-label').textContent =
+            'Resultado del Partido';
+
+        document.getElementById('modal-icono').className =
+            'fas fa-futbol text-success me-2';
+    }
+
+    new bootstrap.Modal(
+        document.getElementById('modalResultado')
+    ).show();
+}
 function agregarSet() {
     numSets++;
     const c   = document.getElementById('sets-container');
