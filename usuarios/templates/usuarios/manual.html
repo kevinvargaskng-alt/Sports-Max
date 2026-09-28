@@ -90,6 +90,84 @@
     /* Scrollbar del sidebar */
     .manual-sidebar::-webkit-scrollbar { width: 6px; }
     .manual-sidebar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+    /* Estilos estandarizados de SOLO TEXTO para impresión (PDF) */
+    @media print {
+        /* Forzar que absolutamente todo no tenga fondo y sea negro */
+        * {
+            background: transparent !important;
+            background-color: transparent !important;
+            color: #000000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            border-color: #000000 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            filter: none !important;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+        body, html, main {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+        }
+        
+        /* Ocultar elementos decorativos y de navegación */
+        .manual-sidebar, .navbar, footer, .btn, .no-print, hr, i.fas, i.far, i.fab, .step-badge {
+            display: none !important;
+        }
+
+        /* Quitar las estructuras de tarjetas y alertas */
+        .manual-section, .manual-feature-card, .alert {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 0 1.5rem 0 !important;
+            page-break-inside: avoid;
+        }
+
+        /* Títulos limpios */
+        h1, h2, h5 {
+            margin: 1.5rem 0 0.5rem 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        h2 {
+            font-size: 1.6rem !important;
+            border-bottom: 2px solid #000 !important;
+            padding-bottom: 0.3rem !important;
+        }
+        
+        h5 {
+            font-size: 1.2rem !important;
+            margin-top: 1rem !important;
+        }
+
+        p, ul, li {
+            font-size: 11pt !important;
+            line-height: 1.4 !important;
+            color: #000 !important;
+        }
+
+        /* Destruir el grid de Bootstrap para evitar columnas o layouts raros */
+        .col-lg-9, .col-lg-12, .col-md-6, .col-md-12, .col-12, .row, .container, .d-flex {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: none !important;
+        }
+
+        .alert-danger {
+            border: 1px solid #000 !important;
+            padding: 10px !important;
+            margin-top: 10px !important;
+        }
+    }
 </style>
 {% endblock %}
 

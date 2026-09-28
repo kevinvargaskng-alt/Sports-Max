@@ -89,9 +89,74 @@
     
     .manual-sidebar::-webkit-scrollbar { width: 6px; }
     .manual-sidebar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+    /* Estilos estandarizados de SOLO TEXTO para impresión (PDF) */
+    @media print {
+        * {
+            background: transparent !important;
+            background-color: transparent !important;
+            color: #000000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            border-color: #000000 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            filter: none !important;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+        body, html, main { background: #ffffff !important; background-color: #ffffff !important; }
+        
+        /* Ocultar ABSOLUTAMENTE TODOS los elementos decorativos, flotantes y widgets globales */
+        .manual-sidebar, .navbar, footer, .btn, .no-print, hr, i.fas, i.far, i.fab, .step-badge, .accordion-button::after,
+        #help-toggle, #acc-toggle, #acc-panel, .acc-badge, #tux-pet, .tux-pet, .chat-window, #chat-window, 
+        #smax-cookie-banner, .asistente-ia-fab, #asistente-ia-container, #themeToggleBtn, svg, canvas,
+        /* Ocultar fondos animados o figuras geométricas inyectadas desde el base.html */
+        .bg-shapes, .court-lines, .field-lines, .decorations, [class*="bg-"], [class*="decor"] { 
+            display: none !important; 
+            opacity: 0 !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute !important;
+            z-index: -9999 !important;
+            border: none !important;
+        }
+
+        /* Destruir pseudo-elementos que dibujan canchas/manchas en el fondo */
+        body::before, body::after, html::before, html::after, main::before, main::after, div::before, div::after {
+            display: none !important;
+            content: none !important;
+            background: none !important;
+            border: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        .manual-section, .manual-feature-card, .alert, .sport-card, .accordion-item {
+            background: transparent !important; border: none !important; padding: 0 !important; margin: 0 0 1.5rem 0 !important; page-break-inside: avoid;
+        }
+        h1, h2, h5 { margin: 1.5rem 0 0.5rem 0 !important; padding: 0 !important; border: none !important; font-weight: bold !important; color: #000000 !important; }
+        h2 { font-size: 1.6rem !important; border-bottom: 2px solid #000 !important; padding-bottom: 0.3rem !important; }
+        h5 { font-size: 1.2rem !important; margin-top: 1rem !important; }
+        p, ul, li, .accordion-body, div, span, strong, b { color: #000000 !important; }
+        p, ul, li, .accordion-body { font-size: 11pt !important; line-height: 1.4 !important; padding: 0 !important; }
+        
+        /* Sobrescribir las utilidades de color de Bootstrap que traen !important */
+        .text-white, .text-white-50, .text-info, .text-danger, .text-warning, 
+        .text-primary, .text-sena-green, .text-admin-purple, .text-success, .text-secondary, .text-muted {
+            color: #000000 !important;
+            text-shadow: none !important;
+        }
+
+        .col-lg-9, .col-lg-12, .col-md-6, .col-md-12, .col-12, .row, .container, .d-flex {
+            display: block !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; flex: none !important;
+        }
+        /* Expandir las preguntas frecuentes (FAQ) en el PDF para que se lean completas */
+        .accordion-collapse { display: block !important; height: auto !important; }
+        .accordion-button { padding: 0 !important; color: #000 !important; font-weight: bold !important; }
+    }
 </style>
-<!-- Html2Pdf para generación de PDF desde cliente -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -367,41 +432,10 @@
 
 <script>
     function descargarPDF() {
-        const elemento = document.getElementById('contenido-manual-pdf');
-        const btnDescargar = document.getElementById('btn-descargar-pdf');
-        
-        // Efecto de carga
-        const textoOriginal = btnDescargar.innerHTML;
-        btnDescargar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generando PDF...';
-        btnDescargar.disabled = true;
-
-        // Opciones de html2pdf
-        const opt = {
-            margin:       [10, 10, 10, 10], // top, left, bottom, right
-            filename:     'Manual_Usuario_SportsMax.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#212529',
-                scrollY: 0, 
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Generar y guardar
-        html2pdf().set(opt).from(elemento).save().then(() => {
-            // Restaurar botón
-            btnDescargar.innerHTML = textoOriginal;
-            btnDescargar.disabled = false;
-        }).catch(err => {
-            console.error('Error al generar PDF: ', err);
-            btnDescargar.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error al descargar';
-            setTimeout(() => {
-                btnDescargar.innerHTML = textoOriginal;
-                btnDescargar.disabled = false;
-            }, 3000);
-        });
+        // En lugar de usar html2canvas (que genera imágenes no seleccionables), 
+        // usamos la función nativa de impresión que exporta a PDF en texto real.
+        // Al presionar descargar, el navegador abrirá la ventana de "Guardar como PDF" nativa.
+        window.print();
     }
 </script>
 {% endblock %}
