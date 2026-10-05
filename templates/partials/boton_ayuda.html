@@ -1,9 +1,84 @@
 {% load static %}
 
 <!-- Botón de Ayuda Flotante (Esquina inferior izquierda) -->
-<a href="{% url 'ayuda' %}" id="help-toggle" title="Centro de Ayuda y Soporte" aria-label="Centro de Ayuda">
+<button type="button" onclick="downloadManualGlobal()" id="help-toggle" title="Descargar Manual de Ayuda" aria-label="Centro de Ayuda">
     <i class="fas fa-question-circle"></i>
-</a>
+</button>
+
+<script>
+function downloadManualGlobal() {
+    if (typeof smaxDialog !== 'undefined') {
+        smaxDialog.confirm(
+            "Estás a punto de descargar el Manual de Usuario completo. Esto abrirá el sistema de generación de PDF. Asegúrate de elegir 'Guardar como PDF' como destino en la ventana que aparecerá.",
+            {
+                title: "¿Quieres descargar el manual?",
+                icon: "info",
+                confirmText: "Descargar",
+                cancelText: "Cancelar"
+            }
+        ).then((confirmed) => {
+            if (confirmed) {
+                _iniciarDescargaFondo();
+            }
+        });
+    } else {
+        if(confirm("¿Quieres descargar el Manual de Usuario?")) {
+            _iniciarDescargaFondo();
+        }
+    }
+}
+
+function _iniciarDescargaFondo() {
+    const toastHtml = `<div id="print-toast" style="position:fixed; top:20px; right:20px; background:var(--accent-blue, #2b7de9); color:#fff; padding:12px 20px; border-radius:12px; z-index:99999; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight:bold; font-family:sans-serif;">Preparando documento PDF...</div>`;
+    document.body.insertAdjacentHTML('beforeend', toastHtml);
+
+    fetch("{% url 'ayuda' %}")
+    .then(response => response.text())
+    .then(html => {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, 'text/html');
+        
+        let manualContent = doc.querySelector('.d-print-block');
+        if (!manualContent) throw new Error("Contenido del manual no encontrado");
+
+        let printContainer = document.getElementById('sportsmax-print-container');
+        if (!printContainer) {
+            printContainer = document.createElement('div');
+            printContainer.id = 'sportsmax-print-container';
+            document.body.appendChild(printContainer);
+            
+            let style = document.createElement('style');
+            style.innerHTML = `
+                @media print {
+                    body > *:not(#sportsmax-print-container) { display: none !important; }
+                    #sportsmax-print-container { display: block !important; width: 100% !important; position: absolute; left: 0; top: 0; }
+                }
+                @media screen {
+                    #sportsmax-print-container { display: none !important; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        printContainer.innerHTML = '';
+        
+        let styles = doc.querySelectorAll('style');
+        styles.forEach(s => printContainer.appendChild(s.cloneNode(true)));
+        printContainer.appendChild(manualContent);
+
+        let toast = document.getElementById('print-toast');
+        if (toast) toast.remove();
+        
+        window.print();
+    })
+    .catch(error => {
+        console.error("Error fetching manual:", error);
+        let toast = document.getElementById('print-toast');
+        if (toast) toast.remove();
+        alert("Ocurrió un error al generar el PDF. Por favor, ve directamente a la sección de Ayuda.");
+    });
+}
+</script>
 
 <style>
 /* ── Botón flotante de ayuda ── */

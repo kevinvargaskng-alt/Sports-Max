@@ -892,6 +892,12 @@ def generar_grupos_manual(request, torneo_id):
 def registrar_resultado(request, partido_id):
     partido = get_object_or_404(PartidoInterfichas, pk=partido_id)
     torneo_id = partido.torneo.codigo_torneo_fichas
+
+    # CP-27.1: Validar bloqueo de edición de actas de torneo clausurado
+    if partido.torneo.estado == 'cerrado':
+        messages.error(request, 'El torneo está cerrado. No se pueden editar los resultados de los partidos.')
+        return redirect('gestionar_torneo', torneo_id=torneo_id)
+
     tipo = partido.tipo_marcador
     print("TIPO MARCADOR:", repr(tipo))
 
@@ -1112,6 +1118,11 @@ def cerrar_torneo(request, codigo_torneo):
 
     if torneo.estado == 'cerrado':
         messages.error(request, 'Este torneo ya está cerrado.')
+        return redirect('interfichas')
+
+    # CP-27.2: Validar restricción de cierre de torneo ante partidos pendientes por disputar.
+    if torneo.partidos.filter(jugado=False).exists():
+        messages.error(request, 'No se puede cerrar el torneo porque hay partidos pendientes por disputar.')
         return redirect('interfichas')
 
     if request.method == 'POST':

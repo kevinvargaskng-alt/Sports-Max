@@ -90,71 +90,198 @@
     .manual-sidebar::-webkit-scrollbar { width: 6px; }
     .manual-sidebar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 
-    /* Estilos estandarizados de SOLO TEXTO para impresión (PDF) */
+    /* ═══════════════════════════════════════════
+       ESTILOS DE IMPRESIÓN CON DISEÑO MEJORADO
+       ═══════════════════════════════════════════ */
     @media print {
-        * {
-            background: transparent !important;
-            background-color: transparent !important;
-            color: #000000 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            border-color: #000000 !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            filter: none !important;
-            transform: none !important;
-            opacity: 1 !important;
+        *, *::before, *::after {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
-        body, html, main { background: #ffffff !important; background-color: #ffffff !important; }
         
-        /* Ocultar ABSOLUTAMENTE TODOS los elementos decorativos, flotantes y widgets globales */
-        .manual-sidebar, .navbar, footer, .btn, .no-print, hr, i.fas, i.far, i.fab, .step-badge, .accordion-button::after,
+        @page {
+            size: letter;
+            margin: 15mm;
+        }
+        
+        body, html, main { 
+            background: #ffffff !important; 
+            background-color: #ffffff !important; 
+            color: #1e293b !important;
+            font-family: 'Segoe UI', system-ui, sans-serif !important;
+        }
+        
+        /* Ocultar elementos irrelevantes para PDF */
+        .manual-sidebar, .navbar, footer, .btn, .no-print, hr, .accordion-button::after,
         #help-toggle, #acc-toggle, #acc-panel, .acc-badge, #tux-pet, .tux-pet, .chat-window, #chat-window, 
         #smax-cookie-banner, .asistente-ia-fab, #asistente-ia-container, #themeToggleBtn, svg, canvas,
-        /* Ocultar fondos animados o figuras geométricas inyectadas desde el base.html */
-        .bg-shapes, .court-lines, .field-lines, .decorations, [class*="bg-"], [class*="decor"] { 
+        .bg-shapes, .court-lines, .field-lines, .decorations, [class*="decor"] { 
             display: none !important; 
             opacity: 0 !important;
             visibility: hidden !important;
             width: 0 !important;
             height: 0 !important;
             position: absolute !important;
-            z-index: -9999 !important;
-            border: none !important;
         }
 
-        /* Destruir pseudo-elementos que dibujan canchas/manchas en el fondo */
-        body::before, body::after, html::before, html::after, main::before, main::after, div::before, div::after {
+        /* Destruir pseudo-elementos conflictivos */
+        body::before, body::after, html::before, html::after, main::before, main::after {
             display: none !important;
-            content: none !important;
-            background: none !important;
-            border: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
         }
 
-        .manual-section, .manual-feature-card, .alert, .sport-card, .accordion-item {
-            background: transparent !important; border: none !important; padding: 0 !important; margin: 0 0 1.5rem 0 !important; page-break-inside: avoid;
+        /* Títulos */
+        h1 {
+            font-size: 2.2rem !important;
+            color: #0f172a !important;
+            text-align: center !important;
+            margin-bottom: 0.5rem !important;
         }
-        h1, h2, h5 { margin: 1.5rem 0 0.5rem 0 !important; padding: 0 !important; border: none !important; font-weight: bold !important; color: #000000 !important; }
-        h2 { font-size: 1.6rem !important; border-bottom: 2px solid #000 !important; padding-bottom: 0.3rem !important; }
-        h5 { font-size: 1.2rem !important; margin-top: 1rem !important; }
-        p, ul, li, .accordion-body, div, span, strong, b { color: #000000 !important; }
-        p, ul, li, .accordion-body { font-size: 11pt !important; line-height: 1.4 !important; padding: 0 !important; }
         
-        /* Sobrescribir las utilidades de color de Bootstrap que traen !important */
-        .text-white, .text-white-50, .text-info, .text-danger, .text-warning, 
-        .text-primary, .text-sena-green, .text-admin-purple, .text-success, .text-secondary, .text-muted {
-            color: #000000 !important;
+        h2 { 
+            font-size: 1.4rem !important; 
+            color: #0f172a !important; 
+            border-bottom: 3px solid #0ea5e9 !important; 
+            padding-bottom: 0.4rem !important; 
+            margin-top: 1.8rem !important;
+            margin-bottom: 1rem !important;
+            page-break-after: avoid;
+        }
+
+        /* Ajustes de secciones y tarjetas */
+        .manual-section {
+            background: #ffffff !important;
+            border: none !important;
+            padding: 0 !important;
+            margin-bottom: 1.5rem !important;
+            box-shadow: none !important;
+        }
+
+        .manual-feature-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 1.2rem !important;
+            margin-bottom: 1rem !important;
+            page-break-inside: avoid;
+        }
+        
+        .sport-card {
+            background: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 12px !important;
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
+            page-break-inside: avoid;
+        }
+
+        /* Colores de bordes según sección */
+        .border-perfil    { border-left: 5px solid #0dcaf0 !important; }
+        .border-gimnasio  { border-left: 5px solid #ef4444 !important; }
+        .border-prestamos { border-left: 5px solid #f59e0b !important; }
+        .border-torneos   { border-left: 5px solid #3b82f6 !important; }
+        .border-habitos   { border-left: 5px solid #10b981 !important; }
+        .border-admin     { border-left: 5px solid #8b5cf6 !important; }
+        
+        h5 { 
+            font-size: 1.1rem !important; 
+            color: #1e293b !important; 
+            font-weight: 800 !important; 
+            margin-top: 0 !important;
+            margin-bottom: 0.6rem !important;
+        }
+
+        p, ul, li, .accordion-body { 
+            color: #334155 !important; 
+            font-size: 10pt !important; 
+            line-height: 1.5 !important; 
+        }
+
+        /* Textos de Bootstrap a oscuros */
+        .text-white, .text-white-50 {
+            color: #334155 !important;
             text-shadow: none !important;
         }
+        
+        .text-info { color: #0284c7 !important; }
+        .text-danger { color: #dc2626 !important; }
+        .text-warning { color: #d97706 !important; }
+        .text-primary { color: #2563eb !important; }
+        .text-success, .text-sena-green { color: #059669 !important; }
+        .text-admin-purple { color: #7c3aed !important; }
 
-        .col-lg-9, .col-lg-12, .col-md-6, .col-md-12, .col-12, .row, .container, .d-flex {
-            display: block !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; flex: none !important;
+        /* Grillas - Corrección Webkit Flexbox Overlap Bug */
+        .row {
+            display: block !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
-        /* Expandir las preguntas frecuentes (FAQ) en el PDF para que se lean completas */
-        .accordion-collapse { display: block !important; height: auto !important; }
-        .accordion-button { padding: 0 !important; color: #000 !important; font-weight: bold !important; }
+        .col-md-6, .col-lg-4, .col-12, .col-md-12, .col-lg-9 {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: none !important;
+            padding: 0 !important;
+            margin-bottom: 1rem !important;
+        }
+
+        /* Acordeones */
+        .accordion-item {
+            background: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+            margin-bottom: 0.8rem !important;
+            page-break-inside: avoid;
+        }
+        .accordion-button {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+            font-weight: 800 !important;
+            padding: 0.8rem 1rem !important;
+            border-radius: 8px !important;
+        }
+        .accordion-collapse { 
+            display: block !important; 
+            height: auto !important; 
+        }
+        .accordion-body {
+            padding: 1rem !important;
+        }
+
+        /* Alertas */
+        .alert {
+            background: #fef2f2 !important;
+            border: 1px solid #fca5a5 !important;
+            border-left: 5px solid #ef4444 !important;
+            color: #7f1d1d !important;
+            padding: 1rem !important;
+            border-radius: 8px !important;
+            page-break-inside: avoid;
+        }
+        .alert.alert-secondary {
+            background: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            border-left: 5px solid #0ea5e9 !important;
+            color: #0f172a !important;
+        }
+        .alert * {
+            color: inherit !important;
+        }
+        
+        .step-badge {
+            background: #0ea5e9 !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 50% !important;
+        }
+        
+        /* Iconos */
+        i.fas, i.far, i.fab {
+            color: inherit;
+        }
     }
 </style>
 {% endblock %}
@@ -162,27 +289,8 @@
 {% block content %}
 <div class="container py-5 text-white">
     <div class="row">
-        <!-- Barra de Navegación Lateral (Índice) -->
-        <div class="col-lg-3 d-none d-lg-block" data-html2canvas-ignore="true">
-            <div class="manual-sidebar p-3 bg-dark rounded-4 shadow border border-secondary">
-                <h5 class="text-white fw-bold mb-4 ms-2"><i class="fas fa-list-ul me-2"></i>Índice Temático</h5>
-                <nav class="nav flex-column" id="manual-navbar">
-                    <a class="manual-nav-link" href="#seccion-inicio"><i class="fas fa-home text-white"></i> Ayuda y Soporte</a>
-                    <a class="manual-nav-link" href="#seccion-faq"><i class="fas fa-question-circle text-warning"></i> Preguntas Frecuentes</a>
-                    <a class="manual-nav-link" href="#seccion-perfil"><i class="fas fa-user-circle text-info"></i> 1. Mi Perfil y Cuenta</a>
-                    <a class="manual-nav-link" href="#seccion-gimnasio"><i class="fas fa-dumbbell text-danger"></i> 2. Gimnasio</a>
-                    <a class="manual-nav-link" href="#seccion-prestamos"><i class="fas fa-volleyball-ball text-warning"></i> 3. Préstamos</a>
-                    <a class="manual-nav-link" href="#seccion-torneos"><i class="fas fa-trophy text-primary"></i> 4. Torneos Interfichas</a>
-                    <a class="manual-nav-link" href="#seccion-habitos"><i class="fas fa-heartbeat text-sena-green"></i> 5. Hábitos Saludables</a>
-                    {% if user.is_staff %}
-                    <a class="manual-nav-link text-admin-purple" href="#seccion-admin"><i class="fas fa-shield-alt text-admin-purple"></i> 6. Administración</a>
-                    {% endif %}
-                </nav>
-            </div>
-        </div>
-
         <!-- Contenido Principal -->
-        <div class="col-lg-9">
+        <div class="col-12">
             <div data-bs-spy="scroll" data-bs-target="#manual-navbar" data-bs-offset="100" tabindex="0" id="contenido-manual-pdf">
                 
                 <!-- Encabezado Principal -->
@@ -197,6 +305,9 @@
                     </div>
                 </section>
 
+                <!-- CONTENIDO DEL MANUAL (SOLO VISIBLE EN PDF) -->
+                <div class="d-none d-print-block">
+                
                 <!-- Módulos de Ayuda -->
                 <div class="row g-4 mb-5">
                     <div class="col-md-6 col-lg-4">
@@ -276,13 +387,19 @@
                         <div class="col-md-6">
                             <div class="manual-feature-card border-perfil">
                                 <h5 class="text-white fw-bold"><i class="fas fa-user-edit text-info me-2"></i>Editar Datos Personales</h5>
-                                <p class="text-white-50 small">Tus datos académicos (Ficha, Programa, Documento) son fijos por motivos institucionales. Sin embargo, puedes actualizar tu <strong>Correo Electrónico</strong>, <strong>Número Celular</strong> y tu <strong>Foto de Perfil</strong> haciendo clic en "Editar perfil".</p>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Tus datos institucionales básicos (Ficha, Programa de Formación y Documento) están bloqueados por seguridad e integridad de la información institucional.</li>
+                                    <li>Para modificar el <strong>Correo Electrónico</strong>, <strong>Número Celular</strong> o tu <strong>Foto de Perfil</strong>, accede a "Editar perfil" desde el menú superior derecho. Es vital mantener el número de celular actualizado para recibir notificaciones de sanciones o torneos.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="manual-feature-card border-perfil">
                                 <h5 class="text-white fw-bold"><i class="fas fa-chart-line text-info me-2"></i>Test de Rendimiento Inicial</h5>
-                                <p class="text-white-50 small">Antes de empezar a entrenar, te recomendamos hacer el Test de Biometría. Registra tu Peso, Estatura, y resultados de pruebas físicas para que el sistema guarde un punto de partida de tu estado físico.</p>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Antes de comenzar cualquier ciclo de entrenamiento en el Gimnasio SENA, se requiere el registro de tu estado físico actual.</li>
+                                    <li>Registra tu <strong>Peso</strong>, <strong>Estatura</strong> y los resultados de las pruebas físicas preliminares. Esto servirá para establecer una base estadística en tu perfil biométrico.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -291,53 +408,54 @@
                 <!-- 2. GIMNASIO -->
                 <section id="seccion-gimnasio" class="manual-section">
                     <h2 class="text-danger fw-bold"><i class="fas fa-dumbbell me-2"></i>2. Módulo de Gimnasio</h2>
-                    <p class="text-white-50 mb-4">El gimnasio del Centro Minero cuenta con un sistema de reservas digitales (Aforo controlado).</p>
+                    <p class="text-white-50 mb-4">El gimnasio del Centro Minero cuenta con un sistema de reservas digitales para controlar el aforo y garantizar un entorno seguro y organizado.</p>
                     
-                    <div class="row g-4">
-                        <div class="col-md-12">
-                            <div class="manual-feature-card border-gimnasio">
-                                <div class="d-flex align-items-start mb-3">
-                                    <span class="step-badge">1</span>
-                                    <div>
-                                        <h5 class="text-white fw-bold mb-1">Explorar las Máquinas</h5>
-                                        <p class="text-white-50 small mb-0">Accede a la pestaña de Gimnasio para ver el inventario de máquinas disponibles, divididas por categorías: Cardio, Fuerza, Funcional. </p>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start mb-3">
-                                    <span class="step-badge">2</span>
-                                    <div>
-                                        <h5 class="text-white fw-bold mb-1">Hacer una Reserva</h5>
-                                        <p class="text-white-50 small mb-0">Para ingresar, debes agendarte. El sistema registrará tu <strong>Hora de Entrada</strong> y calculará tu <strong>Hora límite de Salida</strong> (usualmente 60 minutos).</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="manual-feature-card border-gimnasio mb-3">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-calendar-check text-danger me-2"></i>¿Cómo reservar mi ingreso?</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Paso 1:</strong> Dirígete al módulo de "Gimnasio" en el menú principal.</li>
+                            <li><strong>Paso 2:</strong> Revisa el horario de apertura y cierre disponible para tu jornada.</li>
+                            <li><strong>Paso 3:</strong> Selecciona el bloque horario deseado y verifica que haya cupos disponibles (aforo).</li>
+                            <li><strong>Paso 4:</strong> Haz clic en "Agendar Reserva". El sistema generará tu pase de ingreso automático, el cual calculará tu hora límite de salida permitida.</li>
+                        </ul>
+                    </div>
+                    <div class="manual-feature-card border-gimnasio">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-history text-danger me-2"></i>Asistencias e Inventario</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Inventario de Máquinas:</strong> Puedes consultar en la plataforma las máquinas disponibles en las zonas de Cardio, Fuerza y Funcional para planificar tu rutina antes de asistir.</li>
+                            <li><strong>Historial:</strong> En la sección "Mis Asistencias", el sistema lleva un registro detallado de los días y horas exactas en las que has utilizado las instalaciones, permitiéndote comprobar tu constancia deportiva.</li>
+                        </ul>
                     </div>
                 </section>
 
                 <!-- 3. PRÉSTAMOS -->
                 <section id="seccion-prestamos" class="manual-section">
                     <h2 class="text-warning fw-bold"><i class="fas fa-volleyball-ball me-2"></i>3. Préstamo de Material Deportivo</h2>
-                    <p class="text-white-50 mb-4">Solicita el material desde tu celular antes de ir a bodega.</p>
+                    <p class="text-white-50 mb-4">El sistema de inventario te permite solicitar el préstamo de implementos deportivos de forma anticipada. Ahorra tiempo y asegura tu material antes de llegar a la bodega.</p>
                     
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="manual-feature-card border-prestamos text-center p-4">
-                                <i class="fas fa-search-plus fa-3x text-warning mb-3"></i>
-                                <h5 class="text-white fw-bold">Buscar Elementos</h5>
-                                <p class="text-white-50 small">Explora balones, raquetas, petos y conos. Verifica cuántas unidades quedan disponibles en bodega antes de solicitar.</p>
+                            <div class="manual-feature-card border-prestamos p-4">
+                                <h5 class="text-white fw-bold mb-3"><i class="fas fa-search-plus text-warning me-2"></i>Solicitud de Implementos</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Accede a la pestaña "Préstamos" y navega por el catálogo de elementos disponibles (Balones, Raquetas, Aros, Petos, etc.).</li>
+                                    <li>Revisa en tiempo real la cantidad de unidades en estado "Disponible".</li>
+                                    <li>Selecciona la cantidad que necesitas y envía la solicitud. El administrador validará la entrega en ventanilla al presentar tu carnet SENA oficial.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="manual-feature-card border-prestamos text-center p-4">
-                                <i class="fas fa-hand-holding-heart fa-3x text-warning mb-3"></i>
-                                <h5 class="text-white fw-bold">Solicitar y Devolver</h5>
-                                <p class="text-white-50 small">Genera la solicitud indicando la cantidad. Tienes un límite de días para devolverlo.</p>
+                            <div class="manual-feature-card border-prestamos p-4">
+                                <h5 class="text-white fw-bold mb-3"><i class="fas fa-undo text-warning me-2"></i>Devoluciones y Novedades</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Todo préstamo tiene una fecha y hora máxima de devolución establecida por el centro deportivo.</li>
+                                    <li><strong>Daños o pérdidas:</strong> En caso de averiar un elemento, debes reportarlo inmediatamente al instructor para registrar la novedad formal en el sistema.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-12 mt-3">
                             <div class="alert alert-danger bg-dark border-danger text-white small mb-0">
-                                <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>¡Atención! Sistema de Sanciones:</strong> Si un implemento deportivo no es devuelto a tiempo, o si es devuelto con daños, se generará una "Novedad" que puede bloquear tu cuenta impidiéndote solicitar préstamos temporalmente.
+                                <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>¡Sistema Restrictivo Automático!</strong> Si un implemento no es devuelto en el plazo máximo establecido, el sistema generará automáticamente una "Novedad/Sanción", bloqueando tu cuenta para futuros préstamos y el ingreso a instalaciones hasta que resuelvas la situación en la oficina de deportes.
                             </div>
                         </div>
                     </div>
@@ -346,23 +464,25 @@
                 <!-- 4. TORNEOS -->
                 <section id="seccion-torneos" class="manual-section">
                     <h2 class="text-primary fw-bold"><i class="fas fa-trophy me-2"></i>4. Torneos Interfichas e Intercentros</h2>
-                    <p class="text-white-50 mb-4">El corazón competitivo de Sports-Max. Podrás gestionar campeonatos desde la inscripción hasta la gran final.</p>
+                    <p class="text-white-50 mb-4">El corazón competitivo de Sports-Max. Podrás gestionar campeonatos desde la inscripción de tu ficha técnica hasta la visualización de la gran final.</p>
 
                     <div class="manual-feature-card border-torneos mb-4">
-                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Si eres Capitán (Inscripción de Equipos)</h5>
-                        <ul class="text-white-50 small lh-lg mb-0">
+                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Guía para el Capitán del Equipo (Inscripción)</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
                             <li>Ve al módulo de Torneos y haz clic en <strong>"Inscribir Equipo"</strong>.</li>
-                            <li><strong>Requisitos obligatorios:</strong> Debes subir la imagen del Escudo de tu equipo y cargar la planilla oficial de inscripción en PDF/Word.</li>
-                            <li>Una vez creado el equipo, podrás agregar a cada jugador junto con su <strong>Consentimiento Informado</strong>.</li>
+                            <li><strong>Identidad:</strong> Sube la imagen oficial del Escudo de tu equipo y asigna un nombre representativo.</li>
+                            <li><strong>Documentación:</strong> Debes cargar obligatoriamente la planilla oficial de inscripción en formato PDF o Word, firmada y avalada.</li>
+                            <li><strong>Gestión de Plantilla:</strong> Una vez creado el equipo, como capitán, serás el responsable de agregar a cada jugador mediante su número de documento, validando su <strong>Consentimiento Informado</strong> de riesgos deportivos.</li>
                         </ul>
                     </div>
 
                     <div class="manual-feature-card border-torneos">
                         <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Seguimiento de la Competición</h5>
-                        <ul class="text-white-50 small lh-lg mb-0">
-                            <li><strong>Fase de Grupos:</strong> Revisa el fixture (calendario) para saber contra qué ficha juegas, la fecha, la hora y en qué escenario deportivo.</li>
-                            <li><strong>Resultados Adaptativos:</strong> Los marcadores se adaptan a la disciplina. Verás goles (fútbol), puntos (baloncesto) o Sets (voleibol/pimpón).</li>
-                            <li><strong>Tabla de Posiciones:</strong> El sistema calcula automáticamente los puntos (3 por ganar, 1 por empatar) y ordena la tabla.</li>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Fase de Grupos (Fixture):</strong> Revisa el calendario de encuentros para saber contra qué ficha juegas, la fecha, la hora y en qué escenario deportivo (cancha principal, coliseo, etc.).</li>
+                            <li><strong>Resultados Adaptativos:</strong> Los marcadores se adaptan a la disciplina de cada torneo. Podrás visualizar Goles (Fútbol/Microfútbol), Puntos (Baloncesto) o Sets (Voleibol/Pimpón).</li>
+                            <li><strong>Tabla de Posiciones Dinámica:</strong> Al registrarse un acta de partido, el sistema calcula automáticamente los puntos (3 por ganar, 1 por empatar, 0 por perder), la diferencia de puntos y reordena a los equipos.</li>
+                            <li><strong>Reportes Oficiales:</strong> Al finalizar el torneo, accede al "Boletín Oficial de Cierre" que consolida el Cuadro de Honor con el Campeón, Subcampeón, Juego Limpio y Valla Menos Vencida en un formato PDF descargable e imprimible.</li>
                         </ul>
                     </div>
                 </section>
@@ -370,28 +490,31 @@
                 <!-- 5. HÁBITOS -->
                 <section id="seccion-habitos" class="manual-section">
                     <h2 class="text-sena-green fw-bold"><i class="fas fa-apple-alt me-2"></i>5. Hábitos Saludables y Bienestar</h2>
-                    <p class="text-white-50 mb-4">Un deportista del SENA se cuida integralmente. Este módulo te ayuda a monitorear y mejorar tu estilo de vida.</p>
+                    <p class="text-white-50 mb-4">La salud integral de un deportista SENA es primordial. Este módulo está diseñado para ayudarte a monitorear tu estilo de vida y obtener recomendaciones para mejorar tu rendimiento físico y mental.</p>
 
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="manual-feature-card border-habitos">
-                                <h5 class="text-white fw-bold"><i class="fas fa-lock text-sena-green me-2"></i>Privacidad y Habeas Data</h5>
-                                <p class="text-white-50 small">Por ley, al registrar información médica o corporal, debes aceptar primero la Política de Tratamiento de Datos Personales de la plataforma.</p>
+                                <h5 class="text-white fw-bold"><i class="fas fa-chart-line text-sena-green me-2"></i>Seguimiento Biométrico a Largo Plazo</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Registra tus mediciones corporales periódicamente (Peso, Estatura, Frecuencia Cardíaca).</li>
+                                    <li>Monitorea signos vitales y rutinas diarias como la <strong>Presión arterial</strong>, <strong>Horas promedio de sueño</strong> y <strong>Vasos de agua consumidos</strong> al día.</li>
+                                    <li>El sistema calculará automáticamente tu IMC (Índice de Masa Corporal) y te clasificará en las escalas estandarizadas de salud.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="manual-feature-card border-habitos">
-                                <h5 class="text-white fw-bold"><i class="fas fa-running text-sena-green me-2"></i>Rutinas y Nutrición</h5>
-                                <p class="text-white-50 small">Descubre rutinas físicas adaptadas a niveles y navega por la <strong>Pirámide Nutricional Interactiva</strong>.</p>
+                                <h5 class="text-white fw-bold"><i class="fas fa-carrot text-sena-green me-2"></i>Nutrición y Rutinas</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li>Descubre rutinas de ejercicio físico estructuradas por niveles (Principiante, Intermedio, Avanzado) desde la biblioteca interactiva del SENA.</li>
+                                    <li>Navega por la <strong>Pirámide Nutricional Interactiva</strong> para aprender sobre grupos alimenticios, el "plato saludable" y obtener recomendaciones dietéticas pre y post entrenamiento.</li>
+                                </ul>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="manual-feature-card border-habitos d-flex align-items-center gap-4">
-                                <i class="fas fa-notes-medical fa-4x text-sena-green opacity-50 d-none d-md-block"></i>
-                                <div>
-                                    <h5 class="text-white fw-bold">Seguimiento Biométrico a Largo Plazo</h5>
-                                    <p class="text-white-50 small mb-0">Aquí puedes registrar mediciones periódicas (peso mensual, presión arterial, horas promedio de sueño, vasos de agua al día). El sistema te categorizará según tu IMC.</p>
-                                </div>
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-secondary bg-dark border-secondary text-white small mb-0">
+                                <i class="fas fa-lock text-info me-2"></i><strong>Privacidad y Habeas Data:</strong> Por regulación legal e institucional, toda la información médica y corporal registrada está cifrada. Debes aceptar de antemano el consentimiento de Tratamiento de Datos Personales de la plataforma para acceder a los beneficios estadísticos personales.
                             </div>
                         </div>
                     </div>
@@ -425,6 +548,8 @@
                 </section>
                 {% endif %}
 
+                </div> <!-- Fin de CONTENIDO DEL MANUAL -->
+
             </div>
         </div>
     </div>
@@ -432,10 +557,40 @@
 
 <script>
     function descargarPDF() {
-        // En lugar de usar html2canvas (que genera imágenes no seleccionables), 
-        // usamos la función nativa de impresión que exporta a PDF en texto real.
-        // Al presionar descargar, el navegador abrirá la ventana de "Guardar como PDF" nativa.
-        window.print();
+        if (typeof smaxDialog !== 'undefined') {
+            smaxDialog.confirm(
+                "Para obtener el archivo, en la siguiente ventana debes asegurarte de elegir la opción 'Guardar como PDF' como Destino e iniciar la descarga.",
+                {
+                    title: "Generador de PDF",
+                    icon: "info",
+                    confirmText: "Generar PDF",
+                    cancelText: "Cancelar"
+                }
+            ).then((confirmed) => {
+                if (confirmed) {
+                    window.print();
+                }
+            });
+        } else {
+            if(confirm("Elige 'Guardar como PDF' en la siguiente ventana. ¿Continuar?")) {
+                window.print();
+            }
+        }
     }
+
+    // Auto-imprimir si viene desde el iframe en segundo plano
+    window.addEventListener('load', function() {
+        if (window.location.search.includes('auto_print=1')) {
+            setTimeout(function() {
+                // Remover el toast en el padre si existe
+                if (window.parent && window.parent.document) {
+                    let toast = window.parent.document.getElementById('print-toast');
+                    if (toast) toast.remove();
+                }
+                // Ejecutar impresión nativa
+                window.print();
+            }, 800);
+        }
+    });
 </script>
 {% endblock %}
