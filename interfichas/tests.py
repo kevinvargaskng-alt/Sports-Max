@@ -166,3 +166,26 @@ class InterfichasAppTests(TestCase):
         self.assertEqual(eq1.id, eq1.pk)
         self.assertEqual(self.torneo.id, self.torneo.pk)
 
+    def test_interfichas_list_render_admin_y_aprendiz(self):
+        """Verifica que /interfichas/ cargue correctamente tanto para admin como para aprendiz sin UnboundLocalError."""
+        # Usuario aprendiz
+        self.client.login(username="aprendiz_torneo", password="password123")
+        resp_user = self.client.get('/interfichas/')
+        self.assertEqual(resp_user.status_code, 200)
+        self.assertIn('total_equipos_inscritos', resp_user.context)
+
+        # Usuario admin
+        admin = self.User.objects.create_user(
+            username="admin_list_test",
+            password="password123",
+            email="admin_list@sena.edu.co",
+            numero_documento="99887766",
+            rol="admin",
+            is_staff=True
+        )
+        self.client.login(username="admin_list_test", password="password123")
+        resp_admin = self.client.get('/interfichas/')
+        self.assertEqual(resp_admin.status_code, 200)
+        self.assertIn('total_equipos_inscritos', resp_admin.context)
+
+

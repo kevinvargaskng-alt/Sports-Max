@@ -434,6 +434,7 @@ def interfichas_list(request):
     mis_equipos = []
     mis_partidos = PartidoInterfichas.objects.none()
     torneos_disponibles = torneos
+    total_equipos_inscritos = sum(t.equipos.count() for t in torneos)
 
     if not admin:
         mis_equipos_qs = (
@@ -458,7 +459,6 @@ def interfichas_list(request):
 
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
         torneos_disponibles = torneos.exclude(pk__in=torneos_con_equipo)
-        total_equipos_inscritos = sum(t.equipos.count() for t in torneos)
 
     context = {
         'torneos':             torneos,
