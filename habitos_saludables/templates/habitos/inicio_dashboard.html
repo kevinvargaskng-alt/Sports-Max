@@ -363,50 +363,37 @@ canvas { width: 100% !important; max-height: 220px !important; }
       </div>
     </div>
     
-    <!-- Calculadora Macros/Calorías -->
+    <!-- Calculadora de IMC Dinámica -->
     <div class="col-lg-4">
       <div class="interactive-widget">
-        <div class="panel-title" style="color: var(--acid);"><i class="fas fa-fire-alt"></i> Calculadora de Macros</div>
+        <div class="panel-title" style="color: var(--acid);"><i class="fas fa-heartbeat"></i> Estado Físico Actual</div>
+        
         <div class="imc-slider-container">
-          <div>
-            <label class="small text-muted mb-1 d-flex justify-content-between"><span>Peso (kg)</span> <strong id="valPesoMacros">70</strong></label>
-            <input type="range" min="40" max="150" value="{% if ultimo %}{{ ultimo.peso_kg|floatformat:'0' }}{% else %}70{% endif %}" class="range-slider" id="sliderPesoMacros" oninput="calcularMacros()">
-          </div>
-          <div class="row g-2 mb-2">
+          <div class="row g-2 mb-3">
             <div class="col-6">
-              <label class="small text-muted mb-1">Objetivo</label>
-              <select id="selectObjetivo" class="form-select form-select-sm" style="background: var(--surface2); color: #fff; border: 1px solid var(--border);" onchange="calcularMacros()">
-                <option value="perder">Perder Peso</option>
-                <option value="mantener" selected>Mantener</option>
-                <option value="ganar">Ganar Masa</option>
-              </select>
+              <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-ruler-vertical text-info"></i> ESTATURA</label>
+              <div class="input-group input-group-sm">
+                <input type="number" id="inputAltura" class="form-control" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm }}{% else %}170{% endif %}" placeholder="Ej. 170" oninput="calcularEstadoFisico()">
+                <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">cm</span>
+              </div>
             </div>
             <div class="col-6">
-              <label class="small text-muted mb-1">Actividad</label>
-              <select id="selectActividad" class="form-select form-select-sm" style="background: var(--surface2); color: #fff; border: 1px solid var(--border);" onchange="calcularMacros()">
-                <option value="sedentario">Sedentario</option>
-                <option value="moderado" selected>Moderado</option>
-                <option value="activo">Activo</option>
-              </select>
+              <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-weight text-warning"></i> PESO</label>
+              <div class="input-group input-group-sm">
+                <input type="number" step="0.1" id="inputPeso" class="form-control" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|stringformat:'f' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" oninput="calcularEstadoFisico()">
+                <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">kg</span>
+              </div>
             </div>
           </div>
           
-          <div class="text-center mt-2 mb-1">
-            <div style="font-size: 1.8rem; font-weight: 800; line-height: 1;"><span id="macrosCalories">2100</span> <small style="font-size: 0.8rem; color: var(--muted); font-weight: 600;">kcal/día</small></div>
+          <div class="text-center mt-2">
+            <div class="small text-muted mb-1 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.65rem;">Tu Índice de Masa Corporal</div>
+            <div id="valorIMC" style="font-size: 2.5rem; font-weight: 800; line-height: 1; color: var(--teal);">24.2</div>
           </div>
           
-          <div class="d-flex justify-content-between text-center mt-2 p-2 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
-            <div>
-              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Carbs</div>
-              <div style="color: #5c9eff; font-weight: 700; font-size: 0.9rem;"><span id="macrosCarbs">210</span>g</div>
-            </div>
-            <div>
-              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Proteína</div>
-              <div style="color: var(--teal); font-weight: 700; font-size: 0.9rem;"><span id="macrosProtein">157</span>g</div>
-            </div>
-            <div>
-              <div class="small text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Grasas</div>
-              <div style="color: #ffc107; font-weight: 700; font-size: 0.9rem;"><span id="macrosFat">70</span>g</div>
+          <div class="text-center mt-3 mb-2">
+            <div id="mensajeEstado" style="font-size: 0.95rem; font-weight: 700; padding: 12px; border-radius: 12px; background: rgba(32,201,151,0.1); border: 1px solid rgba(32,201,151,0.3); color: var(--teal);">
+              Te encuentras en tu peso ideal
             </div>
           </div>
         </div>
@@ -739,46 +726,66 @@ canvas { width: 100% !important; max-height: 220px !important; }
   }
   updateWaterUI();
 
-  // 2. Calculadora de Macros
-  function calcularMacros() {
-    const peso = parseFloat(document.getElementById('sliderPesoMacros').value);
-    document.getElementById('valPesoMacros').innerText = peso;
-    
-    const obj = document.getElementById('selectObjetivo').value;
-    const act = document.getElementById('selectActividad').value;
-    
-    // Multiplicador de actividad (estimación simplificada)
-    let factorActividad = 30; // Moderado
-    if (act === 'sedentario') factorActividad = 26;
-    else if (act === 'activo') factorActividad = 35;
-    
-    let caloriasMantenimiento = peso * factorActividad;
-    let caloriasObjetivo = caloriasMantenimiento;
-    
-    let pCarbs = 0.4, pProt = 0.3, pFat = 0.3; // Mantener
-    
-    if (obj === 'perder') {
-        caloriasObjetivo -= 500;
-        pCarbs = 0.3; pProt = 0.4; pFat = 0.3;
-    } else if (obj === 'ganar') {
-        caloriasObjetivo += 400;
-        pCarbs = 0.5; pProt = 0.3; pFat = 0.2;
+  // 2. Calculadora de Estado Físico
+  function calcularEstadoFisico() {
+    const alturaInput = document.getElementById('inputAltura');
+    const pesoInput = document.getElementById('inputPeso');
+    if (!alturaInput || !pesoInput) return;
+
+    const alturaCm = parseFloat(alturaInput.value);
+    const pesoKg = parseFloat(pesoInput.value);
+
+    const valorImcEl = document.getElementById('valorIMC');
+    const mensajeEl = document.getElementById('mensajeEstado');
+
+    if (alturaCm > 0 && pesoKg > 0) {
+      const alturaM = alturaCm / 100;
+      const imc = pesoKg / (alturaM * alturaM);
+      
+      valorImcEl.innerText = imc.toFixed(1);
+
+      let categoria = '';
+      let color = '';
+      let bg = '';
+      let border = '';
+
+      if (imc < 18.5) {
+        categoria = 'Estás por debajo de tu peso ideal';
+        color = '#5c9eff';
+        bg = 'rgba(92,158,255,0.1)';
+        border = 'rgba(92,158,255,0.3)';
+      } else if (imc < 25) {
+        categoria = 'Te encuentras en tu peso ideal';
+        color = 'var(--teal)';
+        bg = 'rgba(32,201,151,0.1)';
+        border = 'rgba(32,201,151,0.3)';
+      } else if (imc < 30) {
+        categoria = 'Estás en sobrepeso';
+        color = '#ffc107';
+        bg = 'rgba(255,193,7,0.1)';
+        border = 'rgba(255,193,7,0.3)';
+      } else {
+        categoria = 'Estás en obesidad';
+        color = '#f87171';
+        bg = 'rgba(248,113,113,0.1)';
+        border = 'rgba(248,113,113,0.3)';
+      }
+
+      mensajeEl.innerText = categoria;
+      mensajeEl.style.color = color;
+      mensajeEl.style.background = bg;
+      mensajeEl.style.borderColor = border;
+      valorImcEl.style.color = color;
+    } else {
+      valorImcEl.innerText = '--';
+      mensajeEl.innerText = 'Ingresa tus datos';
+      mensajeEl.style.color = 'var(--muted)';
+      mensajeEl.style.background = 'rgba(255,255,255,0.05)';
+      mensajeEl.style.borderColor = 'var(--border)';
+      valorImcEl.style.color = 'var(--muted)';
     }
-    
-    // Limitar calorías mínimas saludables
-    if (caloriasObjetivo < 1200) caloriasObjetivo = 1200;
-    
-    // Calorías a gramos (Carbs: 4kcal, Prot: 4kcal, Grasas: 9kcal)
-    const gCarbs = Math.round((caloriasObjetivo * pCarbs) / 4);
-    const gProt = Math.round((caloriasObjetivo * pProt) / 4);
-    const gFat = Math.round((caloriasObjetivo * pFat) / 9);
-    
-    document.getElementById('macrosCalories').innerText = Math.round(caloriasObjetivo);
-    document.getElementById('macrosCarbs').innerText = gCarbs;
-    document.getElementById('macrosProtein').innerText = gProt;
-    document.getElementById('macrosFat').innerText = gFat;
   }
-  calcularMacros();
+  calcularEstadoFisico();
 
   // 3. Frases de Motivación
   const frasesMotivacionales = [
