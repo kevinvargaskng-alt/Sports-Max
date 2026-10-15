@@ -53,18 +53,36 @@ function initSportsMaxValidators() {
         });
     });
 
-    // 3. MEDIDAS DE SALUD & DECIMALES (Peso, Estatura, IMC)
-    document.querySelectorAll('.input-decimal-salud, input[name*="peso"], input[name*="estatura"]').forEach(input => {
+    // 3. MEDIDAS DE SALUD & DECIMALES (Peso, Estatura, IMC, Presión, Horas, etc.)
+    document.querySelectorAll('.input-decimal-salud, input[name*="peso"], input[name*="estatura"], input[name*="sueno"]').forEach(input => {
         input.addEventListener('keydown', (e) => {
             if (['e', 'E', '-', '+'].includes(e.key)) {
                 e.preventDefault();
             }
         });
 
+        input.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (e.target.value !== '' && (!isNaN(val) && val <= 0)) {
+                e.target.classList.add('is-invalid');
+                e.target.setAttribute('aria-invalid', 'true');
+            } else {
+                e.target.classList.remove('is-invalid');
+                e.target.setAttribute('aria-invalid', 'false');
+            }
+        });
+
         input.addEventListener('change', (e) => {
             const val = parseFloat(e.target.value);
             if (!isNaN(val)) {
-                e.target.value = val.toFixed(2);
+                if (val <= 0) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setAttribute('aria-invalid', 'true');
+                } else {
+                    e.target.value = val.toFixed(2);
+                    e.target.classList.remove('is-invalid');
+                    e.target.setAttribute('aria-invalid', 'false');
+                }
             }
         });
     });

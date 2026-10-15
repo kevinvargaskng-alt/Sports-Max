@@ -1,7 +1,7 @@
 import uuid
-from datetime import timedelta
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator
 
 # Punto 1: ElementoDeportivo
 
@@ -9,25 +9,14 @@ from django.conf import settings
 class ElementoDeportivo(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
-    # CP-09: nuevo campo de categoría
-    CATEGORIA_CHOICES = [
-        ('balon', 'Balón'),
-        ('raqueta', 'Raqueta'),
-        ('malla', 'Malla / Red'),
-        ('pesa', 'Pesa / Mancuerna'),
-        ('colchoneta', 'Colchoneta'),
-        ('otro', 'Otro'),
-    ]
-
+    # Estos son los campos que tu Admin está pidiendo:
     tipo_maquina = models.CharField(
         max_length=100, verbose_name="Tipo de Máquina/Elemento")
-    categoria = models.CharField(
-        max_length=20, choices=CATEGORIA_CHOICES, default='otro',
-        verbose_name='Categoría', db_index=True)
-    ubicacion = models.CharField(
-        max_length=100, blank=True, default='Bodega principal',
-        verbose_name='Ubicación')
-    cantidad_total = models.IntegerField(default=1)
+    cantidad_total = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1, message="La cantidad total debe ser como mínimo 1.")],
+        verbose_name="Cantidad Total"
+    )
     estado_general = models.CharField(max_length=50, default='Buen estado')
     fecha_adquisicion = models.DateField(null=True, blank=True)
     descripcion = models.TextField(blank=True, null=True)
@@ -67,12 +56,6 @@ class Reserva(models.Model):
     tiempo_permanencia = models.IntegerField(help_text="Duración en minutos")
     estado_reserva = models.CharField(max_length=30, default='Pendiente')
 
-    class Meta:
-        verbose_name = 'Reserva de Inventario'
-        verbose_name_plural = 'Reservas de Inventario'
-        # CP-09: evitar reservas duplicadas del mismo usuario/elemento/fecha
-        unique_together = [('usuario_solicitante', 'elemento', 'fecha_reserva')]
-
 # 2. PRESTAMO (Cabecera) - ¡YA ESTÁ PERFECTO!
 
 
@@ -87,29 +70,21 @@ class Prestamo(models.Model):
     )
     elemento = models.ForeignKey(
         ElementoDeportivo, on_delete=models.CASCADE, null=True, blank=True)
-    cantidad_prestada = models.IntegerField(default=1)
+    cantidad_prestada = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1, message="La cantidad prestada debe ser como mínimo 1.")],
+        verbose_name="Cantidad Prestada"
+    )
     fecha_devolucion = models.DateField(null=True, blank=True)
     fecha_prestamo = models.DateField(auto_now_add=True)
     hora_prestamo = models.TimeField(auto_now_add=True)
-    dias_prestamo = models.IntegerField(default=1)
-    # CP-09: fecha calculada automáticamente en save()
-    fecha_vencimiento = models.DateField(
-        null=True, blank=True, verbose_name='Fecha de vencimiento')
+    dias_prestamo = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1, message="Los días de préstamo deben ser como mínimo 1.")],
+        verbose_name="Días de Préstamo"
+    )
     estado_prestamo = models.CharField(max_length=30, default='Activo')
     observacion_prestamo = models.TextField(blank=True)
-
-    class Meta:
-        verbose_name = 'Préstamo'
-        verbose_name_plural = 'Préstamos'
-        ordering = ['-fecha_prestamo']
-
-    def save(self, *args, **kwargs):
-        # Calcular fecha_vencimiento = fecha de hoy + dias_prestamo
-        if not self.fecha_vencimiento and self.dias_prestamo:
-            from django.utils import timezone
-            base = self.fecha_prestamo if self.fecha_prestamo else timezone.now().date()
-            self.fecha_vencimiento = base + timedelta(days=self.dias_prestamo)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Préstamo #{self.codigo_prestamo} - {self.usuario.username}"
@@ -139,7 +114,11 @@ class Devolucion(models.Model):
     codigo_devolucion = models.AutoField(primary_key=True)
     prestamo = models.ForeignKey(
         Prestamo, on_delete=models.CASCADE, related_name='devoluciones')
-    cantidad_devuelta = models.IntegerField(default=1)
+    cantidad_devuelta = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1, message="La cantidad devuelta debe ser como mínimo 1.")],
+        verbose_name="Cantidad Devuelta"
+    )
     fecha_devolucion = models.DateField(auto_now_add=True)
     hora_devolucion = models.TimeField(auto_now_add=True)
     tiene_novedad = models.BooleanField(default=False)

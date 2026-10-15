@@ -67,13 +67,18 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 d-flex justify-content-start gap-3">
+                    <div class="mt-4 d-flex justify-content-start gap-3 flex-wrap">
                         <button class="btn btn-warning btn-sm px-4 text-cap shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
                             <i class="fas fa-user-edit me-2"></i>Editar perfil
                         </button>
                             <button class="btn btn-outline-info btn-sm px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTestRendimiento">
                             <i class="fas fa-running me-2"></i>Mi Rendimiento
                         </button>
+                        {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'gestionar_usuarios' %}" class="btn btn-outline-warning btn-sm px-4 text-cap">
+                            <i class="fas fa-users-cog me-2"></i>Gestionar Usuarios
+                        </a>
+                        {% endif %}
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">
                             <i class="fas fa-power-off me-2"></i>Cerrar sesión
                         </a>
@@ -94,21 +99,15 @@
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">Inter-fichas</button>
             </li>
 
-            
-            {% if user.is_staff %}
-            <li class="nav-item">
-                <a class="nav-link text-info fw-bold" href="{% url 'gestionar_usuarios' %}">
-                    <i class="fas fa-users-cog me-1"></i> Gestión Usuarios
-                </a>
-            </li>
 
+            {% if user.is_staff %}
             <li class="nav-item">
                 <button class="nav-link text-warning fw-bold" data-bs-toggle="tab" data-bs-target="#tab-admin-reportes">
                     <i class="fas fa-tasks me-1"></i> Gestión Reportes
                 </button>
             </li>
-
             {% endif %}
+
             
             <!-- BOTÓN BUZÓN -->
             {% if not user.is_staff %}

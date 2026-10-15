@@ -535,9 +535,58 @@
                             onclick="document.getElementById('panel-resortear-manual').classList.toggle('d-none')">
                         <i class="fas fa-hand-paper me-1"></i>Re-sortear manual
                     </button>
+                    <!-- ── Botón Generar Cronograma ── -->
+                    <button type="button" class="btn btn-outline-success btn-sm fw-bold"
+                            onclick="document.getElementById('panel-cronograma').classList.toggle('d-none')">
+                        <i class="fas fa-calendar-alt me-1"></i>Generar Cronograma
+                    </button>
                 </div>
                 {% endif %}
             </div>
+
+            <!-- PANEL CRONOGRAMA (colapsable) -->
+            {% if fase_actual == 'grupos' %}
+            <div id="panel-cronograma" class="d-none mb-4">
+                <div class="estado-panel" style="border-color: rgba(63,185,80,0.4);">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-white fw-bold mb-0">
+                            <i class="fas fa-calendar-alt text-success me-2"></i>Generar Cronograma Automático
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-outline-secondary border-0"
+                                onclick="document.getElementById('panel-cronograma').classList.add('d-none')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p class="text-white-50 small mb-3">
+                        Asigna fechas a los partidos pendientes: <strong class="text-success">1 partido por día hábil</strong>
+                        (lunes a viernes), sin sábados ni domingos. Los partidos ya jugados conservan su fecha.
+                    </p>
+                    <form method="POST" action="{% url 'generar_cronograma' torneo_id=torneo.codigo_torneo_fichas %}">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small text-white-50 fw-bold text-uppercase mb-1">
+                                    <i class="fas fa-calendar-day text-success me-1"></i>Fecha de Inicio
+                                </label>
+                                <input type="date" name="fecha_inicio" class="form-control"
+                                       style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;"
+                                       value="{% now 'Y-m-d' %}" min="{% now 'Y-m-d' %}" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <button type="submit" class="btn btn-success fw-bold w-100"
+                                        data-confirm="¿Generar cronograma? Se reasignarán las fechas de todos los partidos pendientes a partir de la fecha seleccionada."
+                                        data-confirm-title="Generar Cronograma"
+                                        data-confirm-icon="info"
+                                        data-confirm-text="Generar">
+                                    <i class="fas fa-calendar-check me-2"></i>Aplicar Cronograma
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
 
             <!-- PANEL RE-SORTEO MANUAL (colapsable) -->
             {% if fase_actual == 'grupos' %}
@@ -1020,7 +1069,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2 mb-3" id="bloque-azules torneo-u-51">
+                        <div class="row g-2 mb-3 torneo-u-51" id="bloque-azules">
                             <div class="col-12">
                                 <label class="form-label small text-white-50 mb-1 torneo-u-52">🟦 Tarjetas Azules (Local / Visitante)</label>
                                 <div class="input-group input-group-sm">
@@ -1345,7 +1394,8 @@ function abrirModalResultado(partidoId, local, visitante, fecha, hora,
 
     const NOMBRE_DISCIPLINA = "{{ torneo.disciplina.nombre_disciplina|escapejs }}";
     const esFutsal = NOMBRE_DISCIPLINA.toLowerCase().includes('futsal') || NOMBRE_DISCIPLINA.toLowerCase().includes('fútsal');
-    document.getElementById('bloque-azules').style.display = esFutsal ? '' : 'none';
+    const bloqueAzules = document.getElementById('bloque-azules');
+    if (bloqueAzules) bloqueAzules.style.display = esFutsal ? '' : 'none';
 
     if (esNoAplica) {
         document.getElementById('modal-tipo-label').textContent = 'Resultado (Ajedrez)';

@@ -59,6 +59,35 @@
         transition: 0.3s;
     }
     .navbar-brand:hover span { opacity: 0.8; }
+
+    /* ─── Botón Gestionar Usuarios (Admin) ─── */
+    .btn-admin-usuarios {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1.5px solid rgba(0, 210, 180, 0.55);
+        background: rgba(0, 210, 180, 0.1);
+        color: #00D4B4;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        letter-spacing: 0.3px;
+    }
+    .btn-admin-usuarios:hover {
+        background: rgba(0, 210, 180, 0.22);
+        border-color: rgba(0, 210, 180, 0.9);
+        color: #00FFE0;
+        transform: translateY(-1px);
+    }
+    .btn-admin-usuarios i { font-size: 0.8rem; }
+    @media (max-width: 576px) {
+        .btn-admin-usuarios span.btn-label { display: none; }
+        .btn-admin-usuarios { padding: 6px 10px; }
+    }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark p-0 hdr-u-1">
@@ -146,6 +175,12 @@
                     <li><hr class="dropdown-divider border-secondary"></li>
                     <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                 </ul>
+                
+                <!-- ALERTA DE CONEXIÓN -->
+                <div id="networkAlert" class="position-absolute" style="top: 100%; right: 0; margin-top: 12px; background: #dc3545; color: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1050; white-space: nowrap; font-weight: bold; font-size: 0.9rem; transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: translateY(-10px);">
+                    <i id="networkAlertIcon" class="fas fa-wifi-slash me-2"></i>
+                    <span id="networkAlertText">Se perdió la conexión a internet</span>
+                </div>
             </div>
             {% else %}
             <button class="btn-ingresar btn-sm py-2 px-3" data-bs-toggle="modal" data-bs-target="#modalForm">

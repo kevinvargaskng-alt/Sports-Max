@@ -15,8 +15,8 @@ from .models import (
 PAISES_TORNEO = [
     "Argentina", "Brasil", "Francia", "España", "Inglaterra",
     "Alemania", "Portugal", "Países Bajos", "Colombia", "Uruguay",
-    "Croacia", "Bélgica", "Noruega", "Japón", "Estados Unidos",
-    "México", "Croacia"
+    "Canadá", "Bélgica", "Noruega", "Japón", "Estados Unidos",
+    "México",
 ]
 
 PROGRAMAS_GLOBALES = [
@@ -30,6 +30,8 @@ PROGRAMAS_GLOBALES = [
 ]
 
 
+from core.security.file_upload import validate_uploaded_file
+from core.security.sanitizers import strip_dangerous_patterns
 from functools import wraps
 from django.core.exceptions import PermissionDenied
 import threading
@@ -42,7 +44,7 @@ def es_admin(user):
 def solo_admin(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not (request.user.is_authenticated and (request.user.is_staff or user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
+        if not (request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
             raise PermissionDenied("Acceso denegado. Se requieren permisos de administración o instructor.")
         return view_func(request, *args, **kwargs)
     return _wrapped_view
@@ -69,12 +71,12 @@ def _calcular_tabla(grupo):
         if local_id in stats_map:
             st = stats_map[local_id]
             st['pj'] += 1
-            st['gf'] += p.goles_local
-            st['gc'] += p.goles_visitante
-            if p.goles_local > p.goles_visitante:
+            st['gf'] += p.goles_local or 0
+            st['gc'] += p.goles_visitante or 0
+            if (p.goles_local or 0) > (p.goles_visitante or 0):
                 st['pg'] += 1
                 st['pts'] += 3
-            elif p.goles_local == p.goles_visitante:
+            elif (p.goles_local or 0) == (p.goles_visitante or 0):
                 st['pe'] += 1
                 st['pts'] += 1
             else:
@@ -83,12 +85,12 @@ def _calcular_tabla(grupo):
         if visit_id in stats_map:
             st = stats_map[visit_id]
             st['pj'] += 1
-            st['gf'] += p.goles_visitante
-            st['gc'] += p.goles_local
-            if p.goles_visitante > p.goles_local:
+            st['gf'] += p.goles_visitante or 0
+            st['gc'] += p.goles_local or 0
+            if (p.goles_visitante or 0) > (p.goles_local or 0):
                 st['pg'] += 1
                 st['pts'] += 3
-            elif p.goles_local == p.goles_visitante:
+            elif (p.goles_local or 0) == (p.goles_visitante or 0):
                 st['pe'] += 1
                 st['pts'] += 1
             else:
@@ -354,7 +356,16 @@ def interfichas_list(request):
 
             ficha = request.POST.get('ficha', '').strip()
             if not ficha:
-                messages.error(request, "La ficha del capitán es obligatoria.")
+                messages.error(
+                    request, "La ficha del capitán es obligatoria.")
+                return redirect('interfichas')
+
+            # Validar que la ficha sea numérica
+            try:
+                ficha_int = int(ficha)
+            except ValueError:
+                messages.error(
+                    request, "La ficha debe ser un número válido.")
                 return redirect('interfichas')
 
             if _ficha_duplicada(torneo_obj, ficha):
@@ -388,8 +399,9 @@ def interfichas_list(request):
             nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,
                 nombre_equipo=nombre_equipo,
-                capitan=request.POST.get('capitan', '').strip(),
-                ficha=ficha,
+                capitan=strip_dangerous_patterns(
+                    request.POST.get('capitan', '').strip()),
+                ficha=ficha_int,
                 programa=request.POST.get('programa', '').strip(),
                 disciplina=torneo_obj.disciplina,
                 usuario_registra=request.user,
@@ -436,6 +448,7 @@ def interfichas_list(request):
     mis_equipos = []
     mis_partidos = PartidoInterfichas.objects.none()
     torneos_disponibles = torneos
+    total_equipos_inscritos = sum(t.equipos.count() for t in torneos)
 
     if not admin:
         mis_equipos_qs = (
@@ -471,6 +484,7 @@ def interfichas_list(request):
         'mis_equipos':         mis_equipos,
         'mis_partidos':        mis_partidos,
         'torneos_disponibles': torneos_disponibles,
+        'total_equipos_inscritos': total_equipos_inscritos,
     }
     return render(request, 'interfichas/interfichas.html', context)
 
@@ -1019,7 +1033,27 @@ def reporte_torneo(request, torneo_id):
 
     equipos = torneo.equipos.prefetch_related('jugadores').all().order_by('nombre_equipo')
     partidos_todos = torneo.partidos.select_related('equipo_local', 'equipo_visitante').all()
-    partidos_jugados = [p for p in partidos_todos if p.jugado]
+    partidos_jugados_count = sum(1 for p in partidos_todos if p.jugado)
+
+    # Cronograma fase de grupos: jugados primero, pendientes luego ordenados por fecha
+    partidos_grupo_qs = list(
+        PartidoInterfichas.objects
+        .filter(torneo=torneo, fase='grupo')
+        .select_related('equipo_local', 'equipo_visitante', 'grupo')
+        .order_by('fecha_partido', 'id')
+    )
+    cronograma_grupo = [p for p in partidos_grupo_qs if p.jugado] + \
+                       [p for p in partidos_grupo_qs if not p.jugado]
+
+    # Equipos con nombre de grupo anotado
+    equipo_grupo_map = {}
+    for g in grupos:
+        for eq in g.equipos.all():
+            equipo_grupo_map[eq.pk] = g.nombre_grupo
+    equipos_con_grupo = []
+    for eq in equipos:
+        eq.nombre_grupo = equipo_grupo_map.get(eq.pk, '')
+        equipos_con_grupo.append(eq)
 
     campeon = None
     try:
@@ -1041,9 +1075,11 @@ def reporte_torneo(request, torneo_id):
         'torneo':             torneo,
         'grupos_con_tabla':   grupos_con_tabla,
         'equipos':            equipos,
+        'equipos_con_grupo':  equipos_con_grupo,
+        'cronograma_grupo':   cronograma_grupo,
         'total_equipos':      equipos.count(),
-        'total_partidos':     len(partidos_todos),
-        'partidos_jugados':   len(partidos_jugados),
+        'total_partidos':     partidos_todos.count(),
+        'partidos_jugados':   partidos_jugados_count,
         'partidos_cuartos':   torneo.partidos.filter(fase='cuartos').select_related('equipo_local', 'equipo_visitante'),
         'partidos_semifinal': torneo.partidos.filter(fase='semifinal').select_related('equipo_local', 'equipo_visitante'),
         'partidos_final':     torneo.partidos.filter(fase='final').select_related('equipo_local', 'equipo_visitante'),
@@ -1236,3 +1272,105 @@ Si no puedes identificar ningún jugador, devuelve: {"jugadores": []}"""
             'error': f'Error inesperado al procesar la planilla: {str(e)}'
         }, status=500)
 
+
+# ============================================================
+#  GENERAR CRONOGRAMA AUTOMATICO - intercalado entre grupos,
+#  sin repeticion de equipos en dias consecutivos, lun-vie
+# ============================================================
+from datetime import date as _date_cls, timedelta as _timedelta_cls
+
+
+def _reordenar_intercalado(partidos_lista):
+    """
+    Ordena los partidos con dos criterios:
+      1. Alterna entre grupos (el de mayor cola primero)
+      2. Ningun equipo juega dos dias seguidos
+    """
+    colas = {}
+    for p in partidos_lista:
+        letra = p.grupo.nombre_grupo
+        if letra not in colas:
+            colas[letra] = []
+        colas[letra].append(p)
+
+    resultado = []
+    equipos_ultimo = set()
+
+    while any(len(q) > 0 for q in colas.values()):
+        colocado = False
+        grupos_disp = [(k, v) for k, v in colas.items() if len(v) > 0]
+        grupos_disp.sort(key=lambda x: -len(x[1]))
+
+        for grupo_letra, cola in grupos_disp:
+            for i, partido in enumerate(cola):
+                eq_l = partido.equipo_local_id
+                eq_v = partido.equipo_visitante_id
+                if eq_l not in equipos_ultimo and eq_v not in equipos_ultimo:
+                    resultado.append(partido)
+                    equipos_ultimo = {eq_l, eq_v}
+                    colas[grupo_letra].pop(i)
+                    colocado = True
+                    break
+            if colocado:
+                break
+
+        if not colocado:
+            grupos_disp = [(k, v) for k, v in colas.items() if len(v) > 0]
+            grupos_disp.sort(key=lambda x: -len(x[1]))
+            grupo_letra, cola = grupos_disp[0]
+            partido = cola.pop(0)
+            resultado.append(partido)
+            equipos_ultimo = {partido.equipo_local_id, partido.equipo_visitante_id}
+
+    return resultado
+
+
+@solo_admin
+@require_POST
+def generar_cronograma(request, torneo_id):
+    """
+    Asigna fechas a los partidos de grupo con interleaving inteligente:
+    - Intercala partidos entre grupos A, B, C
+    - Ningun equipo juega en dias consecutivos
+    - 1 partido por dia habil (lunes a viernes)
+    - Los partidos ya jugados conservan su fecha
+    """
+    torneo = get_object_or_404(TorneoInterfichas, pk=torneo_id)
+
+    fecha_str = request.POST.get('fecha_inicio', '').strip()
+    try:
+        from datetime import datetime as _dt
+        fecha_inicio = _dt.strptime(fecha_str, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        fecha_inicio = _date_cls.today()
+
+    partidos_pendientes = list(
+        PartidoInterfichas.objects
+        .filter(torneo=torneo, fase='grupo', jugado=False)
+        .select_related('equipo_local', 'equipo_visitante', 'grupo')
+        .order_by('grupo__nombre_grupo', 'id')
+    )
+
+    partidos_ordenados = _reordenar_intercalado(partidos_pendientes)
+
+    def _dias_habiles(desde):
+        fecha = desde
+        while True:
+            if fecha.weekday() < 5:
+                yield fecha
+            fecha += _timedelta_cls(days=1)
+
+    generador = _dias_habiles(fecha_inicio)
+    count = 0
+    for partido in partidos_ordenados:
+        partido.fecha_partido = next(generador)
+        partido.save(update_fields=['fecha_partido'])
+        count += 1
+
+    messages.success(
+        request,
+        f"Cronograma intercalado generado: {count} partido(s) programado(s) "
+        f"a partir del {fecha_inicio.strftime('%d/%m/%Y')}, "
+        f"de lunes a viernes (1 por dia, grupos alternados)."
+    )
+    return redirect('gestionar_torneo', torneo_id=torneo_id)

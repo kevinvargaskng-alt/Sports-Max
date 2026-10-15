@@ -951,6 +951,7 @@ document.addEventListener('DOMContentLoaded', function () {
       body: formData,
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
+    
     .then(r => r.json())
     .then(data => {
       if (alertEl) {

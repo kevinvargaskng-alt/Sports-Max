@@ -1,11 +1,18 @@
 from inventario.models import ElementoDeportivo, Prestamo, Sancion
 from interfichas.models import TorneoInterfichas, EquipoInterfichas, JugadorEquipo, PartidoInterfichas
 from gimnasio.models import Reserva
+from core.image_generator import (
+    generar_imagen_ia,
+    es_administrador,
+    DIMENSIONES_ASPECTO,
+    NOMBRES_ESTILO
+)
 import json
 import logging
 import urllib.request
 import urllib.error
 import os
+import re
 import base64
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -209,18 +216,21 @@ def _construir_system_prompt(user, contexto_bd: str) -> str:
 - El usuario que te habla NO ha iniciado sesión (es un visitante o aprendiz explorando la plataforma).
 - Bríndale respuestas amables, formativas, genéricas y de nivel introductorio sobre los servicios del SENA Centro Minero.
 - Oriéntalo sobre cómo usar el sistema, cómo registrarse con su carnet o documento para poder reservar o pedir implementos, y los horarios generales.
-- NO expongas métricas internas de control, listas de usuarios ni inventario privado de administración."""
+- NO expongas métricas internas de control, listas de usuarios ni inventario privado de administración.
+- La función de GENERACIÓN DE IMÁGENES CON IA es de uso exclusivo del Administrador; si la solicitan, acláralo amablemente."""
     elif user.is_staff or getattr(user, 'rol', '') == 'admin':
         rol_instrucciones = f"""## DIRECTIVA DE ROL: ADMINISTRADOR DEL SISTEMA ({user.get_full_name()})
 - El usuario que te habla es un ADMINISTRADOR del sistema deportivo.
 - Bríndale respuestas analíticas, técnicas, ejecutivas y orientadas a la toma de decisiones.
 - Proporciónale resúmenes operativos detallados, alertas de stock crítico en inventario, préstamos vencidos que requieren seguimiento, reservas de gimnasio pendientes por aprobar y control de usuarios.
+- Como ADMINISTRADOR, cuenta con acceso exclusivo a la GENERACIÓN DE IMÁGENES CON IA para afiches deportivos, banners, torneos y material institucional con parámetros (formato 1:1, 16:9, 9:16 y estilos fotorealista, afiche SENA, 3D, etc.).
 - Puedes sugerir acciones de gestión administrativa y auditoría con tono profesional y resolutivo."""
     else:
         rol_instrucciones = f"""## DIRECTIVA DE ROL: APRENDIZ / USUARIO REGISTRADO ({user.get_full_name()} - Ficha: {getattr(user, 'ficha', 'N/A')})
 - El usuario que te habla es un APRENDIZ del SENA autenticado en su cuenta.
 - Adapta tus respuestas de manera personalizada enfocándote en sus reservas activas, el estado de sus implementos prestados, sus fechas límites de devolución para evitar sanciones, y el estado de sus equipos en torneos interfichas.
-- Motívalo a practicar deporte y a cumplir estrictamente los reglamentos de entrega de material y turnos de entrenamiento."""
+- Motívalo a practicar deporte y a cumplir estrictamente los reglamentos de entrega de material y turnos de entrenamiento.
+- La función de GENERACIÓN DE IMÁGENES CON IA está reservada para el Administrador; si te pide generar o dibujar imágenes, declina cortésmente aclarando este permiso."""
 
     prompt = f"""Eres **Tux** 🐱, el asistente de inteligencia artificial del Sistema de Gestión Deportiva del SENA Centro Minero (Colombia).
 
@@ -351,6 +361,73 @@ def _get_motor_ia_local():
 
 
 # ============================================================
+#  HELPERS PARA GENERACIÓN DE IMÁGENES
+# ============================================================
+
+def _es_peticion_generar_imagen(texto: str) -> bool:
+    """Detecta si el mensaje es una solicitud de generación de imagen."""
+    if not texto:
+        return False
+    t = texto.lower()
+    gatillos = [
+        'genera una imagen', 'generar una imagen', 'generar imagen', 'genera imagen',
+        'crea una imagen', 'crear una imagen', 'crear imagen', 'crea imagen',
+        'hazme una imagen', 'haz una imagen', 'dibuja una imagen', 'dibújame', 'dibujame',
+        'dibuja un', 'dibuja una', '/imagen', 'generame una imagen', 'genérame una imagen',
+        'diseña una imagen', 'diseña un afiche', 'diseña afiche', 'diseñar afiche',
+        'crear afiche', 'crea un afiche', 'crea afiche', 'genera un afiche', 'generar afiche',
+        'haz un afiche', 'hazme un afiche'
+    ]
+    return any(g in t for g in gatillos)
+
+
+def _extraer_parametros_texto(texto: str) -> dict:
+    """Extrae prompt limpio, relación de aspecto y estilo desde el texto del administrador."""
+    t_lower = texto.lower()
+
+    # Formato / Aspecto
+    aspecto = '1:1'
+    if '16:9' in t_lower or 'panoramico' in t_lower or 'panorámico' in t_lower or 'banner' in t_lower:
+        aspecto = '16:9'
+    elif '9:16' in t_lower or 'vertical' in t_lower or 'historia' in t_lower or 'story' in t_lower:
+        aspecto = '9:16'
+    elif '4:3' in t_lower:
+        aspecto = '4:3'
+    elif '3:4' in t_lower:
+        aspecto = '3:4'
+
+    # Estilo visual
+    estilo = 'fotorealista'
+    if 'afiche' in t_lower or 'sena' in t_lower or 'institucional' in t_lower:
+        estilo = 'deportivo_sena'
+    elif '3d' in t_lower or 'render' in t_lower or 'pixar' in t_lower or 'blender' in t_lower:
+        estilo = 'ilustracion_3d'
+    elif 'digital' in t_lower or 'arte' in t_lower or 'concepto' in t_lower:
+        estilo = 'arte_digital'
+    elif 'minimalista' in t_lower or 'vector' in t_lower or 'plano' in t_lower:
+        estilo = 'minimalista'
+
+    # Limpiar prompt quitando disparadores
+    prompt_limpio = texto
+    patrones_quitar = [
+        r'(?i)^/?(?:tux,?\s*)?(?:por favor\s*)?(?:genera|generar|crea|crear|hazme|haz|dibuja|diseña)\s+(?:una\s+imagen|un\s+afiche|imagen)?\s*(?:de|del|sobre)?\s*',
+        r'(?i)\b(?:en\s+formato|con\s+aspecto|formato|relaci[oó]n)\s*(?:16:9|9:16|1:1|4:3|3:4|panor[aá]mico|vertical|cuadrado)\b',
+        r'(?i)\b(?:en\s+estilo|estilo)\s*(?:fotorealista|afiche\s+sena|3d|arte\s+digital|minimalista)\b'
+    ]
+    for pat in patrones_quitar:
+        prompt_limpio = re.sub(pat, '', prompt_limpio).strip()
+
+    if not prompt_limpio:
+        prompt_limpio = texto
+
+    return {
+        'prompt': prompt_limpio,
+        'aspecto': aspecto,
+        'estilo': estilo
+    }
+
+
+# ============================================================
 #  ENDPOINT PRINCIPAL: /api/chat-tux/
 # ============================================================
 
@@ -381,6 +458,56 @@ def chat_tux_api(request):
 
         if not mensaje and not imagen_data:
             return JsonResponse({"error": "El mensaje o la imagen están vacíos."}, status=400)
+
+        # ── INTERCEPTOR: SOLICITUD DE GENERACIÓN DE IMÁGENES ──
+        if mensaje and _es_peticion_generar_imagen(mensaje):
+            if not es_administrador(request.user):
+                return JsonResponse({
+                    "reply": (
+                        "🎨 Lo siento, la **generación de imágenes con Inteligencia Artificial** "
+                        "es una función exclusiva para el **Administrador del Sistema**.\n\n"
+                        "Como usuario aprendiz o visitante, puedes consultarme sobre horarios de gimnasio, "
+                        "préstamos deportivos, torneos interfichas o rutinas físicas. ¡Con gusto te ayudo!"
+                    ),
+                    "modulo": "permiso_denegado"
+                })
+            else:
+                # El usuario es Administrador: procesar generación de imagen
+                params = _extraer_parametros_texto(mensaje)
+                res_img = generar_imagen_ia(
+                    prompt=params['prompt'],
+                    aspecto=params['aspecto'],
+                    estilo=params['estilo'],
+                    usuario=request.user,
+                    optimizar=True
+                )
+                if res_img.get('success'):
+                    estilo_nombre = res_img.get('estilo_nombre', params['estilo'])
+                    aspecto = res_img.get('aspecto', params['aspecto'])
+                    return JsonResponse({
+                        "reply": (
+                            f"✨ **¡Imagen generada con éxito, Administrador!** 🎨\n\n"
+                            f"• **Idea:** *{res_img.get('prompt_original')}*\n"
+                            f"• **Estilo:** {estilo_nombre}\n"
+                            f"• **Formato:** {aspecto} ({res_img.get('ancho')}x{res_img.get('alto')} px)\n\n"
+                            f"Puedes hacer clic en la imagen para ampliarla o usar el botón de descarga."
+                        ),
+                        "modulo": "generador_imagen",
+                        "image_generated": {
+                            "url": res_img['image_url'],
+                            "prompt": res_img.get('prompt_original'),
+                            "estilo": estilo_nombre,
+                            "aspecto": aspecto,
+                            "ancho": res_img.get('ancho'),
+                            "alto": res_img.get('alto'),
+                            "filename": res_img.get('filename')
+                        }
+                    })
+                else:
+                    return JsonResponse({
+                        "reply": f"⚠️ No se pudo generar la imagen: {res_img.get('error', 'Error del generador.')}",
+                        "modulo": "error_imagen"
+                    })
 
         # 1. Obtener contexto real de BD (datos en tiempo real adaptados al rol)
         try:
@@ -521,5 +648,58 @@ def transcribe_voice_api(request):
     except Exception as e:
         security_logger.exception("Error en transcribe_voice_api: %s", e)
         return JsonResponse({"error": "Error al procesar el audio. Intenta de nuevo."}, status=500)
+
+
+# ============================================================
+#  ENDPOINT: /api/generar-imagen-ia/ (Exclusivo Administrador)
+# ============================================================
+
+@csrf_exempt
+@require_POST
+def generar_imagen_api(request):
+    """
+    Endpoint para generar imágenes con IA con parámetros personalizados.
+    Restringido estrictamente a Administradores del Sistema.
+    """
+    if not es_administrador(request.user):
+        return JsonResponse({
+            "success": False,
+            "error": "Acceso no autorizado. La generación de imágenes con IA está reservada exclusivamente para el Administrador del Sistema."
+        }, status=403)
+
+    try:
+        data = json.loads(request.body)
+        prompt = (data.get("prompt") or "").strip()
+        aspecto = data.get("aspecto", "1:1")
+        estilo = data.get("estilo", "fotorealista")
+        optimizar = data.get("optimizar", True)
+        seed = data.get("seed")
+
+        if not prompt:
+            return JsonResponse({
+                "success": False,
+                "error": "Debes proporcionar una descripción o idea para la imagen."
+            }, status=400)
+
+        resultado = generar_imagen_ia(
+            prompt=prompt,
+            aspecto=aspecto,
+            estilo=estilo,
+            usuario=request.user,
+            optimizar=optimizar,
+            seed=seed
+        )
+
+        if resultado.get("success"):
+            return JsonResponse(resultado)
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": resultado.get("error", "Error al generar la imagen.")
+            }, status=500)
+
+    except Exception as e:
+        security_logger.exception("Error en generar_imagen_api: %s", e)
+        return JsonResponse({"success": False, "error": "Error interno al procesar la solicitud de imagen."}, status=500)
 
 
