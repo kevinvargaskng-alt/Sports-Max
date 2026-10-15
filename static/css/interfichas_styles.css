@@ -439,9 +439,9 @@
     color: #ffffff;
     border-color: #38bdf8;
     box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
-}
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
 }
+    
 
 /* Tarjetas deportivas de equipos ("Diseño Melo") */
 .team-card-sport {
@@ -662,3 +662,9 @@
 }
 
 
+
+.team-crest-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
