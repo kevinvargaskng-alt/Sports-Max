@@ -170,3 +170,112 @@ class GimnasioAppTests(TestCase):
         self.assertEqual(resp_sobrecupo.status_code, 400)
         self.assertEqual(resp_sobrecupo.json().get('codigo'), 'SOBRECUPO')
         self.assertIn('Sobrecupo', resp_sobrecupo.json().get('message', ''))
+
+
+class TestGimnasioQAQC(TestCase):
+    """Batería de Pruebas QA/QC para el Módulo de Agendamiento y Control de Aforo del Gimnasio."""
+
+    def setUp(self):
+        self.User = get_user_model()
+        self.aprendiz1 = self.User.objects.create_user(
+            username="aprendiz_gym_qa1",
+            password="Password123*",
+            email="gym1_qa@sena.edu.co",
+            numero_documento="77665544",
+            rol="aprendiz"
+        )
+        self.aprendiz2 = self.User.objects.create_user(
+            username="aprendiz_gym_qa2",
+            password="Password123*",
+            email="gym2_qa@sena.edu.co",
+            numero_documento="77665545",
+            rol="aprendiz"
+        )
+        self.config = GimnasioConfig.get_config()
+        self.config.estado = 'abierta'
+        self.config.save()
+
+        self.franja = FranjaHoraria.objects.create(
+            dia_semana="Jueves",
+            hora_inicio=time(9, 0),
+            hora_fin=time(10, 0),
+            aforo_maximo=2,
+            habilitada=True
+        )
+
+    def test_cp_gim_01_reserva_exitosa_dentro_de_aforo(self):
+        """CP-GIM-01 (Positivo): Reserva de turno procesada exitosamente dentro del aforo disponible."""
+        self.client.login(username="aprendiz_gym_qa1", password="Password123*")
+        ahora = timezone.localtime(timezone.now())
+
+        resp = self.client.post('/reserva/turno/', {
+            'fecha_reserva': ahora.date().isoformat(),
+            'franja_id': self.franja.id
+        })
+        self.assertEqual(resp.status_code, 201)
+        data = resp.json()
+        self.assertEqual(data.get('status'), 'success')
+
+        # Comprobar reserva creada en BD
+        reserva = Reserva.objects.filter(usuario_solicitante=self.aprendiz1, franja_horaria=self.franja).first()
+        self.assertIsNotNone(reserva)
+        self.assertEqual(reserva.estado, 'Activa')
+
+    def test_cp_gim_02_y_03_limite_aforo_y_rechazo_sobrecupo(self):
+        """CP-GIM-02 (Límite) & CP-GIM-03 (Negativo): Permite hasta el cupo máximo (2) y rechaza el 3ero con error de sobrecupo."""
+        ahora = timezone.localtime(timezone.now())
+
+        # Reserva 1 / 2 (Cupo 1)
+        self.client.login(username="aprendiz_gym_qa1", password="Password123*")
+        resp1 = self.client.post('/reserva/turno/', {
+            'fecha_reserva': ahora.date().isoformat(),
+            'franja_id': self.franja.id
+        })
+        self.assertEqual(resp1.status_code, 201)
+        self.client.logout()
+
+        # Reserva 2 / 2 (Cupo límite 2 de 2 alcanzado)
+        self.client.login(username="aprendiz_gym_qa2", password="Password123*")
+        resp2 = self.client.post('/reserva/turno/', {
+            'fecha_reserva': ahora.date().isoformat(),
+            'franja_id': self.franja.id
+        })
+        self.assertEqual(resp2.status_code, 201)
+        self.client.logout()
+
+        # Intento de reserva 3 sobre franja llena (CP-GIM-03 Sobrecupo)
+        aprendiz3 = self.User.objects.create_user(
+            username="aprendiz_gym_qa3",
+            password="Password123*",
+            email="gym3_qa@sena.edu.co",
+            numero_documento="77665546",
+            rol="aprendiz"
+        )
+        self.client.login(username="aprendiz_gym_qa3", password="Password123*")
+        resp3 = self.client.post('/reserva/turno/', {
+            'fecha_reserva': ahora.date().isoformat(),
+            'franja_id': self.franja.id
+        })
+        self.assertEqual(resp3.status_code, 400)
+        self.assertEqual(resp3.json().get('codigo'), 'SOBRECUPO')
+
+    def test_cp_gim_04_rechazo_reserva_duplicada_mismo_dia(self):
+        """CP-GIM-04 (Negativo): El mismo usuario no puede reservar dos veces el mismo turno."""
+        self.client.login(username="aprendiz_gym_qa1", password="Password123*")
+        ahora = timezone.localtime(timezone.now())
+
+        # Primera reserva
+        resp1 = self.client.post('/reserva/turno/', {
+            'fecha_reserva': ahora.date().isoformat(),
+            'franja_id': self.franja.id
+        })
+        self.assertEqual(resp1.status_code, 201)
+
+        # Intento duplicado
+        resp2 = self.client.post('/reserva/turno/', {
+            'fecha_reserva': ahora.date().isoformat(),
+            'franja_id': self.franja.id
+        })
+        self.assertEqual(resp2.status_code, 400)
+        self.assertIn('Ya cuentas con una reserva activa', resp2.json().get('message', ''))
+

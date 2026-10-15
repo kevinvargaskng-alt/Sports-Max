@@ -82,17 +82,16 @@ class SeguimientoSaludAdmin(admin.ModelAdmin):
     def imc_badge(self, obj):
         if not obj.imc:
             return '—'
-        imc = float(obj.imc)
-        if imc < 18.5:
-            color = 'orange'
-        elif imc <= 24.9:
-            color = 'green'
-        elif imc <= 29.9:
-            color = 'darkorange'
-        else:
-            color = 'red'
+        categoria, color_key = obj.get_categoria_imc()
+        colors = {
+            'success': '#20c997',
+            'warning': '#ffc107',
+            'danger': '#f87171',
+            'secondary': '#6c757d',
+        }
+        color = colors.get(color_key, '#20c997')
         return format_html(
-            '<span style="color:{};font-weight:bold">{}</span>',
-            color, obj.imc
+            '<span style="color:{};font-weight:bold">{} ({})</span>',
+            color, obj.imc, categoria
         )
     imc_badge.short_description = 'IMC'

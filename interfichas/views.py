@@ -30,6 +30,8 @@ PROGRAMAS_GLOBALES = [
 ]
 
 
+from core.security.file_upload import validate_uploaded_file
+from core.security.sanitizers import strip_dangerous_patterns
 from functools import wraps
 from django.core.exceptions import PermissionDenied
 import threading
@@ -42,7 +44,7 @@ def es_admin(user):
 def solo_admin(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not (request.user.is_authenticated and (request.user.is_staff or user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
+        if not (request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
             raise PermissionDenied("Acceso denegado. Se requieren permisos de administración o instructor.")
         return view_func(request, *args, **kwargs)
     return _wrapped_view
@@ -69,12 +71,12 @@ def _calcular_tabla(grupo):
         if local_id in stats_map:
             st = stats_map[local_id]
             st['pj'] += 1
-            st['gf'] += p.goles_local
-            st['gc'] += p.goles_visitante
-            if p.goles_local > p.goles_visitante:
+            st['gf'] += p.goles_local or 0
+            st['gc'] += p.goles_visitante or 0
+            if (p.goles_local or 0) > (p.goles_visitante or 0):
                 st['pg'] += 1
                 st['pts'] += 3
-            elif p.goles_local == p.goles_visitante:
+            elif (p.goles_local or 0) == (p.goles_visitante or 0):
                 st['pe'] += 1
                 st['pts'] += 1
             else:
@@ -83,12 +85,12 @@ def _calcular_tabla(grupo):
         if visit_id in stats_map:
             st = stats_map[visit_id]
             st['pj'] += 1
-            st['gf'] += p.goles_visitante
-            st['gc'] += p.goles_local
-            if p.goles_visitante > p.goles_local:
+            st['gf'] += p.goles_visitante or 0
+            st['gc'] += p.goles_local or 0
+            if (p.goles_visitante or 0) > (p.goles_local or 0):
                 st['pg'] += 1
                 st['pts'] += 3
-            elif p.goles_local == p.goles_visitante:
+            elif (p.goles_local or 0) == (p.goles_visitante or 0):
                 st['pe'] += 1
                 st['pts'] += 1
             else:
@@ -354,7 +356,16 @@ def interfichas_list(request):
 
             ficha = request.POST.get('ficha', '').strip()
             if not ficha:
-                messages.error(request, "La ficha del capitán es obligatoria.")
+                messages.error(
+                    request, "La ficha del capitán es obligatoria.")
+                return redirect('interfichas')
+
+            # Validar que la ficha sea numérica
+            try:
+                ficha_int = int(ficha)
+            except ValueError:
+                messages.error(
+                    request, "La ficha debe ser un número válido.")
                 return redirect('interfichas')
 
             if _ficha_duplicada(torneo_obj, ficha):
@@ -388,8 +399,9 @@ def interfichas_list(request):
             nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,
                 nombre_equipo=nombre_equipo,
-                capitan=request.POST.get('capitan', '').strip(),
-                ficha=ficha,
+                capitan=strip_dangerous_patterns(
+                    request.POST.get('capitan', '').strip()),
+                ficha=ficha_int,
                 programa=request.POST.get('programa', '').strip(),
                 disciplina=torneo_obj.disciplina,
                 usuario_registra=request.user

@@ -189,3 +189,103 @@ class InterfichasAppTests(TestCase):
         self.assertIn('total_equipos_inscritos', resp_admin.context)
 
 
+class TestInterfichasQAQC(TestCase):
+    """Batería de Pruebas QA/QC para el Módulo de Torneos y Juegos Interfichas."""
+
+    def setUp(self):
+        self.User = get_user_model()
+        self.aprendiz = self.User.objects.create_user(
+            username="aprendiz_torneos_qa",
+            password="Password123*",
+            email="torneos_qa@sena.edu.co",
+            numero_documento="88776655",
+            rol="aprendiz"
+        )
+        self.disciplina_futbol = Disciplina.objects.create(
+            nombre_disciplina="Fútbol 8",
+            tipo_marcador="goles"
+        )
+        self.disciplina_volei = Disciplina.objects.create(
+            nombre_disciplina="Voleibol Mixto",
+            tipo_marcador="sets"
+        )
+        self.torneo = TorneoInterfichas.objects.create(
+            nombre_torneo="Copa Integración SENA 2026",
+            fecha_torneo_fichas=date.today(),
+            lugar="Cancha Múltiple Centro Minero",
+            disciplina=self.disciplina_futbol,
+            estado="activo"
+        )
+
+    def test_cp_int_01_inscripcion_equipo_con_ficha(self):
+        """CP-INT-01 (Positivo): Registro de equipo con número de ficha, programa y capitán."""
+        equipo = EquipoInterfichas.objects.create(
+            ficha=2849102,
+            programa="Gestión de Seguridad y Salud en el Trabajo",
+            nombre_equipo="Seguridad Titanes FC",
+            capitan="Carlos Rincón",
+            torneo=self.torneo,
+            disciplina=self.disciplina_futbol,
+            usuario_registra=self.aprendiz,
+            estado="Inscrito"
+        )
+        self.assertEqual(equipo.ficha, 2849102)
+        self.assertEqual(equipo.estado, 'Inscrito')
+        self.assertEqual(equipo.usuario_registra, self.aprendiz)
+        self.assertEqual(str(equipo), "Seguridad Titanes FC - Ficha: 2849102")
+
+    def test_cp_int_02_calculo_marcador_empate_y_victorias(self):
+        """CP-INT-02 (Límite & QC Lógica): Validación de cálculo de puntos en caso de victoria (3-0) y empate (1-1)."""
+        eq_a = EquipoInterfichas.objects.create(ficha=101, programa="ADSO", nombre_equipo="Equipo A", capitan="Cap A", torneo=self.torneo, disciplina=self.disciplina_futbol)
+        eq_b = EquipoInterfichas.objects.create(ficha=102, programa="SST", nombre_equipo="Equipo B", capitan="Cap B", torneo=self.torneo, disciplina=self.disciplina_futbol)
+
+        # Caso 1: Partido con empate 0 - 0 (Límite inferior de goles)
+        partido_empate = PartidoInterfichas.objects.create(
+            torneo=self.torneo,
+            equipo_local=eq_a,
+            equipo_visitante=eq_b,
+            goles_local=0,
+            goles_visitante=0,
+            jugado=True
+        )
+        self.assertEqual(partido_empate.puntos_local(), 1)
+        self.assertEqual(partido_empate.puntos_visitante(), 1)
+
+        # Caso 2: Victoria Local
+        partido_empate.goles_local = 3
+        partido_empate.goles_visitante = 1
+        partido_empate.save()
+        self.assertEqual(partido_empate.puntos_local(), 3)
+        self.assertEqual(partido_empate.puntos_visitante(), 0)
+
+        # Caso 3: Victoria Visitante
+        partido_empate.goles_local = 1
+        partido_empate.goles_visitante = 2
+        partido_empate.save()
+        self.assertEqual(partido_empate.puntos_local(), 0)
+        self.assertEqual(partido_empate.puntos_visitante(), 3)
+
+    def test_cp_int_03_sets_voleibol_y_formato_resultado(self):
+        """CP-INT-03 (Funcional): Registro y representación formateada de parciales por sets en Voleibol."""
+        torneo_volei = TorneoInterfichas.objects.create(
+            nombre_torneo="Torneo Voleibol Centro Minero",
+            fecha_torneo_fichas=date.today(),
+            lugar="Coliseo",
+            disciplina=self.disciplina_volei
+        )
+        eq_v1 = EquipoInterfichas.objects.create(ficha=201, programa="Topografía", nombre_equipo="Topos Voley", capitan="Cap T", torneo=torneo_volei, disciplina=self.disciplina_volei)
+        eq_v2 = EquipoInterfichas.objects.create(ficha=202, programa="Minería", nombre_equipo="Mineros Voley", capitan="Cap M", torneo=torneo_volei, disciplina=self.disciplina_volei)
+
+        partido_volei = PartidoInterfichas.objects.create(
+            torneo=torneo_volei,
+            equipo_local=eq_v1,
+            equipo_visitante=eq_v2,
+            sets_local=[25, 23, 15],
+            sets_visitante=[20, 25, 10],
+            jugado=True
+        )
+        self.assertEqual(partido_volei.tipo_marcador, 'sets')
+        self.assertEqual(partido_volei.sets_str, '25-20, 23-25, 15-10')
+
+
+

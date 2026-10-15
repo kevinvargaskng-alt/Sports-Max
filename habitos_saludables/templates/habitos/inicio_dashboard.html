@@ -441,7 +441,7 @@ canvas { width: 100% !important; max-height: 220px !important; }
       <div class="stat-label">IMC</div>
       <div class="stat-value">{{ ultimo.imc|default:"—" }}</div>
       <div class="stat-sub">
-        <span class="imc-badge {% if ultimo.imc %}{% if ultimo.imc < 18.5 %}imc-bajo{% elif ultimo.imc < 25 %}imc-normal{% elif ultimo.imc < 30 %}imc-sobrepeso{% else %}imc-obesidad{% endif %}{% endif %}">{{ ultimo.get_categoria_imc }}</span>
+        <span class="imc-badge {% if ultimo.imc %}{% if ultimo.imc < 18.5 %}imc-bajo{% elif ultimo.imc < 25 %}imc-normal{% elif ultimo.imc < 30 %}imc-sobrepeso{% else %}imc-obesidad{% endif %}{% endif %}">{{ ultimo.get_categoria_imc.0 }}</span>
       </div>
     </div>
     <div class="stat-card sc-pink">

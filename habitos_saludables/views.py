@@ -25,17 +25,13 @@ from .forms import (
 # HELPERS
 # ─────────────────────────────────────────────
 def tiene_habeas_data(user):
-    """Verifica si el usuario ha aceptado el Habeas Data o genera el registro automáticamente."""
+    """Verifica si el usuario ha aceptado explícitamente el Habeas Data."""
     if not user.is_authenticated:
         return False
     try:
         return user.habeas_data.acepta
     except (HabeasDataConsent.DoesNotExist, AttributeError):
-        try:
-            consent, _ = HabeasDataConsent.objects.get_or_create(usuario=user, defaults={'acepta': True})
-            return consent.acepta
-        except Exception:
-            return True
+        return False
 
 
 def requiere_habeas_data(view_func):
@@ -331,8 +327,22 @@ def descargar_material(request, pk):
     material = get_object_or_404(MaterialApoyo, pk=pk, activo=True)
 
     if material.tipo_contenido == 'video':
-        # Redirigir a URL externa
+        # Redirigir a URL externa — validar dominio permitido
         material.incrementar_descargas()
+        from urllib.parse import urlparse
+        ALLOWED_VIDEO_DOMAINS = {
+            'youtube.com', 'youtu.be', 'vimeo.com',
+            'dailymotion.com', 'facebook.com', 'fb.watch',
+        }
+        parsed = urlparse(material.url_video)
+        domain = parsed.netloc.lower()
+        if domain.startswith('www.'):
+            domain = domain[4:]
+        if domain not in ALLOWED_VIDEO_DOMAINS:
+            messages.warning(
+                request,
+                'El enlace de este video no está disponible.')
+            return redirect('habitos:biblioteca')
         return redirect(material.url_video)
 
     if material.archivo:
