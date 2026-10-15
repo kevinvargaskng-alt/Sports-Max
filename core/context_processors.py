@@ -40,34 +40,39 @@ def programas_context(request):
             pass
 
         # 2. Notificaciones dinámicas de préstamos activos (plazos y vencimientos)
-        prestamos_activos = Prestamo.objects.filter(usuario=request.user, estado_prestamo='Activo')
-        ahora_date = timezone.localdate()
-        
-        for p in prestamos_activos:
-            if p.elemento:
-                limite = p.fecha_prestamo + timedelta(days=p.dias_prestamo)
-                es_vencido = ahora_date > limite
-                
-                if es_vencido:
-                    unread_count += 1
-                    tipo = 'danger'
-                    icono = 'fa-exclamation-triangle'
-                    badge = 'Vencido'
-                    mensaje = f'¡ATENCIÓN! Has superado la fecha límite de devolución ({limite.strftime("%d/%m/%Y")}). Devuélvelo hoy mismo.'
-                else:
-                    tipo = 'warning'
-                    icono = 'fa-hourglass-half'
-                    badge = 'Plazo Activo'
-                    mensaje = f'Recuerda devolverlo a tiempo. Fecha límite: {limite.strftime("%d/%m/%Y")}.'
-                
-                notifs.append({
-                    'tipo': tipo,
-                    'icono': icono,
-                    'titulo': f'Préstamo de {p.elemento.tipo_maquina} activo',
-                    'mensaje': mensaje,
-                    'badge': badge,
-                    'leida': False
-                })
+        try:
+            prestamos_activos = Prestamo.objects.filter(usuario=request.user, estado_prestamo='Activo')
+            ahora_date = timezone.localdate()
+            prestamos_marcados_hoy = (request.session.get('notifs_prestamos_leidas_date') == str(ahora_date))
+            
+            for p in prestamos_activos:
+                if p.elemento:
+                    limite = p.fecha_prestamo + timedelta(days=p.dias_prestamo)
+                    es_vencido = ahora_date > limite
+                    
+                    if es_vencido:
+                        if not prestamos_marcados_hoy:
+                            unread_count += 1
+                        tipo = 'danger'
+                        icono = 'fa-exclamation-triangle'
+                        badge = 'Vencido' if not prestamos_marcados_hoy else 'Vencido (Leído)'
+                        mensaje = f'¡ATENCIÓN! Has superado la fecha límite de devolución ({limite.strftime("%d/%m/%Y")}). Devuélvelo hoy mismo.'
+                    else:
+                        tipo = 'warning'
+                        icono = 'fa-hourglass-half'
+                        badge = 'Plazo Activo' if not prestamos_marcados_hoy else 'Plazo Activo (Leído)'
+                        mensaje = f'Recuerda devolverlo a tiempo. Fecha límite: {limite.strftime("%d/%m/%Y")}.'
+                    
+                    notifs.append({
+                        'tipo': tipo,
+                        'icono': icono,
+                        'titulo': f'Préstamo de {p.elemento.tipo_maquina} activo',
+                        'mensaje': mensaje,
+                        'badge': badge,
+                        'leida': prestamos_marcados_hoy
+                    })
+        except Exception:
+            pass
         
         if not notifs:
             notifs.append({
