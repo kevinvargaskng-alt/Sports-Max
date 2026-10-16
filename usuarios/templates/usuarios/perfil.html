@@ -27,7 +27,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|title }}</h2>
+                    <h2 class="text-white fw-bold text-cap mb-1">{{ usuario.get_full_name|lower }}</h2>
                     <span class="badge {% if usuario.is_staff or usuario.rol == 'admin' %}bg-warning{% elif usuario.rol == 'instructor' %}bg-info{% else %}bg-info{% endif %} text-dark px-3 py-1 mb-3">
                         <i class="fas {% if usuario.is_staff or usuario.rol == 'admin' %}fa-user-shield{% elif usuario.rol == 'instructor' %}fa-chalkboard-teacher{% else %}fa-user-graduate{% endif %} me-1"></i>
                         {% if usuario.is_staff or usuario.rol == 'admin' %}Administrador{% elif usuario.rol == 'instructor' %}Instructor{% else %}Aprendiz sena{% endif %}
@@ -67,14 +67,18 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 d-flex justify-content-start gap-3">
+                    <div class="mt-4 d-flex justify-content-start gap-3 flex-wrap">
                         <button class="btn btn-warning btn-sm px-4 text-cap shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
                             <i class="fas fa-user-edit me-2"></i>Editar perfil
                         </button>
                             <button class="btn btn-outline-info btn-sm px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTestRendimiento">
                             <i class="fas fa-running me-2"></i>Mi Rendimiento
                         </button>
-
+                        {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'gestionar_usuarios' %}" class="btn btn-outline-warning btn-sm px-4 text-cap">
+                            <i class="fas fa-users-cog me-2"></i>Gestionar Usuarios
+                        </a>
+                        {% endif %}
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">
                             <i class="fas fa-power-off me-2"></i>Cerrar sesión
                         </a>
@@ -95,21 +99,15 @@
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-interfichas">Inter-fichas</button>
             </li>
 
-            
-            {% if user.is_staff %}
-            <li class="nav-item">
-                <a class="nav-link text-info fw-bold" href="{% url 'gestionar_usuarios' %}">
-                    <i class="fas fa-users-cog me-1"></i> Gestión Usuarios
-                </a>
-            </li>
 
+            {% if user.is_staff %}
             <li class="nav-item">
                 <button class="nav-link text-warning fw-bold" data-bs-toggle="tab" data-bs-target="#tab-admin-reportes">
                     <i class="fas fa-tasks me-1"></i> Gestión Reportes
                 </button>
             </li>
-
             {% endif %}
+
             
             <!-- BOTÓN BUZÓN -->
             {% if not user.is_staff %}
@@ -246,7 +244,7 @@
                             <tbody>
                                 {% for s in reportes_todos %}
                                 <tr class="prf-u-5">
-                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|title }}</td>
+                                    <td class="text-info fw-bold">{{ s.usuario.get_full_name|lower }}</td>
                                     <td><div class="small text-white-50 text-truncate prf-u-6">{{ s.comentario }}</div></td>
                                     <td>
                                         {% if s.imagen %}
@@ -339,7 +337,7 @@
                     <div class="row g-3">
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Nombre completo</label>
-                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|title }}" disabled>
+                            <input type="text" class="custom-input form-control border-0 text-white text-cap" value="{{ usuario.get_full_name|lower }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-white-50 text-cap">Tipo de identificación</label>

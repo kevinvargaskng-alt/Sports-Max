@@ -1,12 +1,9 @@
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.db.models import Q
-from django.core.files.base import ContentFile
-from django.contrib.staticfiles import finders
 import random
 from itertools import combinations
 from .models import (
@@ -18,8 +15,8 @@ from .models import (
 PAISES_TORNEO = [
     "Argentina", "Brasil", "Francia", "España", "Inglaterra",
     "Alemania", "Portugal", "Países Bajos", "Colombia", "Uruguay",
-    "Croacia", "Bélgica", "Noruega", "Japón", "Estados Unidos",
-    "México", "Croacia"
+    "Canadá", "Bélgica", "Noruega", "Japón", "Estados Unidos",
+    "México",
 ]
 
 PROGRAMAS_GLOBALES = [
@@ -32,79 +29,9 @@ PROGRAMAS_GLOBALES = [
     "Otro",
 ]
 
-# ================================================================
-# BANDERAS DEL MUNDIAL
-# ================================================================
-# IMPORTANTE: estas rutas son relativas a cualquier carpeta 'static/'
-# de tus apps (o STATICFILES_DIRS). Debes colocar los archivos de
-# imagen en: static/interfichas/banderas/<archivo>
-# Ajusta los nombres de archivo si los tuyos son distintos.
-BANDERAS_MUNDIAL = {
-    "Argentina":      "interfichas/static/img/banderas/argentina.png",
-    "Brasil":         "interfichas/static/img/banderas/brasil.png",
-    "Francia":        "interfichas/static/img/banderas/francia.png",
-    "España":         "interfichas/static/img/banderas/espana.png",
-    "Inglaterra":     "interfichas/static/img/banderas/inglaterra.png",
-    "Alemania":       "interfichas/static/img/banderas/alemania.png",
-    "Portugal":       "interfichas/static/img/banderas/portugal.png",
-    "Países Bajos":   "interfichas/static/img/banderas/paises_bajos.png",
-    "Colombia":       "interfichas/static/img/banderas/colombia.png",
-    "Uruguay":        "interfichas/static/img/banderas/uruguay.png",
-    "Croacia":        "interfichas/static/img/banderas/croacia.png",
-    "Bélgica":        "interfichas/static/img/banderas/belgica.png",
-    "Noruega":        "interfichas/static/img/banderas/noruega.png",
-    "Japón":          "interfichas/static/img/banderas/japon.png",
-    "Estados Unidos": "interfichas/static/img/banderas/estados_unidos.png",
-    "México":         "interfichas/static/img/banderas/mexico.png",
-}
 
-
-def asignar_escudo_por_pais(equipo, nombre_pais, forzar=False):
-    """
-    Busca la imagen de bandera correspondiente al país (usando los
-    archivos estáticos del proyecto) y la guarda en el campo `escudo`
-    del equipo.
-    """
-    if equipo.escudo and not forzar:
-        return False
-
-    ruta_relativa = BANDERAS_MUNDIAL.get(nombre_pais)
-    if not ruta_relativa:
-        return False
-
-    # Probamos varias variantes de la ruta, porque finders.find() busca
-    # DENTRO de la carpeta static/ de cada app (no incluye "static/" en
-    # el argumento). Así evitamos que un typo en la ruta rompa todo en
-    # silencio.
-    candidatos = [
-        ruta_relativa,
-        ruta_relativa.replace('interfichas/static/', ''),
-        ruta_relativa.replace('interfichas/', ''),
-        ruta_relativa.split('/')[-1] and f"img/banderas/{os.path.basename(ruta_relativa)}",
-    ]
-
-    ruta_absoluta = None
-    ruta_encontrada = ruta_relativa
-    for candidato in candidatos:
-        if not candidato:
-            continue
-        ruta_absoluta = finders.find(candidato)
-        if ruta_absoluta:
-            ruta_encontrada = candidato
-            break
-
-    if not ruta_absoluta:
-        return False
-
-    with open(ruta_absoluta, 'rb') as f:
-        contenido = f.read()
-
-    nombre_archivo = os.path.basename(ruta_encontrada)
-    equipo.escudo.save(nombre_archivo, ContentFile(contenido), save=True)
-    return True
-
-
-
+from core.security.file_upload import validate_uploaded_file
+from core.security.sanitizers import strip_dangerous_patterns
 from functools import wraps
 from django.core.exceptions import PermissionDenied
 import threading
@@ -117,7 +44,7 @@ def es_admin(user):
 def solo_admin(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not (request.user.is_authenticated and (request.user.is_staff or user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
+        if not (request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser or getattr(request.user, 'rol', '') in ['admin', 'instructor'])):
             raise PermissionDenied("Acceso denegado. Se requieren permisos de administración o instructor.")
         return view_func(request, *args, **kwargs)
     return _wrapped_view
@@ -125,31 +52,14 @@ def solo_admin(view_func):
 
 def _calcular_tabla(grupo):
     equipos = grupo.equipos.all()
-
-    # Partidos jugados del grupo
-    partidos_jugados = grupo.partidos.filter(
-        jugado=True
-    ).select_related(
-        'equipo_local',
-        'equipo_visitante'
-    )
+    # 1 sola consulta SQL precargando equipos locales y visitantes para eliminar el problema N+1
+    partidos_jugados = grupo.partidos.filter(jugado=True).select_related('equipo_local', 'equipo_visitante')
 
     stats_map = {
         eq.pk: {
             'equipo': eq,
-            'pj': 0,
-            'pg': 0,
-            'pe': 0,
-            'pp': 0,
-            'gf': 0,
-            'gc': 0,
-            'dg': 0,
-            'pts': 0,
-
-            # CP-24: acumulación de tarjetas
-            'amarillas': 0,
-            'rojas': 0,
-            'azules': 0,
+            'pj': 0, 'pg': 0, 'pe': 0, 'pp': 0,
+            'gf': 0, 'gc': 0, 'dg': 0, 'pts': 0
         }
         for eq in equipos
     }
@@ -158,68 +68,39 @@ def _calcular_tabla(grupo):
         local_id = p.equipo_local_id
         visit_id = p.equipo_visitante_id
 
-        # ============================================================
-        # EQUIPO LOCAL
-        # ============================================================
         if local_id in stats_map:
             st = stats_map[local_id]
-
             st['pj'] += 1
-            st['gf'] += p.goles_local
-            st['gc'] += p.goles_visitante
-
-            if p.goles_local > p.goles_visitante:
+            st['gf'] += p.goles_local or 0
+            st['gc'] += p.goles_visitante or 0
+            if (p.goles_local or 0) > (p.goles_visitante or 0):
                 st['pg'] += 1
                 st['pts'] += 3
-            elif p.goles_local == p.goles_visitante:
+            elif (p.goles_local or 0) == (p.goles_visitante or 0):
                 st['pe'] += 1
                 st['pts'] += 1
             else:
                 st['pp'] += 1
 
-            # CP-24: tarjetas recibidas como local
-            st['amarillas'] += p.tarjetas_amarillas_local or 0
-            st['rojas'] += p.tarjetas_rojas_local or 0
-            st['azules'] += p.tarjetas_azules_local or 0
-
-        # ============================================================
-        # EQUIPO VISITANTE
-        # ============================================================
         if visit_id in stats_map:
             st = stats_map[visit_id]
-
             st['pj'] += 1
-            st['gf'] += p.goles_visitante
-            st['gc'] += p.goles_local
-
-            if p.goles_visitante > p.goles_local:
+            st['gf'] += p.goles_visitante or 0
+            st['gc'] += p.goles_local or 0
+            if (p.goles_visitante or 0) > (p.goles_local or 0):
                 st['pg'] += 1
                 st['pts'] += 3
-            elif p.goles_local == p.goles_visitante:
+            elif (p.goles_local or 0) == (p.goles_visitante or 0):
                 st['pe'] += 1
                 st['pts'] += 1
             else:
                 st['pp'] += 1
 
-            # CP-24: tarjetas recibidas como visitante
-            st['amarillas'] += p.tarjetas_amarillas_visitante or 0
-            st['rojas'] += p.tarjetas_rojas_visitante or 0
-            st['azules'] += p.tarjetas_azules_visitante or 0
-
-    # Diferencia de goles
     for st in stats_map.values():
         st['dg'] = st['gf'] - st['gc']
 
     tabla = list(stats_map.values())
-
-    tabla.sort(
-        key=lambda x: (
-            -x['pts'],
-            -x['dg'],
-            -x['gf']
-        )
-    )
-
+    tabla.sort(key=lambda x: (-x['pts'], -x['dg'], -x['gf']))
     return tabla
 
 
@@ -354,15 +235,6 @@ def interfichas_list(request):
     for eq in todos_equipos_list:
         eq.nombre_grupo = equipo_grupo_map.get(eq.pk, '')
 
-    # Reparación automática: si un equipo representa un país mundial y
-    # todavía no tiene escudo (por ejemplo, quedó inscrito antes de
-    # arreglar la ruta de banderas), se le asigna aquí mismo al cargar
-    # el panel — sin necesidad de acción manual.
-    for eq in todos_equipos_list:
-        if not eq.escudo and eq.nombre_equipo in BANDERAS_MUNDIAL:
-            asignar_escudo_por_pais(eq, eq.nombre_equipo)
-        
-
     # Agrupar los equipos por Grupo para la visualización en bloques
     grupos_dict = {}
     for eq in todos_equipos_list:
@@ -484,7 +356,16 @@ def interfichas_list(request):
 
             ficha = request.POST.get('ficha', '').strip()
             if not ficha:
-                messages.error(request, "La ficha del capitán es obligatoria.")
+                messages.error(
+                    request, "La ficha del capitán es obligatoria.")
+                return redirect('interfichas')
+
+            # Validar que la ficha sea numérica
+            try:
+                ficha_int = int(ficha)
+            except ValueError:
+                messages.error(
+                    request, "La ficha debe ser un número válido.")
                 return redirect('interfichas')
 
             if _ficha_duplicada(torneo_obj, ficha):
@@ -515,14 +396,15 @@ def interfichas_list(request):
                 if not nombre_equipo:
                     nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
 
-            nuevo_equipo = EquipoInterfichas.objects.create (
+            nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,
                 nombre_equipo=nombre_equipo,
-                capitan=request.POST.get('capitan', '').strip(),
-                ficha=ficha,
+                capitan=strip_dangerous_patterns(
+                    request.POST.get('capitan', '').strip()),
+                ficha=ficha_int,
                 programa=request.POST.get('programa', '').strip(),
                 disciplina=torneo_obj.disciplina,
-                usuario_registra=request.user,
+                usuario_registra=request.user
             )
 
             # Guardar planilla de inscripción (archivo)
@@ -530,11 +412,6 @@ def interfichas_list(request):
             if planilla_file:
                 nuevo_equipo.planilla_inscripcion = planilla_file
                 nuevo_equipo.save()
-
-            # Asignación automática del escudo (bandera del país) para
-            # torneos temática mundial. Ya no se sube manualmente.
-            if es_mundial:
-                asignar_escudo_por_pais(nuevo_equipo, nombre_equipo)
 
             # Guardar jugadores con documento y consentimiento
             nombres_jugadores = request.POST.getlist('jugadores[]')
@@ -594,7 +471,6 @@ def interfichas_list(request):
 
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
         torneos_disponibles = torneos.exclude(pk__in=torneos_con_equipo)
-        
 
     context = {
         'torneos':             torneos,
@@ -892,14 +768,7 @@ def generar_grupos_manual(request, torneo_id):
 def registrar_resultado(request, partido_id):
     partido = get_object_or_404(PartidoInterfichas, pk=partido_id)
     torneo_id = partido.torneo.codigo_torneo_fichas
-
-    # CP-27.1: Validar bloqueo de edición de actas de torneo clausurado
-    if partido.torneo.estado == 'cerrado':
-        messages.error(request, 'El torneo está cerrado. No se pueden editar los resultados de los partidos.')
-        return redirect('gestionar_torneo', torneo_id=torneo_id)
-
     tipo = partido.tipo_marcador
-    print("TIPO MARCADOR:", repr(tipo))
 
     fecha = request.POST.get('fecha_partido')
     hora = request.POST.get('hora_partido')
@@ -949,15 +818,8 @@ def registrar_resultado(request, partido_id):
             return redirect('gestionar_torneo', torneo_id=torneo_id)
 
         if sl and sv and len(sl) == len(sv):
-            # CP-27.2: Validar exigencia de diferencia mínima de dos puntos en cierre de cada set
-            for i, (a, b) in enumerate(zip(sl, sv)):
-                if abs(a - b) < 2:
-                    messages.error(request, f"Error en el Set {i+1}: Debe haber una diferencia mínima de 2 puntos para cerrar el set ({a}-{b}).")
-                    return redirect('gestionar_torneo', torneo_id=torneo_id)
-
             partido.sets_local = sl
             partido.sets_visitante = sv
-            # CP-27.1: Cálculo automático de ganador por mayoría de sets
             partido.goles_local = sum(1 for a, b in zip(sl, sv) if a > b)
             partido.goles_visitante = sum(1 for a, b in zip(sl, sv) if b > a)
             partido.jugado = True
@@ -1120,16 +982,8 @@ def cerrar_torneo(request, codigo_torneo):
         messages.error(request, 'Este torneo ya está cerrado.')
         return redirect('interfichas')
 
-    # CP-27.2: Validar restricción de cierre de torneo ante partidos pendientes por disputar.
-    if torneo.partidos.filter(jugado=False).exists():
-        messages.error(request, 'No se puede cerrar el torneo porque hay partidos pendientes por disputar.')
-        return redirect('interfichas')
-
     if request.method == 'POST':
         ganador_id = request.POST.get('ganador_id')
-        subcampeon_id = request.POST.get('subcampeon_id')
-        valla_id = request.POST.get('valla_menos_vencida_id')
-        juego_limpio_id = request.POST.get('balance_juego_limpio_id')
         accion = request.POST.get('accion')
 
         if not ganador_id:
@@ -1137,23 +991,14 @@ def cerrar_torneo(request, codigo_torneo):
             return redirect('interfichas')
 
         try:
-            ganador = get_object_or_404(EquipoInterfichas, id=int(ganador_id), torneo=torneo)
-            subcampeon = EquipoInterfichas.objects.filter(id=int(subcampeon_id), torneo=torneo).first() if subcampeon_id else None
-            valla = EquipoInterfichas.objects.filter(id=int(valla_id), torneo=torneo).first() if valla_id else None
-            juego_limpio = EquipoInterfichas.objects.filter(id=int(juego_limpio_id), torneo=torneo).first() if juego_limpio_id else None
+            ganador = get_object_or_404(
+                EquipoInterfichas, id=int(ganador_id), torneo=torneo)
         except (ValueError, EquipoInterfichas.DoesNotExist):
-            messages.error(request, "Datos de equipos inválidos.")
+            messages.error(request, "Equipo ganador inválido.")
             return redirect('interfichas')
 
-        defaults = {
-            'ganador': ganador,
-            'subcampeon': subcampeon,
-            'valla_menos_vencida': valla,
-            'balance_juego_limpio': juego_limpio
-        }
-
         resultado, _ = ResultadoTorneo.objects.update_or_create(
-            torneo=torneo, defaults=defaults
+            torneo=torneo, defaults={'ganador': ganador}
         )
 
         if accion == 'archivar':
@@ -1186,7 +1031,27 @@ def reporte_torneo(request, torneo_id):
 
     equipos = torneo.equipos.prefetch_related('jugadores').all().order_by('nombre_equipo')
     partidos_todos = torneo.partidos.select_related('equipo_local', 'equipo_visitante').all()
-    partidos_jugados = [p for p in partidos_todos if p.jugado]
+    partidos_jugados_count = sum(1 for p in partidos_todos if p.jugado)
+
+    # Cronograma fase de grupos: jugados primero, pendientes luego ordenados por fecha
+    partidos_grupo_qs = list(
+        PartidoInterfichas.objects
+        .filter(torneo=torneo, fase='grupo')
+        .select_related('equipo_local', 'equipo_visitante', 'grupo')
+        .order_by('fecha_partido', 'id')
+    )
+    cronograma_grupo = [p for p in partidos_grupo_qs if p.jugado] + \
+                       [p for p in partidos_grupo_qs if not p.jugado]
+
+    # Equipos con nombre de grupo anotado
+    equipo_grupo_map = {}
+    for g in grupos:
+        for eq in g.equipos.all():
+            equipo_grupo_map[eq.pk] = g.nombre_grupo
+    equipos_con_grupo = []
+    for eq in equipos:
+        eq.nombre_grupo = equipo_grupo_map.get(eq.pk, '')
+        equipos_con_grupo.append(eq)
 
     campeon = None
     try:
@@ -1208,9 +1073,11 @@ def reporte_torneo(request, torneo_id):
         'torneo':             torneo,
         'grupos_con_tabla':   grupos_con_tabla,
         'equipos':            equipos,
+        'equipos_con_grupo':  equipos_con_grupo,
+        'cronograma_grupo':   cronograma_grupo,
         'total_equipos':      equipos.count(),
-        'total_partidos':     len(partidos_todos),
-        'partidos_jugados':   len(partidos_jugados),
+        'total_partidos':     partidos_todos.count(),
+        'partidos_jugados':   partidos_jugados_count,
         'partidos_cuartos':   torneo.partidos.filter(fase='cuartos').select_related('equipo_local', 'equipo_visitante'),
         'partidos_semifinal': torneo.partidos.filter(fase='semifinal').select_related('equipo_local', 'equipo_visitante'),
         'partidos_final':     torneo.partidos.filter(fase='final').select_related('equipo_local', 'equipo_visitante'),
@@ -1224,39 +1091,33 @@ def reporte_torneo(request, torneo_id):
 @solo_admin
 def editar_equipo(request, equipo_id):
     equipo = get_object_or_404(EquipoInterfichas, pk=equipo_id)
-    
     if request.method == 'POST':
-        equipo.nombre_equipo = request.POST.get('nombre_equipo', equipo.nombre_equipo).strip()
-        equipo.capitan = request.POST.get('capitan', equipo.capitan).strip()
-        
-        ficha_val = request.POST.get('ficha')
-        if ficha_val is not None:
-            equipo.ficha = ficha_val.strip() if isinstance(ficha_val, str) else ficha_val
-            
-        equipo.programa = request.POST.get('programa', equipo.programa).strip()
-        
-        # Guardar / actualizar archivos si vienen en la petición
-        if 'planilla_inscripcion' in request.FILES:
-            equipo.planilla_inscripcion = request.FILES['planilla_inscripcion']
+        equipo.nombre_equipo = request.POST.get(
+            'nombre_equipo', equipo.nombre_equipo).strip()
+        equipo.capitan = request.POST.get(
+            'capitan',       equipo.capitan).strip()
+        equipo.ficha = request.POST.get('ficha',         equipo.ficha)
+        equipo.programa = request.POST.get(
+            'programa',      equipo.programa).strip()
+        # Guardar / actualizar planilla de inscripción
+        planilla_file = request.FILES.get('planilla_inscripcion')
+        if planilla_file:
+            equipo.planilla_inscripcion = planilla_file
 
-        if 'escudo' in request.FILES:
-            equipo.escudo = request.FILES['escudo']
-
-        # ¡CRÍTICO: Faltaba persistir los cambios!
         equipo.save()
         messages.success(
             request, f"Equipo '{equipo.nombre_equipo}' actualizado correctamente.")
         return redirect('gestionar_torneo', torneo_id=equipo.torneo.pk)
 
     return JsonResponse({
-        'id': equipo.pk,
-        'nombre_equipo': equipo.nombre_equipo,
-        'capitan': equipo.capitan,
-        'ficha': equipo.ficha,
-        'programa': equipo.programa,
-        'escudo': equipo.escudo.url if equipo.escudo else None,
+        'id':                   equipo.pk,
+        'nombre_equipo':        equipo.nombre_equipo,
+        'capitan':              equipo.capitan,
+        'ficha':                equipo.ficha,
+        'programa':             equipo.programa,
         'planilla_inscripcion': equipo.planilla_inscripcion.url if equipo.planilla_inscripcion else None,
     })
+
 
 @solo_admin
 @require_POST
@@ -1279,43 +1140,15 @@ def asignar_paises_torneo(request, torneo_id):
         eq.nombre_equipo = PAISES_TORNEO[i] if i < len(
             PAISES_TORNEO) else f"Equipo {i + 1}"
         eq.save()
-        # Mantener el escudo sincronizado con el nuevo nombre de país asignado
-        asignar_escudo_por_pais(eq, eq.nombre_equipo, forzar=True)
     messages.success(
         request, "Nombres de países asignados a los equipos en orden.")
     return redirect('gestionar_torneo', torneo_id=torneo_id)
 
 
-@solo_admin
-@require_POST
-def asignar_escudos_faltantes(request, torneo_id=None):
-    """
-    Recorre los equipos (opcionalmente filtrados por torneo) cuyo
-    nombre coincide con un país mapeado en BANDERAS_MUNDIAL y que
-    todavía no tienen escudo, y les asigna la bandera correspondiente.
-    Útil para "reparar" equipos inscritos antes de esta funcionalidad.
-    """
-    equipos_qs = EquipoInterfichas.objects.filter(
-        nombre_equipo__in=BANDERAS_MUNDIAL.keys()
-    ).filter(Q(escudo='') | Q(escudo__isnull=True))
-
-    if torneo_id:
-        equipos_qs = equipos_qs.filter(torneo_id=torneo_id)
-
-    total = 0
-    for eq in equipos_qs:
-        if asignar_escudo_por_pais(eq, eq.nombre_equipo):
-            total += 1
-
-    messages.success(request, f"Se asignaron {total} escudo(s) automáticamente.")
-    if torneo_id:
-        return redirect('gestionar_torneo', torneo_id=torneo_id)
-    return redirect('interfichas')
-
-
 # ============================================================
 #  API: OCR DE PLANILLA DE INSCRIPCIÓN (Gemini Vision)
 # ============================================================
+import os
 import json as json_stdlib
 import base64
 import requests as http_requests
@@ -1435,3 +1268,106 @@ Si no puedes identificar ningún jugador, devuelve: {"jugadores": []}"""
         return JsonResponse({
             'error': f'Error inesperado al procesar la planilla: {str(e)}'
         }, status=500)
+
+
+# ============================================================
+#  GENERAR CRONOGRAMA AUTOMATICO - intercalado entre grupos,
+#  sin repeticion de equipos en dias consecutivos, lun-vie
+# ============================================================
+from datetime import date as _date_cls, timedelta as _timedelta_cls
+
+
+def _reordenar_intercalado(partidos_lista):
+    """
+    Ordena los partidos con dos criterios:
+      1. Alterna entre grupos (el de mayor cola primero)
+      2. Ningun equipo juega dos dias seguidos
+    """
+    colas = {}
+    for p in partidos_lista:
+        letra = p.grupo.nombre_grupo
+        if letra not in colas:
+            colas[letra] = []
+        colas[letra].append(p)
+
+    resultado = []
+    equipos_ultimo = set()
+
+    while any(len(q) > 0 for q in colas.values()):
+        colocado = False
+        grupos_disp = [(k, v) for k, v in colas.items() if len(v) > 0]
+        grupos_disp.sort(key=lambda x: -len(x[1]))
+
+        for grupo_letra, cola in grupos_disp:
+            for i, partido in enumerate(cola):
+                eq_l = partido.equipo_local_id
+                eq_v = partido.equipo_visitante_id
+                if eq_l not in equipos_ultimo and eq_v not in equipos_ultimo:
+                    resultado.append(partido)
+                    equipos_ultimo = {eq_l, eq_v}
+                    colas[grupo_letra].pop(i)
+                    colocado = True
+                    break
+            if colocado:
+                break
+
+        if not colocado:
+            grupos_disp = [(k, v) for k, v in colas.items() if len(v) > 0]
+            grupos_disp.sort(key=lambda x: -len(x[1]))
+            grupo_letra, cola = grupos_disp[0]
+            partido = cola.pop(0)
+            resultado.append(partido)
+            equipos_ultimo = {partido.equipo_local_id, partido.equipo_visitante_id}
+
+    return resultado
+
+
+@solo_admin
+@require_POST
+def generar_cronograma(request, torneo_id):
+    """
+    Asigna fechas a los partidos de grupo con interleaving inteligente:
+    - Intercala partidos entre grupos A, B, C
+    - Ningun equipo juega en dias consecutivos
+    - 1 partido por dia habil (lunes a viernes)
+    - Los partidos ya jugados conservan su fecha
+    """
+    torneo = get_object_or_404(TorneoInterfichas, pk=torneo_id)
+
+    fecha_str = request.POST.get('fecha_inicio', '').strip()
+    try:
+        from datetime import datetime as _dt
+        fecha_inicio = _dt.strptime(fecha_str, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        fecha_inicio = _date_cls.today()
+
+    partidos_pendientes = list(
+        PartidoInterfichas.objects
+        .filter(torneo=torneo, fase='grupo', jugado=False)
+        .select_related('equipo_local', 'equipo_visitante', 'grupo')
+        .order_by('grupo__nombre_grupo', 'id')
+    )
+
+    partidos_ordenados = _reordenar_intercalado(partidos_pendientes)
+
+    def _dias_habiles(desde):
+        fecha = desde
+        while True:
+            if fecha.weekday() < 5:
+                yield fecha
+            fecha += _timedelta_cls(days=1)
+
+    generador = _dias_habiles(fecha_inicio)
+    count = 0
+    for partido in partidos_ordenados:
+        partido.fecha_partido = next(generador)
+        partido.save(update_fields=['fecha_partido'])
+        count += 1
+
+    messages.success(
+        request,
+        f"Cronograma intercalado generado: {count} partido(s) programado(s) "
+        f"a partir del {fecha_inicio.strftime('%d/%m/%Y')}, "
+        f"de lunes a viernes (1 por dia, grupos alternados)."
+    )
+    return redirect('gestionar_torneo', torneo_id=torneo_id)

@@ -69,8 +69,10 @@ def strip_dangerous_patterns(text):
     # Remover patrones de inyección de script
     patterns_to_remove = [
         r'<script[^>]*>.*?</script>',
+        r'<[^>]+>',
         r'javascript\s*:',
-        r'on\w+\s*=\s*["\']',
+        r'on\w+\s*=\s*["\'][^"\']*["\']',
+        r'on\w+\s*=\s*[^\s>]*',
         r'<\s*iframe',
         r'<\s*object',
         r'<\s*embed',

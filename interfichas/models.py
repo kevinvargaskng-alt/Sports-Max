@@ -196,18 +196,22 @@ class PartidoInterfichas(models.Model):
     def puntos_local(self):
         if not self.jugado:
             return 0
-        if self.goles_local > self.goles_visitante:
+        gl = self.goles_local or 0
+        gv = self.goles_visitante or 0
+        if gl > gv:
             return 3
-        elif self.goles_local == self.goles_visitante:
+        elif gl == gv:
             return 1
         return 0
 
     def puntos_visitante(self):
         if not self.jugado:
             return 0
-        if self.goles_visitante > self.goles_local:
+        gl = self.goles_local or 0
+        gv = self.goles_visitante or 0
+        if gv > gl:
             return 3
-        elif self.goles_local == self.goles_visitante:
+        elif gl == gv:
             return 1
         return 0
 

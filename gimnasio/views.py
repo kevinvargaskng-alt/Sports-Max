@@ -21,9 +21,7 @@ def gimnasio_list(request):
     ).order_by('-fecha_entrada', '-hora_entrada')
 
     ahora = timezone.localtime(timezone.now())
-    horario_ok = 7 <= ahora.hour < 17
     dia_semana = ahora.weekday()
-    es_fin_de_semana = dia_semana in [5, 6]
 
     festivos_2026 = [
         "01-01", "01-06", "03-23", "04-02", "04-03", "05-01",
@@ -34,6 +32,23 @@ def gimnasio_list(request):
 
     config = GimnasioConfig.get_config()
     estado_manual = config.estado == 'abierta'
+
+    # Usar horario configurado en GimnasioConfig en lugar de hardcodeado
+    apertura = config.horario_apertura
+    cierre = config.horario_cierre
+    ahora_min = ahora.hour * 60 + ahora.minute
+    apertura_min = apertura.hour * 60 + apertura.minute
+    cierre_min = cierre.hour * 60 + cierre.minute
+    horario_ok = apertura_min <= ahora_min < cierre_min
+
+    # Verificar día de la semana contra dias_habilitados
+    dia_map = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom']
+    dia_codigo = dia_map[dia_semana] if dia_semana < len(dia_map) else ''
+    dias_hab = config.dias_habilitados or []
+    if dias_hab:
+        es_fin_de_semana = dia_codigo not in dias_hab
+    else:
+        es_fin_de_semana = dia_semana in [5, 6]
 
     esta_abierto = (
         horario_ok
@@ -159,7 +174,18 @@ def gimnasio_list(request):
 @login_required
 @require_POST
 def eliminar_reserva(request, id):
-    reserva = get_object_or_404(Reserva, codigo_registro=id)
+    if request.user.is_staff or request.user.is_superuser:
+        reserva = get_object_or_404(Reserva, codigo_registro=id)
+    else:
+        try:
+            reserva = Reserva.objects.get(
+                codigo_registro=id,
+                usuario_solicitante=request.user)
+        except Reserva.DoesNotExist:
+            messages.error(
+                request,
+                "No tienes permisos para eliminar esta reserva.")
+            return redirect('gimnasio')
     reserva.delete()
     messages.warning(request, "El registro de asistencia ha sido eliminado.")
     return redirect('gimnasio')
@@ -168,7 +194,15 @@ def eliminar_reserva(request, id):
 # --- EDITAR REGISTRO ---
 @login_required
 def editar_reserva(request, id):
-    reserva = get_object_or_404(Reserva, codigo_registro=id)
+    if request.user.is_staff or request.user.is_superuser:
+        reserva = get_object_or_404(Reserva, codigo_registro=id)
+    else:
+        try:
+            reserva = Reserva.objects.get(
+                codigo_registro=id,
+                usuario_solicitante=request.user)
+        except Reserva.DoesNotExist:
+            raise Http404("No tienes permisos para editar esta reserva.")
     if request.method == 'POST':
         reserva.save()
         messages.info(request, "Información actualizada.")
@@ -358,6 +392,7 @@ def crear_maquina(request):
     categoria = request.POST.get('categoria', 'Cardio')
     estado = request.POST.get('estado', 'Disponible')
     descripcion = request.POST.get('descripcion', '').strip()
+    next_param = request.POST.get('next', '')
     imagen = request.FILES.get('imagen')
     if imagen:
         try:
@@ -368,7 +403,6 @@ def crear_maquina(request):
                 return redirect('machine_list')
             request.session['seccion_admin'] = 'maquinas'
             return redirect('gimnasio')
-    next_param = request.POST.get('next')
 
     if not nombre:
         messages.error(request, 'El nombre de la máquina es obligatorio.')

@@ -1,9 +1,11 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from .models import Sugerencia, HistorialAccion
 
 class UsuariosAppTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.User = get_user_model()
         self.usuario = self.User.objects.create_user(
             username="aprendiz_test",
@@ -130,3 +132,102 @@ class UsuariosAppTests(TestCase):
         self.client.login(username="aprendiz_test", password="password123")
         resp_acceso = self.client.get('/usuarios/')
         self.assertEqual(resp_acceso.status_code, 200)
+
+
+class TestUsuariosQAQC(TestCase):
+    """Batería de Pruebas QA/QC para el Módulo de Autenticación, Auditoría y Seguridad de Usuarios."""
+
+    def setUp(self):
+        cache.clear()
+        self.User = get_user_model()
+        self.aprendiz = self.User.objects.create_user(
+            username="1029384756",
+            password="PasswordValido123*",
+            email="aprendiz_seguridad@sena.edu.co",
+            numero_documento="1029384756",
+            rol="aprendiz"
+        )
+
+    def test_cp_usr_01_autenticacion_valida_y_reset_intentos(self):
+        """CP-USR-01 (Positivo): Login exitoso resetea contador de intentos fallidos a cero."""
+        self.aprendiz.intentos_fallidos = 2
+        self.aprendiz.save()
+
+        resp = self.client.post('/login/', {
+            'username': '1029384756',
+            'password': 'PasswordValido123*'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json().get('success'))
+
+        self.aprendiz.refresh_from_db()
+        self.assertEqual(self.aprendiz.intentos_fallidos, 0)
+        self.assertIsNone(self.aprendiz.bloqueado_hasta)
+
+    def test_cp_usr_02_bloqueo_por_fuerza_bruta_intentos_fallidos(self):
+        """CP-USR-02 (Límite & Seguridad): 3 intentos erróneos activan bloqueo temporal de cuenta."""
+        for intento in range(1, 4):
+            resp = self.client.post('/login/', {
+                'username': '1029384756',
+                'password': 'PasswordIncorrecto*'
+            }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        # Al tercer intento, debe responder 403 con estado bloqueado
+        self.assertEqual(resp.status_code, 403)
+        self.assertTrue(resp.json().get('bloqueado'))
+
+        self.aprendiz.refresh_from_db()
+        self.assertEqual(self.aprendiz.intentos_fallidos, 3)
+        self.assertIsNotNone(self.aprendiz.bloqueado_hasta)
+
+    def test_cp_usr_03_restriccion_rutas_administrativas_rol_aprendiz(self):
+        """CP-USR-03 (Negativo & Control de Acceso): Aprendiz es redirigido o denegado en rutas de administración."""
+        self.client.login(username="1029384756", password="PasswordValido123*")
+
+        # Intentar acceder a módulo de administración de usuarios
+        resp = self.client.get('/usuarios/')
+        self.assertEqual(resp.status_code, 302)
+
+    def test_administrador_nunca_se_bloquea(self):
+        """Valida que un usuario con rol de administrador jamás sea bloqueado por intentos fallidos o toggle."""
+        admin = self.User.objects.create_superuser(
+            username="admin_inmune",
+            password="AdminPassword123*",
+            email="admin_inmune@sena.edu.co",
+            numero_documento="77778888",
+            rol="admin"
+        )
+
+        # 1. 5 intentos erróneos de login no bloquean al admin
+        for _ in range(5):
+            resp = self.client.post('/login/', {
+                'username': '77778888',
+                'password': 'PasswordIncorrecto*'
+            }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            self.assertEqual(resp.status_code, 401)
+            self.assertFalse(resp.json().get('bloqueado', False))
+
+        admin.refresh_from_db()
+        self.assertEqual(admin.intentos_fallidos, 0)
+        self.assertIsNone(admin.bloqueado_hasta)
+        self.assertTrue(admin.is_active)
+        self.assertEqual(admin.estado, 'activo')
+
+        # Limpiar rate limiting de IP para probar autenticación válida
+        cache.clear()
+
+        # 2. Login con contraseña correcta funciona inmediatamente
+        resp_ok = self.client.post('/login/', {
+            'username': '77778888',
+            'password': 'AdminPassword123*'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_ok.status_code, 200)
+
+        # 3. Intentar bloquear la cuenta admin mediante toggle_usuario es denegado
+        self.client.login(username="admin_inmune", password="AdminPassword123*")
+        resp_toggle = self.client.post(f'/perfil/toggle/{admin.id}/')
+        self.assertEqual(resp_toggle.status_code, 302)
+        admin.refresh_from_db()
+        self.assertTrue(admin.is_active)
+        self.assertEqual(admin.estado, 'activo')
+

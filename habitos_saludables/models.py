@@ -3,6 +3,7 @@ models.py - Módulo Hábitos Saludables SENA
 """
 
 import uuid
+from decimal import Decimal
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -155,7 +156,13 @@ class RutinaFisica(models.Model):
 
     descripcion = models.TextField()
 
-    duracion_minutos = models.PositiveIntegerField()
+    duracion_minutos = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1, message='La duración debe ser mayor a 0 minutos.'),
+            MaxValueValidator(360, message='La duración no puede superar los 360 minutos.')
+        ],
+        help_text='Duración en minutos (mayor a 0)'
+    )
 
     ejercicios = models.TextField(
         help_text='Un ejercicio por línea'
@@ -359,18 +366,20 @@ class SeguimientoSalud(models.Model):
         max_digits=5,
         decimal_places=2,
         validators=[
-            MinValueValidator(20),
-            MaxValueValidator(300)
-        ]
+            MinValueValidator(Decimal('20.0'), message='El peso debe ser mayor a 0 (mínimo 20 kg).'),
+            MaxValueValidator(Decimal('300.0'), message='El peso no puede superar los 300 kg.')
+        ],
+        help_text='Peso en kilogramos (entre 20 y 300 kg)'
     )
 
     estatura_cm = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[
-            MinValueValidator(100),
-            MaxValueValidator(250)
-        ]
+            MinValueValidator(Decimal('100.0'), message='La estatura debe ser mayor a 0 (mínimo 100 cm).'),
+            MaxValueValidator(Decimal('250.0'), message='La estatura no puede superar los 250 cm.')
+        ],
+        help_text='Estatura en centímetros (entre 100 y 250 cm)'
     )
 
     imc = models.DecimalField(
@@ -382,17 +391,29 @@ class SeguimientoSalud(models.Model):
 
     presion_sistolica = models.PositiveIntegerField(
         null=True,
-        blank=True
+        blank=True,
+        validators=[
+            MinValueValidator(40, message='La presión sistólica debe ser mayor a 0 (mínimo 40 mmHg).'),
+            MaxValueValidator(260, message='La presión sistólica no puede superar los 260 mmHg.')
+        ]
     )
 
     presion_diastolica = models.PositiveIntegerField(
         null=True,
-        blank=True
+        blank=True,
+        validators=[
+            MinValueValidator(30, message='La presión diastólica debe ser mayor a 0 (mínimo 30 mmHg).'),
+            MaxValueValidator(160, message='La presión diastólica no puede superar los 160 mmHg.')
+        ]
     )
 
     frecuencia_cardiaca = models.PositiveIntegerField(
         null=True,
-        blank=True
+        blank=True,
+        validators=[
+            MinValueValidator(30, message='La frecuencia cardíaca debe ser mayor a 0 (mínimo 30 lpm).'),
+            MaxValueValidator(250, message='La frecuencia cardíaca no puede superar los 250 lpm.')
+        ]
     )
 
     nivel_actividad = models.CharField(
@@ -405,12 +426,20 @@ class SeguimientoSalud(models.Model):
         max_digits=4,
         decimal_places=1,
         null=True,
-        blank=True
+        blank=True,
+        validators=[
+            MinValueValidator(Decimal('0.5'), message='Las horas de sueño deben ser mayores a 0 (mínimo 0.5 horas).'),
+            MaxValueValidator(Decimal('24.0'), message='Las horas de sueño no pueden superar las 24 horas diarias.')
+        ]
     )
 
     vasos_agua = models.PositiveIntegerField(
         null=True,
-        blank=True
+        blank=True,
+        validators=[
+            MinValueValidator(1, message='Los vasos de agua deben ser mayores a 0.'),
+            MaxValueValidator(50, message='El número de vasos de agua no puede superar los 50 diarios.')
+        ]
     )
 
     observaciones = models.TextField(
@@ -428,29 +457,53 @@ class SeguimientoSalud(models.Model):
         return f"{self.usuario.get_full_name()} - {self.fecha_evaluacion}"
 
     def calcular_imc(self):
-        if self.peso_kg and self.estatura_cm:
-            estatura_m = float(self.estatura_cm) / 100
-            return round(
-                float(self.peso_kg) / (estatura_m ** 2),
-                2
-            )
+        """
+        Calcula el Índice de Masa Corporal (IMC): peso (kg) / (estatura en metros)^2.
+        Evita división por cero y valores no positivos (0 o negativos).
+        """
+        if self.peso_kg is not None and self.estatura_cm is not None:
+            try:
+                peso = float(self.peso_kg)
+                estatura = float(self.estatura_cm)
+                if peso <= 0 or estatura <= 0:
+                    return None
+                estatura_m = estatura / 100.0
+                return round(peso / (estatura_m ** 2), 2)
+            except (ZeroDivisionError, ValueError, TypeError):
+                return None
         return None
 
     def get_categoria_imc(self):
-
-        if not self.imc:
-            return 'Sin calcular'
+        """
+        Devuelve una tupla (categoria, color) según los rangos estándar de la OMS:
+        - < 18.5: Bajo peso
+        - 18.5 a 24.99: Peso normal
+        - 25.0 a 29.99: Sobrepeso
+        - >= 30.0: Obesidad
+        """
+        if not self.imc or float(self.imc) <= 0:
+            return ('Sin calcular', 'secondary')
 
         imc = float(self.imc)
 
         if imc < 18.5:
-            return 'Bajo peso'
-        elif imc < 25:
-            return 'Peso normal'
-        elif imc < 30:
-            return 'Sobrepeso'
+            return ('Bajo peso', 'warning')
+        elif imc < 25.0:
+            return ('Peso normal', 'success')
+        elif imc < 30.0:
+            return ('Sobrepeso', 'warning')
         else:
-            return 'Obesidad'
+            return ('Obesidad', 'danger')
+
+    @property
+    def categoria_imc(self):
+        """Atributo de conveniencia para templates y vistas."""
+        return self.get_categoria_imc()[0]
+
+    @property
+    def color_imc(self):
+        """Color de badge asociado a la categoría."""
+        return self.get_categoria_imc()[1]
 
     def save(self, *args, **kwargs):
         self.imc = self.calcular_imc()

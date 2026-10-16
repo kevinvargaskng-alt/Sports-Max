@@ -33,8 +33,11 @@ def inventario_list(request):
             usuario=request.user).order_by('-fecha_prestamo')
 
     # Sanciones activas del usuario actual (para el aviso en modal de préstamo)
+    # Una sanción vencida (fecha_fin en el pasado) no debe bloquear préstamos
     sanciones = Sancion.objects.filter(
-        usuario=request.user, estado_sancion='Activa')
+        usuario=request.user,
+        estado_sancion='Activa',
+        fecha_fin_sancion__gte=date.today())
 
     if request.method == 'POST':
         accion = request.POST.get('accion')
@@ -44,6 +47,22 @@ def inventario_list(request):
             if not request.user.is_staff:
                 messages.error(
                     request, "No tienes permisos para crear elementos.")
+                return redirect('inventario')
+
+            nombre_elemento = request.POST.get('nombre_elemento', '').strip()
+            if not nombre_elemento:
+                messages.error(request, "El nombre del elemento es obligatorio.")
+                return redirect('inventario')
+
+            cantidad_raw = request.POST.get('cantidad_total')
+            try:
+                cantidad_total = int(cantidad_raw)
+            except (ValueError, TypeError):
+                messages.error(request, "La cantidad debe ser un número entero válido.")
+                return redirect('inventario')
+
+            if cantidad_total < 1:
+                messages.error(request, "La cantidad para agregar un elemento debe ser como mínimo 1. No se permiten valores de 0 o negativos.")
                 return redirect('inventario')
 
             # Obtener el ID del responsable desde el POST
@@ -60,8 +79,8 @@ def inventario_list(request):
                     return redirect('inventario')
 
             ElementoDeportivo.objects.create(
-                tipo_maquina=request.POST.get('nombre_elemento'),
-                cantidad_total=request.POST.get('cantidad_total'),
+                tipo_maquina=nombre_elemento,
+                cantidad_total=cantidad_total,
                 estado_general='Bueno',
                 fecha_adquisicion=request.POST.get(
                     'fecha_adquisicion') or None,
@@ -84,6 +103,22 @@ def inventario_list(request):
             if codigo:
                 elemento = get_object_or_404(ElementoDeportivo, id=codigo)
 
+                nombre_elemento = request.POST.get('nombre_elemento', '').strip()
+                if not nombre_elemento:
+                    messages.error(request, "El nombre del elemento es obligatorio.")
+                    return redirect('inventario')
+
+                cantidad_raw = request.POST.get('cantidad_total')
+                try:
+                    cantidad_total = int(cantidad_raw)
+                except (ValueError, TypeError):
+                    messages.error(request, "La cantidad debe ser un número entero válido.")
+                    return redirect('inventario')
+
+                if cantidad_total < 1:
+                    messages.error(request, "La cantidad debe ser como mínimo 1. No se permiten valores de 0 o negativos.")
+                    return redirect('inventario')
+
                 # Obtener el ID del responsable desde el POST
                 responsable_id = request.POST.get('usuario_responsable')
                 if responsable_id:
@@ -92,8 +127,8 @@ def inventario_list(request):
                 else:
                     elemento.usuario_responsable = None
 
-                elemento.tipo_maquina = request.POST.get('nombre_elemento')
-                elemento.cantidad_total = request.POST.get('cantidad_total')
+                elemento.tipo_maquina = nombre_elemento
+                elemento.cantidad_total = cantidad_total
                 elemento.estado_general = request.POST.get('estado_general') or elemento.estado_general or 'Buen estado'
                 elemento.fecha_adquisicion = request.POST.get(
                     'fecha_adquisicion') or None
@@ -141,14 +176,22 @@ def inventario_list(request):
                 return redirect('inventario')
 
             id_elemento = request.POST.get('elemento')
-            cantidad = int(request.POST.get('cantidad_prestada', 0))
-            dias = int(request.POST.get('dias_prestamo', 1))
+            cantidad_raw = request.POST.get('cantidad_prestada', 0)
+            dias_raw = request.POST.get('dias_prestamo', 1)
+            try:
+                cantidad = int(cantidad_raw)
+                dias = int(dias_raw)
+            except (ValueError, TypeError):
+                messages.error(
+                    request,
+                    "La cantidad y los días deben ser valores numéricos.")
+                return redirect('inventario')
 
             elemento = get_object_or_404(ElementoDeportivo, id=id_elemento)
 
             # Validar stock disponible
-            if cantidad <= 0:
-                messages.error(request, "La cantidad debe ser mayor a 0.")
+            if cantidad < 1:
+                messages.error(request, "La cantidad a prestar debe ser como mínimo 1. No se permiten valores de 0 o negativos.")
                 return redirect('inventario')
 
             if cantidad > elemento.cantidad_total:
@@ -227,7 +270,17 @@ def devoluciones_list(request):
 
         if accion == 'registrar_devolucion':
             codigo_prestamo = request.POST.get('prestamo')
-            cantidad_devuelta = int(request.POST.get('cantidad_devuelta', 1))
+            cantidad_raw = request.POST.get('cantidad_devuelta', 1)
+            try:
+                cantidad_devuelta = int(cantidad_raw)
+            except (ValueError, TypeError):
+                messages.error(request, "La cantidad devuelta debe ser un número entero.")
+                return redirect('devoluciones')
+
+            if cantidad_devuelta < 1:
+                messages.error(request, "La cantidad a devolver debe ser como mínimo 1. No se permiten valores de 0 o negativos.")
+                return redirect('devoluciones')
+
             tiene_novedad = request.POST.get('tiene_novedad') == 'on'
             estado_elemento = request.POST.get('estado_elemento_devolucion')
             tipo_novedad = request.POST.get('tipo_novedad_devolucion', '')
@@ -434,8 +487,24 @@ def editar_elemento(request, id):
             except ValidationError as e:
                 messages.error(request, f"Error en la imagen: {e.message}")
                 return redirect('inventario')
-        elemento.tipo_maquina = request.POST.get('tipo_maquina')
-        elemento.cantidad_total = request.POST.get('cantidad_total')
+        tipo_maquina = request.POST.get('tipo_maquina', '').strip()
+        if not tipo_maquina:
+            messages.error(request, "El nombre del elemento es obligatorio.")
+            return redirect('inventario')
+
+        cantidad_raw = request.POST.get('cantidad_total')
+        try:
+            cantidad_total = int(cantidad_raw)
+        except (ValueError, TypeError):
+            messages.error(request, "La cantidad debe ser un número entero válido.")
+            return redirect('inventario')
+
+        if cantidad_total < 1:
+            messages.error(request, "La cantidad debe ser como mínimo 1. No se permiten valores de 0 o negativos.")
+            return redirect('inventario')
+
+        elemento.tipo_maquina = tipo_maquina
+        elemento.cantidad_total = cantidad_total
         elemento.estado_general = request.POST.get('estado_general')
 
         responsable_id = request.POST.get('usuario_responsable')
@@ -560,6 +629,10 @@ def bloquear_morosos(request):
     bloqueados_count = 0
     for p in qs:
         u = p.usuario
+        # Al administrador NUNCA se le bloquea por inventario o morosidad
+        if u.rol == 'admin' or u.is_superuser or u.is_staff:
+            continue
+
         # 1. Crear sanción disciplinaria en la base de datos
         sancion_existente = Sancion.objects.filter(
             usuario=u,

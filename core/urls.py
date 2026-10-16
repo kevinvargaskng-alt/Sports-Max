@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # --- IMPORTACIÓN DE LA VISTA DEL AGENTE IA (NUEVO) ---
-from core.views import chat_tux_api, transcribe_voice_api
+from core.views import chat_tux_api, transcribe_voice_api, generar_imagen_api
 from gimnasio.views import (
     api_aforo_turnos,
     crear_reserva_turno,
@@ -42,6 +42,7 @@ urlpatterns = [
     # --- RUTA DEL AGENTE INTELIGENTE TUX (NUEVO) ---
     path('api/chat-tux/', chat_tux_api, name='chat_tux_api'),
     path('api/transcribe-voice/', transcribe_voice_api, name='transcribe_voice_api'),
+    path('api/generar-imagen-ia/', generar_imagen_api, name='generar_imagen_api'),
 
 ]
 

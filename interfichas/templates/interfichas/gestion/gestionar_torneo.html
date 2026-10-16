@@ -231,14 +231,6 @@
     margin: 0.75rem 0 0.4rem;
     color: #8b949e; font-size: 0.78rem; font-style: italic;
 }
-
-#bloque-sanciones {
-    display: block !important;
-}
-
-#bloque-azules {
-    display: block !important;
-}
 </style>
 {% endblock %}
 
@@ -543,9 +535,58 @@
                             onclick="document.getElementById('panel-resortear-manual').classList.toggle('d-none')">
                         <i class="fas fa-hand-paper me-1"></i>Re-sortear manual
                     </button>
+                    <!-- ── Botón Generar Cronograma ── -->
+                    <button type="button" class="btn btn-outline-success btn-sm fw-bold"
+                            onclick="document.getElementById('panel-cronograma').classList.toggle('d-none')">
+                        <i class="fas fa-calendar-alt me-1"></i>Generar Cronograma
+                    </button>
                 </div>
                 {% endif %}
             </div>
+
+            <!-- PANEL CRONOGRAMA (colapsable) -->
+            {% if fase_actual == 'grupos' %}
+            <div id="panel-cronograma" class="d-none mb-4">
+                <div class="estado-panel" style="border-color: rgba(63,185,80,0.4);">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-white fw-bold mb-0">
+                            <i class="fas fa-calendar-alt text-success me-2"></i>Generar Cronograma Automático
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-outline-secondary border-0"
+                                onclick="document.getElementById('panel-cronograma').classList.add('d-none')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p class="text-white-50 small mb-3">
+                        Asigna fechas a los partidos pendientes: <strong class="text-success">1 partido por día hábil</strong>
+                        (lunes a viernes), sin sábados ni domingos. Los partidos ya jugados conservan su fecha.
+                    </p>
+                    <form method="POST" action="{% url 'generar_cronograma' torneo_id=torneo.codigo_torneo_fichas %}">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small text-white-50 fw-bold text-uppercase mb-1">
+                                    <i class="fas fa-calendar-day text-success me-1"></i>Fecha de Inicio
+                                </label>
+                                <input type="date" name="fecha_inicio" class="form-control"
+                                       style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;"
+                                       value="{% now 'Y-m-d' %}" min="{% now 'Y-m-d' %}" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <button type="submit" class="btn btn-success fw-bold w-100"
+                                        data-confirm="¿Generar cronograma? Se reasignarán las fechas de todos los partidos pendientes a partir de la fecha seleccionada."
+                                        data-confirm-title="Generar Cronograma"
+                                        data-confirm-icon="info"
+                                        data-confirm-text="Generar">
+                                    <i class="fas fa-calendar-check me-2"></i>Aplicar Cronograma
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
 
             <!-- PANEL RE-SORTEO MANUAL (colapsable) -->
             {% if fase_actual == 'grupos' %}
@@ -636,32 +677,16 @@
                             <table class="tabla-posiciones">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Equipo</th>
-                                        <th>PJ</th>
-                                        <th>PG</th>
-                                        <th>PE</th>
+                                        <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th>
                                         <th>PP</th>
-
                                         {% if tipo_marcador == 'sets' %}
-                                            <th>SF</th>
-                                            <th>SC</th>
+                                            <th>SF</th><th>SC</th>
                                         {% elif tipo_marcador == 'puntos' %}
-                                            <th>PF</th>
-                                            <th>PC</th>
+                                            <th>PF</th><th>PC</th>
                                         {% else %}
-                                            <th>GF</th>
-                                            <th>GC</th>
+                                            <th>GF</th><th>GC</th>
                                         {% endif %}
-
-                                        <th>DIF</th>
-
-                                        <!-- TARJETAS -->
-                                        <th>🟨</th>
-                                        <th>🟥</th>
-                                        <th>🟦</th>
-
-                                        <th>PTS</th>
+                                        <th>DIF</th><th>PTS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -679,24 +704,7 @@
                                         <td class="{% if fila.dg > 0 %}text-success{% elif fila.dg < 0 %}text-danger{% endif %}">
                                             {% if fila.dg > 0 %}+{% endif %}{{ fila.dg }}
                                         </td>
-
-                                        <!-- TARJETAS ACUMULADAS -->
-                                        <td class="text-warning fw-bold">
-                                            {{ fila.amarillas }}
-                                        </td>
-
-                                        <td class="text-danger fw-bold">
-                                            {{ fila.rojas }}
-                                        </td>
-
-                                        <td class="text-info fw-bold">      
-                                            {{ fila.azules }}
-                                        </td>
-
-                                        <td class="fw-bold text-warning">
-                                            {{ fila.pts }}
-                                        </td>
-                                        
+                                        <td class="fw-bold text-warning">{{ fila.pts }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -767,10 +775,7 @@
                                     <div class="text-center torneo-u-24">
                                         {% if partido.jugado %}
                                             {% if tipo_marcador == 'sets' %}
-                                                <span class="resultado-display resultado-sets" title="{{ partido.sets_str }}">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
-                                                {% if partido.sets_str %}
-                                                <div class="small text-white-50 lh-1" style="font-size: 0.6rem; margin-top: 2px;">({{ partido.sets_str }})</div>
-                                                {% endif %}
+                                                <span class="resultado-display resultado-sets">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
                                             {% elif tipo_marcador == 'puntos' %}
                                                 <span class="resultado-display resultado-pts">{{ partido.goles_local }}–{{ partido.goles_visitante }}</span>
                                             {% else %}
@@ -1064,7 +1069,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2 mb-3" id="bloque-azules">
+                        <div class="row g-2 mb-3 torneo-u-51" id="bloque-azules">
                             <div class="col-12">
                                 <label class="form-label small text-white-50 mb-1 torneo-u-52">🟦 Tarjetas Azules (Local / Visitante)</label>
                                 <div class="input-group input-group-sm">
@@ -1356,133 +1361,66 @@ function validarGruposRemanual() {
 // ════════════════════════════════════════════════
 function abrirModalResultado(partidoId, local, visitante, fecha, hora,
                               amarillasL, amarillasV, rojasL, rojasV, azulesL, azulesV, detallesSanciones) {
-
-    document.getElementById('label-local').textContent = local;
-    document.getElementById('label-visitante').textContent = visitante;
-    document.getElementById('sets-label-local').textContent = local;
+    document.getElementById('label-local').textContent          = local;
+    document.getElementById('label-visitante').textContent      = visitante;
+    document.getElementById('sets-label-local').textContent     = local;
     document.getElementById('sets-label-visitante').textContent = visitante;
     document.getElementById('modal-partido-nombres').textContent = local + ' vs ' + visitante;
-
-    document.getElementById('formResultado').action =
-        '/interfichas/partido/' + partidoId + '/resultado/';
-
-    document.getElementById('goles-local').value = '';
+    document.getElementById('formResultado').action = '/interfichas/partido/' + partidoId + '/resultado/';
+    document.getElementById('goles-local').value     = '';
     document.getElementById('goles-visitante').value = '';
-
-    document.getElementById('fecha-partido').value = fecha || '';
-    document.getElementById('hora-partido').value = hora || '';
-
-    document.getElementById('amarillas-local').value = amarillasL || 0;
+    document.getElementById('fecha-partido').value   = fecha || '';
+    document.getElementById('hora-partido').value    = hora  || '';
+    document.getElementById('amarillas-local').value    = amarillasL || 0;
     document.getElementById('amarillas-visitante').value = amarillasV || 0;
-
-    document.getElementById('rojas-local').value = rojasL || 0;
-    document.getElementById('rojas-visitante').value = rojasV || 0;
-
+    document.getElementById('rojas-local').value         = rojasL    || 0;
+    document.getElementById('rojas-visitante').value     = rojasV    || 0;
     const azL = document.getElementById('azules-local');
     const azV = document.getElementById('azules-visitante');
-
     if (azL) azL.value = azulesL || 0;
     if (azV) azV.value = azulesV || 0;
+    document.getElementById('detalles-sanciones').value = detallesSanciones || '';
 
-    document.getElementById('detalles-sanciones').value =
-        detallesSanciones || '';
+    const esSet       = TIPO_MARCADOR === 'sets';
+    const esPuntos    = TIPO_MARCADOR === 'puntos';
+    const esGoles     = TIPO_MARCADOR === 'goles';
+    const esNoAplica  = TIPO_MARCADOR === 'no_aplica';
 
-    const esSet = TIPO_MARCADOR === 'sets';
-    const esPuntos = TIPO_MARCADOR === 'puntos';
-    const esGoles = TIPO_MARCADOR === 'goles';
-    const esNoAplica = TIPO_MARCADOR === 'no_aplica';
+    // Mostrar/ocultar bloques según tipo
+    document.getElementById('bloque-normal').style.display    = (esSet || esNoAplica) ? 'none' : '';
+    document.getElementById('bloque-sets').style.display      = esSet ? '' : 'none';
+    document.getElementById('bloque-ajedrez').style.display   = esNoAplica ? '' : 'none';
+    document.getElementById('bloque-sanciones').style.display = esGoles ? '' : 'none';
 
-    // Identificar la disciplina
-    const NOMBRE_DISCIPLINA =
-        "{{ torneo.disciplina.nombre_disciplina|escapejs }}".toLowerCase();
-
-    const esFutsal =
-        NOMBRE_DISCIPLINA.includes('fútsal') ||
-        NOMBRE_DISCIPLINA.includes('fútbol sala') ||
-        NOMBRE_DISCIPLINA.includes('futbol sala') ||
-        NOMBRE_DISCIPLINA.includes('fútbol de salón') ||
-        NOMBRE_DISCIPLINA.includes('futbol de salon');
-
-            // Mostrar / ocultar bloques
-        document.getElementById('bloque-normal').style.display =
-            (esSet || esNoAplica) ? 'none' : '';
-
-        document.getElementById('bloque-sets').style.display =
-            esSet ? '' : 'none';
-
-        document.getElementById('bloque-ajedrez').style.display =
-            esNoAplica ? '' : 'none';
-
-    // TARJETAS: fútbol y futsal
-    const bloqueSanciones = document.getElementById('bloque-sanciones');
-
-    if (esGoles || esFutsal) {
-        bloqueSanciones.style.setProperty('display', 'block', 'important');
-    } else {
-        bloqueSanciones.style.setProperty('display', 'none', 'important');
-    }
-
-    // TARJETAS AZULES: únicamente futsal
+    const NOMBRE_DISCIPLINA = "{{ torneo.disciplina.nombre_disciplina|escapejs }}";
+    const esFutsal = NOMBRE_DISCIPLINA.toLowerCase().includes('futsal') || NOMBRE_DISCIPLINA.toLowerCase().includes('fútsal');
     const bloqueAzules = document.getElementById('bloque-azules');
-
-    if (esFutsal) {
-            bloqueAzules.style.setProperty('display', 'block', 'important');
-    } else {
-        bloqueAzules.style.setProperty('display', 'none', 'important');
-    }
+    if (bloqueAzules) bloqueAzules.style.display = esFutsal ? '' : 'none';
 
     if (esNoAplica) {
-
-        document.getElementById('modal-tipo-label').textContent =
-            'Resultado (Ajedrez)';
-
-        document.getElementById('modal-icono').className =
-            'fas fa-chess text-warning me-2';
-
+        document.getElementById('modal-tipo-label').textContent = 'Resultado (Ajedrez)';
+        document.getElementById('modal-icono').className = 'fas fa-chess text-warning me-2';
+        // Establecer nombres en las etiquetas de ajedrez
         document.getElementById('ajedrez-label-local').textContent = local;
         document.getElementById('ajedrez-label-visitante').textContent = visitante;
-
-        document.querySelectorAll(
-            'input[name="ganador_ajedrez"]'
-        ).forEach(r => r.checked = false);
-
+        // Limpiar selección previa
+        document.querySelectorAll('input[name="ganador_ajedrez"]').forEach(r => r.checked = false);
     } else if (esPuntos) {
-
-        document.getElementById('modal-tipo-label').textContent =
-            'Resultado (Puntos)';
-
-        document.getElementById('modal-icono').className =
-            'fas fa-basketball-ball text-warning me-2';
-
+        document.getElementById('modal-tipo-label').textContent = 'Resultado (Puntos)';
+        document.getElementById('modal-icono').className = 'fas fa-basketball-ball text-warning me-2';
     } else if (esSet) {
-
-        document.getElementById('modal-tipo-label').textContent =
-            'Resultado por Sets';
-
-        document.getElementById('modal-icono').className =
-            'fas fa-table-tennis text-info me-2';
-
+        document.getElementById('modal-tipo-label').textContent = 'Resultado por Sets';
+        document.getElementById('modal-icono').className = 'fas fa-table-tennis text-info me-2';
         numSets = 0;
-
         document.getElementById('sets-container').innerHTML = '';
-
-        agregarSet();
-        agregarSet();
-        agregarSet();
-
+        agregarSet(); agregarSet(); agregarSet();
     } else {
-
-        document.getElementById('modal-tipo-label').textContent =
-            'Resultado del Partido';
-
-        document.getElementById('modal-icono').className =
-            'fas fa-futbol text-success me-2';
+        document.getElementById('modal-tipo-label').textContent = 'Resultado del Partido';
+        document.getElementById('modal-icono').className = 'fas fa-futbol text-success me-2';
     }
-
-    new bootstrap.Modal(
-        document.getElementById('modalResultado')
-    ).show();
+    new bootstrap.Modal(document.getElementById('modalResultado')).show();
 }
+
 function agregarSet() {
     numSets++;
     const c   = document.getElementById('sets-container');
