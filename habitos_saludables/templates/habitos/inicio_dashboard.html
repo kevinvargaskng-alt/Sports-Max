@@ -640,29 +640,43 @@ canvas { width: 100% !important; max-height: 220px !important; }
   // WIDGETS LOGIC
   {% if not user.is_staff %}
   
-  // 1. Water Tracker
+  // 1. Water Tracker (Scoped to individual user)
+  const currentUserId = '{{ user.id|default:"anon" }}';
+  const keyWaterDate = `waterDate_${currentUserId}`;
+  const keyWaterCount = `waterCount_${currentUserId}`;
+  const keyWaterStreak = `waterStreak_${currentUserId}`;
+  const keyLastGoalDate = `lastGoalDate_${currentUserId}`;
+
+  // Limpiar claves globales obsoletas sin scope para que no afecten a otros usuarios
+  if (localStorage.getItem('waterCount') !== null) {
+     localStorage.removeItem('waterCount');
+     localStorage.removeItem('waterDate');
+     localStorage.removeItem('waterStreak');
+     localStorage.removeItem('lastGoalDate');
+  }
+
   const getTodayStr = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
   const getYesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
 
   let todayStr = getTodayStr();
   let yesterdayStr = getYesterdayStr();
 
-  let savedWaterDate = localStorage.getItem('waterDate') || '';
-  let savedWaterCount = parseInt(localStorage.getItem('waterCount') || '0');
-  let waterStreak = parseInt(localStorage.getItem('waterStreak') || '0');
-  let lastGoalDate = localStorage.getItem('lastGoalDate') || '';
+  let savedWaterDate = localStorage.getItem(keyWaterDate) || '';
+  let savedWaterCount = parseInt(localStorage.getItem(keyWaterCount) || '0');
+  let waterStreak = parseInt(localStorage.getItem(keyWaterStreak) || '0');
+  let lastGoalDate = localStorage.getItem(keyLastGoalDate) || '';
 
   // Reset daily count if it's a new day
   if (savedWaterDate !== todayStr) {
      savedWaterCount = 0;
-     localStorage.setItem('waterCount', 0);
-     localStorage.setItem('waterDate', todayStr);
+     localStorage.setItem(keyWaterCount, 0);
+     localStorage.setItem(keyWaterDate, todayStr);
   }
 
   // Break streak if goal was not met yesterday and not met today
   if (lastGoalDate !== todayStr && lastGoalDate !== yesterdayStr && lastGoalDate !== '') {
      waterStreak = 0;
-     localStorage.setItem('waterStreak', 0);
+     localStorage.setItem(keyWaterStreak, 0);
   }
 
   function updateWaterUI() {
@@ -704,22 +718,22 @@ canvas { width: 100% !important; max-height: 220px !important; }
     if (savedWaterCount === index + 1) savedWaterCount = index; // toggle off
     else savedWaterCount = index + 1;
     
-    localStorage.setItem('waterCount', savedWaterCount);
+    localStorage.setItem(keyWaterCount, savedWaterCount);
     
     // Streak logic
     if (savedWaterCount === 8) {
        if (lastGoalDate !== todayStr) {
           waterStreak++;
           lastGoalDate = todayStr;
-          localStorage.setItem('waterStreak', waterStreak);
-          localStorage.setItem('lastGoalDate', todayStr);
+          localStorage.setItem(keyWaterStreak, waterStreak);
+          localStorage.setItem(keyLastGoalDate, todayStr);
        }
     } else {
        if (lastGoalDate === todayStr) {
           waterStreak = Math.max(0, waterStreak - 1);
           lastGoalDate = yesterdayStr; // Hack to rollback
-          localStorage.setItem('waterStreak', waterStreak);
-          localStorage.setItem('lastGoalDate', lastGoalDate);
+          localStorage.setItem(keyWaterStreak, waterStreak);
+          localStorage.setItem(keyLastGoalDate, lastGoalDate);
        }
     }
     updateWaterUI();
