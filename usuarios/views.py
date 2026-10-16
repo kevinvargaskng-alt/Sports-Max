@@ -58,36 +58,43 @@ def login_view(request):
                 Q(username__iexact=doc) | Q(numero_documento__iexact=doc) | Q(email__iexact=doc)
             ).first()
 
-        # Verificar si la cuenta está inactiva
-        if usuario_obj and (not usuario_obj.is_active or usuario_obj.estado == 'inactivo'):
+        es_admin = bool(usuario_obj and (usuario_obj.is_superuser or usuario_obj.rol == 'admin' or usuario_obj.is_staff))
+
+        # Verificar si la cuenta está inactiva (a administradores NUNCA se les bloquea)
+        if usuario_obj and not es_admin and (not usuario_obj.is_active or usuario_obj.estado == 'inactivo'):
             msg = 'Tu cuenta se encuentra inactiva. Comunícate con un administrador para activarla.'
             if is_ajax:
                 return JsonResponse({'status': 'error', 'success': False, 'message': msg}, status=403)
             messages.error(request, msg)
             return redirect('home')
 
-        # Verificar si la cuenta está bloqueada temporalmente por intentos fallidos
+        # Verificar si la cuenta está bloqueada temporalmente por intentos fallidos (a administradores NUNCA se les bloquea)
         if usuario_obj and usuario_obj.bloqueado_hasta:
-            ahora = _tz.localtime(_tz.now())
-            if ahora < usuario_obj.bloqueado_hasta:
-                minutos_restantes = int(
-                    (usuario_obj.bloqueado_hasta - ahora).total_seconds() / 60) + 1
-                msg = f'Cuenta bloqueada. Intente de nuevo en {minutos_restantes} minuto(s).'
-                if is_ajax:
-                    return JsonResponse({
-                        'status': 'blocked',
-                        'success': False,
-                        'bloqueado': True,
-                        'minutos': minutos_restantes,
-                        'message': msg
-                    }, status=403)
-                messages.error(request, msg)
-                return redirect('home')
-            else:
-                # Tiempo de bloqueo expirado — resetear
-                usuario_obj.intentos_fallidos = 0
+            if es_admin:
                 usuario_obj.bloqueado_hasta = None
+                usuario_obj.intentos_fallidos = 0
                 usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
+            else:
+                ahora = _tz.localtime(_tz.now())
+                if ahora < usuario_obj.bloqueado_hasta:
+                    minutos_restantes = int(
+                        (usuario_obj.bloqueado_hasta - ahora).total_seconds() / 60) + 1
+                    msg = f'Cuenta bloqueada. Intente de nuevo en {minutos_restantes} minuto(s).'
+                    if is_ajax:
+                        return JsonResponse({
+                            'status': 'blocked',
+                            'success': False,
+                            'bloqueado': True,
+                            'minutos': minutos_restantes,
+                            'message': msg
+                        }, status=403)
+                    messages.error(request, msg)
+                    return redirect('home')
+                else:
+                    # Tiempo de bloqueo expirado — resetear
+                    usuario_obj.intentos_fallidos = 0
+                    usuario_obj.bloqueado_hasta = None
+                    usuario_obj.save(update_fields=['intentos_fallidos', 'bloqueado_hasta'])
 
         username_auth = usuario_obj.username if usuario_obj else doc
         user = authenticate(request, username=username_auth, password=password)
@@ -113,6 +120,22 @@ def login_view(request):
         # Fallo de autenticación
         log_login_attempt(request, doc, success=False, reason='credenciales_invalidas')
         if usuario_obj:
+            if es_admin:
+                # Al administrador NUNCA se le bloquea por intentos fallidos
+                msg = 'Documento/correo o contraseña incorrectos.'
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'error',
+                        'success': False,
+                        'message': msg,
+                        'errors': {
+                            'username': 'Verifica tu documento o correo.',
+                            'password': 'La contraseña no coincide con la cuenta.'
+                        }
+                    }, status=401)
+                messages.error(request, msg)
+                return redirect('home')
+
             usuario_obj.intentos_fallidos += 1
             intentos = usuario_obj.intentos_fallidos
 
@@ -512,13 +535,13 @@ def perfil_view(request):
 def toggle_usuario_estado(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
-    # Seguridad: evitar que un admin se bloquee a sí mismo
-    if int(user_id) == request.user.id:
+    u = get_object_or_404(Usuario, pk=user_id)
+    # Seguridad: prohibir bloquear cuentas de administrador
+    if u.rol == 'admin' or u.is_superuser or u.is_staff:
         messages.error(
-            request, "Acceso denegado: No puedes bloquear tu propia cuenta de administrador.")
+            request, "Acceso denegado: Las cuentas con rol de administrador no pueden ser bloqueadas.")
         return redirect('gestionar_usuarios')
 
-    u = get_object_or_404(Usuario, pk=user_id)
     u.is_active = not u.is_active
     u.estado = 'activo' if u.is_active else 'inactivo'
     u.save()
