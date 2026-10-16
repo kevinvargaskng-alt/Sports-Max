@@ -53,8 +53,132 @@ function initSportsMaxValidators() {
         });
     });
 
-    // 3. MEDIDAS DE SALUD & DECIMALES (Peso, Estatura, IMC, Presión, Horas, etc.)
-    document.querySelectorAll('.input-decimal-salud, input[name*="peso"], input[name*="estatura"], input[name*="sueno"]').forEach(input => {
+    // 3. MEDIDAS DE SALUD & VALIDADORES BIOMÉTRICOS (Estatura, Peso, Edad, Sueño, etc.)
+    // 3.1 ESTATURA Y EDAD (Máximo 3 dígitos enteros, sin letras, sin negativos ni decimales)
+    document.querySelectorAll('.input-estatura, .input-edad, input[name*="estatura"], input[name*="altura"], input[name*="edad"], #inputAltura, #inputEstatura, #id_estatura_cm, #inputEdad, #id_edad').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            // Permitir teclas de control (Backspace, Delete, Tab, Flechas, etc.)
+            if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End' || e.ctrlKey || e.metaKey) {
+                return;
+            }
+            // Bloquear letras, signos y puntos/comas
+            if (['e', 'E', '-', '+', '.', ','].includes(e.key) || !/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                return;
+            }
+            // Bloquear si ya tiene 3 dígitos y no hay texto seleccionado
+            const selLen = (input.selectionEnd || 0) - (input.selectionStart || 0);
+            if (input.value.length >= 3 && selLen === 0) {
+                e.preventDefault();
+            }
+        });
+
+        const sanitizarEntero3 = (el) => {
+            let val = String(el.value || '').replace(/[^0-9]/g, '');
+            if (val.length > 3) val = val.slice(0, 3);
+            
+            // Límite específico para Estatura (máximo 230 cm)
+            const isEstatura = el.classList.contains('input-estatura') || 
+                               (el.id && (el.id.includes('Altura') || el.id.includes('Estatura'))) ||
+                               (el.name && (el.name.includes('estatura') || el.name.includes('altura')));
+            if (isEstatura && val !== '' && parseInt(val, 10) > 230) {
+                val = '230';
+            }
+
+            // Límite específico para Edad (máximo 120 años)
+            const isEdad = el.classList.contains('input-edad') || 
+                           (el.id && el.id.includes('Edad')) ||
+                           (el.name && el.name.includes('edad'));
+            if (isEdad && val !== '' && parseInt(val, 10) > 120) {
+                val = '120';
+            }
+
+            if (el.value !== val) el.value = val;
+        };
+
+        input.addEventListener('input', (e) => sanitizarEntero3(e.target));
+        input.addEventListener('paste', (e) => {
+            setTimeout(() => sanitizarEntero3(e.target), 10);
+        });
+    });
+
+    // 3.2 PESO (Máximo 3 dígitos enteros, opcional 1 decimal, sin letras ni negativos, máximo 200 kg)
+    document.querySelectorAll('.input-peso, input[name*="peso"], #inputPeso, #id_peso_kg').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End' || e.ctrlKey || e.metaKey) {
+                return;
+            }
+            // Bloquear signos y notación exponencial
+            if (['e', 'E', '-', '+'].includes(e.key)) {
+                e.preventDefault();
+                return;
+            }
+            // Manejo de punto o coma decimal
+            if (e.key === '.' || e.key === ',') {
+                if (input.value.includes('.')) {
+                    e.preventDefault();
+                }
+                return;
+            }
+            // Si no es un dígito [0-9], bloquear
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                return;
+            }
+
+            // Regla de longitud: max 3 dígitos enteros, max 1 decimal
+            const selLen = (input.selectionEnd || 0) - (input.selectionStart || 0);
+            if (selLen === 0) {
+                const dotIdx = input.value.indexOf('.');
+                const cursor = input.selectionStart || 0;
+                if (dotIdx === -1) {
+                    if (input.value.length >= 3) {
+                        e.preventDefault();
+                    }
+                } else {
+                    if (cursor <= dotIdx) {
+                        const intPart = input.value.substring(0, dotIdx);
+                        if (intPart.length >= 3) {
+                            e.preventDefault();
+                        }
+                    } else {
+                        const decPart = input.value.substring(dotIdx + 1);
+                        if (decPart.length >= 1) {
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
+
+        const sanitizarPeso = (el) => {
+            let val = String(el.value || '').replace(',', '.').replace(/[^0-9.]/g, '');
+            const partes = val.split('.');
+            let intPart = partes[0] || '';
+            if (intPart.length > 3) intPart = intPart.slice(0, 3);
+            
+            // Límite máximo para peso (200 kg)
+            if (intPart !== '' && parseInt(intPart, 10) > 200) {
+                intPart = '200';
+                val = '200';
+            } else if (partes.length > 1) {
+                const decPart = partes.slice(1).join('').slice(0, 1);
+                val = intPart + '.' + decPart;
+            } else {
+                val = intPart;
+            }
+
+            if (el.value !== val) el.value = val;
+        };
+
+        input.addEventListener('input', (e) => sanitizarPeso(e.target));
+        input.addEventListener('paste', (e) => {
+            setTimeout(() => sanitizarPeso(e.target), 10);
+        });
+    });
+
+    // 3.3 OTRAS MEDIDAS DE SALUD (Sueño, Presión, Frecuencia)
+    document.querySelectorAll('.input-decimal-salud, input[name*="sueno"]').forEach(input => {
         input.addEventListener('keydown', (e) => {
             if (['e', 'E', '-', '+'].includes(e.key)) {
                 e.preventDefault();
@@ -62,28 +186,8 @@ function initSportsMaxValidators() {
         });
 
         input.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value);
-            if (e.target.value !== '' && (!isNaN(val) && val <= 0)) {
-                e.target.classList.add('is-invalid');
-                e.target.setAttribute('aria-invalid', 'true');
-            } else {
-                e.target.classList.remove('is-invalid');
-                e.target.setAttribute('aria-invalid', 'false');
-            }
-        });
-
-        input.addEventListener('change', (e) => {
-            const val = parseFloat(e.target.value);
-            if (!isNaN(val)) {
-                if (val <= 0) {
-                    e.target.classList.add('is-invalid');
-                    e.target.setAttribute('aria-invalid', 'true');
-                } else {
-                    e.target.value = val.toFixed(2);
-                    e.target.classList.remove('is-invalid');
-                    e.target.setAttribute('aria-invalid', 'false');
-                }
-            }
+            let val = String(e.target.value || '').replace(/[^0-9.]/g, '');
+            if (e.target.value !== val) e.target.value = val;
         });
     });
 

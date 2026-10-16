@@ -32,8 +32,8 @@ Este documento detalla las restricciones de integridad y validaciones aplicadas 
 ### 1.4 Módulo de Hábitos Saludables (`SeguimientoSalud`)
 | Campo / Regla | Ubicación | Tipo de Validación | Detalle / Restricción |
 |---|---|---|---|
-| `peso_kg` | Servidor / Frontend | Rango Numérico | Restringido entre 20.00 kg y 300.00 kg mediante `MinValueValidator` y `MaxValueValidator` en Django. |
-| `estatura_cm` | Servidor / Frontend | Rango Numérico | Restringido entre 100.00 cm y 250.00 cm mediante `MinValueValidator` y `MaxValueValidator`. |
+| `peso_kg` | Servidor / Frontend | Rango Numérico | Restringido entre 20.00 kg y 200.00 kg mediante `MinValueValidator` y `MaxValueValidator` en Django. |
+| `estatura_cm` | Servidor / Frontend | Rango Numérico | Restringido entre 100.00 cm y 230.00 cm mediante `MinValueValidator` y `MaxValueValidator`. |
 | `horas_sueno` | Servidor / Frontend | Rango Numérico | Decimal positivo menor o igual a 24.0 horas. |
 | `imc` | Servidor | Cálculo automático | Campo calculado automáticamente en el método `save()` dividiendo el peso (kg) entre la estatura al cuadrado (metros). |
 

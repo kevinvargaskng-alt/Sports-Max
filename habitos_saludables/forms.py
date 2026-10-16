@@ -58,11 +58,11 @@ class SeguimientoSaludForm(forms.ModelForm):
             ),
             'peso_kg': forms.NumberInput(
                 attrs={'class': 'form-control input-decimal-salud', 'step': '0.1',
-                       'min': '20', 'max': '300', 'placeholder': 'Ej: 70.5'}
+                       'min': '20', 'max': '200', 'placeholder': 'Ej: 70.5'}
             ),
             'estatura_cm': forms.NumberInput(
                 attrs={'class': 'form-control input-decimal-salud', 'step': '0.1',
-                       'min': '100', 'max': '250', 'placeholder': 'Ej: 170'}
+                       'min': '100', 'max': '230', 'placeholder': 'Ej: 170'}
             ),
             'presion_sistolica': forms.NumberInput(
                 attrs={'class': 'form-control input-entero-estricto', 'min': '40',
@@ -127,8 +127,8 @@ class SeguimientoSaludForm(forms.ModelForm):
         if peso is not None:
             if peso <= 0:
                 raise ValidationError("El peso debe ser mayor a 0 kg. No se permiten valores de 0 o negativos.")
-            if peso < 20 or peso > 300:
-                raise ValidationError("El peso debe estar entre 20 y 300 kg.")
+            if peso < 20 or peso > 200:
+                raise ValidationError("El peso debe estar entre 20 y 200 kg.")
         return peso
 
     def clean_estatura_cm(self):
@@ -136,8 +136,8 @@ class SeguimientoSaludForm(forms.ModelForm):
         if estatura is not None:
             if estatura <= 0:
                 raise ValidationError("La estatura debe ser mayor a 0 cm. No se permiten valores de 0 o negativos.")
-            if estatura < 100 or estatura > 250:
-                raise ValidationError("La estatura debe estar entre 100 y 250 cm (ej: 170 para 1.70m).")
+            if estatura < 100 or estatura > 230:
+                raise ValidationError("La estatura debe estar entre 100 y 230 cm (ej: 170 para 1.70m).")
         return estatura
 
     def clean_presion_sistolica(self):

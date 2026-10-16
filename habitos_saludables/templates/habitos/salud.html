@@ -467,10 +467,10 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 
         if (input.value !== '' && (isNaN(val) || val <= 0)) {
             errorMsg = 'El valor debe ser mayor a 0. No se permiten valores de 0 ni negativos.';
-        } else if (name === 'peso_kg' && input.value !== '' && (val < 20 || val > 300)) {
-            errorMsg = 'El peso debe estar entre 20 y 300 kg.';
-        } else if (name === 'estatura_cm' && input.value !== '' && (val < 100 || val > 250)) {
-            errorMsg = 'La estatura debe estar entre 100 y 250 cm (ej: 170).';
+        } else if (name === 'peso_kg' && input.value !== '' && (val < 20 || val > 200)) {
+            errorMsg = 'El peso debe estar entre 20 y 200 kg.';
+        } else if (name === 'estatura_cm' && input.value !== '' && (val < 100 || val > 230)) {
+            errorMsg = 'La estatura debe estar entre 100 y 230 cm (ej: 170).';
         } else if (name === 'presion_sistolica' && input.value !== '' && (val < 40 || val > 260)) {
             errorMsg = 'La presión sistólica debe estar entre 40 y 260 mmHg.';
         } else if (name === 'presion_diastolica' && input.value !== '' && (val < 30 || val > 160)) {

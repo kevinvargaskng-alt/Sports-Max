@@ -373,14 +373,14 @@ canvas { width: 100% !important; max-height: 220px !important; }
             <div class="col-6">
               <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-ruler-vertical text-info"></i> ESTATURA</label>
               <div class="input-group input-group-sm">
-                <input type="number" id="inputAltura" class="form-control" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm }}{% else %}170{% endif %}" placeholder="Ej. 170" oninput="calcularEstadoFisico()">
+                <input type="number" id="inputAltura" class="form-control input-estatura" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm|floatformat:0 }}{% else %}170{% endif %}" placeholder="Ej. 170" min="100" max="230" oninput="calcularEstadoFisico()">
                 <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">cm</span>
               </div>
             </div>
             <div class="col-6">
               <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-weight text-warning"></i> PESO</label>
               <div class="input-group input-group-sm">
-                <input type="number" step="0.1" id="inputPeso" class="form-control" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|stringformat:'f' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" oninput="calcularEstadoFisico()">
+                <input type="number" step="0.1" id="inputPeso" class="form-control input-peso" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|floatformat:'-1' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" min="20" max="200" oninput="calcularEstadoFisico()">
                 <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">kg</span>
               </div>
             </div>
@@ -746,13 +746,41 @@ canvas { width: 100% !important; max-height: 220px !important; }
     const pesoInput = document.getElementById('inputPeso');
     if (!alturaInput || !pesoInput) return;
 
+    // Sanitizar estatura: solo números enteros, sin letras ni negativos, máximo 3 dígitos, máximo 230
+    let rawAltura = String(alturaInput.value || '').replace(/[^0-9]/g, '');
+    if (rawAltura.length > 3) rawAltura = rawAltura.slice(0, 3);
+    if (rawAltura !== '' && parseInt(rawAltura, 10) > 230) {
+      rawAltura = '230';
+    }
+    if (alturaInput.value !== rawAltura) {
+      alturaInput.value = rawAltura;
+    }
+
+    // Sanitizar peso: solo números positivos y punto decimal opcional, máx 3 dígitos enteros, máx 1 decimal, máximo 200
+    let rawPeso = String(pesoInput.value || '').replace(',', '.').replace(/[^0-9.]/g, '');
+    const partesPeso = rawPeso.split('.');
+    let intPeso = partesPeso[0] || '';
+    if (intPeso.length > 3) intPeso = intPeso.slice(0, 3);
+    if (intPeso !== '' && parseInt(intPeso, 10) > 200) {
+      intPeso = '200';
+      rawPeso = '200';
+    } else if (partesPeso.length > 1) {
+      const decPeso = partesPeso.slice(1).join('').slice(0, 1);
+      rawPeso = intPeso + '.' + decPeso;
+    } else {
+      rawPeso = intPeso;
+    }
+    if (pesoInput.value !== rawPeso) {
+      pesoInput.value = rawPeso;
+    }
+
     const alturaCm = parseFloat(alturaInput.value);
     const pesoKg = parseFloat(pesoInput.value);
 
     const valorImcEl = document.getElementById('valorIMC');
     const mensajeEl = document.getElementById('mensajeEstado');
 
-    if (alturaCm > 0 && pesoKg > 0) {
+    if (alturaCm >= 50 && alturaCm <= 230 && pesoKg >= 15 && pesoKg <= 200) {
       const alturaM = alturaCm / 100;
       const imc = pesoKg / (alturaM * alturaM);
       

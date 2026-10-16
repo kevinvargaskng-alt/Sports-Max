@@ -367,9 +367,9 @@ class SeguimientoSalud(models.Model):
         decimal_places=2,
         validators=[
             MinValueValidator(Decimal('20.0'), message='El peso debe ser mayor a 0 (mínimo 20 kg).'),
-            MaxValueValidator(Decimal('300.0'), message='El peso no puede superar los 300 kg.')
+            MaxValueValidator(Decimal('200.0'), message='El peso no puede superar los 200 kg.')
         ],
-        help_text='Peso en kilogramos (entre 20 y 300 kg)'
+        help_text='Peso en kilogramos (entre 20 y 200 kg)'
     )
 
     estatura_cm = models.DecimalField(
@@ -377,9 +377,9 @@ class SeguimientoSalud(models.Model):
         decimal_places=2,
         validators=[
             MinValueValidator(Decimal('100.0'), message='La estatura debe ser mayor a 0 (mínimo 100 cm).'),
-            MaxValueValidator(Decimal('250.0'), message='La estatura no puede superar los 250 cm.')
+            MaxValueValidator(Decimal('230.0'), message='La estatura no puede superar los 230 cm.')
         ],
-        help_text='Estatura en centímetros (entre 100 y 250 cm)'
+        help_text='Estatura en centímetros (entre 100 y 230 cm)'
     )
 
     imc = models.DecimalField(

@@ -494,10 +494,10 @@ def calcular_imc_api(request):
 
     # Validaciones de rango
     errores = []
-    if not (20 <= peso <= 300):
-        errores.append('El peso debe estar entre 20 y 300 kg.')
-    if not (100 <= estatura <= 250):
-        errores.append('La estatura debe estar entre 100 y 250 cm.')
+    if not (20 <= peso <= 200):
+        errores.append('El peso debe estar entre 20 y 200 kg.')
+    if not (100 <= estatura <= 230):
+        errores.append('La estatura debe estar entre 100 y 230 cm.')
     if not (10 <= edad <= 120):
         errores.append('La edad debe estar entre 10 y 120 años.')
     if errores:

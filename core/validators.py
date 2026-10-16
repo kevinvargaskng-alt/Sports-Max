@@ -18,12 +18,12 @@ validador_entero_positivo = RegexValidator(
 # 3. 📏 Validadores de medidas de salud y rangos biológicos humanos
 validador_peso_salud = [
     MinValueValidator(30.00, message="El peso mínimo permitido es de 30.00 kg."),
-    MaxValueValidator(250.00, message="El peso máximo permitido es de 250.00 kg.")
+    MaxValueValidator(200.00, message="El peso máximo permitido es de 200.00 kg.")
 ]
 
 validador_estatura_salud = [
     MinValueValidator(1.00, message="La estatura mínima permitida es de 1.00 m."),
-    MaxValueValidator(2.50, message="La estatura máxima permitida es de 2.50 m.")
+    MaxValueValidator(2.30, message="La estatura máxima permitida es de 2.30 m.")
 ]
 
 # 4. 🔐 Validador de contraseña segura
