@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from .models import Sugerencia, HistorialAccion
+from .models import Sugerencia, HistorialAccion, Notificacion
 
 class UsuariosAppTests(TestCase):
     def setUp(self):
@@ -132,6 +132,54 @@ class UsuariosAppTests(TestCase):
         self.client.login(username="aprendiz_test", password="password123")
         resp_acceso = self.client.get('/usuarios/')
         self.assertEqual(resp_acceso.status_code, 200)
+
+    def test_marcar_todas_notificaciones_leidas(self):
+        """Prueba que el endpoint marque todas las notificaciones pendientes del usuario autenticado."""
+        Notificacion.objects.create(usuario=self.usuario, titulo="Notif 1", mensaje="Texto 1", leida=False)
+        Notificacion.objects.create(usuario=self.usuario, titulo="Notif 2", mensaje="Texto 2", leida=False)
+        
+        self.assertEqual(self.usuario.notificaciones.filter(leida=False).count(), 2)
+
+        self.client.login(username="aprendiz_test", password="password123")
+        resp = self.client.post('/notificaciones/marcar-leidas/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data.get('status'), 'success')
+        self.assertEqual(data.get('actualizadas'), 2)
+        self.assertEqual(data.get('pendientes'), 0)
+        self.assertEqual(self.usuario.notificaciones.filter(leida=False).count(), 0)
+
+    def test_marcar_notificacion_individual_leida(self):
+        """Prueba que se pueda marcar una sola notificación específica como leída."""
+        n1 = Notificacion.objects.create(usuario=self.usuario, titulo="N1", mensaje="M1", leida=False)
+        n2 = Notificacion.objects.create(usuario=self.usuario, titulo="N2", mensaje="M2", leida=False)
+
+        self.client.login(username="aprendiz_test", password="password123")
+        resp = self.client.post(
+            '/notificaciones/marcar-leidas/',
+            {'notificacion_id': n1.id},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data.get('status'), 'success')
+        self.assertEqual(data.get('pendientes'), 1)
+
+        n1.refresh_from_db()
+        n2.refresh_from_db()
+        self.assertTrue(n1.leida)
+        self.assertFalse(n2.leida)
+
+    def test_marcar_notificaciones_seguridad(self):
+        """Verifica que el endpoint rechace accesos sin autenticación o con método GET."""
+        # Sin login redirige
+        resp_unauth = self.client.post('/notificaciones/marcar-leidas/')
+        self.assertEqual(resp_unauth.status_code, 302)
+
+        # Con login pero método GET responde 405 Method Not Allowed
+        self.client.login(username="aprendiz_test", password="password123")
+        resp_get = self.client.get('/notificaciones/marcar-leidas/')
+        self.assertEqual(resp_get.status_code, 405)
 
 
 class TestUsuariosQAQC(TestCase):

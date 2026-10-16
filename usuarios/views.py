@@ -370,10 +370,38 @@ def registro_view(request):
 @login_required
 @require_POST
 def marcar_notificaciones_leidas(request):
-    """Marca todas las notificaciones pendientes del usuario como leídas."""
-    request.user.notificaciones.filter(leida=False).update(leida=True)
+    """
+    Marca las notificaciones del usuario como leídas.
+    Permite marcar una específica (notificacion_id) o todas las pendientes.
+    """
+    import json
+    notif_id = None
+    if request.content_type == 'application/json':
+        try:
+            body_data = json.loads(request.body.decode('utf-8'))
+            notif_id = body_data.get('notificacion_id')
+        except Exception:
+            pass
+    else:
+        notif_id = request.POST.get('notificacion_id')
+
+    if notif_id:
+        actualizadas = request.user.notificaciones.filter(id=notif_id, leida=False).update(leida=True)
+        pendientes = request.user.notificaciones.filter(leida=False).count()
+        return JsonResponse({
+            'status': 'success',
+            'notificacion_id': notif_id,
+            'actualizadas': actualizadas,
+            'pendientes': pendientes,
+            'message': 'Notificación marcada como leída.'
+        })
+
+    actualizadas = request.user.notificaciones.filter(leida=False).update(leida=True)
+    request.session['notifs_prestamos_leidas_date'] = str(timezone.localdate())
     return JsonResponse({
         'status': 'success',
+        'actualizadas': actualizadas,
+        'pendientes': 0,
         'message': 'Todas las notificaciones han sido marcadas como leídas.'
     })
 

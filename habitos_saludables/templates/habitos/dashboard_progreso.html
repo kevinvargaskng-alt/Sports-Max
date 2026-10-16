@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mi Progreso — Sports-Max SENA{% endblock %}
+{% block meta_description %}Dashboard de progreso: IMC, calorías, sueño, rutinas y racha de hábitos en un solo lugar.{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── CP-14: Dashboard de Progreso ────────────────────────── */
+.progreso-hero {
+  background: linear-gradient(135deg, #060818 0%, #0d1117 50%, #0d1f0d 100%);
+  padding: 2.5rem 0 1.5rem;
+}
+.progreso-hero h1 { color:#fff; font-weight:800; }
+.progreso-hero p  { color:rgba(255,255,255,.6); }
+
+/* KPI Cards */
+.kpi-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1.1rem;
+  padding: 1.5rem;
+  position: relative; overflow: hidden;
+  transition: transform .25s, box-shadow .25s;
+}
+.kpi-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.3); }
+.kpi-card::after {
+  content: '';
+  position: absolute; right: -20px; bottom: -20px;
+  width: 120px; height: 120px; border-radius: 50%;
+  opacity: .08;
+}
+.kpi-card.verde::after  { background: #39A900; }
+.kpi-card.azul::after   { background: #0d6efd; }
+.kpi-card.morado::after { background: #a855f7; }
+.kpi-card.naranja::after { background: #f59e0b; }
+
+.kpi-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.5); }
+.kpi-value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+.kpi-delta { font-size: .8rem; }
+
+/* Chart cards */
+.chart-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1.1rem;
+  padding: 1.5rem;
+}
+
+/* Timeline actividad */
+.timeline-item {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: .75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.timeline-item:last-child { border: none; }
+.timeline-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(57,169,0,.15); border: 1px solid rgba(57,169,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  color: #39A900; flex-shrink: 0;
+}
+
+/* Animación al hacer scroll (IntersectionObserver) */
+.fade-up { opacity: 0; transform: translateY(30px); transition: opacity .5s, transform .5s; }
+.fade-up.visible { opacity: 1; transform: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="progreso-hero mb-4">
+  <div class="container">
+    <h1 class="h2 mb-1">
+      <i class="fas fa-chart-line text-success me-2"></i>Mi Progreso
+    </h1>
+    <p class="mb-0">Todas tus métricas de salud y actividad en un solo lugar.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+
+  <!-- KPI CARDS -->
+  <div class="row g-3 mb-4">
+
+    <!-- IMC -->
+    <div class="col-6 col-lg-3 fade-up">
+      <div class="kpi-card verde">
+        <div class="kpi-label mb-2"><i class="fas fa-weight-scale me-1"></i>IMC Actual</div>
+        <div class="kpi-value text-success">
+          {% if ultimo_seguimiento %}{{ ultimo_seguimiento.imc|default:"—" }}{% else %}—{% endif %}
+        </div>
+        <div class="kpi-delta text-muted mt-1">
+          {% if ultimo_seguimiento %}
+            <span class="badge {% if ultimo_seguimiento.get_categoria_imc == 'Peso normal' %}bg-success{% elif ultimo_seguimiento.get_categoria_imc == 'Sobrepeso' %}bg-warning text-dark{% elif ultimo_seguimiento.get_categoria_imc == 'Obesidad' %}bg-danger{% else %}bg-info{% endif %} rounded-pill">
+              {{ ultimo_seguimiento.get_categoria_imc }}
+            </span>
+          {% else %}
+            <a href="{% url 'habitos:calcular_imc' %}" class="text-success small">Calcular →</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sueño promedio -->
+    <div class="col-6 col-lg-3 fade-up">
+      <div class="kpi-card morado">
+        <div class="kpi-label mb-2"><i class="fas fa-moon me-1"></i>Sueño prom.</div>
+        <div class="kpi-value" style="color:#a855f7">{{ promedio_sueno }}h</div>
+        <div class="kpi-delta text-muted mt-1 small">
+          {% if promedio_sueno >= 7 %}✅ Óptimo{% elif promedio_sueno >= 5 %}⚠️ Insuficiente{% else %}❌ Muy poco{% endif %}
+          (última semana)
+        </div>
+      </div>
+    </div>
+
+    <!-- Racha -->
+    <div class="col-6 col-lg-3 fade-up">
+      <div class="kpi-card naranja">
+        <div class="kpi-label mb-2"><i class="fas fa-fire me-1"></i>Racha activa</div>
+        <div class="kpi-value text-warning">{{ racha }}</div>
+        <div class="kpi-delta text-muted mt-1 small">
+          día{{ racha|pluralize }} consecutivo{{ racha|pluralize }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Peso actual -->
+    <div class="col-6 col-lg-3 fade-up">
+      <div class="kpi-card azul">
+        <div class="kpi-label mb-2"><i class="fas fa-person me-1"></i>Peso actual</div>
+        <div class="kpi-value text-primary">
+          {% if ultimo_seguimiento %}{{ ultimo_seguimiento.peso_kg }} kg{% else %}—{% endif %}
+        </div>
+        <div class="kpi-delta text-muted mt-1 small">
+          <a href="{% url 'habitos:registrar_seguimiento' %}" class="text-primary small">Actualizar →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /KPIs -->
+
+  <!-- GRÁFICOS -->
+  <div class="row g-4 mb-4">
+
+    <!-- Evolución de peso -->
+    <div class="col-lg-7 fade-up">
+      <div class="chart-card">
+        <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+          <i class="fas fa-weight me-1 text-success"></i>Evolución del peso (30 días)
+        </h2>
+        <div style="height:220px; position:relative;">
+          <canvas id="chartPeso"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sesiones de ejercicio -->
+    <div class="col-lg-5 fade-up">
+      <div class="chart-card">
+        <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+          <i class="fas fa-dumbbell me-1 text-warning"></i>Sesiones (últimas 4 semanas)
+        </h2>
+        <div style="height:220px; position:relative;">
+          <canvas id="chartSesiones"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACTIVIDAD RECIENTE -->
+  <div class="chart-card fade-up">
+    <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+      <i class="fas fa-clock-rotate-left me-1 text-info"></i>Actividad reciente
+    </h2>
+    {% for sesion in actividad_reciente %}
+    <div class="timeline-item">
+      <div class="timeline-dot">
+        <i class="fas fa-{% if sesion.completado %}check{% else %}xmark{% endif %} fa-sm"></i>
+      </div>
+      <div>
+        <div class="fw-semibold text-white small">{{ sesion.rutina.nombre }}</div>
+        <div class="text-muted" style="font-size:.78rem">
+          {{ sesion.fecha|date:"d M Y" }} · {{ sesion.duracion_real_min }} min · Esfuerzo {{ sesion.nivel_esfuerzo }}/5
+        </div>
+        {% if sesion.notas %}<div class="text-muted fst-italic" style="font-size:.75rem">"{{ sesion.notas|truncatechars:80 }}"</div>{% endif %}
+      </div>
+      <div class="ms-auto">
+        <span class="badge rounded-pill {% if sesion.completado %}bg-success{% else %}bg-secondary{% endif %}">
+          {% if sesion.completado %}✓ Completada{% else %}Parcial{% endif %}
+        </span>
+      </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-4 text-muted">
+      <i class="fas fa-person-running fa-2x mb-2 opacity-25 d-block"></i>
+      Aún no has registrado sesiones. <a href="{% url 'habitos:mis_rutinas' %}" class="text-success">Empieza hoy →</a>
+    </div>
+    {% endfor %}
+  </div>
+
+</div><!-- /container -->
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const DEFAULTS_CHART = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: 'rgba(255,255,255,.5)', font: { size: 11 } } },
+      y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: 'rgba(255,255,255,.5)', font: { size: 11 } } },
+    },
+  };
+
+  // ── Gráfico evolución de peso ────────────────────────────
+  const pesosLabels = {{ pesos_labels|safe }};
+  const pesosData   = {{ pesos_data|safe }};
+
+  if (pesosData.length > 0) {
+    new Chart(document.getElementById('chartPeso'), {
+      type: 'line',
+      data: {
+        labels: pesosLabels,
+        datasets: [{
+          label: 'Peso (kg)',
+          data: pesosData,
+          borderColor: '#39A900',
+          backgroundColor: 'rgba(57,169,0,.1)',
+          fill: true,
+          tension: .4,
+          pointRadius: 4,
+          pointBackgroundColor: '#39A900',
+        }],
+      },
+      options: {
+        ...DEFAULTS_CHART,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ` ${c.raw} kg` } },
+        },
+        scales: { ...DEFAULTS_CHART.scales, y: { ...DEFAULTS_CHART.scales.y, ticks: { ...DEFAULTS_CHART.scales.y.ticks, callback: v => v + ' kg' } } },
+      },
+    });
+  } else {
+    document.getElementById('chartPeso').closest('.chart-card').insertAdjacentHTML('beforeend',
+      '<p class="text-muted small text-center mt-2">Sin registros de peso. <a href="{% url "habitos:calcular_imc" %}" class="text-success">Calcular IMC →</a></p>');
+  }
+
+  // ── Gráfico sesiones ─────────────────────────────────────
+  const sesLabels = {{ sesiones_labels|safe }};
+  const sesData   = {{ sesiones_data|safe }};
+
+  new Chart(document.getElementById('chartSesiones'), {
+    type: 'bar',
+    data: {
+      labels: sesLabels,
+      datasets: [{
+        label: 'Sesiones',
+        data: sesData,
+        backgroundColor: 'rgba(245,158,11,.7)',
+        borderRadius: 8,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      ...DEFAULTS_CHART,
+      scales: {
+        ...DEFAULTS_CHART.scales,
+        y: { ...DEFAULTS_CHART.scales.y, beginAtZero: true, ticks: { ...DEFAULTS_CHART.scales.y.ticks, stepSize: 1 } },
+      },
+    },
+  });
+
+  // ── IntersectionObserver animaciones ─────────────────────
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+})();
+</script>
+{% endblock %}

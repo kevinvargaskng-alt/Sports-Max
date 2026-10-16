@@ -215,8 +215,20 @@
                                         {% endif %}
                                     </div>
                                     <div>
-                                        <div class="text-white fw-bold small gest-u-8">{{ u.get_full_name|lower }}</div>
-                                        <div class="text-white-50 gest-u-9">Desde {{ u.fecha_registro|date:"d/m/Y" }}</div>
+                                        <div class="text-white fw-bold small">{{ u.get_full_name|title }}</div>
+                                        <div class="d-flex flex-column gap-1 mt-1" style="font-size: 0.72rem; line-height: 1.2;">
+                                            <span class="text-white-50" title="Fecha de registro">
+                                                <i class="fas fa-calendar-plus me-1 text-success opacity-75"></i>Reg: {{ u.fecha_registro|date:"d/m/Y" }}
+                                            </span>
+                                            <span class="text-white-50" title="Última actualización de datos">
+                                                <i class="fas fa-pen-to-square me-1 text-warning opacity-75"></i>Act: {{ u.fecha_actualizacion|date:"d/m/Y H:i" }}
+                                            </span>
+                                            {% if u.last_login %}
+                                            <span class="text-white-50" title="Último inicio de sesión">
+                                                <i class="fas fa-clock me-1 text-info opacity-75"></i>Acceso: {{ u.last_login|timesince }} atrás
+                                            </span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </td>
