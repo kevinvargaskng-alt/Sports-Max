@@ -236,3 +236,46 @@ class TestUsuariosQAQC(TestCase):
         resp = self.client.get('/usuarios/')
         self.assertEqual(resp.status_code, 302)
 
+    def test_administrador_nunca_se_bloquea(self):
+        """Valida que un usuario con rol de administrador jamás sea bloqueado por intentos fallidos o toggle."""
+        admin = self.User.objects.create_superuser(
+            username="admin_inmune",
+            password="AdminPassword123*",
+            email="admin_inmune@sena.edu.co",
+            numero_documento="77778888",
+            rol="admin"
+        )
+
+        # 1. 5 intentos erróneos de login no bloquean al admin
+        for _ in range(5):
+            resp = self.client.post('/login/', {
+                'username': '77778888',
+                'password': 'PasswordIncorrecto*'
+            }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            self.assertEqual(resp.status_code, 401)
+            self.assertFalse(resp.json().get('bloqueado', False))
+
+        admin.refresh_from_db()
+        self.assertEqual(admin.intentos_fallidos, 0)
+        self.assertIsNone(admin.bloqueado_hasta)
+        self.assertTrue(admin.is_active)
+        self.assertEqual(admin.estado, 'activo')
+
+        # Limpiar rate limiting de IP para probar autenticación válida
+        cache.clear()
+
+        # 2. Login con contraseña correcta funciona inmediatamente
+        resp_ok = self.client.post('/login/', {
+            'username': '77778888',
+            'password': 'AdminPassword123*'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_ok.status_code, 200)
+
+        # 3. Intentar bloquear la cuenta admin mediante toggle_usuario es denegado
+        self.client.login(username="admin_inmune", password="AdminPassword123*")
+        resp_toggle = self.client.post(f'/perfil/toggle/{admin.id}/')
+        self.assertEqual(resp_toggle.status_code, 302)
+        admin.refresh_from_db()
+        self.assertTrue(admin.is_active)
+        self.assertEqual(admin.estado, 'activo')
+

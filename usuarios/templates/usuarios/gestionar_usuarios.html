@@ -284,8 +284,10 @@
                                             title="Cambiar rol">
                                         <i class="fas fa-user-tag me-1"></i>Rol
                                     </button>
+                                    {% endif %}
 
                                     <!-- Bloquear / activar -->
+                                    {% if u.id != usuario.id and u.rol != 'admin' and not u.is_superuser and not u.is_staff %}
                                     <form action="{% url 'toggle_usuario' u.id %}" method="POST" class="gest-u-14">
                                         {% csrf_token %}
                                         <button type="submit" 
@@ -296,8 +298,8 @@
                                         </button>
                                     </form>
                                     {% else %}
-                                    <span class="btn btn-sm btn-outline-secondary action-btn disabled opacity-50" title="Tu cuenta">
-                                        <i class="fas fa-user-shield"></i>
+                                    <span class="btn btn-sm btn-outline-secondary action-btn disabled opacity-50" title="Cuenta protegida contra bloqueos">
+                                        <i class="fas fa-user-shield me-1"></i>Protegido
                                     </span>
                                     {% endif %}
                                 </div>

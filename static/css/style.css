@@ -180,33 +180,34 @@ body.light-theme .btn-profile {
     color: #0f172a !important;
 }
 body.light-theme .hero {
-    background: #f8fafc !important;
+    background: #0b1528 !important;
 }
 body.light-theme .hero-bg {
     background-image: url('../img/hero_bg.png') !important;
     background-size: cover !important;
     background-position: center !important;
-    opacity: 0.45 !important;
+    opacity: 0.75 !important;
 }
 body.light-theme .hero-overlay {
-    background: linear-gradient(to top, #f8fafc 0%, rgba(248, 250, 252, 0.25) 50%, transparent 100%) !important;
+    background: linear-gradient(to top, rgba(11, 21, 40, 0.95) 0%, rgba(11, 21, 40, 0.45) 14%, transparent 28%) !important;
 }
 body.light-theme .hero-title {
-    color: #0f172a !important;
+    color: #ffffff !important;
 }
 body.light-theme .hero-title .outline {
-    -webkit-text-stroke: 2px rgba(15, 23, 42, 0.3) !important;
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.45) !important;
+    color: transparent !important;
 }
 body.light-theme .hero-sub {
-    color: #475569 !important;
+    color: rgba(255, 255, 255, 0.88) !important;
 }
 body.light-theme .btn-outline-sport {
-    color: #0f172a !important;
-    border-color: rgba(15, 23, 42, 0.3) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
 }
 body.light-theme .btn-outline-sport:hover {
-    background: rgba(15, 23, 42, 0.05) !important;
-    color: #000 !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
 }
 body.light-theme .scanner-btn {
     background: rgba(26, 95, 180, 0.08) !important;

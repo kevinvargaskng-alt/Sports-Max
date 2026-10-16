@@ -711,22 +711,78 @@ html.acc-daltonismo .modal-backdrop {
     filter: none !important; 
 }
 
-/* Tamaño fuente */
-html.acc-font-sm  body { font-size: 14px !important; }
-html.acc-font-md  body { font-size: 16px !important; }
-html.acc-font-lg  body { font-size: 19px !important; }
-html.acc-font-xl  body { font-size: 22px !important; }
+/* Tamaño fuente general, IA y notificaciones */
+html.acc-font-sm body,
+html.acc-font-sm .chat-window,
+html.acc-font-sm .chat-window .bubble,
+html.acc-font-sm #modalNotificacionesSistema,
+html.acc-font-sm #modalNotificacionesSistema .notif-item-box { font-size: 13.5px !important; }
 
-/* Tipo fuente */
-html.acc-font-sans      body { font-family: 'Segoe UI', system-ui, sans-serif !important; }
-html.acc-font-serif     body { font-family: Georgia, 'Times New Roman', serif !important; }
-html.acc-font-mono      body { font-family: 'Courier New', Courier, monospace !important; }
-html.acc-font-dyslexic  body { font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.05em; word-spacing: 0.1em; line-height: 1.7 !important; }
+html.acc-font-md body,
+html.acc-font-md .chat-window,
+html.acc-font-md .chat-window .bubble,
+html.acc-font-md #modalNotificacionesSistema,
+html.acc-font-md #modalNotificacionesSistema .notif-item-box { font-size: 16px !important; }
 
-/* Interlineado */
-html.acc-line-normal body { line-height: 1.5 !important; }
-html.acc-line-wide   body { line-height: 1.9 !important; }
-html.acc-line-wider  body { line-height: 2.4 !important; }
+html.acc-font-lg body,
+html.acc-font-lg .chat-window,
+html.acc-font-lg .chat-window .bubble,
+html.acc-font-lg #modalNotificacionesSistema,
+html.acc-font-lg #modalNotificacionesSistema .notif-item-box { font-size: 19px !important; }
+
+html.acc-font-xl body,
+html.acc-font-xl .chat-window,
+html.acc-font-xl .chat-window .bubble,
+html.acc-font-xl #modalNotificacionesSistema,
+html.acc-font-xl #modalNotificacionesSistema .notif-item-box { font-size: 22px !important; }
+
+/* Tipo fuente - cubre toda la web, IA Tux y modal de notificaciones */
+html.acc-font-sans body,
+html.acc-font-sans body *:not(#acc-panel):not(#acc-panel *):not(i):not([class*="fa-"]),
+html.acc-font-sans #asistente-ia-wrap *:not(i):not([class*="fa-"]),
+html.acc-font-sans .chat-window *:not(i):not([class*="fa-"]),
+html.acc-font-sans #modalNotificacionesSistema *:not(i):not([class*="fa-"]) {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+html.acc-font-serif body,
+html.acc-font-serif body *:not(#acc-panel):not(#acc-panel *):not(i):not([class*="fa-"]),
+html.acc-font-serif #asistente-ia-wrap *:not(i):not([class*="fa-"]),
+html.acc-font-serif .chat-window *:not(i):not([class*="fa-"]),
+html.acc-font-serif #modalNotificacionesSistema *:not(i):not([class*="fa-"]) {
+    font-family: Georgia, 'Times New Roman', serif !important;
+}
+
+html.acc-font-mono body,
+html.acc-font-mono body *:not(#acc-panel):not(#acc-panel *):not(i):not([class*="fa-"]),
+html.acc-font-mono #asistente-ia-wrap *:not(i):not([class*="fa-"]),
+html.acc-font-mono .chat-window *:not(i):not([class*="fa-"]),
+html.acc-font-mono #modalNotificacionesSistema *:not(i):not([class*="fa-"]) {
+    font-family: 'Courier New', Courier, monospace !important;
+}
+
+html.acc-font-dyslexic body,
+html.acc-font-dyslexic body *:not(#acc-panel):not(#acc-panel *):not(i):not([class*="fa-"]),
+html.acc-font-dyslexic #asistente-ia-wrap *:not(i):not([class*="fa-"]),
+html.acc-font-dyslexic .chat-window *:not(i):not([class*="fa-"]),
+html.acc-font-dyslexic #modalNotificacionesSistema *:not(i):not([class*="fa-"]) {
+    font-family: Arial, Helvetica, sans-serif !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.1em !important;
+}
+
+/* Interlineado general, IA y notificaciones */
+html.acc-line-normal body,
+html.acc-line-normal .chat-window .bubble,
+html.acc-line-normal #modalNotificacionesSistema { line-height: 1.5 !important; }
+
+html.acc-line-wide body,
+html.acc-line-wide .chat-window .bubble,
+html.acc-line-wide #modalNotificacionesSistema { line-height: 1.9 !important; }
+
+html.acc-line-wider body,
+html.acc-line-wider .chat-window .bubble,
+html.acc-line-wider #modalNotificacionesSistema { line-height: 2.3 !important; }
 
 /* Foco */
 html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
