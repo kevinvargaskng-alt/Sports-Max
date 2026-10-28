@@ -594,7 +594,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small">Nombre *</label>
-                            <input type="text" name="nombre" class="adm-input" placeholder="Ej: Press de Pierna" required>
+                            <input type="text" name="nombre" class="adm-input" placeholder="Ej: Press de Pierna" required minlength="2" maxlength="100">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold small">Categoría</label>
@@ -610,11 +610,11 @@
                         </div>
                         <div class="col-md-8">
                             <label class="form-label fw-bold small">Descripción</label>
-                            <textarea name="descripcion" class="adm-input" rows="2" placeholder="Para qué sirve y cómo se usa..."></textarea>
+                            <textarea name="descripcion" class="adm-input" rows="2" placeholder="Para qué sirve y cómo se usa..." maxlength="500"></textarea>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold small">Músculos trabajados</label>
-                            <input type="text" name="musculos" class="adm-input" placeholder="Piernas, Glúteos (separado por comas)">
+                            <input type="text" name="musculos" class="adm-input" placeholder="Piernas, Glúteos (separado por comas)" maxlength="200">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary fw-bold px-4 py-2 mt-3">
@@ -646,19 +646,28 @@
                         <td data-label="Estado">
                             <form method="post" action="{% url 'toggle_estado_maquina' m.pk %}" class="gym-u-29">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-estado-toggle estado-{{ m.estado }}" title="Clic para cambiar de estado">
+                                <button type="submit" class="btn-estado-toggle estado-{{ m.estado }}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Cambiar estado operativo de la máquina"
+                                        aria-label="Cambiar estado de {{ m.nombre }}. Actualmente: {{ m.get_estado_display }}">
                                     ● {{ m.get_estado_display }}
                                 </button>
                             </form>
                         </td>
                         <td data-label="Acciones" class="text-center">
-                            <button type="button" class="btn-edit" title="Editar"
-                                    data-bs-toggle="modal" data-bs-target="#editMaquina{{ m.pk }}">
+                            <button type="button" class="btn-edit"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="Editar ficha y detalles de {{ m.nombre }}"
+                                    aria-label="Editar máquina {{ m.nombre }}"
+                                    data-bs-target="#editMaquina{{ m.pk }}">
                                 <i class="fas fa-pen me-1"></i>Editar
                             </button>
                             <form method="post" action="{% url 'eliminar_maquina' m.pk %}" class="gym-u-30">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-trash" title="Eliminar"
+                                <button type="submit" class="btn-trash"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Eliminar esta máquina del gimnasio"
+                                        aria-label="Eliminar máquina {{ m.nombre }}"
                                         data-confirm="¿Eliminar la máquina {{ m.nombre }}?" data-confirm-title="Eliminar Máquina" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
@@ -679,7 +688,7 @@
                                     <div class="modal-body">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold small">Nombre</label>
-                                            <input type="text" name="nombre" class="adm-input" value="{{ m.nombre }}" required>
+                                            <input type="text" name="nombre" class="adm-input" value="{{ m.nombre }}" required minlength="2" maxlength="100">
                                         </div>
                                         <div class="row g-3 mb-3">
                                             <div class="col-6">
@@ -701,12 +710,12 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label fw-bold small">Descripción</label>
-                                            <textarea name="descripcion" class="adm-input" rows="2">{{ m.descripcion }}</textarea>
+                                            <textarea name="descripcion" class="adm-input" rows="2" maxlength="500">{{ m.descripcion }}</textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label fw-bold small">Músculos (separados por comas)</label>
                                             <input type="text" name="musculos" class="adm-input"
-                                                   value="{% for msc in m.musculos %}{{ msc }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                                                   value="{% for msc in m.musculos %}{{ msc }}{% if not forloop.last %}, {% endif %}{% endfor %}" maxlength="200">
                                         </div>
                                         <div class="mb-1">
                                             <label class="form-label fw-bold small">Reemplazar foto (opcional)</label>

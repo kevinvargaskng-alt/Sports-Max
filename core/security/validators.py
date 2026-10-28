@@ -104,45 +104,65 @@ def validate_numeric_id(value, field_name='ID'):
 class RegistroForm(forms.Form):
     """Validación basada en esquema para el formulario de registro."""
     numero_documento = forms.CharField(
-        min_length=5, max_length=20,
+        min_length=7, max_length=10,
         validators=[
-            forms.RegexField(regex=r'^\d{5,20}$', error_messages={
-                'invalid': 'El documento debe contener solo números (5-20 dígitos).'
+            forms.RegexField(regex=r'^\d{7,10}$', error_messages={
+                'invalid': 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.'
             }).validators[0]
         ]
     )
     nombres = forms.CharField(min_length=2, max_length=100)
     apellidos = forms.CharField(min_length=2, max_length=100)
-    contrasena = forms.CharField(min_length=12, max_length=128)
+    contrasena = forms.CharField(min_length=8, max_length=128)
     email = forms.EmailField(max_length=254)
-    tipo_documento = forms.ChoiceField(choices=[
-        ('CC', 'CC'), ('TI', 'TI'), ('CE', 'CE'), ('PA', 'PA'),
-    ])
-    telefono = forms.CharField(max_length=15, required=False)
-    ficha = forms.CharField(max_length=20, required=False)
+    tipo_documento = forms.ChoiceField(
+        choices=[
+            ('CC', 'CC'), ('TI', 'TI'), ('CE', 'CE'), ('PA', 'PA'),
+        ],
+        error_messages={'invalid_choice': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'}
+    )
+    telefono = forms.CharField(max_length=10, min_length=10, required=False)
+    ficha = forms.CharField(max_length=7, min_length=7, required=False)
     programa_formacion = forms.CharField(max_length=25, required=False)
-    genero = forms.ChoiceField(choices=[
-        ('M', 'M'), ('F', 'F'), ('O', 'O'), ('NR', 'NR'),
-    ])
+    genero = forms.ChoiceField(
+        choices=[
+            ('M', 'M'), ('F', 'F'), ('O', 'O'), ('NR', 'NR'),
+        ],
+        error_messages={'invalid_choice': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'}
+    )
 
     def clean_email(self):
         return validate_email_strict(self.cleaned_data['email'])
 
     def clean_nombres(self):
-        return validate_text_safe(
-            self.cleaned_data['nombres'], 'nombre', max_length=100
-        ).title()
+        val = self.cleaned_data['nombres'].strip()
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\'-]+$', val):
+            raise ValidationError("Este campo solo permite letras y un máximo de 100 caracteres.")
+        return validate_text_safe(val, 'nombre', max_length=100).title()
 
     def clean_apellidos(self):
-        return validate_text_safe(
-            self.cleaned_data['apellidos'], 'apellidos', max_length=100
-        ).title()
+        val = self.cleaned_data['apellidos'].strip()
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\'-]+$', val):
+            raise ValidationError("Este campo solo permite letras y un máximo de 100 caracteres.")
+        return validate_text_safe(val, 'apellidos', max_length=100).title()
+
+    def clean_telefono(self):
+        tel = self.cleaned_data.get('telefono', '').strip()
+        if tel and not re.match(r'^\d{10}$', tel):
+            raise ValidationError("El teléfono debe contener exactamente 10 dígitos numéricos.")
+        return tel
+
+    def clean_ficha(self):
+        ficha = self.cleaned_data.get('ficha', '').strip()
+        if ficha and not re.match(r'^\d{7}$', ficha):
+            raise ValidationError("La ficha debe contener exactamente 7 dígitos numéricos.")
+        return ficha
 
 
 class PerfilUpdateForm(forms.Form):
     """Validación para actualización de perfil (whitelist de campos)."""
-    email = forms.EmailField(max_length=254, required=False)
-    celular = forms.CharField(max_length=15, required=False)
+    email = forms.EmailField(max_length=100, required=False)
+    celular = forms.CharField(max_length=10, min_length=10, required=False)
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -152,8 +172,8 @@ class PerfilUpdateForm(forms.Form):
 
     def clean_celular(self):
         celular = self.cleaned_data.get('celular', '').strip()
-        if celular and not re.match(r'^\+?\d{7,15}$', celular):
-            raise ValidationError("Número de teléfono inválido.")
+        if celular and not re.match(r'^\d{10}$', celular):
+            raise ValidationError("El teléfono debe contener exactamente 10 dígitos numéricos.")
         return celular
 
 
@@ -202,6 +222,7 @@ class SugerenciaForm(forms.Form):
             ('mejora', 'mejora'), ('queja', 'queja'),
         ],
         required=False,
+        error_messages={'invalid_choice': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'}
     )
     comentario = forms.CharField(min_length=10, max_length=2000)
 

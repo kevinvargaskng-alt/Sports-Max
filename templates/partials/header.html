@@ -145,8 +145,12 @@
 
         <div class="ms-auto ps-3 d-flex align-items-center gap-2">
             <!-- SWITCH MODO CLARO / OSCURO -->
-            <button id="themeToggleBtn" title="Cambiar tema claro/oscuro"
-                    class="hdr-u-4">
+            <button id="themeToggleBtn"
+                    class="hdr-u-4"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    data-bs-title="Cambiar tema claro / oscuro"
+                    aria-label="Cambiar tema de color">
                 <i class="fas fa-sun" id="themeIcon"></i>
             </button>
             
@@ -154,15 +158,16 @@
             <!-- CAMPANITA DE NOTIFICACIONES -->
             <button class="btn-campanita hdr-u-5" id="btnCampanita"
                     data-bs-toggle="modal" data-bs-target="#modalNotificacionesSistema"
+                    data-bs-placement="bottom"
                     title="Notificaciones del sistema"
-                    aria-label="Notificaciones del sistema">
+                    aria-label="Ver notificaciones del sistema ({{ notificaciones_count }} pendientes)">
                 <i class="fas fa-bell"></i>
                 {% if notificaciones_count > 0 %}
                 <span id="puntoCampanita" class="hdr-u-6">{{ notificaciones_count }}</span>
                 {% endif %}
             </button>
             <div class="dropdown">
-                <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-label="Menú de perfil de usuario" data-bs-placement="bottom" title="Opciones de cuenta">
                     {% if user.foto_perfil %}
                         <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle hdr-u-7" style="object-fit: cover; object-position: {{ user.foto_posicion }};">
                     {% else %}

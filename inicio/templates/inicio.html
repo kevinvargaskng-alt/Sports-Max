@@ -275,10 +275,10 @@
             <form id="loginForm" action="{% url 'login' %}" method="POST" novalidate class="px-2 py-3">
               {% csrf_token %}
               <div class="mb-4">
-                <label class="form-label fw-semibold text-white small text-uppercase ini-u-38">Número de Documento o Correo</label>
+                <label class="form-label fw-semibold text-white small text-uppercase ini-u-38">Número de Documento o Usuario</label>
                 <div class="input-group has-validation">
                   <span class="input-group-text bg-transparent custom-input ini-u-39"><i class="fas fa-user-circle text-white-50"></i></span>
-                  <input type="text" name="username" id="login_username" class="form-control custom-input" placeholder="Ej: 1052345678 o usuario@sena.edu.co" required maxlength="254" autocomplete="username">
+                  <input type="text" name="username" id="login_username" class="form-control custom-input" placeholder="Ej: 1052345678" required maxlength="10" autocomplete="username">
                   <div class="invalid-feedback text-danger small mt-1" id="err_login_username"></div>
                 </div>
               </div>
@@ -369,7 +369,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-51">Número Documento <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-52"><i class="fas fa-hashtag text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="numero_documento" id="id_numero_documento" required minlength="5" maxlength="20" placeholder="Ej: 1052345678" autocomplete="username">
+                    <input type="text" class="form-control custom-input" name="numero_documento" id="id_numero_documento" required minlength="7" maxlength="10" pattern="[0-9]{7,10}" placeholder="Ej: 1052345678" autocomplete="username">
                     <div class="invalid-feedback text-danger small mt-1" id="err_numero_documento"></div>
                   </div>
                 </div>
@@ -407,7 +407,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-63">Teléfono <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-64"><i class="fas fa-phone text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="telefono" id="id_telefono" required minlength="7" maxlength="15" placeholder="Ej: 3101234567" autocomplete="tel">
+                    <input type="text" class="form-control custom-input" name="telefono" id="id_telefono" required minlength="10" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 3101234567" autocomplete="tel">
                     <div class="invalid-feedback text-danger small mt-1" id="err_telefono"></div>
                   </div>
                 </div>
@@ -434,7 +434,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-69">Correo Electrónico <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-70"><i class="fas fa-envelope text-white-50"></i></span>
-                    <input type="email" class="form-control custom-input" name="email" id="id_email" required maxlength="254" placeholder="ejemplo@sena.edu.co" autocomplete="email">
+                    <input type="email" class="form-control custom-input" name="email" id="id_email" required maxlength="100" placeholder="ejemplo@sena.edu.co" autocomplete="email">
                     <div class="invalid-feedback text-danger small mt-1" id="err_email"></div>
                   </div>
                 </div>
@@ -442,7 +442,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-72">Número de Ficha <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-73"><i class="fas fa-users text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required minlength="5" maxlength="20" placeholder="Ej: 2826489" autocomplete="off">
+                    <input type="text" class="form-control custom-input" name="ficha" id="id_ficha" required minlength="7" maxlength="7" pattern="[0-9]{7}" placeholder="Ej: 2826489" autocomplete="off">
                     <div class="invalid-feedback text-danger small mt-1" id="err_ficha"></div>
                   </div>
                 </div>
@@ -531,15 +531,15 @@
           {% csrf_token %}
           <div class="mb-3">
             <label class="form-label small fw-bold text-white-50">NÚMERO DE DOCUMENTO</label>
-            <input type="text" name="numero_documento" class="form-control custom-input" required placeholder="Ej: 1052345678">
+            <input type="text" name="numero_documento" class="form-control custom-input" required minlength="7" maxlength="10" pattern="[0-9]{7,10}" placeholder="Ej: 1052345678">
           </div>
           <div class="mb-3">
             <label class="form-label small fw-bold text-white-50">CORREO ELECTRÓNICO</label>
-            <input type="email" name="email" class="form-control custom-input" required>
+            <input type="email" name="email" class="form-control custom-input" required maxlength="100">
           </div>
           <div class="mb-4">
             <label class="form-label small fw-bold text-white-50">TELÉFONO REGISTRADO</label>
-            <input type="text" name="telefono" class="form-control custom-input" required placeholder="Ej: 3001234567">
+            <input type="text" name="telefono" class="form-control custom-input" required minlength="10" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 3001234567">
           </div>
           <button type="submit" class="btn w-100 py-3 fw-bold text-white ini-u-92">
             <i class="fas fa-unlock me-2"></i>VERIFICAR Y DESBLOQUEAR

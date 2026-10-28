@@ -597,10 +597,11 @@
 <div id="asistente-csrf-wrap" style="display:none;">{% csrf_token %}</div>
 
 <!-- Botón Asistente IA Tux (Fijo) -->
-<div id="tux-pet" class="tux-pet" aria-label="IA Asistente" title="IA Asistente - Haz clic para chatear">
+<div id="tux-pet" class="tux-pet" role="button" tabindex="0" aria-label="Abrir asistente inteligente Tux"
+     data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Abrir Asistente IA Tux (Chat, Voz y Visión)">
   <div class="tux-ia-badge"><span class="tux-ia-dot"></span>IA Asistente</div>
   <div class="tux-sprite-wrap" id="tux-sprite-wrap">
-    <img id="tux-pet-img" class="tux-sprite" src="{% static 'img/Mascota.png' %}?v=3" alt="IA Asistente" style="width:115px !important; height:115px !important; max-width:115px !important; max-height:115px !important; object-fit:contain !important; display:block !important; pointer-events:none !important;">
+    <img id="tux-pet-img" class="tux-sprite" src="{% static 'img/Mascota.png' %}?v=3" alt="Mascota IA Asistente Tux" style="width:115px !important; height:115px !important; max-width:115px !important; max-height:115px !important; object-fit:contain !important; display:block !important; pointer-events:none !important;">
     <div class="tux-shadow"></div>
   </div>
 </div>
@@ -617,7 +618,9 @@
     </div>
     <div class="status-pill"><span class="pulse"></span>En línea</div>
     <div class="voice-pill" id="voicePill"><span class="pulse-red"></span>Escuchando</div>
-    <button type="button" class="chat-close-btn" onclick="document.querySelector('.chat-window').classList.remove('open')" title="Cerrar chat" aria-label="Cerrar chat">✕</button>
+    <button type="button" class="chat-close-btn" onclick="document.querySelector('.chat-window').classList.remove('open')"
+            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cerrar ventana del asistente"
+            title="Cerrar chat" aria-label="Cerrar ventana del asistente">✕</button>
   </div>
 
   <div class="modules">
@@ -737,7 +740,9 @@
       <input type="file" id="tuxImageInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
       
       <!-- Botón adjuntar imagen -->
-      <button type="button" class="attach-btn" id="attachBtn" onclick="document.getElementById('tuxImageInput').click()" title="Adjuntar imagen o pega con Ctrl+V" aria-label="Adjuntar imagen">
+      <button type="button" class="attach-btn" id="attachBtn" onclick="document.getElementById('tuxImageInput').click()"
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Adjuntar o pegar imagen (Ctrl+V)"
+              title="Adjuntar imagen o pega con Ctrl+V" aria-label="Adjuntar imagen al chat">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -747,7 +752,9 @@
 
       {% if user.is_authenticated and user.is_staff or user.is_superuser or user.rol == 'admin' %}
       <!-- Botón Generar Imagen IA (Exclusivo Administrador) -->
-      <button type="button" class="gen-img-btn" id="genImgBtn" onclick="openImageGenPanel()" title="Generar Imagen con IA (Administrador)" aria-label="Generar Imagen con IA">
+      <button type="button" class="gen-img-btn" id="genImgBtn" onclick="openImageGenPanel()"
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Generar imagen con IA (Administrador)"
+              title="Generar Imagen con IA (Administrador)" aria-label="Generar Imagen con Inteligencia Artificial">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4L2 9.4h7.6z"/>
         </svg>
@@ -757,7 +764,9 @@
       <input class="chat-input" id="chatIn" type="text" placeholder="Pregúntame o pega imagen (Ctrl+V)..." onkeydown="if(event.key==='Enter')send()"/>
 
       <!-- Botón micrófono -->
-      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Hablar con Tux" aria-label="Activar micrófono">
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()"
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Hablar con Tux por voz"
+              title="Hablar con Tux" aria-label="Activar reconocimiento por voz">
         <svg id="micIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
           <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
@@ -765,7 +774,9 @@
           <line x1="8" y1="23" x2="16" y2="23"/>
         </svg>
       </button>
-      <button class="send-btn" onclick="send()">
+      <button class="send-btn" onclick="send()"
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Enviar mensaje (Enter)"
+              title="Enviar mensaje" aria-label="Enviar mensaje al asistente">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>

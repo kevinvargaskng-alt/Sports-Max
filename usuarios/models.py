@@ -4,6 +4,24 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 
+from django.core.validators import RegexValidator
+
+validador_documento_7_10 = RegexValidator(
+    regex=r'^\d{7,10}$',
+    message='El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.'
+)
+
+validador_telefono_10 = RegexValidator(
+    regex=r'^\d{10}$',
+    message='El teléfono debe contener exactamente 10 dígitos numéricos.'
+)
+
+validador_ficha_7 = RegexValidator(
+    regex=r'^\d{7}$',
+    message='La ficha debe contener exactamente 7 dígitos numéricos.'
+)
+
+
 class Usuario(AbstractUser):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
@@ -33,14 +51,23 @@ class Usuario(AbstractUser):
         ('MANTENIMIENTO_EQUIPO', 'Mantenimiento de Equipo Pesado'),
     ]
 
-    numero_documento = models.CharField(max_length=20, unique=True)
+    numero_documento = models.CharField(
+        max_length=10, unique=True,
+        validators=[validador_documento_7_10]
+    )
     email = models.EmailField(unique=True, verbose_name="Correo Electrónico")
     tipo_documento = models.CharField(
         max_length=2, choices=TIPO_DOC, default='CC')
-    telefono = models.CharField(max_length=15, blank=True)
+    telefono = models.CharField(
+        max_length=15, blank=True,
+        validators=[validador_telefono_10]
+    )
     genero = models.CharField(
         max_length=2, choices=GENERO_CHOICES, blank=True, null=True)
-    ficha = models.CharField(max_length=20, blank=True, null=True)
+    ficha = models.CharField(
+        max_length=20, blank=True, null=True,
+        validators=[validador_ficha_7]
+    )
     programa_formacion = models.CharField(
         max_length=25, choices=PROGRAMA_CHOICES, blank=True, null=True)
     rol = models.CharField(max_length=20, default='aprendiz')

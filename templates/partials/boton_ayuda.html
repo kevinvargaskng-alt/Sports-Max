@@ -1,7 +1,11 @@
 {% load static %}
 
 <!-- Botón de Ayuda Flotante (Esquina inferior izquierda) -->
-<button type="button" onclick="downloadManualGlobal()" id="help-toggle" title="Descargar Manual de Ayuda" aria-label="Centro de Ayuda">
+<button type="button" onclick="downloadManualGlobal()" id="help-toggle"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        data-bs-title="Descargar Manual de Usuario (PDF)"
+        title="Descargar Manual de Usuario (PDF)"
+        aria-label="Descargar Manual de Usuario en PDF">
     <i class="fas fa-question-circle"></i>
 </button>
 

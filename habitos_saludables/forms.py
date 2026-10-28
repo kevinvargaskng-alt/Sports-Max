@@ -89,7 +89,8 @@ class SeguimientoSaludForm(forms.ModelForm):
             ),
             'observaciones': forms.Textarea(
                 attrs={'class': 'form-control', 'rows': 3,
-                       'placeholder': 'Notas adicionales sobre tu salud...'}
+                       'placeholder': 'Notas adicionales sobre tu salud...',
+                       'maxlength': '500'}
             ),
         }
         labels = {
@@ -210,12 +211,13 @@ class MaterialApoyoForm(forms.ModelForm):
             'autor', 'fecha_publicacion', 'activo'
         ]
         widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'minlength': '2', 'maxlength': '150'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'maxlength': '1000'}),
             'tipo_contenido': forms.Select(attrs={'class': 'form-select'}),
             'url_video': forms.URLInput(attrs={'class': 'form-control',
-                                               'placeholder': 'https://youtube.com/...'}),
-            'autor': forms.TextInput(attrs={'class': 'form-control'}),
+                                               'placeholder': 'https://youtube.com/...',
+                                               'maxlength': '500'}),
+            'autor': forms.TextInput(attrs={'class': 'form-control', 'maxlength': '100'}),
             'fecha_publicacion': forms.DateInput(attrs={'type': 'date',
                                                         'class': 'form-control'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -250,9 +252,11 @@ class BuscarMaterialForm(forms.Form):
     """Formulario de búsqueda/filtro para la biblioteca."""
     q = forms.CharField(
         required=False,
+        max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Buscar material...'
+            'placeholder': 'Buscar material...',
+            'maxlength': '100'
         })
     )
     tipo = forms.ChoiceField(

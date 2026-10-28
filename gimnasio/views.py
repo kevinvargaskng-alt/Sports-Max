@@ -404,6 +404,17 @@ def crear_maquina(request):
             request.session['seccion_admin'] = 'maquinas'
             return redirect('gimnasio')
 
+    valid_categorias = ['Cardio', 'Fuerza', 'Funcional', 'Flexibilidad', 'cardio', 'fuerza', 'funcional', 'flexibilidad']
+    valid_estados = ['Disponible', 'En Mantenimiento', 'Inactivo', 'disponible', 'mantenimiento', 'inactivo']
+
+    if categoria not in valid_categorias:
+        messages.error(request, 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.')
+        return redirect('machine_list' if next_param == 'machine_list' else 'gimnasio')
+
+    if estado not in valid_estados:
+        messages.error(request, 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.')
+        return redirect('machine_list' if next_param == 'machine_list' else 'gimnasio')
+
     if not nombre:
         messages.error(request, 'El nombre de la máquina es obligatorio.')
         if next_param == 'machine_list':
@@ -466,6 +477,19 @@ def editar_maquina(request, pk):
                 return redirect('machine_list')
             request.session['seccion_admin'] = 'maquinas'
             return redirect('gimnasio')
+
+    valid_categorias = ['Cardio', 'Fuerza', 'Funcional', 'Flexibilidad', 'cardio', 'fuerza', 'funcional', 'flexibilidad']
+    valid_estados = ['Disponible', 'En Mantenimiento', 'Inactivo', 'disponible', 'mantenimiento', 'inactivo']
+
+    cat_input = request.POST.get('categoria')
+    if cat_input and cat_input not in valid_categorias:
+        messages.error(request, 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.')
+        return redirect('machine_list' if next_param == 'machine_list' else 'gimnasio')
+
+    est_input = request.POST.get('estado')
+    if est_input and est_input not in valid_estados:
+        messages.error(request, 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.')
+        return redirect('machine_list' if next_param == 'machine_list' else 'gimnasio')
 
     if machine:
         machine.nombre = nombre
@@ -648,7 +672,13 @@ def admin_franjas_list_create(request):
         dia = request.POST.get('dia_semana', 'Lunes').strip()
         h_inicio = request.POST.get('hora_inicio')
         h_fin = request.POST.get('hora_fin')
-        aforo = int(request.POST.get('aforo_maximo', 30))
+        try:
+            aforo = int(request.POST.get('aforo_maximo', 30))
+            if aforo < 1 or aforo > 500:
+                return JsonResponse({'status': 'error', 'message': 'El aforo máximo debe estar entre 1 y 500.', 'errors': {'aforo_maximo': 'Rango inválido.'}}, status=400)
+        except (ValueError, TypeError):
+            return JsonResponse({'status': 'error', 'message': 'El aforo debe ser un número entero.', 'errors': {'aforo_maximo': 'Valor no numérico.'}}, status=400)
+
         habilitada = request.POST.get('habilitada', 'true').lower() in ['true', '1', 'on']
 
         if not h_inicio or not h_fin:
@@ -697,8 +727,16 @@ def admin_franja_editar(request, pk):
         franja.hora_inicio = request.POST.get('hora_inicio')
     if 'hora_fin' in request.POST:
         franja.hora_fin = request.POST.get('hora_fin')
+    if franja.hora_inicio and franja.hora_fin and franja.hora_inicio >= franja.hora_fin:
+        return JsonResponse({'status': 'error', 'message': 'La hora de inicio debe ser anterior a la hora de fin.'}, status=400)
     if 'aforo_maximo' in request.POST:
-        franja.aforo_maximo = int(request.POST.get('aforo_maximo'))
+        try:
+            aforo = int(request.POST.get('aforo_maximo'))
+            if aforo < 1 or aforo > 500:
+                return JsonResponse({'status': 'error', 'message': 'El aforo máximo debe estar entre 1 y 500.', 'errors': {'aforo_maximo': 'Rango inválido.'}}, status=400)
+            franja.aforo_maximo = aforo
+        except (ValueError, TypeError):
+            return JsonResponse({'status': 'error', 'message': 'El aforo debe ser un número entero.', 'errors': {'aforo_maximo': 'Valor no numérico.'}}, status=400)
     if 'habilitada' in request.POST:
         franja.habilitada = request.POST.get('habilitada', 'true').lower() in ['true', '1', 'on']
 

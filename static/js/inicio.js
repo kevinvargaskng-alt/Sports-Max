@@ -237,9 +237,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!usernameInput || !usernameInput.value.trim()) {
                 setFieldError(this, 'username', 'El número de documento o correo es obligatorio.');
                 hasClientErrors = true;
+            } else {
+                const uVal = usernameInput.value.trim();
+                if (uVal.length > 10) {
+                    setFieldError(this, 'username', 'Las credenciales no pueden superar los 10 caracteres.');
+                    hasClientErrors = true;
+                }
             }
             if (!passwordInput || !passwordInput.value) {
                 setFieldError(this, 'password', 'La contraseña es obligatoria.');
+                hasClientErrors = true;
+            } else if (passwordInput.value.length > 128) {
+                setFieldError(this, 'password', 'La contraseña no puede superar los 128 caracteres.');
                 hasClientErrors = true;
             }
 
@@ -355,22 +364,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const numDoc = form.querySelector('[name="numero_documento"]');
             if (!numDoc || !numDoc.value.trim()) {
-                setFieldError(form, 'numero_documento', 'El número de documento es obligatorio.');
+                setFieldError(form, 'numero_documento', 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.');
                 clientErrors = true;
-            } else if (!/^\d{5,20}$/.test(numDoc.value.trim())) {
-                setFieldError(form, 'numero_documento', 'El documento debe contener entre 5 y 20 dígitos numéricos.');
+            } else if (!/^\d{7,10}$/.test(numDoc.value.trim())) {
+                setFieldError(form, 'numero_documento', 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.');
                 clientErrors = true;
             }
 
             const nombres = form.querySelector('[name="nombres"]');
             if (!nombres || nombres.value.trim().length < 2) {
-                setFieldError(form, 'nombres', 'Los nombres deben contener al menos 2 caracteres.');
+                setFieldError(form, 'nombres', 'Este campo solo permite letras y un máximo de 100 caracteres.');
+                clientErrors = true;
+            } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/.test(nombres.value.trim())) {
+                setFieldError(form, 'nombres', 'Este campo solo permite letras y un máximo de 100 caracteres.');
                 clientErrors = true;
             }
 
             const apellidos = form.querySelector('[name="apellidos"]');
             if (!apellidos || apellidos.value.trim().length < 2) {
-                setFieldError(form, 'apellidos', 'Los apellidos deben contener al menos 2 caracteres.');
+                setFieldError(form, 'apellidos', 'Este campo solo permite letras y un máximo de 100 caracteres.');
+                clientErrors = true;
+            } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/.test(apellidos.value.trim())) {
+                setFieldError(form, 'apellidos', 'Este campo solo permite letras y un máximo de 100 caracteres.');
                 clientErrors = true;
             }
 
@@ -384,8 +399,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!telefono || !telefono.value.trim()) {
                 setFieldError(form, 'telefono', 'El teléfono es obligatorio.');
                 clientErrors = true;
-            } else if (!/^\d{7,15}$/.test(telefono.value.trim())) {
-                setFieldError(form, 'telefono', 'El teléfono debe contener entre 7 y 15 dígitos numéricos.');
+            } else if (!/^\d{10}$/.test(telefono.value.trim())) {
+                setFieldError(form, 'telefono', 'El teléfono debe contener exactamente 10 dígitos numéricos.');
                 clientErrors = true;
             }
 
@@ -408,8 +423,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!ficha || !ficha.value.trim()) {
                 setFieldError(form, 'ficha', 'El número de ficha es obligatorio.');
                 clientErrors = true;
-            } else if (!/^\d{5,20}$/.test(ficha.value.trim())) {
-                setFieldError(form, 'ficha', 'La ficha debe contener entre 5 y 20 dígitos numéricos.');
+            } else if (!/^\d{7}$/.test(ficha.value.trim())) {
+                setFieldError(form, 'ficha', 'La ficha debe contener exactamente 7 dígitos numéricos (ej: 2826489).');
                 clientErrors = true;
             }
 

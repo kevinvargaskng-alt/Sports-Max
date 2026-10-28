@@ -205,12 +205,32 @@ def login_view(request):
 @require_POST
 def desbloquear_cuenta_view(request):
     """Permite desbloquear la cuenta ingresando datos de validación."""
+    import re
     doc = request.POST.get('numero_documento', '').strip()
     correo = request.POST.get('email', '').strip().lower()
     telefono = request.POST.get('telefono', '').strip()
 
     if not doc or not correo or not telefono:
         return JsonResponse({'status': 'error', 'message': 'Todos los campos son obligatorios.'}, status=400)
+
+    if not re.match(r'^\d{7,10}$', doc):
+        return JsonResponse({
+            'status': 'error',
+            'message': 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.',
+            'errors': {'numero_documento': 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.'}
+        }, status=400)
+
+    try:
+        validate_email_strict(correo)
+    except ValidationError:
+        return JsonResponse({'status': 'error', 'message': 'Formato de correo electrónico inválido.', 'errors': {'email': 'Correo inválido.'}}, status=400)
+
+    if not re.match(r'^\d{10}$', telefono):
+        return JsonResponse({
+            'status': 'error',
+            'message': 'El teléfono debe contener exactamente 10 dígitos numéricos.',
+            'errors': {'telefono': 'El teléfono debe contener exactamente 10 dígitos numéricos.'}
+        }, status=400)
 
     try:
         from django.db.models import Q
@@ -481,16 +501,104 @@ def perfil_view(request):
                 request, '¡Gracias! Tu reporte de error ha sido enviado exitosamente.')
             return redirect('perfil')
 
-        email = request.POST.get('email')
-        celular = request.POST.get('celular')
+        email = request.POST.get('email', '').strip()
+        celular = request.POST.get('celular', '').strip()
         eliminar_foto = request.POST.get('eliminar_foto') == 'true'
         foto_posicion = request.POST.get('foto_posicion')
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
 
-        if email:
-            usuario.email = email
+        # 1. Validación de Correo Electrónico
+        if not email:
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': 'El correo electrónico es un campo obligatorio.', 'errors': {'email': 'Campo obligatorio.'}}, status=400)
+            messages.error(request, 'El correo electrónico es un campo obligatorio.')
+            return redirect('perfil')
+
+        if len(email) < 6 or len(email) > 100:
+            msg = 'El correo electrónico debe tener entre 6 y 100 caracteres.'
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': msg, 'errors': {'email': msg}}, status=400)
+            messages.error(request, msg)
+            return redirect('perfil')
+
+        try:
+            validate_email_strict(email)
+        except ValidationError as e:
+            msg = e.message if hasattr(e, 'message') else str(e)
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': f'Formato de correo inválido: {msg}', 'errors': {'email': msg}}, status=400)
+            messages.error(request, f'Formato de correo inválido: {msg}')
+            return redirect('perfil')
+
+        # Verificar unicidad del correo electrónico
+        if Usuario.objects.filter(email__iexact=email).exclude(pk=usuario.pk).exists():
+            msg = 'El correo electrónico ingresado ya pertenece a otro usuario registrado.'
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': msg, 'errors': {'email': msg}}, status=400)
+            messages.error(request, msg)
+            return redirect('perfil')
+
+        usuario.email = email
+
+        # 2. Validación de Teléfono / Celular (Estricto: exactamente 10 dígitos)
         if celular:
+            import re
+            if not re.match(r'^\d{10}$', celular):
+                msg = 'El teléfono debe contener exactamente 10 dígitos numéricos.'
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'celular': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('perfil')
             usuario.telefono = celular
-        
+        else:
+            usuario.telefono = ''
+
+        # 3. Validación y actualización de Contraseña si se solicita
+        password_actual = request.POST.get('password_actual', '').strip()
+        nuevo_password = request.POST.get('nuevo_password', '').strip()
+        confirmar_password = request.POST.get('confirmar_password', '').strip()
+
+        if nuevo_password or password_actual or confirmar_password:
+            if not password_actual:
+                messages.error(request, 'Debes ingresar tu contraseña actual para autorizar el cambio de contraseña.')
+                return redirect('perfil')
+
+            if not usuario.check_password(password_actual):
+                messages.error(request, 'La contraseña actual ingresada es incorrecta.')
+                return redirect('perfil')
+
+            if not nuevo_password:
+                messages.error(request, 'Debes ingresar la nueva contraseña.')
+                return redirect('perfil')
+
+            if len(nuevo_password) < 8:
+                messages.error(request, 'La nueva contraseña debe tener mínimo 8 caracteres.')
+                return redirect('perfil')
+
+            if len(nuevo_password) > 128:
+                messages.error(request, 'La nueva contraseña no puede superar los 128 caracteres.')
+                return redirect('perfil')
+
+            if nuevo_password != confirmar_password:
+                messages.error(request, 'La confirmación de la nueva contraseña no coincide.')
+                return redirect('perfil')
+
+            # Validar requisitos de seguridad
+            try:
+                validate_password(nuevo_password, user=usuario)
+                from core.validators import validador_password_segura
+                validador_password_segura(nuevo_password)
+            except ValidationError as e:
+                err_msg = e.messages[0] if hasattr(e, 'messages') else str(e)
+                messages.error(request, f'Requisitos de contraseña: {err_msg}')
+                return redirect('perfil')
+
+            from django.contrib.auth import update_session_auth_hash
+            usuario.set_password(nuevo_password)
+            update_session_auth_hash(request, usuario)
+            messages.info(request, 'Tu contraseña ha sido actualizada con éxito.')
+
+        # 4. Foto de perfil
         if eliminar_foto:
             usuario.foto_perfil = None
             usuario.foto_posicion = '50% 50%'
@@ -499,14 +607,14 @@ def perfil_view(request):
                 validated_img = validate_uploaded_file(request.FILES.get('imagen'), allowed_types='image')
                 usuario.foto_perfil = validated_img
             except ValidationError as e:
-                messages.error(request, str(e.message))
+                messages.error(request, str(e.message if hasattr(e, 'message') else e))
                 return redirect('perfil')
             
         if foto_posicion:
             usuario.foto_posicion = foto_posicion
 
         usuario.save()
-        messages.success(request, '¡Perfil actualizado!')
+        messages.success(request, '¡Perfil actualizado exitosamente!')
         return redirect('perfil')
 
     # Reportes propios para cualquier usuario (Mis Reportes)
@@ -590,12 +698,16 @@ def cambiar_rol_usuario(request, user_id):
         messages.error(request, 'Solo un superusuario puede asignar el rol de administrador.')
         return redirect('gestionar_usuarios')
 
-    if nuevo_rol in ['aprendiz', 'instructor', 'profesional', 'admin']:
-        u.rol = nuevo_rol
-        u.is_staff = (nuevo_rol == 'admin')
-        u.save()
-        log_admin_action(request, 'CAMBIAR_ROL', 'Usuario', str(user_id),
-                         f'Nuevo rol: {nuevo_rol}')
+    if nuevo_rol not in ['aprendiz', 'instructor', 'profesional', 'admin']:
+        messages.error(request, 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.')
+        return redirect('gestionar_usuarios')
+
+    u.rol = nuevo_rol
+    u.is_staff = (nuevo_rol == 'admin')
+    u.save()
+    log_admin_action(request, 'CAMBIAR_ROL', 'Usuario', str(user_id),
+                     f'Nuevo rol: {nuevo_rol}')
+    messages.success(request, f'Rol actualizado exitosamente a {nuevo_rol}.')
     return redirect('gestionar_usuarios')
 
 
@@ -651,30 +763,45 @@ def gestionar_usuarios_view(request):
 
 @login_required
 def export_database_backup(request):
-    """Genera y descarga un respaldo completo de la base de datos en formato JSON."""
+    """Genera y descarga un respaldo completo de la base de datos bajo un esquema estricto con metadatos."""
     if not request.user.is_staff:
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("Acceso denegado: Se requieren privilegios de administrador.")
 
     import io
+    import json
     from django.core import management
     from django.http import HttpResponse
 
     output = io.StringIO()
     try:
         management.call_command('dumpdata', stdout=output, indent=2, exclude=['contenttypes', 'auth.Permission'])
-        log_admin_action(request, 'EXPORT_DB_BACKUP', 'Database', '', 'Respaldo completo generado')
-        response = HttpResponse(output.getvalue(), content_type='application/json')
-        response['Content-Disposition'] = 'attachment; filename="respaldo_base_datos.json"'
+        raw_json = output.getvalue()
+        raw_data = json.loads(raw_json) if raw_json.strip() else []
+
+        # Estructura estricta con metadatos explícitos
+        backup_dict = {
+            "version": "1.0",
+            "timestamp": timezone.now().isoformat(),
+            "entity": "SportMax_Backup_Total",
+            "system": "SportMax - Sistema de Gestión Deportiva SENA",
+            "exported_by": request.user.username,
+            "total_records": len(raw_data),
+            "data": raw_data
+        }
+        formatted_json = json.dumps(backup_dict, indent=2, ensure_ascii=False)
+        log_admin_action(request, 'EXPORT_DB_BACKUP', 'Database', '', f'Respaldo estructurado generado ({len(raw_data)} registros)')
+        response = HttpResponse(formatted_json, content_type='application/json; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="respaldo_sportmax_{timezone.localdate().strftime("%Y%m%d")}.json"'
         return response
-    except Exception:
-        messages.error(request, 'Error al generar el respaldo de la base de datos.')
+    except Exception as e:
+        messages.error(request, f'Error al generar el respaldo de la base de datos: {e}')
         return redirect('perfil')
 
 
 @login_required
 def restore_database_backup(request):
-    """Restaura la base de datos a partir de un archivo JSON subido."""
+    """Restaura la base de datos a partir de un archivo JSON subido bajo el esquema estructurado."""
     if not request.user.is_staff:
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("Acceso denegado: Se requieren privilegios de administrador.")
@@ -687,21 +814,38 @@ def restore_database_backup(request):
 
         import tempfile
         import os
+        import json
         from django.core import management
 
         temp_path = None
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.json') as temp_file:
-                for chunk in backup_file.chunks():
-                    temp_file.write(chunk)
+            content_bytes = backup_file.read()
+            content_str = content_bytes.decode('utf-8')
+            parsed = json.loads(content_str)
+
+            # Verificar si viene bajo el esquema estructurado con metadatos
+            if isinstance(parsed, dict) and 'data' in parsed:
+                records = parsed['data']
+            elif isinstance(parsed, list):
+                records = parsed
+            else:
+                messages.error(request, "El archivo JSON no tiene una estructura de respaldo compatible (debe contener el esquema {'version', 'timestamp', 'entity', 'data': [...]}).")
+                return redirect('gestionar_usuarios')
+
+            if not isinstance(records, list):
+                messages.error(request, "Los datos del respaldo deben ser una lista de registros.")
+                return redirect('gestionar_usuarios')
+
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json', encoding='utf-8') as temp_file:
+                json.dump(records, temp_file, indent=2, ensure_ascii=False)
                 temp_path = temp_file.name
 
             # Cargar los datos a la base de datos
             management.call_command('loaddata', temp_path)
-            log_admin_action(request, 'RESTORE_DB_BACKUP', 'Database', '', 'Respaldo restaurado')
-            messages.success(request, 'Base de datos restaurada exitosamente desde el respaldo JSON.')
-        except Exception:
-            messages.error(request, 'Error al restaurar la base de datos.')
+            log_admin_action(request, 'RESTORE_DB_BACKUP', 'Database', '', f'Respaldo restaurado ({len(records)} registros)')
+            messages.success(request, f'Base de datos restaurada exitosamente desde el respaldo JSON ({len(records)} registros procesados).')
+        except Exception as e:
+            messages.error(request, f'Error al restaurar la base de datos: {e}')
         finally:
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)

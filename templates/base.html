@@ -75,6 +75,37 @@
     <!-- ── Medición y Analítica (Consent Mode v2) ─────────────── -->
     {% include "partials/analytics.html" %}
 
+    <style>
+    /* Tooltips Accesibles Sports-Max (a11y) */
+    .tooltip .tooltip-inner {
+        background-color: #0f172a;
+        color: #f8fafc;
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+        max-width: 280px;
+        line-height: 1.35;
+        text-align: center;
+    }
+    .tooltip.bs-tooltip-top .tooltip-arrow::before { border-top-color: #0f172a; }
+    .tooltip.bs-tooltip-bottom .tooltip-arrow::before { border-bottom-color: #0f172a; }
+    .tooltip.bs-tooltip-start .tooltip-arrow::before { border-left-color: #0f172a; }
+    .tooltip.bs-tooltip-end .tooltip-arrow::before { border-right-color: #0f172a; }
+    body.light-theme .tooltip .tooltip-inner {
+        background-color: #ffffff;
+        color: #0f172a;
+        border: 1px solid rgba(15, 23, 42, 0.25);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    body.light-theme .tooltip.bs-tooltip-top .tooltip-arrow::before { border-top-color: #ffffff; }
+    body.light-theme .tooltip.bs-tooltip-bottom .tooltip-arrow::before { border-bottom-color: #ffffff; }
+    body.light-theme .tooltip.bs-tooltip-start .tooltip-arrow::before { border-left-color: #ffffff; }
+    body.light-theme .tooltip.bs-tooltip-end .tooltip-arrow::before { border-right-color: #ffffff; }
+    </style>
+
     {% block extra_css %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -198,6 +229,45 @@
 
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
+    });
+
+    // Validación Global Estricta de Formularios (Longitud y Restricciones)
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(input => {
+            if (!input.hasAttribute('maxlength') && !input.readOnly && !input.disabled) {
+                input.setAttribute('maxlength', '254');
+            }
+        });
+        document.querySelectorAll('textarea').forEach(textarea => {
+            if (!textarea.hasAttribute('maxlength') && !textarea.readOnly && !textarea.disabled) {
+                textarea.setAttribute('maxlength', '3000');
+            }
+        });
+
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.reportValidity();
+                }
+            });
+        });
+
+        // Inicialización Global Accesible de Tooltips (Bootstrap 5)
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(triggerEl => {
+                const tooltipText = triggerEl.getAttribute('data-bs-title') || triggerEl.getAttribute('title');
+                if (tooltipText && !triggerEl.getAttribute('aria-label') && triggerEl.tagName === 'BUTTON') {
+                    triggerEl.setAttribute('aria-label', tooltipText);
+                }
+                new bootstrap.Tooltip(triggerEl, {
+                    trigger: 'hover focus',
+                    boundary: 'window'
+                });
+            });
+        }
     });
     </script>
     
