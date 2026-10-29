@@ -8,10 +8,11 @@
   --border:rgba(255,255,255,0.08);
   --text:#F5F5F7;--muted:rgba(255,255,255,0.42);
   --green:#34D399;--red:#FF453A;--radius:20px;
-  --font:'DM Sans',sans-serif;
+  --font:inherit;
 }
 
 .chat-window{
+  font-family: var(--font, inherit);
   background:var(--surface);border:0.5px solid var(--border);
   border-radius:var(--radius);overflow:hidden;
   display:flex;flex-direction:column;height:580px;
@@ -45,7 +46,7 @@
   overflow:hidden;
 }
 .header-info{flex:1}
-.header-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);letter-spacing:.01em}
+.header-name{font-family:inherit;font-size:15px;font-weight:700;color:var(--text);letter-spacing:.01em}
 .header-sub{font-size:11px;color:var(--muted);margin-top:1px}
 .status-pill{
   display:flex;align-items:center;gap:5px;

@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mis Rutinas de Ejercicio — Sports-Max SENA{% endblock %}
+{% block meta_description %}Registra y haz seguimiento de tus rutinas de ejercicio diarias. Visualiza tu progreso semanal y mantén tu racha activa.{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── CP-11: Seguimiento de Rutinas ───────────────────────── */
+.rutinas-hero {
+  background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0f1f0f 100%);
+  padding: 2.5rem 0 1.5rem; position: relative; overflow: hidden;
+}
+.rutinas-hero::before {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 50%;
+  background: radial-gradient(ellipse at 80% 50%, rgba(57,169,0,.12) 0%, transparent 70%);
+}
+.rutinas-hero h1 { color: #fff; font-weight: 800; position: relative; }
+.rutinas-hero p  { color: rgba(255,255,255,.6); position: relative; }
+
+/* Racha badge */
+.racha-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff; font-weight: 700; font-size: 1.1rem;
+  padding: .5rem 1.25rem; border-radius: 99px;
+  box-shadow: 0 4px 16px rgba(245,158,11,.35);
+  animation: pulseGlow 2s infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 4px 16px rgba(245,158,11,.35); }
+  50%       { box-shadow: 0 4px 28px rgba(245,158,11,.6); }
+}
+
+/* Días de la semana */
+.dia-chip {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  transition: transform .2s;
+  cursor: default;
+}
+.dia-chip:hover { transform: scale(1.1); }
+.dia-chip.completado { background: #39A900; color: #fff; box-shadow: 0 0 10px rgba(57,169,0,.5); }
+.dia-chip.omitido   { background: rgba(239,68,68,.2); color: #ef4444; border: 1px solid rgba(239,68,68,.4); }
+.dia-chip.pendiente { background: rgba(255,255,255,.08); color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.1); }
+.dia-chip.hoy       { border: 2px solid #39A900; }
+
+/* Rutina card */
+.rutina-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1rem;
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.rutina-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.3); border-color: rgba(57,169,0,.4); }
+
+/* Ejercicio checks */
+.ejercicio-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6rem .75rem; border-radius: .5rem;
+  cursor: pointer; transition: background .15s;
+}
+.ejercicio-item:hover { background: rgba(57,169,0,.07); }
+.ejercicio-item input[type="checkbox"] { accent-color: #39A900; width: 18px; height: 18px; }
+.ejercicio-item.checked { opacity: .6; text-decoration: line-through; }
+
+/* FAB */
+.fab-registrar {
+  position: fixed; bottom: 5.5rem; right: 1.5rem; z-index: 1050;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: linear-gradient(135deg, #39A900, #2d8000);
+  color: #fff; border: none; box-shadow: 0 8px 24px rgba(57,169,0,.45);
+  font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+  transition: transform .2s, box-shadow .2s;
+}
+.fab-registrar:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 12px 32px rgba(57,169,0,.6); }
+
+/* Progress bar semanal */
+.barra-progreso {
+  height: 8px; border-radius: 99px;
+  background: rgba(255,255,255,.1); overflow: hidden;
+}
+.barra-progreso-inner {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #39A900, #86efac);
+  transition: width 1s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Confetti (CSS puro) */
+.confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: none; }
+.confetti-piece { position: absolute; width: 10px; height: 10px; border-radius: 2px; animation: confettiFall 2s forwards; }
+@keyframes confettiFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="rutinas-hero mb-4">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div>
+        <h1 class="h2 mb-1"><i class="fas fa-dumbbell text-success me-2"></i>Mis Rutinas</h1>
+        <p class="mb-0">Registra tus entrenamientos y mantén tu racha activa.</p>
+      </div>
+      {% if racha > 0 %}
+      <div class="racha-badge">
+        <i class="fas fa-fire"></i> {{ racha }} día{{ racha|pluralize }} de racha
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="container pb-5">
+
+  <!-- PROGRESO SEMANAL -->
+  <div class="card mb-4" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:1rem;">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h6 text-white-50 mb-0 text-uppercase" style="letter-spacing:.08em">Esta semana</h2>
+        <span class="text-success fw-bold" id="txtProgreso">
+          {% with completados=dias_semana|length %}0/7{% endwith %}
+        </span>
+      </div>
+      <div class="barra-progreso mb-3">
+        <div class="barra-progreso-inner" id="barraProgresoInner" style="width:0%"></div>
+      </div>
+      <div class="d-flex gap-2 justify-content-between">
+        {% for d in dias_semana %}
+        <div class="text-center">
+          <div class="dia-chip {% if d.completado == True %}completado{% elif d.completado == False %}omitido{% else %}pendiente{% endif %} {% if d.fecha == hoy %}hoy{% endif %}"
+               title="{{ d.fecha|date:'d M' }}">
+            {{ d.dia }}
+          </div>
+          <div class="text-muted mt-1" style="font-size:.65rem">{{ d.fecha|date:'d' }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RUTINAS DISPONIBLES -->
+  <h2 class="h5 text-white mb-3"><i class="fas fa-list-check text-success me-2"></i>Rutinas disponibles</h2>
+  <div class="row g-4">
+    {% for rutina in rutinas %}
+    <div class="col-md-6 col-lg-4">
+      <div class="rutina-card p-4 h-100">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h3 class="h6 text-white mb-1">{{ rutina.nombre }}</h3>
+            <span class="badge rounded-pill
+              {% if rutina.nivel == 'principiante' %}bg-success
+              {% elif rutina.nivel == 'intermedio' %}bg-warning text-dark
+              {% else %}bg-danger{% endif %}
+              small">{{ rutina.get_nivel_display }}</span>
+          </div>
+          <span class="text-muted small"><i class="fas fa-clock me-1"></i>{{ rutina.duracion_minutos }} min</span>
+        </div>
+
+        <p class="text-muted small mb-3">{{ rutina.descripcion|truncatewords:20 }}</p>
+
+        <!-- Lista de ejercicios con checkboxes -->
+        <div class="ejercicios-list mb-3" id="ejercicios-{{ rutina.pk }}">
+          {% for ejercicio in rutina.get_ejercicios_lista %}
+          <div class="ejercicio-item" onclick="toggleEjercicio(this, {{ rutina.pk }}, '{{ ejercicio|escapejs }}')">
+            <input type="checkbox" id="ej-{{ rutina.pk }}-{{ forloop.counter }}"
+                   aria-label="Marcar {{ ejercicio }} como completado">
+            <label for="ej-{{ rutina.pk }}-{{ forloop.counter }}" class="mb-0 small" style="cursor:pointer">
+              {{ ejercicio }}
+            </label>
+          </div>
+          {% empty %}
+          <p class="text-muted small">Sin ejercicios registrados.</p>
+          {% endfor %}
+        </div>
+
+        <!-- Objetivo -->
+        <div class="mt-auto">
+          <span class="badge bg-dark border border-success text-success rounded-pill small">
+            <i class="fas fa-bullseye me-1"></i>{{ rutina.get_objetivo_display }}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+      <i class="fas fa-person-running fa-3x mb-3 opacity-25"></i>
+      <p>No hay rutinas activas disponibles.<br>Consulta con tu entrenador.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div><!-- /container -->
+
+<!-- FAB -->
+<button id="fabRegistrar" class="fab-registrar" data-bs-toggle="modal" data-bs-target="#modalSesion"
+        title="Registrar sesión de hoy" aria-label="Registrar sesión de entrenamiento">
+  <i class="fas fa-plus"></i>
+</button>
+
+<!-- MODAL REGISTRAR SESIÓN -->
+<div class="modal fade" id="modalSesion" tabindex="-1" aria-labelledby="modalSesionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#1a1f2e;border:1px solid rgba(57,169,0,.3)">
+      <div class="modal-header border-0">
+        <h4 class="modal-title text-white" id="modalSesionLabel">
+          <i class="fas fa-stopwatch text-success me-2"></i>Registrar Sesión
+        </h4>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label text-white-50 small">Rutina realizada</label>
+          <select id="selectRutinaModal" class="form-select" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)">
+            {% for rutina in rutinas %}
+            <option value="{{ rutina.pk }}">{{ rutina.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label text-white-50 small" for="inputFechaSesion">Fecha</label>
+            <input type="date" id="inputFechaSesion" class="form-control" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)"
+                   value="{{ hoy|date:'Y-m-d' }}">
+          </div>
+          <div class="col-6">
+            <label class="form-label text-white-50 small" for="inputDuracion">Duración (min)</label>
+            <input type="number" id="inputDuracion" class="form-control" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)"
+                   min="1" max="300" placeholder="45">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-white-50 small">Nivel de esfuerzo</label>
+          <div class="d-flex gap-2">
+            {% for val, label in "1:😴 Fácil,2:🙂 Normal,3:😤 Moderado,4:🥵 Difícil,5:💪 Máximo"|split:"," %}
+            {% endfor %}
+            <!-- Stars estrellas de esfuerzo -->
+            <div class="d-flex gap-2" id="estrellas-esfuerzo">
+              {% for i in "12345" %}
+              <button type="button" class="btn btn-sm btn-outline-warning rounded-circle esfuerzo-star"
+                      data-val="{{ forloop.counter }}" style="width:36px;height:36px;font-size:1rem">
+                {{ forloop.counter }}
+              </button>
+              {% endfor %}
+            </div>
+            <input type="hidden" id="inputEsfuerzo" value="3">
+          </div>
+        </div>
+        <div class="mb-1">
+          <label class="form-label text-white-50 small" for="inputNotas">Notas (opcional)</label>
+          <textarea id="inputNotas" class="form-control" rows="2" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)"
+                    placeholder="¿Cómo te fue hoy?"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer border-0 gap-2">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success rounded-pill fw-bold px-4" id="btnGuardarSesion">
+          <i class="fas fa-check me-1"></i>Guardar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confetti -->
+<div class="confetti-container" id="confettiContainer"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  const CSRF = '{{ csrf_token }}';
+
+  // ── Restore checkboxes from localStorage ────────────────
+  const hoyStr = '{{ hoy|date:"Y-m-d" }}';
+
+  document.querySelectorAll('.ejercicio-item input[type="checkbox"]').forEach(cb => {
+    const rutinaId = cb.closest('.ejercicios-list').id.split('-')[1];
+    const key = `rutina_${hoyStr}_${rutinaId}_${cb.id}`;
+    if (localStorage.getItem(key) === '1') {
+      cb.checked = true;
+      cb.closest('.ejercicio-item').classList.add('checked');
+    }
+  });
+
+  // Actualizar progreso semanal al cargar
+  actualizarBarraSemanal();
+
+  // ── Toggle ejercicio ────────────────────────────────────
+  window.toggleEjercicio = function (el, rutinaId, nombre) {
+    const cb = el.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    el.classList.toggle('checked', cb.checked);
+    const key = `rutina_${hoyStr}_${rutinaId}_${cb.id}`;
+    localStorage.setItem(key, cb.checked ? '1' : '0');
+
+    // Verificar si todos los ejercicios están completados
+    const lista = document.getElementById(`ejercicios-${rutinaId}`);
+    const todos = lista.querySelectorAll('input[type="checkbox"]');
+    const completados = [...todos].filter(c => c.checked).length;
+    if (completados === todos.length && todos.length > 0) {
+      lanzarConfetti();
+    }
+    actualizarBarraSemanal();
+  };
+
+  function actualizarBarraSemanal() {
+    const dias = document.querySelectorAll('.dia-chip');
+    const completadosCnt = document.querySelectorAll('.dia-chip.completado').length;
+    const pct = (completadosCnt / dias.length) * 100;
+    document.getElementById('barraProgresoInner').style.width = pct + '%';
+    document.getElementById('txtProgreso').textContent = `${completadosCnt}/7`;
+  }
+
+  // ── Estrellas de esfuerzo ───────────────────────────────
+  let esfuerzoVal = 3;
+  document.querySelectorAll('.esfuerzo-star').forEach(btn => {
+    btn.addEventListener('click', function () {
+      esfuerzoVal = parseInt(this.dataset.val);
+      document.getElementById('inputEsfuerzo').value = esfuerzoVal;
+      document.querySelectorAll('.esfuerzo-star').forEach((b, i) => {
+        b.classList.toggle('btn-warning', i < esfuerzoVal);
+        b.classList.toggle('btn-outline-warning', i >= esfuerzoVal);
+      });
+    });
+  });
+
+  // ── Guardar sesión ──────────────────────────────────────
+  document.getElementById('btnGuardarSesion').addEventListener('click', async function () {
+    const btn = this;
+    btn.disabled = true;
+
+    const payload = {
+      rutina_id:       document.getElementById('selectRutinaModal').value,
+      fecha:           document.getElementById('inputFechaSesion').value,
+      duracion_real_min: parseInt(document.getElementById('inputDuracion').value) || 0,
+      completado:      true,
+      nivel_esfuerzo:  parseInt(document.getElementById('inputEsfuerzo').value),
+      notas:           document.getElementById('inputNotas').value,
+    };
+
+    try {
+      const resp = await fetch('{% url "habitos:registrar_sesion" %}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('modalSesion')).hide();
+        lanzarConfetti();
+        setTimeout(() => location.reload(), 2000);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ── Confetti ────────────────────────────────────────────
+  function lanzarConfetti() {
+    const container = document.getElementById('confettiContainer');
+    container.innerHTML = '';
+    container.style.display = 'block';
+    const colores = ['#39A900','#0d6efd','#f59e0b','#ef4444','#a855f7','#06b6d4'];
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.top  = '-10px';
+      piece.style.background = colores[Math.floor(Math.random() * colores.length)];
+      piece.style.animationDelay = (Math.random() * 1.5) + 's';
+      piece.style.animationDuration = (1.5 + Math.random()) + 's';
+      piece.style.width  = (8 + Math.random() * 8) + 'px';
+      piece.style.height = (8 + Math.random() * 8) + 'px';
+      container.appendChild(piece);
+    }
+    setTimeout(() => { container.style.display = 'none'; container.innerHTML = ''; }, 3000);
+  }
+})();
+</script>
+{% endblock %}

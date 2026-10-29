@@ -2,6 +2,7 @@
 <div class="modal fade" id="modalNotificacionesSistema" tabindex="-1" aria-labelledby="modalNotificacionesLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content custom-modal text-white notif-modal-content" style="background: #181c24; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px;">
+            {% csrf_token %}
             <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
                 <h5 class="modal-title fw-bold text-cap" id="modalNotificacionesLabel">
                      <i class="fas fa-bell text-warning me-2 animate-bounce"></i>Notificaciones del Sistema
@@ -9,15 +10,17 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body py-3">
-                <div class="d-flex flex-column gap-3">
+                <div class="d-flex flex-column gap-3" id="listaNotificacionesSistema">
                     {% for notif in notificaciones_sistema %}
-                        <div class="p-3 rounded border notif-item-box {% if not notif.leida %}border-warning bg-warning bg-opacity-10{% else %}border-secondary bg-dark bg-opacity-40{% endif %}">
+                        <div class="p-3 rounded border notif-item-box {% if not notif.leida %}border-warning bg-warning bg-opacity-10{% else %}border-secondary bg-dark bg-opacity-40{% endif %}"
+                             id="notif-box-{{ notif.id|default:forloop.counter }}"
+                             data-notif-id="{{ notif.id|default:'' }}">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div class="d-flex align-items-center gap-2">
                                     <i class="fas {{ notif.icono }} {% if notif.tipo == 'warning' or notif.tipo == 'danger' %}text-warning{% else %}text-info{% endif %}"></i>
                                     <h6 class="mb-0 fw-bold text-white small">{{ notif.titulo }}</h6>
                                 </div>
-                                <span class="badge {% if notif.badge == 'Nueva' or notif.badge == 'Vencido' %}bg-danger text-white{% elif notif.tipo == 'warning' %}bg-warning text-dark{% else %}bg-info text-white{% endif %} font-monospace notif-badge-size">
+                                <span class="badge notif-status-badge {% if not notif.leida %}{% if notif.badge == 'Nueva' or notif.badge == 'Vencido' %}bg-danger text-white{% elif notif.tipo == 'warning' %}bg-warning text-dark{% else %}bg-info text-white{% endif %}{% else %}bg-secondary text-white{% endif %} font-monospace notif-badge-size">
                                     {{ notif.badge }}
                                 </span>
                             </div>
@@ -28,9 +31,16 @@
                                 {% else %}
                                     <span></span>
                                 {% endif %}
-                                {% if notif.enlace %}
-                                    <a href="{{ notif.enlace }}" class="btn btn-sm btn-outline-light py-0 px-2 rounded-pill" style="font-size: 0.75rem;">Ver detalle <i class="fas fa-arrow-right ms-1"></i></a>
-                                {% endif %}
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if not notif.leida and notif.id %}
+                                        <button type="button" class="btn btn-sm btn-outline-warning py-0 px-2 rounded-pill btn-marcar-individual" onclick="marcarNotificacionIndividual({{ notif.id }})" title="Marcar como leída" style="font-size: 0.75rem;">
+                                            <i class="fas fa-check me-1"></i>Leída
+                                        </button>
+                                    {% endif %}
+                                    {% if notif.enlace %}
+                                        <a href="{{ notif.enlace }}" {% if notif.id and not notif.leida %}onclick="marcarNotificacionIndividual({{ notif.id }})"{% endif %} class="btn btn-sm btn-outline-light py-0 px-2 rounded-pill" style="font-size: 0.75rem;">Ver detalle <i class="fas fa-arrow-right ms-1"></i></a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     {% empty %}
@@ -54,8 +64,89 @@
 </div>
 
 <script>
+function getNotifCsrfToken() {
+    const modal = document.getElementById('modalNotificacionesSistema');
+    const inputToken = modal ? modal.querySelector('[name=csrfmiddlewaretoken]') : null;
+    if (inputToken && inputToken.value) return inputToken.value;
+
+    const pageToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (pageToken && pageToken.value) return pageToken.value;
+
+    if (typeof getCookie === 'function') {
+        const val = getCookie('csrftoken');
+        if (val) return val;
+    }
+
+    if (document.cookie) {
+        const match = document.cookie.match(/csrftoken=([^;]+)/);
+        if (match) return decodeURIComponent(match[1]);
+    }
+    return '';
+}
+
+function actualizarContadorCampanita(nuevoConteo) {
+    const punto = document.getElementById('puntoCampanita');
+    const badgeCampanita = document.querySelector('.btn-campanita .hdr-u-6, [data-notif-count]');
+    const target = punto || badgeCampanita;
+
+    if (target) {
+        if (nuevoConteo <= 0) {
+            target.style.display = 'none';
+            target.textContent = '0';
+        } else {
+            target.style.display = '';
+            target.textContent = nuevoConteo;
+        }
+    }
+}
+
+function marcarNotificacionIndividual(notifId) {
+    if (!notifId) return;
+    const csrftoken = getNotifCsrfToken();
+    const formData = new FormData();
+    formData.append('notificacion_id', notifId);
+
+    fetch('/notificaciones/marcar-leidas/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const box = document.getElementById('notif-box-' + notifId);
+            if (box) {
+                box.classList.remove('border-warning', 'bg-warning', 'bg-opacity-10');
+                box.classList.add('border-secondary', 'bg-dark', 'bg-opacity-40');
+                const badge = box.querySelector('.notif-status-badge');
+                if (badge) {
+                    badge.className = 'badge notif-status-badge bg-secondary text-white font-monospace notif-badge-size';
+                    badge.textContent = 'Leída';
+                }
+                const btnInd = box.querySelector('.btn-marcar-individual');
+                if (btnInd) btnInd.remove();
+            }
+
+            if (typeof data.pendientes !== 'undefined') {
+                actualizarContadorCampanita(data.pendientes);
+                if (data.pendientes === 0) {
+                    const btnAll = document.getElementById('btnMarcarLeidas');
+                    if (btnAll) {
+                        btnAll.classList.add('disabled', 'opacity-50');
+                        btnAll.innerHTML = '<i class="fas fa-check-double me-1 text-success"></i>Todas leídas';
+                    }
+                }
+            }
+        }
+    })
+    .catch(err => console.error('Error al marcar notificación individual:', err));
+}
+
 function marcarTodasNotificacionesLeidas() {
-    const csrftoken = typeof getCookie === 'function' ? getCookie('csrftoken') : (document.querySelector('[name=csrfmiddlewaretoken]')?.value || '');
+    const csrftoken = getNotifCsrfToken();
     fetch('/notificaciones/marcar-leidas/', {
         method: 'POST',
         headers: {
@@ -66,23 +157,30 @@ function marcarTodasNotificacionesLeidas() {
     .then(r => r.json())
     .then(data => {
         if (data.status === 'success') {
-            const badges = document.querySelectorAll('#modalNotificacionesSistema .badge.bg-danger');
+            const badges = document.querySelectorAll('#modalNotificacionesSistema .notif-status-badge');
             badges.forEach(b => {
-                b.className = 'badge bg-secondary text-white font-monospace notif-badge-size';
+                b.className = 'badge notif-status-badge bg-secondary text-white font-monospace notif-badge-size';
                 b.textContent = 'Leída';
             });
-            const unreadItems = document.querySelectorAll('#modalNotificacionesSistema .notif-item-box.border-warning');
+
+            const unreadItems = document.querySelectorAll('#modalNotificacionesSistema .notif-item-box');
             unreadItems.forEach(i => {
                 i.classList.remove('border-warning', 'bg-warning', 'bg-opacity-10');
                 i.classList.add('border-secondary', 'bg-dark', 'bg-opacity-40');
             });
-            const bellBadge = document.querySelector('.fa-bell + .badge, [data-notif-count]');
-            if (bellBadge) {
-                bellBadge.style.display = 'none';
+
+            const btns = document.querySelectorAll('#modalNotificacionesSistema .btn-marcar-individual');
+            btns.forEach(btn => btn.remove());
+
+            actualizarContadorCampanita(0);
+
+            const btnAll = document.getElementById('btnMarcarLeidas');
+            if (btnAll) {
+                btnAll.classList.add('disabled', 'opacity-50');
+                btnAll.innerHTML = '<i class="fas fa-check-double me-1 text-success"></i>Todas leídas';
             }
         }
     })
     .catch(err => console.error('Error al marcar notificaciones:', err));
 }
 </script>
-

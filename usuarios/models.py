@@ -46,7 +46,8 @@ class Usuario(AbstractUser):
     rol = models.CharField(max_length=20, default='aprendiz')
     estado = models.CharField(
         max_length=20, choices=ESTADO_CHOICES, default='activo')
-    fecha_registro = models.DateTimeField(auto_now_add=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Registro")
+    fecha_actualizacion = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
     foto_perfil = models.ImageField(
         upload_to='perfiles/', blank=True, null=True)
     foto_posicion = models.CharField(max_length=50, default='50% 50%')

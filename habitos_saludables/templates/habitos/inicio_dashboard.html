@@ -373,14 +373,14 @@ canvas { width: 100% !important; max-height: 220px !important; }
             <div class="col-6">
               <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-ruler-vertical text-info"></i> ESTATURA</label>
               <div class="input-group input-group-sm">
-                <input type="number" id="inputAltura" class="form-control" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm }}{% else %}170{% endif %}" placeholder="Ej. 170" oninput="calcularEstadoFisico()">
+                <input type="number" id="inputAltura" class="form-control input-estatura" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm|floatformat:0 }}{% else %}170{% endif %}" placeholder="Ej. 170" min="100" max="230" oninput="calcularEstadoFisico()">
                 <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">cm</span>
               </div>
             </div>
             <div class="col-6">
               <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-weight text-warning"></i> PESO</label>
               <div class="input-group input-group-sm">
-                <input type="number" step="0.1" id="inputPeso" class="form-control" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|stringformat:'f' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" oninput="calcularEstadoFisico()">
+                <input type="number" step="0.1" id="inputPeso" class="form-control input-peso" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|floatformat:'-1' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" min="20" max="200" oninput="calcularEstadoFisico()">
                 <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">kg</span>
               </div>
             </div>
@@ -640,29 +640,43 @@ canvas { width: 100% !important; max-height: 220px !important; }
   // WIDGETS LOGIC
   {% if not user.is_staff %}
   
-  // 1. Water Tracker
+  // 1. Water Tracker (Scoped to individual user)
+  const currentUserId = '{{ user.id|default:"anon" }}';
+  const keyWaterDate = `waterDate_${currentUserId}`;
+  const keyWaterCount = `waterCount_${currentUserId}`;
+  const keyWaterStreak = `waterStreak_${currentUserId}`;
+  const keyLastGoalDate = `lastGoalDate_${currentUserId}`;
+
+  // Limpiar claves globales obsoletas sin scope para que no afecten a otros usuarios
+  if (localStorage.getItem('waterCount') !== null) {
+     localStorage.removeItem('waterCount');
+     localStorage.removeItem('waterDate');
+     localStorage.removeItem('waterStreak');
+     localStorage.removeItem('lastGoalDate');
+  }
+
   const getTodayStr = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
   const getYesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
 
   let todayStr = getTodayStr();
   let yesterdayStr = getYesterdayStr();
 
-  let savedWaterDate = localStorage.getItem('waterDate') || '';
-  let savedWaterCount = parseInt(localStorage.getItem('waterCount') || '0');
-  let waterStreak = parseInt(localStorage.getItem('waterStreak') || '0');
-  let lastGoalDate = localStorage.getItem('lastGoalDate') || '';
+  let savedWaterDate = localStorage.getItem(keyWaterDate) || '';
+  let savedWaterCount = parseInt(localStorage.getItem(keyWaterCount) || '0');
+  let waterStreak = parseInt(localStorage.getItem(keyWaterStreak) || '0');
+  let lastGoalDate = localStorage.getItem(keyLastGoalDate) || '';
 
   // Reset daily count if it's a new day
   if (savedWaterDate !== todayStr) {
      savedWaterCount = 0;
-     localStorage.setItem('waterCount', 0);
-     localStorage.setItem('waterDate', todayStr);
+     localStorage.setItem(keyWaterCount, 0);
+     localStorage.setItem(keyWaterDate, todayStr);
   }
 
   // Break streak if goal was not met yesterday and not met today
   if (lastGoalDate !== todayStr && lastGoalDate !== yesterdayStr && lastGoalDate !== '') {
      waterStreak = 0;
-     localStorage.setItem('waterStreak', 0);
+     localStorage.setItem(keyWaterStreak, 0);
   }
 
   function updateWaterUI() {
@@ -704,22 +718,22 @@ canvas { width: 100% !important; max-height: 220px !important; }
     if (savedWaterCount === index + 1) savedWaterCount = index; // toggle off
     else savedWaterCount = index + 1;
     
-    localStorage.setItem('waterCount', savedWaterCount);
+    localStorage.setItem(keyWaterCount, savedWaterCount);
     
     // Streak logic
     if (savedWaterCount === 8) {
        if (lastGoalDate !== todayStr) {
           waterStreak++;
           lastGoalDate = todayStr;
-          localStorage.setItem('waterStreak', waterStreak);
-          localStorage.setItem('lastGoalDate', todayStr);
+          localStorage.setItem(keyWaterStreak, waterStreak);
+          localStorage.setItem(keyLastGoalDate, todayStr);
        }
     } else {
        if (lastGoalDate === todayStr) {
           waterStreak = Math.max(0, waterStreak - 1);
           lastGoalDate = yesterdayStr; // Hack to rollback
-          localStorage.setItem('waterStreak', waterStreak);
-          localStorage.setItem('lastGoalDate', lastGoalDate);
+          localStorage.setItem(keyWaterStreak, waterStreak);
+          localStorage.setItem(keyLastGoalDate, lastGoalDate);
        }
     }
     updateWaterUI();
@@ -732,13 +746,41 @@ canvas { width: 100% !important; max-height: 220px !important; }
     const pesoInput = document.getElementById('inputPeso');
     if (!alturaInput || !pesoInput) return;
 
+    // Sanitizar estatura: solo números enteros, sin letras ni negativos, máximo 3 dígitos, máximo 230
+    let rawAltura = String(alturaInput.value || '').replace(/[^0-9]/g, '');
+    if (rawAltura.length > 3) rawAltura = rawAltura.slice(0, 3);
+    if (rawAltura !== '' && parseInt(rawAltura, 10) > 230) {
+      rawAltura = '230';
+    }
+    if (alturaInput.value !== rawAltura) {
+      alturaInput.value = rawAltura;
+    }
+
+    // Sanitizar peso: solo números positivos y punto decimal opcional, máx 3 dígitos enteros, máx 1 decimal, máximo 200
+    let rawPeso = String(pesoInput.value || '').replace(',', '.').replace(/[^0-9.]/g, '');
+    const partesPeso = rawPeso.split('.');
+    let intPeso = partesPeso[0] || '';
+    if (intPeso.length > 3) intPeso = intPeso.slice(0, 3);
+    if (intPeso !== '' && parseInt(intPeso, 10) > 200) {
+      intPeso = '200';
+      rawPeso = '200';
+    } else if (partesPeso.length > 1) {
+      const decPeso = partesPeso.slice(1).join('').slice(0, 1);
+      rawPeso = intPeso + '.' + decPeso;
+    } else {
+      rawPeso = intPeso;
+    }
+    if (pesoInput.value !== rawPeso) {
+      pesoInput.value = rawPeso;
+    }
+
     const alturaCm = parseFloat(alturaInput.value);
     const pesoKg = parseFloat(pesoInput.value);
 
     const valorImcEl = document.getElementById('valorIMC');
     const mensajeEl = document.getElementById('mensajeEstado');
 
-    if (alturaCm > 0 && pesoKg > 0) {
+    if (alturaCm >= 50 && alturaCm <= 230 && pesoKg >= 15 && pesoKg <= 200) {
       const alturaM = alturaCm / 100;
       const imc = pesoKg / (alturaM * alturaM);
       

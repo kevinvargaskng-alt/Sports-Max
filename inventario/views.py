@@ -629,6 +629,10 @@ def bloquear_morosos(request):
     bloqueados_count = 0
     for p in qs:
         u = p.usuario
+        # Al administrador NUNCA se le bloquea por inventario o morosidad
+        if u.rol == 'admin' or u.is_superuser or u.is_staff:
+            continue
+
         # 1. Crear sanción disciplinaria en la base de datos
         sancion_existente = Sancion.objects.filter(
             usuario=u,
