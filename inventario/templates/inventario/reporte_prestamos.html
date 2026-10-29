@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reporte de Préstamos e Inventario — Sports-Max{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rep-filter-card {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(43, 125, 233, 0.25);
+        border-radius: 16px;
+        padding: 22px;
+        backdrop-filter: blur(12px);
+    }
+    .rep-kpi-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 16px 20px;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .rep-kpi-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(43, 125, 233, 0.4);
+    }
+    .rep-kpi-num {
+        font-size: 1.85rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    .rep-period-btn {
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 16px;
+    }
+    @media print {
+        .no-print, .smax-position-bar, .navbar, footer, #acc-toggle, #help-toggle {
+            display: none !important;
+        }
+        body, .main-container, .sport-card {
+            background: #ffffff !important;
+            color: #000000 !important;
+            box-shadow: none !important;
+        }
+        .table, .table th, .table td {
+            color: #000000 !important;
+            border-color: #cbd5e1 !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+    <div class="container-fluid px-3 px-md-4">
+
+        <!-- ENCABEZADO DEL REPORTE -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="no-print">
+                    {% include 'partials/back_button.html' with back_url='inventario' back_label='Volver a Inventario' %}
+                </div>
+                <div>
+                    <h3 class="fw-bold text-white mb-0">
+                        <i class="fas fa-clipboard-check text-info me-2"></i>Reporte de Préstamos e Implementación Deportiva
+                    </h3>
+                    <p class="text-white-50 small mb-0">
+                        SENA Centro Minero — Consulta histórica, control por ficha y exportación de préstamos
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap no-print">
+                <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-success btn-sm fw-bold px-3 py-2 rounded-pill">
+                    <i class="fas fa-file-excel me-1"></i> Exportar Excel (CSV)
+                </a>
+                <button type="button" onclick="window.print()" class="btn btn-outline-info btn-sm fw-bold px-3 py-2 rounded-pill">
+                    <i class="fas fa-file-pdf me-1"></i> Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- TARJETAS KPI RESUMEN -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Total Préstamos</div>
+                    <div class="rep-kpi-num text-info">{{ metricas.total_registros }}</div>
+                    <small class="text-white-50">{{ metricas.unidades_prestadas }} implementos en total</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Activos al Día</div>
+                    <div class="rep-kpi-num text-primary">{{ metricas.total_activos }}</div>
+                    <small class="text-white-50">En plazo vigente</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Devueltos</div>
+                    <div class="rep-kpi-num text-success">{{ metricas.total_devueltos }}</div>
+                    <small class="text-white-50">Entregados en bodega</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Retrasados (Mora)</div>
+                    <div class="rep-kpi-num text-danger">{{ metricas.total_retrasados }}</div>
+                    <small class="text-white-50">Fecha límite vencida</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DE FILTROS -->
+        <form method="GET" action="{% url 'reporte_inventario' %}" class="rep-filter-card mb-4 no-print" id="formReporteInv">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-25">
+                <span class="text-white fw-bold small text-uppercase">
+                    <i class="fas fa-calendar-alt text-info me-2"></i>Periodo de visualización:
+                </span>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '7d' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('7d')">
+                        Últimos 7 días
+                    </button>
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '30d' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('30d')">
+                        Últimos 30 días
+                    </button>
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'todos' or not filtros.periodo %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('todos')">
+                        Todos los registros
+                    </button>
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'rango' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('rango')">
+                        Rango personalizado
+                    </button>
+                </div>
+                <input type="hidden" name="periodo" id="inputPeriodo" value="{{ filtros.periodo|default:'todos' }}">
+            </div>
+
+            <div class="row g-3 align-items-end">
+                <!-- Rango de fechas personalizado -->
+                <div class="col-12 col-sm-6 col-md-2 rango-fechas-group" {% if filtros.periodo != 'rango' %}style="display:none;"{% endif %}>
+                    <label class="form-label small text-white-50 fw-semibold">Desde</label>
+                    <input type="date" name="fecha_inicio" value="{{ filtros.fecha_inicio }}" class="form-control form-control-sm custom-input" onchange="document.getElementById('inputPeriodo').value='rango'">
+                </div>
+                <div class="col-12 col-sm-6 col-md-2 rango-fechas-group" {% if filtros.periodo != 'rango' %}style="display:none;"{% endif %}>
+                    <label class="form-label small text-white-50 fw-semibold">Hasta</label>
+                    <input type="date" name="fecha_fin" value="{{ filtros.fecha_fin }}" class="form-control form-control-sm custom-input" onchange="document.getElementById('inputPeriodo').value='rango'">
+                </div>
+
+                <!-- Número de Ficha SENA -->
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label small text-white-50 fw-semibold">Número de Ficha</label>
+                    <input type="text" name="ficha" value="{{ filtros.ficha }}" class="form-control form-control-sm custom-input" placeholder="Ej: 2670006">
+                </div>
+
+                <!-- Tipo de Elemento -->
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label small text-white-50 fw-semibold">Elemento Deportivo</label>
+                    <select name="elemento" class="form-select form-select-sm custom-input">
+                        <option value="">Todos los elementos</option>
+                        {% for el in elementos_catalogo %}
+                        <option value="{{ el.id }}" {% if filtros.elemento == el.id|stringformat:"s" %}selected{% endif %}>{{ el.tipo_maquina }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Estado del Préstamo -->
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label small text-white-50 fw-semibold">Estado del Préstamo</label>
+                    <select name="estado" class="form-select form-select-sm custom-input">
+                        <option value="">Todos los estados</option>
+                        <option value="activo" {% if filtros.estado == 'activo' %}selected{% endif %}>Activo (En plazo)</option>
+                        <option value="devuelto" {% if filtros.estado == 'devuelto' %}selected{% endif %}>Devuelto</option>
+                        <option value="retrasado" {% if filtros.estado == 'retrasado' %}selected{% endif %}>Retrasado (En mora)</option>
+                    </select>
+                </div>
+
+                <!-- Usuario / Documento -->
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label small text-white-50 fw-semibold">Aprendiz / Documento</label>
+                    <input type="text" name="usuario" value="{{ filtros.usuario }}" class="form-control form-control-sm custom-input" placeholder="Nombre o cédula...">
+                </div>
+
+                <!-- Botones Filtrar / Limpiar -->
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                    <a href="{% url 'reporte_inventario' %}" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="fas fa-eraser me-1"></i> Limpiar
+                    </a>
+                    <button type="submit" class="btn btn-info btn-sm fw-bold text-dark px-4">
+                        <i class="fas fa-filter me-1"></i> Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- TABLA DE RESULTADOS -->
+        <div class="sport-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="text-uppercase small text-white-50">
+                            <th class="ps-4">Código</th>
+                            <th>Aprendiz / Usuario</th>
+                            <th>Documento</th>
+                            <th>Ficha SENA</th>
+                            <th>Elemento Deportivo</th>
+                            <th class="text-center">Cant.</th>
+                            <th>Fecha Préstamo</th>
+                            <th>Fecha Límite</th>
+                            <th class="text-center pe-4">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in page_obj %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-info">#{{ p.codigo_prestamo }}</td>
+                            <td>
+                                <div class="fw-bold text-white">{{ p.usuario.get_full_name|default:p.usuario.username|title }}</div>
+                                <small class="text-white-50">{{ p.usuario.get_programa_formacion_display|default:p.usuario.programa_formacion }}</small>
+                            </td>
+                            <td>{{ p.usuario.numero_documento }}</td>
+                            <td>
+                                {% if p.usuario.ficha %}
+                                <span class="badge bg-dark border border-info text-info">{{ p.usuario.ficha }}</span>
+                                {% else %}
+                                <span class="text-white-50 small">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-semibold">{{ p.elemento.tipo_maquina|default:"Implemento" }}</td>
+                            <td class="text-center fw-bold">{{ p.cantidad_prestada }}</td>
+                            <td>{{ p.fecha_prestamo|date:"d/m/Y" }}</td>
+                            <td>{{ p.fecha_devolucion|date:"d/m/Y" }}</td>
+                            <td class="text-center pe-4">
+                                {% if p.estado_prestamo == 'Devuelto' %}
+                                    <span class="badge bg-success">Devuelto</span>
+                                {% elif p.fecha_devolucion and p.fecha_devolucion < hoy %}
+                                    <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i>Retrasado</span>
+                                {% else %}
+                                    <span class="badge bg-primary">Activo</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-white-50">
+                                <i class="fas fa-box-open fa-3x mb-3 d-block opacity-50"></i>
+                                No se encontraron préstamos con los filtros seleccionados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="px-4 py-3 border-top border-secondary d-flex flex-wrap justify-content-between align-items-center gap-2 no-print">
+                <span class="text-white-50 small">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} ({{ metricas.total_registros }} registros)
+                </span>
+                <nav aria-label="Paginación de reporte">
+                    <ul class="pagination pagination-sm mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&periodo={{ filtros.periodo }}&fecha_inicio={{ filtros.fecha_inicio }}&fecha_fin={{ filtros.fecha_fin }}&ficha={{ filtros.ficha }}&elemento={{ filtros.elemento }}&estado={{ filtros.estado }}&usuario={{ filtros.usuario }}">Anterior</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&periodo={{ filtros.periodo }}&fecha_inicio={{ filtros.fecha_inicio }}&fecha_fin={{ filtros.fecha_fin }}&ficha={{ filtros.ficha }}&elemento={{ filtros.elemento }}&estado={{ filtros.estado }}&usuario={{ filtros.usuario }}">Siguiente</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+function setPeriodo(valor) {
+    document.getElementById('inputPeriodo').value = valor;
+    const gruposRango = document.querySelectorAll('.rango-fechas-group');
+    if (valor === 'rango') {
+        gruposRango.forEach(el => el.style.display = '');
+    } else {
+        gruposRango.forEach(el => el.style.display = 'none');
+        document.getElementById('formReporteInv').submit();
+    }
+}
+</script>
+{% endblock %}
+

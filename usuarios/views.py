@@ -740,23 +740,113 @@ def admin_editar_usuario(request, user_id):
 
 @login_required(login_url='home')
 def gestionar_usuarios_view(request):
-    """Vista para la página de gestión de usuarios exclusiva para admins"""
+    """
+    Vista para la gestión y reporte de usuarios (exclusiva para admins):
+    - Filtros de visualización: recientes (últimos 7 días), 30d (últimos 30 días), todos, o rango de fechas de inscripción.
+    - Filtros estrictos: número de ficha (SENA), rol (aprendiz, instructor, admin) y estado (activo/inactivo).
+    - Exportación a Excel (CSV UTF-8 con BOM) e impresión PDF.
+    """
     if not request.user.is_staff:
         messages.error(
             request, 'No tienes permisos para acceder a esta página.')
         return redirect('perfil')
 
-    todos_usuarios = Usuario.objects.all().order_by('-fecha_registro')
-    total_usuarios = todos_usuarios.count()
-    total_activos = todos_usuarios.filter(is_active=True).count()
-    total_bloqueados = todos_usuarios.filter(is_active=False).count()
+    import csv
+    from datetime import timedelta
+    from django.db.models import Q
+    from django.http import HttpResponse
+
+    hoy = timezone.localdate()
+    qs = Usuario.objects.all().order_by('-fecha_registro')
+
+    # 1. Filtro de Periodo / Rango de Fechas de Inscripción
+    periodo = request.GET.get('periodo', 'todos').strip()
+    fecha_inicio = request.GET.get('fecha_inicio', '').strip()
+    fecha_fin = request.GET.get('fecha_fin', '').strip()
+
+    if periodo in ('recientes', '7d'):
+        qs = qs.filter(fecha_registro__date__gte=hoy - timedelta(days=7))
+    elif periodo == '30d':
+        qs = qs.filter(fecha_registro__date__gte=hoy - timedelta(days=30))
+    elif periodo == 'rango':
+        if fecha_inicio:
+            qs = qs.filter(fecha_registro__date__gte=fecha_inicio)
+        if fecha_fin:
+            qs = qs.filter(fecha_registro__date__lte=fecha_fin)
+
+    # 2. Filtros estrictos (Ficha SENA, Rol, Estado, Búsqueda)
+    ficha = request.GET.get('ficha', '').strip()
+    rol = request.GET.get('rol', '').strip().lower()
+    estado = request.GET.get('estado', '').strip().lower()
+    q = request.GET.get('q', '').strip()
+
+    if ficha:
+        qs = qs.filter(ficha__icontains=ficha)
+
+    if rol == 'aprendiz':
+        qs = qs.filter(rol='aprendiz')
+    elif rol == 'instructor':
+        qs = qs.filter(rol='instructor')
+    elif rol == 'admin':
+        qs = qs.filter(Q(rol='admin') | Q(is_staff=True) | Q(is_superuser=True))
+
+    if estado == 'activo':
+        qs = qs.filter(is_active=True)
+    elif estado in ('inactivo', 'bloqueado'):
+        qs = qs.filter(is_active=False)
+
+    if q:
+        qs = qs.filter(
+            Q(first_name__icontains=q) |
+            Q(last_name__icontains=q) |
+            Q(numero_documento__icontains=q) |
+            Q(email__icontains=q) |
+            Q(username__icontains=q)
+        )
+
+    # 3. Exportación a Excel (CSV UTF-8 con BOM)
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="reporte_usuarios_sportmax_{hoy.strftime("%Y%m%d")}.csv"'
+        response.write('\ufeff')
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow([
+            'Nombre Completo', 'Tipo Doc.', 'Número Documento', 'Correo Electrónico',
+            'Ficha SENA', 'Programa de Formación', 'Rol', 'Estado', 'Fecha de Registro'
+        ])
+        for u in qs:
+            writer.writerow([
+                u.get_full_name() or u.username,
+                u.tipo_documento,
+                u.numero_documento,
+                u.email,
+                u.ficha or 'N/A',
+                u.get_programa_formacion_display() if hasattr(u, 'get_programa_formacion_display') else u.programa_formacion,
+                u.rol.capitalize(),
+                'Activo' if u.is_active else 'Inactivo / Bloqueado',
+                timezone.localtime(u.fecha_registro).strftime('%d/%m/%Y %H:%M') if u.fecha_registro else '',
+            ])
+        return response
+
+    total_usuarios = qs.count()
+    total_activos = qs.filter(is_active=True).count()
+    total_bloqueados = qs.filter(is_active=False).count()
 
     contexto = {
         'usuario': request.user,
-        'todos_usuarios': todos_usuarios,
+        'todos_usuarios': qs,
         'total_usuarios': total_usuarios,
         'total_activos': total_activos,
         'total_bloqueados': total_bloqueados,
+        'filtros': {
+            'periodo': periodo,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'ficha': ficha,
+            'rol': rol,
+            'estado': estado,
+            'q': q,
+        }
     }
     return render(request, 'usuarios/gestionar_usuarios.html', contexto)
 

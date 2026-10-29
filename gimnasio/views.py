@@ -851,3 +851,140 @@ def crear_reserva_turno(request):
         'hora': str(reserva.hora_entrada),
         'cupos_restantes': max(0, limite_aforo - (ocupacion_actual + 1))
     }, status=201)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# REPORTE AVANZADO DE GIMNASIO (INGRESOS, RESERVAS Y PICOS HORARIOS)
+# ══════════════════════════════════════════════════════════════════════
+@login_required
+def reporte_gimnasio_view(request):
+    """
+    Reporte del Módulo de Gimnasio:
+    - Filtros de visualización: 7d (Últimos 7 días), 30d (Últimos 30 días), todos, rango personalizado.
+    - Filtros adicionales: Número de ficha, programa de formación o documento del aprendiz.
+    - Métricas clave: Total de ingresos en el periodo y picos de asistencia por horario.
+    - Exportación a Excel (CSV UTF-8 con BOM) e impresión PDF.
+    """
+    import csv
+    from datetime import timedelta
+    from collections import Counter
+    from django.db.models import Q
+    from django.core.paginator import Paginator
+    from django.http import HttpResponse
+    from usuarios.models import Usuario
+
+    hoy = timezone.localdate()
+    qs = Reserva.objects.select_related('usuario_solicitante', 'franja_horaria').order_by('-fecha_entrada', '-hora_entrada')
+
+    if not (request.user.is_staff or request.user.is_superuser):
+        qs = qs.filter(usuario_solicitante=request.user)
+
+    # 1. Filtro de Periodo / Rango de Fechas
+    periodo = request.GET.get('periodo', 'todos').strip()
+    fecha_inicio = request.GET.get('fecha_inicio', '').strip()
+    fecha_fin = request.GET.get('fecha_fin', '').strip()
+
+    if periodo == '7d':
+        qs = qs.filter(fecha_entrada__gte=hoy - timedelta(days=7))
+    elif periodo == '30d':
+        qs = qs.filter(fecha_entrada__gte=hoy - timedelta(days=30))
+    elif periodo == 'rango':
+        if fecha_inicio:
+            qs = qs.filter(fecha_entrada__gte=fecha_inicio)
+        if fecha_fin:
+            qs = qs.filter(fecha_entrada__lte=fecha_fin)
+
+    # 2. Filtros adicionales (Ficha, Programa, Documento / Aprendiz)
+    ficha = request.GET.get('ficha', '').strip()
+    programa = request.GET.get('programa', '').strip()
+    documento = request.GET.get('documento', '').strip()
+
+    if ficha:
+        qs = qs.filter(usuario_solicitante__ficha__icontains=ficha)
+
+    if programa:
+        qs = qs.filter(usuario_solicitante__programa_formacion__iexact=programa)
+
+    if documento:
+        qs = qs.filter(
+            Q(usuario_solicitante__numero_documento__icontains=documento) |
+            Q(usuario_solicitante__first_name__icontains=documento) |
+            Q(usuario_solicitante__last_name__icontains=documento) |
+            Q(usuario_solicitante__username__icontains=documento)
+        )
+
+    # 3. Cálculo de Métricas Clave y Picos de Asistencia por Horario
+    total_ingresos = qs.count()
+    aprendices_unicos = qs.values('usuario_solicitante').distinct().count()
+
+    conteo_horas = Counter()
+    for hora in qs.values_list('hora_entrada', flat=True):
+        if hora:
+            franja_lbl = f"{hora.hour:02d}:00 - {(hora.hour + 1) % 24:02d}:00"
+            conteo_horas[franja_lbl] += 1
+
+    hora_pico_principal = "Sin registros"
+    max_ingresos_hora = 0
+    picos_horarios = []
+
+    if conteo_horas:
+        hora_pico_principal, max_ingresos_hora = conteo_horas.most_common(1)[0]
+        for franja_lbl, cant in sorted(conteo_horas.items()):
+            porcentaje = round((cant / max_ingresos_hora) * 100) if max_ingresos_hora > 0 else 0
+            picos_horarios.append({
+                'franja': franja_lbl,
+                'cantidad': cant,
+                'porcentaje': porcentaje,
+                'es_pico': (cant == max_ingresos_hora and max_ingresos_hora > 0),
+            })
+
+    # 4. Exportación CSV / Excel
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="reporte_gimnasio_sportmax_{hoy.strftime("%Y%m%d")}.csv"'
+        response.write('\ufeff')
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow([
+            'Código', 'Aprendiz / Usuario', 'Documento', 'Ficha SENA', 'Programa de Formación',
+            'Fecha Entrada', 'Hora Entrada', 'Hora Salida', 'Permanencia (min)', 'Estado'
+        ])
+        for r in qs:
+            u = r.usuario_solicitante
+            writer.writerow([
+                f"#{r.codigo_registro}",
+                u.get_full_name() or u.username,
+                u.numero_documento,
+                u.ficha or 'N/A',
+                u.get_programa_formacion_display() if hasattr(u, 'get_programa_formacion_display') else u.programa_formacion,
+                r.fecha_entrada.strftime('%d/%m/%Y') if r.fecha_entrada else '',
+                r.hora_entrada.strftime('%H:%M') if r.hora_entrada else '',
+                r.hora_salida.strftime('%H:%M') if r.hora_salida else '',
+                r.tiempo_permanencia,
+                r.estado,
+            ])
+        return response
+
+    # 5. Paginación
+    paginator = Paginator(qs, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    context = {
+        'page_obj': page_obj,
+        'programas_choices': Usuario.PROGRAMA_CHOICES,
+        'filtros': {
+            'periodo': periodo,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'ficha': ficha,
+            'programa': programa,
+            'documento': documento,
+        },
+        'metricas': {
+            'total_ingresos': total_ingresos,
+            'aprendices_unicos': aprendices_unicos,
+            'hora_pico_principal': hora_pico_principal,
+            'max_ingresos_hora': max_ingresos_hora,
+            'picos_horarios': picos_horarios,
+        }
+    }
+    return render(request, 'gimnasio/reporte_gimnasio.html', context)

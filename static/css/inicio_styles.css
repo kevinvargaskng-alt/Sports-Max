@@ -16,25 +16,42 @@
     overflow-x: hidden;
   }
 
-  /* ── TICKER ── */
+  /* ── TICKER (Marquesina Responsiva Sin Desbordamiento) ── */
   .ticker-bar {
+    width: 100%;
+    max-width: 100vw;
     background: var(--sena-green);
     padding: 8px 0;
     overflow: hidden;
-    white-space: nowrap;
+    position: relative;
+    display: flex;
+    align-items: center;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 13px;
     letter-spacing: 1.5px;
     font-weight: 700;
     text-transform: uppercase;
     color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   }
   .ticker-inner {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    width: max-content;
+    flex-shrink: 0;
+    white-space: nowrap;
+    will-change: transform;
     animation: ticker 28s linear infinite;
   }
-  .ticker-inner span { margin: 0 40px; }
-  .ticker-sep { color: rgba(255,255,255,0.5); }
+  .ticker-bar:hover .ticker-inner {
+    animation-play-state: paused;
+  }
+  .ticker-inner span {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 24px;
+  }
+  .ticker-sep { color: rgba(255,255,255,0.5); margin: 0 16px; }
   @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
   /* ── HERO ── */

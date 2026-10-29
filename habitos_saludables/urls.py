@@ -66,4 +66,7 @@ urlpatterns = [
 
     # ── CP-14: Dashboard de progreso ─────────────────
     path('mi-progreso/', views.dashboard_progreso, name='dashboard_progreso'),
+
+    # ── Reporte Multimódulo de Hábitos Saludables ────
+    path('reportes/', views.reporte_habitos_view, name='reporte_habitos'),
 ]

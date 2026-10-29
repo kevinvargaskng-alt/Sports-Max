@@ -950,3 +950,134 @@ def bloquear_morosos(request):
         'message': f'Se aplicaron bloqueos y sanciones a {bloqueados_count} moroso(s) correctamente.',
         'bloqueados_count': bloqueados_count
     })
+
+
+# ══════════════════════════════════════════════════════════════════════
+# REPORTE AVANZADO DE INVENTARIO Y PRÉSTAMOS (FILTROS MULTICRITERIO)
+# ══════════════════════════════════════════════════════════════════════
+@login_required
+def reporte_inventario_prestamos(request):
+    """
+    Reporte multimódulo de Préstamos de Implementación Deportiva:
+    - Filtros de periodo: 7d (Últimos 7 días), 30d (Últimos 30 días), todos, rango personalizado.
+    - Filtros adicionales: Ficha SENA, Tipo de elemento, Estado (activo, devuelto, retrasado) y Usuario.
+    - Exportación directa a Excel (CSV UTF-8 con BOM) e impresión PDF.
+    """
+    import csv
+    from django.db.models import Q, Sum
+    from django.core.paginator import Paginator
+    from django.http import HttpResponse
+
+    hoy = timezone.localdate()
+    qs = Prestamo.objects.select_related('usuario', 'elemento').order_by('-fecha_prestamo', '-hora_prestamo')
+
+    if not request.user.is_staff:
+        qs = qs.filter(usuario=request.user)
+
+    # 1. Filtro de Periodo / Rango de Fechas
+    periodo = request.GET.get('periodo', 'todos').strip()
+    fecha_inicio = request.GET.get('fecha_inicio', '').strip()
+    fecha_fin = request.GET.get('fecha_fin', '').strip()
+
+    if periodo == '7d':
+        qs = qs.filter(fecha_prestamo__gte=hoy - timedelta(days=7))
+    elif periodo == '30d':
+        qs = qs.filter(fecha_prestamo__gte=hoy - timedelta(days=30))
+    elif periodo == 'rango':
+        if fecha_inicio:
+            qs = qs.filter(fecha_prestamo__gte=fecha_inicio)
+        if fecha_fin:
+            qs = qs.filter(fecha_prestamo__lte=fecha_fin)
+
+    # 2. Filtros adicionales (Ficha, Elemento, Estado, Usuario)
+    ficha = request.GET.get('ficha', '').strip()
+    elemento_q = request.GET.get('elemento', '').strip()
+    estado = request.GET.get('estado', '').strip().lower()
+    usuario_q = request.GET.get('usuario', '').strip()
+
+    if ficha:
+        qs = qs.filter(usuario__ficha__icontains=ficha)
+
+    if elemento_q:
+        if elemento_q.isdigit():
+            qs = qs.filter(elemento_id=int(elemento_q))
+        else:
+            qs = qs.filter(elemento__tipo_maquina__icontains=elemento_q)
+
+    if estado == 'activo':
+        qs = qs.filter(estado_prestamo__iexact='Activo', fecha_devolucion__gte=hoy)
+    elif estado == 'devuelto':
+        qs = qs.filter(estado_prestamo__iexact='Devuelto')
+    elif estado == 'retrasado':
+        qs = qs.filter(estado_prestamo__iexact='Activo', fecha_devolucion__lt=hoy)
+
+    if usuario_q:
+        qs = qs.filter(
+            Q(usuario__first_name__icontains=usuario_q) |
+            Q(usuario__last_name__icontains=usuario_q) |
+            Q(usuario__numero_documento__icontains=usuario_q) |
+            Q(usuario__username__icontains=usuario_q)
+        )
+
+    # Métricas resumen del filtro actual
+    total_registros = qs.count()
+    total_activos = qs.filter(estado_prestamo__iexact='Activo', fecha_devolucion__gte=hoy).count()
+    total_retrasados = qs.filter(estado_prestamo__iexact='Activo', fecha_devolucion__lt=hoy).count()
+    total_devueltos = qs.filter(estado_prestamo__iexact='Devuelto').count()
+    unidades_prestadas = qs.aggregate(total=Sum('cantidad_prestada'))['total'] or 0
+
+    # 3. Exportación CSV / Excel
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="reporte_inventario_sportmax_{hoy.strftime("%Y%m%d")}.csv"'
+        response.write('\ufeff')  # BOM UTF-8 para Excel
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow([
+            'Código', 'Aprendiz / Usuario', 'Documento', 'Ficha SENA', 'Programa',
+            'Elemento Deportivo', 'Cantidad', 'Fecha Préstamo', 'Fecha Límite Devolución', 'Estado Actual'
+        ])
+        for p in qs:
+            es_mora = (p.estado_prestamo.lower() == 'activo' and p.fecha_devolucion and p.fecha_devolucion < hoy)
+            estado_visual = 'Retrasado (En Mora)' if es_mora else p.estado_prestamo
+            writer.writerow([
+                f"#{p.codigo_prestamo}",
+                p.usuario.get_full_name() or p.usuario.username,
+                p.usuario.numero_documento,
+                p.usuario.ficha or 'N/A',
+                p.usuario.get_programa_formacion_display() if hasattr(p.usuario, 'get_programa_formacion_display') else p.usuario.programa_formacion,
+                p.elemento.tipo_maquina if p.elemento else 'N/A',
+                p.cantidad_prestada,
+                p.fecha_prestamo.strftime('%d/%m/%Y') if p.fecha_prestamo else '',
+                p.fecha_devolucion.strftime('%d/%m/%Y') if p.fecha_devolucion else '',
+                estado_visual,
+            ])
+        return response
+
+    # 4. Paginación
+    paginator = Paginator(qs, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    elementos_catalogo = ElementoDeportivo.objects.all().order_by('tipo_maquina')
+
+    context = {
+        'page_obj': page_obj,
+        'hoy': hoy,
+        'elementos_catalogo': elementos_catalogo,
+        'filtros': {
+            'periodo': periodo,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'ficha': ficha,
+            'elemento': elemento_q,
+            'estado': estado,
+            'usuario': usuario_q,
+        },
+        'metricas': {
+            'total_registros': total_registros,
+            'total_activos': total_activos,
+            'total_retrasados': total_retrasados,
+            'total_devueltos': total_devueltos,
+            'unidades_prestadas': unidades_prestadas,
+        }
+    }
+    return render(request, 'inventario/reporte_prestamos.html', context)
