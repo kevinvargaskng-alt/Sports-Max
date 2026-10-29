@@ -338,25 +338,28 @@
             </div>
             <div class="row g-3">
                 <div class="col-6 col-md-3">
-                    <div class="stat-mini">
+                    <div class="stat-mini stat-apertura">
+                        <i class="fas fa-sun stat-icon"></i>
                         <span class="stat-num gym-u-5">{{ config.horario_apertura|time:"H:i" }}</span>
                         <span class="stat-lbl">Apertura</span>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="stat-mini">
+                    <div class="stat-mini stat-cierre">
+                        <i class="fas fa-moon stat-icon"></i>
                         <span class="stat-num gym-u-6">{{ config.horario_cierre|time:"H:i" }}</span>
                         <span class="stat-lbl">Cierre</span>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="stat-mini">
+                    <div class="stat-mini stat-capacidad">
+                        <i class="fas fa-users stat-icon"></i>
                         <span class="stat-num">{{ config.capacidad_maxima|default:40 }}</span>
                         <span class="stat-lbl">Capacidad</span>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="stat-mini">
+                    <div class="stat-mini stat-estado">
                         <span class="stat-num gym-estado-val gym-estado-{{ config.estado }}">
                             ●&nbsp;{{ config.get_estado_display }}
                         </span>

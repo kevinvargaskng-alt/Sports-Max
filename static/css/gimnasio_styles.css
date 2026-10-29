@@ -180,21 +180,60 @@
         background: rgba(255,255,255,.03);
         border: 1px solid #30363d;
         border-radius: 12px;
-        padding: 18px 20px;
+        padding: 22px 20px 16px;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: border-color .25s, box-shadow .25s;
+    }
+    .stat-mini:hover {
+        box-shadow: 0 0 20px rgba(255,255,255,.04);
+    }
+    .stat-mini .stat-icon {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-size: 0.85rem;
+        opacity: 0.4;
     }
     .stat-mini .stat-num {
         font-family: 'Consolas', monospace;
         font-size: 2rem;
-        color: #58a6ff;
         display: block;
         line-height: 1;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
     }
     .stat-mini .stat-lbl {
         font-size: 0.65rem; font-weight: 800;
-        letter-spacing: 1.5px; text-transform: uppercase; color: #6b7a94;
+        letter-spacing: 1.5px; text-transform: uppercase;
     }
+
+    /* ── Apertura: Amber / Gold ── */
+    .stat-apertura { border-color: rgba(251, 191, 36, .3); }
+    .stat-apertura:hover { border-color: rgba(251, 191, 36, .6); box-shadow: 0 0 18px rgba(251, 191, 36, .08); }
+    .stat-apertura .stat-num { color: #fbbf24; }
+    .stat-apertura .stat-lbl { color: #a88a3d; }
+    .stat-apertura .stat-icon { color: #fbbf24; }
+
+    /* ── Cierre: Purple / Violet ── */
+    .stat-cierre { border-color: rgba(167, 139, 250, .3); }
+    .stat-cierre:hover { border-color: rgba(167, 139, 250, .6); box-shadow: 0 0 18px rgba(167, 139, 250, .08); }
+    .stat-cierre .stat-num { color: #a78bfa; }
+    .stat-cierre .stat-lbl { color: #7c6aad; }
+    .stat-cierre .stat-icon { color: #a78bfa; }
+
+    /* ── Capacidad: Emerald / Green ── */
+    .stat-capacidad { border-color: rgba(52, 211, 153, .3); }
+    .stat-capacidad:hover { border-color: rgba(52, 211, 153, .6); box-shadow: 0 0 18px rgba(52, 211, 153, .08); }
+    .stat-capacidad .stat-num { color: #34d399; }
+    .stat-capacidad .stat-lbl { color: #3a9d78; }
+    .stat-capacidad .stat-icon { color: #34d399; }
+
+    /* ── Estado: Cyan / Blue (default) ── */
+    .stat-estado { border-color: rgba(88, 166, 255, .3); }
+    .stat-estado:hover { border-color: rgba(88, 166, 255, .6); box-shadow: 0 0 18px rgba(88, 166, 255, .08); }
+    .stat-estado .stat-num { color: #58a6ff; }
+    .stat-estado .stat-lbl { color: #5a8bbf; }
 
     .adm-sec { display: none; }
     .adm-sec.activa { display: block; }
