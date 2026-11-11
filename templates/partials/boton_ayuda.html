@@ -66,10 +66,20 @@ function _iniciarDescargaFondo() {
         styles.forEach(s => printContainer.appendChild(s.cloneNode(true)));
         printContainer.appendChild(manualContent);
 
-        let toast = document.getElementById('print-toast');
-        if (toast) toast.remove();
-        
-        window.print();
+        const imgs = Array.from(printContainer.querySelectorAll('img'));
+        const waitForImages = imgs.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        });
+
+        Promise.all(waitForImages).then(() => {
+            let toast = document.getElementById('print-toast');
+            if (toast) toast.remove();
+            window.print();
+        });
     })
     .catch(error => {
         console.error("Error fetching manual:", error);
