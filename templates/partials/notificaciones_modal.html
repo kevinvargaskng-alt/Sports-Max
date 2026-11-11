@@ -33,12 +33,23 @@
                                 {% endif %}
                                 <div class="d-flex align-items-center gap-2">
                                     {% if not notif.leida and notif.id %}
-                                        <button type="button" class="btn btn-sm btn-outline-warning py-0 px-2 rounded-pill btn-marcar-individual" onclick="marcarNotificacionIndividual({{ notif.id }})" title="Marcar como leída" style="font-size: 0.75rem;">
+                                        <button type="button" class="btn btn-sm btn-outline-warning py-0 px-2 rounded-pill btn-marcar-individual"
+                                                onclick="marcarNotificacionIndividual({{ notif.id }})"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                data-bs-title="Marcar esta notificación como leída"
+                                                title="Marcar como leída"
+                                                aria-label="Marcar notificación '{{ notif.titulo|escapejs }}' como leída"
+                                                style="font-size: 0.75rem;">
                                             <i class="fas fa-check me-1"></i>Leída
                                         </button>
                                     {% endif %}
                                     {% if notif.enlace %}
-                                        <a href="{{ notif.enlace }}" {% if notif.id and not notif.leida %}onclick="marcarNotificacionIndividual({{ notif.id }})"{% endif %} class="btn btn-sm btn-outline-light py-0 px-2 rounded-pill" style="font-size: 0.75rem;">Ver detalle <i class="fas fa-arrow-right ms-1"></i></a>
+                                        <a href="{{ notif.enlace }}" {% if notif.id and not notif.leida %}onclick="marcarNotificacionIndividual({{ notif.id }})"{% endif %}
+                                           class="btn btn-sm btn-outline-light py-0 px-2 rounded-pill"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           data-bs-title="Ir a la sección relacionada"
+                                           aria-label="Ver detalle de '{{ notif.titulo|escapejs }}'"
+                                           style="font-size: 0.75rem;">Ver detalle <i class="fas fa-arrow-right ms-1"></i></a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -52,7 +63,11 @@
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0 justify-content-between">
-                <button type="button" class="btn btn-sm btn-link text-warning text-decoration-none fw-semibold p-0" id="btnMarcarLeidas" onclick="marcarTodasNotificacionesLeidas()">
+                <button type="button" class="btn btn-sm btn-link text-warning text-decoration-none fw-semibold p-0"
+                        id="btnMarcarLeidas" onclick="marcarTodasNotificacionesLeidas()"
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-title="Marcar todas las notificaciones pendientes como leídas"
+                        aria-label="Marcar todas las notificaciones como leídas">
                     <i class="fas fa-check-double me-1"></i>Marcar todas como leídas
                 </button>
                 <button type="button" class="btn btn-outline-info btn-sm fw-bold px-4 rounded-pill" data-bs-dismiss="modal">

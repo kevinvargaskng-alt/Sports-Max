@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Manual de Usuario Integral - Sports-Max{% endblock %}
+{% block title %}Manual de Usuario del Sistema — Gestión Deportiva SENA{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Estilos personalizados para el Manual */
     .manual-sidebar {
         position: sticky;
         top: 20px;
         max-height: calc(100vh - 40px);
         overflow-y: auto;
     }
-    
+
     .manual-nav-link {
         color: rgba(255, 255, 255, 0.7);
         padding: 10px 15px;
@@ -23,18 +22,46 @@
         margin-bottom: 5px;
         font-weight: 500;
     }
-    
+
     .manual-nav-link:hover, .manual-nav-link.active {
         background: rgba(255, 255, 255, 0.1);
-        color: #0dcaf0; /* text-info */
+        color: #0dcaf0;
         transform: translateX(5px);
     }
-    
+
     .manual-nav-link i {
         width: 25px;
         text-align: center;
     }
-    
+
+    .manual-meta-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .manual-meta-table th,
+    .manual-meta-table td {
+        padding: 12px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 0.95rem;
+    }
+
+    .manual-meta-table th {
+        width: 32%;
+        background: rgba(57, 169, 0, 0.15);
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .manual-meta-table td {
+        color: rgba(255, 255, 255, 0.85);
+    }
+
     .manual-section {
         background: rgba(0, 0, 0, 0.25);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -43,13 +70,13 @@
         margin-bottom: 30px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
-    
+
     .manual-section h2 {
         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         padding-bottom: 15px;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
-    
+
     .manual-feature-card {
         background: rgba(255, 255, 255, 0.03);
         border-radius: 10px;
@@ -58,128 +85,45 @@
         border-left: 4px solid transparent;
         transition: transform 0.3s ease;
     }
-    
-    .manual-feature-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    /* Paleta de Colores Alineada con los Módulos */
-    .border-perfil    { border-left-color: #0dcaf0 !important; } /* Cyan / Info */
-    .border-gimnasio  { border-left-color: #dc3545 !important; } /* Rojo / Danger (Energía) */
-    .border-prestamos { border-left-color: #ffc107 !important; } /* Amarillo / Warning (Inventario) */
-    .border-torneos   { border-left-color: #0d6efd !important; } /* Azul / Primary (Competencia) */
-    .border-habitos   { border-left-color: #39A900 !important; } /* Verde SENA / Success (Salud) */
-    .border-admin     { border-left-color: #6f42c1 !important; } /* Morado (Seguridad) */
-    
-    .text-sena-green { color: #39A900 !important; }
-    .text-admin-purple { color: #d63384 !important; }
 
-    .step-badge {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        margin-right: 10px;
-        color: #fff;
+    .manual-figure {
+        margin: 22px 0;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 14px;
     }
-    
-    /* Scrollbar del sidebar */
+
+    .manual-figure img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    .manual-figure figcaption {
+        margin-top: 10px;
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.68);
+        font-style: italic;
+    }
+
+    .border-perfil    { border-left-color: #0dcaf0 !important; }
+    .border-gimnasio  { border-left-color: #dc3545 !important; }
+    .border-prestamos { border-left-color: #ffc107 !important; }
+    .border-torneos   { border-left-color: #0d6efd !important; }
+    .border-habitos   { border-left-color: #39A900 !important; }
+
+    .text-sena-green { color: #39A900 !important; }
+
     .manual-sidebar::-webkit-scrollbar { width: 6px; }
     .manual-sidebar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-
-    /* Estilos estandarizados de SOLO TEXTO para impresión (PDF) */
-    @media print {
-        /* Forzar que absolutamente todo no tenga fondo y sea negro */
-        * {
-            background: transparent !important;
-            background-color: transparent !important;
-            color: #000000 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            border-color: #000000 !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            filter: none !important;
-            transform: none !important;
-            opacity: 1 !important;
-        }
-        body, html, main {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-        }
-        
-        /* Ocultar elementos decorativos y de navegación */
-        .manual-sidebar, .navbar, footer, .btn, .no-print, hr, i.fas, i.far, i.fab, .step-badge {
-            display: none !important;
-        }
-
-        /* Quitar las estructuras de tarjetas y alertas */
-        .manual-section, .manual-feature-card, .alert {
-            background: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 0 1.5rem 0 !important;
-            page-break-inside: avoid;
-        }
-
-        /* Títulos limpios */
-        h1, h2, h5 {
-            margin: 1.5rem 0 0.5rem 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            font-weight: bold !important;
-            color: #000 !important;
-        }
-        
-        h2 {
-            font-size: 1.6rem !important;
-            border-bottom: 2px solid #000 !important;
-            padding-bottom: 0.3rem !important;
-        }
-        
-        h5 {
-            font-size: 1.2rem !important;
-            margin-top: 1rem !important;
-        }
-
-        p, ul, li {
-            font-size: 11pt !important;
-            line-height: 1.4 !important;
-            color: #000 !important;
-        }
-
-        /* Destruir el grid de Bootstrap para evitar columnas o layouts raros */
-        .col-lg-9, .col-lg-12, .col-md-6, .col-md-12, .col-12, .row, .container, .d-flex {
-            display: block !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            flex: none !important;
-        }
-
-        .alert-danger {
-            border: 1px solid #000 !important;
-            padding: 10px !important;
-            margin-top: 10px !important;
-        }
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    
-    <!-- Encabezado del Manual -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold text-white display-4"><i class="fas fa-book-reader text-info me-3"></i>Manual de Usuario Oficial</h1>
-        <p class="text-white-50 lead mt-3">Aprende a sacarle el máximo provecho a la plataforma de gestión deportiva del SENA Centro Minero.</p>
-        <hr class="w-25 mx-auto border-secondary mt-4">
-    </div>
 
     <div class="row">
         <!-- Barra de Navegación Lateral (Índice) -->
@@ -187,17 +131,18 @@
             <div class="manual-sidebar p-3 bg-dark rounded-4 shadow border border-secondary">
                 <h5 class="text-white fw-bold mb-4 ms-2"><i class="fas fa-list-ul me-2"></i>Índice Temático</h5>
                 <nav class="nav flex-column" id="manual-navbar">
-                    <a class="manual-nav-link" href="#seccion-perfil"><i class="fas fa-user-circle text-info"></i> 1. Mi Perfil y Cuenta</a>
+                    <a class="manual-nav-link" href="#seccion-perfil"><i class="fas fa-user-circle text-info"></i> 1. Inicio y Mi Perfil</a>
                     <a class="manual-nav-link" href="#seccion-gimnasio"><i class="fas fa-dumbbell text-danger"></i> 2. Gimnasio</a>
-                    <a class="manual-nav-link" href="#seccion-prestamos"><i class="fas fa-volleyball-ball text-warning"></i> 3. Préstamos</a>
+                    <a class="manual-nav-link" href="#seccion-prestamos"><i class="fas fa-boxes text-warning"></i> 3. Inventario y Préstamos</a>
                     <a class="manual-nav-link" href="#seccion-torneos"><i class="fas fa-trophy text-primary"></i> 4. Torneos Interfichas</a>
                     <a class="manual-nav-link" href="#seccion-habitos"><i class="fas fa-heartbeat text-sena-green"></i> 5. Hábitos Saludables</a>
-                    {% if user.is_staff %}
-                    <a class="manual-nav-link text-admin-purple" href="#seccion-admin"><i class="fas fa-shield-alt text-admin-purple"></i> 6. Administración</a>
-                    {% endif %}
+                    <a class="manual-nav-link" href="#seccion-faq"><i class="fas fa-question-circle text-warning"></i> 6. Preguntas Frecuentes</a>
                 </nav>
-                <div class="mt-4 pt-3 border-top border-secondary text-center">
-                    <a href="{% url 'perfil' %}" class="btn btn-outline-info w-100 rounded-pill"><i class="fas fa-arrow-left me-2"></i>Volver al perfil</a>
+                <div class="mt-4 pt-3 border-top border-secondary text-center d-grid gap-2">
+                    <button type="button" onclick="downloadManualGlobal()" class="btn btn-warning rounded-pill fw-bold">
+                        <i class="fas fa-file-pdf me-2"></i>Descargar PDF
+                    </button>
+                    <a href="{% url 'perfil' %}" class="btn btn-outline-info rounded-pill"><i class="fas fa-arrow-left me-2"></i>Volver al perfil</a>
                 </div>
             </div>
         </div>
@@ -205,164 +150,241 @@
         <!-- Contenido del Manual -->
         <div class="col-lg-9">
             <div data-bs-spy="scroll" data-bs-target="#manual-navbar" data-bs-offset="100" tabindex="0">
-                
-                <!-- 1. PERFIL Y CUENTA -->
+
+                <!-- Tabla de Ficha Técnica del Documento -->
+                <table class="manual-meta-table">
+                    <tbody>
+                        <tr>
+                            <th>Proyecto / Sistema:</th>
+                            <td>Gestión Deportiva SENA (Sports-Max)</td>
+                        </tr>
+                        <tr>
+                            <th>Programa de Formación:</th>
+                            <td>Análisis y Desarrollo de Software (ADSO) - Ficha 3196477</td>
+                        </tr>
+                        <tr>
+                            <th>Centro de Formación:</th>
+                            <td>SENA - Centro Minero</td>
+                        </tr>
+                        <tr>
+                            <th>Documento:</th>
+                            <td>Manual de Usuario del Sistema</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Introducción -->
+                <section class="manual-section">
+                    <h1 class="fw-bold text-info text-center mb-3" style="font-size: 1.85rem;">
+                        MANUAL DE USUARIO - GESTIÓN DEPORTIVA SENA
+                    </h1>
+                    <p class="text-white-50 mb-0 lh-lg">
+                        Este manual explica el uso de los diferentes módulos que conforman la plataforma de Gestión Deportiva SENA (Sports-Max). El sistema está pensado para que los aprendices puedan registrar su carnet con código QR, apartar cupo en el gimnasio, solicitar préstamos de implementos deportivos, inscribir equipos en los torneos del centro y llevar un control básico de su estado físico.
+                    </p>
+                </section>
+
+                <!-- 1. Módulo de Inicio y Mi Perfil -->
                 <section id="seccion-perfil" class="manual-section">
-                    <h2 class="text-info fw-bold"><i class="fas fa-user-circle me-2"></i>1. Mi Perfil y Configuración de Cuenta</h2>
-                    <p class="text-white-50 mb-4">El módulo de perfil es tu centro de control personal. Desde aquí gestionas tus datos y puedes ver un resumen de toda tu actividad en la plataforma.</p>
-                    
-                    <div class="row g-4">
+                    <h2 class="text-info fw-bold"><i class="fas fa-user-circle me-2"></i>1. Módulo de Inicio y Mi Perfil</h2>
+                    <p class="text-white-50 lh-lg">
+                        Al iniciar sesión en la plataforma se accede al módulo de Inicio y al perfil personal del aprendiz. Desde esta pantalla se puede registrar el carnet del SENA por medio de código QR, revisar las notificaciones generales y consultar el resumen de toda la actividad dentro del sistema.
+                    </p>
+
+                    <div class="row g-4 mt-1">
                         <div class="col-md-6">
                             <div class="manual-feature-card border-perfil">
-                                <h5 class="text-white fw-bold"><i class="fas fa-user-edit text-info me-2"></i>Editar Datos Personales</h5>
-                                <p class="text-white-50 small">Tus datos académicos (Ficha, Programa, Documento) son fijos por motivos institucionales. Sin embargo, puedes actualizar tu <strong>Correo Electrónico</strong>, <strong>Número Celular</strong> y tu <strong>Foto de Perfil</strong> haciendo clic en "Editar perfil".</p>
+                                <h5 class="text-white fw-bold"><i class="fas fa-user-edit text-info me-2"></i>Editar datos personales</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li><strong>Datos institucionales:</strong> Los datos básicos de formación (Ficha, Programa de Formación y Número de Documento) vienen bloqueados por defecto por seguridad e integridad de la información institucional.</li>
+                                    <li><strong>Datos de contacto:</strong> Para cambiar el correo electrónico, el número de celular o la foto de perfil, hay que entrar al botón «Editar perfil» (en el panel principal o desde el menú de usuario arriba a la derecha). Es muy importante tener el número de celular actualizado porque ahí llegan los avisos de sanciones o información de los torneos.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="manual-feature-card border-perfil">
-                                <h5 class="text-white fw-bold"><i class="fas fa-chart-line text-info me-2"></i>Test de Rendimiento Inicial</h5>
-                                <p class="text-white-50 small">Antes de empezar a entrenar, te recomendamos hacer el Test de Biometría. Registra tu Peso, Estatura, y resultados de pruebas físicas para que el sistema guarde un punto de partida de tu estado físico.</p>
+                                <h5 class="text-white fw-bold"><i class="fas fa-chart-line text-info me-2"></i>Test de rendimiento inicial</h5>
+                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                                    <li><strong>Registro físico base:</strong> Antes de empezar a entrenar en el gimnasio del SENA, el sistema pide registrar el estado físico actual. En la opción «Mi Rendimiento» se ingresa el peso, la estatura y los resultados de las pruebas físicas iniciales para guardar una base estadística en el perfil.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image1.png' %}" alt="Vista del perfil del aprendiz, datos de cuenta e historial de ingresos al gimnasio.">
+                        <figcaption>Vista del perfil del aprendiz, datos de cuenta e historial de ingresos al gimnasio.</figcaption>
+                    </figure>
                 </section>
 
-                <!-- 2. GIMNASIO -->
+                <!-- 2. Módulo de Gimnasio -->
                 <section id="seccion-gimnasio" class="manual-section">
                     <h2 class="text-danger fw-bold"><i class="fas fa-dumbbell me-2"></i>2. Módulo de Gimnasio</h2>
-                    <p class="text-white-50 mb-4">El gimnasio del Centro Minero cuenta con un sistema de reservas digitales (Aforo controlado).</p>
-                    
-                    <div class="row g-4">
-                        <div class="col-md-12">
-                            <div class="manual-feature-card border-gimnasio">
-                                <div class="d-flex align-items-start mb-3">
-                                    <span class="step-badge">1</span>
-                                    <div>
-                                        <h5 class="text-white fw-bold mb-1">Explorar las Máquinas</h5>
-                                        <p class="text-white-50 small mb-0">Accede a la pestaña de Gimnasio para ver el inventario de máquinas disponibles, divididas por categorías: Cardio, Fuerza, Funcional. </p>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start mb-3">
-                                    <span class="step-badge">2</span>
-                                    <div>
-                                        <h5 class="text-white fw-bold mb-1">Hacer una Reserva</h5>
-                                        <p class="text-white-50 small mb-0">Para ingresar, debes agendarte. El sistema registrará tu <strong>Hora de Entrada</strong> y calculará tu <strong>Hora límite de Salida</strong> (usualmente 60 minutos).</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <p class="text-white-50 lh-lg">
+                        El gimnasio del Centro Minero maneja un sistema de reservas digitales para controlar el aforo por jornada y organizar el ingreso de los aprendices.
+                    </p>
+
+                    <div class="manual-feature-card border-gimnasio mb-3">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-calendar-check text-danger me-2"></i>Pasos para reservar el ingreso</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Paso 1:</strong> Entrar al módulo «Gimnasio» desde el menú principal de arriba.</li>
+                            <li><strong>Paso 2:</strong> Revisar el horario de apertura y cierre que esté habilitado para la jornada.</li>
+                            <li><strong>Paso 3:</strong> Elegir el bloque de hora deseado y verificar que todavía queden cupos disponibles.</li>
+                            <li><strong>Paso 4:</strong> Dar clic en «Agendar Reserva». El sistema genera de forma automática el pase de ingreso e indica hasta qué hora límite está permitido permanecer en la sala.</li>
+                        </ul>
                     </div>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image2.png' %}" alt="Pantalla principal del módulo de Gimnasio con el reloj e indicador de estado de la sala.">
+                        <figcaption>Pantalla principal del módulo de Gimnasio con el reloj e indicador de estado de la sala.</figcaption>
+                    </figure>
+
+                    <div class="manual-feature-card border-gimnasio mb-3">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-history text-danger me-2"></i>Consulta de máquinas y asistencias</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Inventario de máquinas:</strong> En la plataforma se pueden ver las máquinas que tiene el gimnasio divididas por zonas: Cardio (bicicleta estática, caminadora, elíptica), Fuerza (multiestación, poleas) y Funcional. Esto sirve para conocer qué músculos trabaja cada equipo y armar la rutina antes de ir.</li>
+                            <li><strong>Mis asistencias:</strong> En el apartado de historial quedan guardados los días y las horas exactas de entrada y salida en las que se ha usado el gimnasio.</li>
+                        </ul>
+                    </div>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image3.png' %}" alt="Catálogo de máquinas y equipos disponibles en el gimnasio filtrados por categoría.">
+                        <figcaption>Catálogo de máquinas y equipos disponibles en el gimnasio filtrados por categoría.</figcaption>
+                    </figure>
                 </section>
 
-                <!-- 3. PRÉSTAMOS -->
+                <!-- 3. Módulo de Inventario y Préstamo de Material -->
                 <section id="seccion-prestamos" class="manual-section">
-                    <h2 class="text-warning fw-bold"><i class="fas fa-volleyball-ball me-2"></i>3. Préstamo de Material Deportivo</h2>
-                    <p class="text-white-50 mb-4">Solicita el material desde tu celular antes de ir a bodega.</p>
-                    
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="manual-feature-card border-prestamos text-center p-4">
-                                <i class="fas fa-search-plus fa-3x text-warning mb-3"></i>
-                                <h5 class="text-white fw-bold">Buscar Elementos</h5>
-                                <p class="text-white-50 small">Explora balones, raquetas, petos y conos. Verifica cuántas unidades quedan disponibles en bodega antes de solicitar.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="manual-feature-card border-prestamos text-center p-4">
-                                <i class="fas fa-hand-holding-heart fa-3x text-warning mb-3"></i>
-                                <h5 class="text-white fw-bold">Solicitar y Devolver</h5>
-                                <p class="text-white-50 small">Genera la solicitud indicando la cantidad. Tienes un límite de días para devolverlo.</p>
-                            </div>
-                        </div>
-                        <div class="col-12 mt-3">
-                            <div class="alert alert-danger bg-dark border-danger text-white small mb-0">
-                                <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>¡Atención! Sistema de Sanciones:</strong> Si un implemento deportivo no es devuelto a tiempo, o si es devuelto con daños, se generará una "Novedad" que puede bloquear tu cuenta impidiéndote solicitar préstamos temporalmente.
-                            </div>
-                        </div>
+                    <h2 class="text-warning fw-bold"><i class="fas fa-boxes me-2"></i>3. Módulo de Inventario y Préstamo de Material</h2>
+                    <p class="text-white-50 lh-lg">
+                        Este módulo permite pedir prestados los implementos deportivos con anticipación para asegurar el material antes de pasar por la bodega. En la pantalla principal aparecen tres accesos rápidos: «Nuevo Préstamo», «Mis Devoluciones» y «Mis Sanciones».
+                    </p>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image4.png' %}" alt="Panel principal del módulo de Inventario.">
+                        <figcaption>Panel principal del módulo de Inventario.</figcaption>
+                    </figure>
+
+                    <div class="manual-feature-card border-prestamos mb-3">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-hand-holding text-warning me-2"></i>¿Cómo solicitar un implemento?</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Catálogo disponible:</strong> Entrar a la pestaña de préstamos o catálogo para ver los elementos que hay en bodega (balones de baloncesto, fútbol, voleibol, cintas métricas, colchonetas, raquetas, aros, petos, etc.).</li>
+                            <li><strong>Stock en tiempo real:</strong> Cada tarjeta muestra en una etiqueta verde cuántas unidades están en estado «Disponible» en ese momento.</li>
+                            <li><strong>Solicitud y entrega:</strong> Seleccionar el implemento en el botón «Solicitar Préstamo», indicar la cantidad y enviar la solicitud. Para reclamar el material en ventanilla, el administrador valida la entrega presentando el carnet oficial del SENA.</li>
+                        </ul>
+                    </div>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image5.png' %}" alt="Catálogo de implementos deportivos con la cantidad de unidades disponibles.">
+                        <figcaption>Catálogo de implementos deportivos con la cantidad de unidades disponibles.</figcaption>
+                    </figure>
+
+                    <div class="manual-feature-card border-prestamos mb-3">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-undo text-warning me-2"></i>Devoluciones, daños y sanciones</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Horarios de entrega:</strong> Todo préstamo tiene una fecha y hora límite de devolución fijada por el centro deportivo.</li>
+                            <li><strong>Daños o pérdidas:</strong> Si algún implemento se daña durante el uso, se debe reportar de inmediato al instructor encargado para que registre la novedad en el sistema.</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-danger bg-dark border-danger text-white small mb-0">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i><strong>Importante (Sistema restrictivo automático):</strong> Si un implemento no se devuelve dentro del plazo máximo, el sistema genera automáticamente una Novedad o Sanción. Esto bloquea la cuenta para pedir nuevos préstamos o reservar el gimnasio hasta que se solucione el inconveniente en la oficina de deportes.
                     </div>
                 </section>
 
-                <!-- 4. TORNEOS -->
+                <!-- 4. Torneos Interfichas e Intercentros -->
                 <section id="seccion-torneos" class="manual-section">
                     <h2 class="text-primary fw-bold"><i class="fas fa-trophy me-2"></i>4. Torneos Interfichas e Intercentros</h2>
-                    <p class="text-white-50 mb-4">El corazón competitivo de Sports-Max. Podrás gestionar campeonatos desde la inscripción hasta la gran final.</p>
+                    <p class="text-white-50 lh-lg">
+                        Desde el módulo «Inter-Fichas» se gestionan los campeonatos del centro deportivo, desde que el capitán inscribe a su ficha hasta que se publican los resultados finales.
+                    </p>
 
-                    <div class="manual-feature-card border-torneos mb-4">
-                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Si eres Capitán (Inscripción de Equipos)</h5>
-                        <ul class="text-white-50 small lh-lg mb-0">
-                            <li>Ve al módulo de Torneos y haz clic en <strong>"Inscribir Equipo"</strong>.</li>
-                            <li><strong>Requisitos obligatorios:</strong> Debes subir la imagen del Escudo de tu equipo y cargar la planilla oficial de inscripción en PDF/Word.</li>
-                            <li>Una vez creado el equipo, podrás agregar a cada jugador junto con su <strong>Consentimiento Informado</strong>.</li>
-                        </ul>
+                    <div class="manual-feature-card border-torneos mb-3">
+                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Inscripción de equipos (Guía para el capitán)</h5>
+                        <ol class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Elegir torneo:</strong> Entrar al módulo de Torneos, revisar las convocatorias que estén en estado «Abierto» y hacer clic en «Inscribir mi equipo».</li>
+                            <li><strong>Identidad del equipo:</strong> Subir la imagen del escudo del equipo y colocarle un nombre representativo.</li>
+                            <li><strong>Planilla oficial:</strong> Cargar obligatoriamente la planilla de inscripción en archivo PDF o Word, debidamente firmada y avalada.</li>
+                            <li><strong>Registro de jugadores:</strong> Una vez creado el equipo, el capitán debe agregar a los integrantes con su número de documento y validar el consentimiento informado sobre riesgos deportivos.</li>
+                        </ol>
                     </div>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image6.png' %}" alt="Listado de torneos interfichas disponibles para inscripción.">
+                        <figcaption>Listado de torneos interfichas disponibles para inscripción.</figcaption>
+                    </figure>
 
                     <div class="manual-feature-card border-torneos">
-                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Seguimiento de la Competición</h5>
-                        <ul class="text-white-50 small lh-lg mb-0">
-                            <li><strong>Fase de Grupos:</strong> Revisa el fixture (calendario) para saber contra qué ficha juegas, la fecha, la hora y en qué escenario deportivo.</li>
-                            <li><strong>Resultados Adaptativos:</strong> Los marcadores se adaptan a la disciplina. Verás goles (fútbol), puntos (baloncesto) o Sets (voleibol/pimpón).</li>
-                            <li><strong>Tabla de Posiciones:</strong> El sistema calcula automáticamente los puntos (3 por ganar, 1 por empatar) y ordena la tabla.</li>
+                        <h5 class="text-white fw-bold border-bottom border-secondary pb-2 mb-3">Seguimiento del torneo</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Calendario (Fixture):</strong> Permite revisar la programación de la fase de grupos para saber contra qué ficha toca jugar, el día, la hora y la cancha asignada.</li>
+                            <li><strong>Marcadores según el deporte:</strong> Los resultados se adaptan a cada disciplina, mostrando goles (fútbol y microfútbol), puntos (baloncesto) o sets (voleibol y pimpón).</li>
+                            <li><strong>Tabla de posiciones:</strong> Cuando se sube el acta de un partido, el sistema suma los puntos automáticamente (3 por ganar, 1 por empatar y 0 por perder), calcula la diferencia y ordena la tabla.</li>
+                            <li><strong>Boletín de cierre:</strong> Al terminar el torneo se puede descargar en PDF el Boletín Oficial de Cierre con el cuadro de honor (campeón, subcampeón, juego limpio y valla menos vencida).</li>
                         </ul>
                     </div>
                 </section>
 
-                <!-- 5. HÁBITOS -->
+                <!-- 5. Hábitos Saludables y Bienestar -->
                 <section id="seccion-habitos" class="manual-section">
-                    <h2 class="text-sena-green fw-bold"><i class="fas fa-apple-alt me-2"></i>5. Hábitos Saludables y Bienestar</h2>
-                    <p class="text-white-50 mb-4">Un deportista del SENA se cuida integralmente. Este módulo te ayuda a monitorear y mejorar tu estilo de vida.</p>
+                    <h2 class="text-sena-green fw-bold"><i class="fas fa-heartbeat me-2"></i>5. Hábitos Saludables y Bienestar</h2>
+                    <p class="text-white-50 lh-lg">
+                        Este módulo sirve para llevar un control del estado físico y consultar guías de alimentación y entrenamiento. Cuenta con accesos a «Mi Dashboard», «Ver Hábitos», «Registrar Seguimiento» y cinco secciones de consulta: Guía de Hábitos, Rutinas Físicas, Nutrición, Mi Salud y Biblioteca.
+                    </p>
 
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="manual-feature-card border-habitos">
-                                <h5 class="text-white fw-bold"><i class="fas fa-lock text-sena-green me-2"></i>Privacidad y Habeas Data</h5>
-                                <p class="text-white-50 small">Por ley, al registrar información médica o corporal, debes aceptar primero la Política de Tratamiento de Datos Personales de la plataforma.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="manual-feature-card border-habitos">
-                                <h5 class="text-white fw-bold"><i class="fas fa-running text-sena-green me-2"></i>Rutinas y Nutrición</h5>
-                                <p class="text-white-50 small">Descubre rutinas físicas adaptadas a niveles y navega por la <strong>Pirámide Nutricional Interactiva</strong>.</p>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="manual-feature-card border-habitos d-flex align-items-center gap-4">
-                                <i class="fas fa-notes-medical fa-4x text-sena-green opacity-50 d-none d-md-block"></i>
-                                <div>
-                                    <h5 class="text-white fw-bold">Seguimiento Biométrico a Largo Plazo</h5>
-                                    <p class="text-white-50 small mb-0">Aquí puedes registrar mediciones periódicas (peso mensual, presión arterial, horas promedio de sueño, vasos de agua al día). El sistema te categorizará según tu IMC.</p>
-                                </div>
-                            </div>
-                        </div>
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image7.png' %}" alt="Pantalla de inicio del módulo de Hábitos Saludables.">
+                        <figcaption>Pantalla de inicio del módulo de Hábitos Saludables.</figcaption>
+                    </figure>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image8.png' %}" alt="Secciones del módulo de bienestar y acceso a la biblioteca de materiales en PDF.">
+                        <figcaption>Secciones del módulo de bienestar y acceso a la biblioteca de materiales en PDF.</figcaption>
+                    </figure>
+
+                    <div class="manual-feature-card border-habitos mb-3">
+                        <h5 class="text-white fw-bold mb-3"><i class="fas fa-chart-line text-sena-green me-2"></i>Seguimiento biométrico y nutrición</h5>
+                        <ul class="text-white-50 small lh-lg mb-0 ps-3">
+                            <li><strong>Mediciones e IMC:</strong> En el Dashboard de Salud se registra periódicamente el peso, la estatura y la frecuencia cardíaca. Con estos datos la plataforma calcula sola el Índice de Masa Corporal (IMC) e indica si la persona está en su peso ideal.</li>
+                            <li><strong>Hábitos diarios:</strong> Permite registrar los vasos de agua consumidos al día (meta de 8 vasos), horas de sueño y presión arterial.</li>
+                            <li><strong>Rutinas y alimentación:</strong> Incluye rutinas de ejercicio divididas por nivel (principiante, intermedio y avanzado) y una pirámide nutricional interactiva con recomendaciones para antes y después de entrenar.</li>
+                        </ul>
+                    </div>
+
+                    <figure class="manual-figure">
+                        <img src="{% static 'img/manual/image9.png' %}" alt="Dashboard de salud con registro de hidratación, cálculo de IMC y frase motivacional.">
+                        <figcaption>Dashboard de salud con registro de hidratación, cálculo de IMC y frase motivacional.</figcaption>
+                    </figure>
+
+                    <div class="alert alert-secondary bg-dark border-secondary text-white small mb-0">
+                        <i class="fas fa-lock text-info me-2"></i><strong>Privacidad y tratamiento de datos:</strong> Por normativa institucional (Habeas Data), los datos médicos y corporales se guardan de forma cifrada. Para usar las estadísticas del módulo es necesario aceptar primero el consentimiento de tratamiento de datos personales.
                     </div>
                 </section>
 
-                <!-- 6. ADMINISTRACIÓN -->
-                {% if user.is_staff %}
-                <section id="seccion-admin" class="manual-section">
-                    <h2 class="text-admin-purple fw-bold"><i class="fas fa-user-shield me-2"></i>6. Herramientas de Administración</h2>
-                    <p class="text-white-50 mb-4">Sección exclusiva para Instructores y Administradores de la plataforma.</p>
-                    
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="manual-feature-card border-admin">
-                                <h5 class="text-white fw-bold"><i class="fas fa-users-cog text-admin-purple me-2"></i>Gestión de Usuarios</h5>
-                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
-                                    <li>Bloquea o desbloquea el acceso a aprendices.</li>
-                                    <li>Asigna roles (Aprendiz, Administrador).</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="manual-feature-card border-admin">
-                                <h5 class="text-white fw-bold"><i class="fas fa-database text-admin-purple me-2"></i>Auditoría y Backups</h5>
-                                <ul class="text-white-50 small lh-lg mb-0 ps-3">
-                                    <li>Realiza copias de seguridad de la base de datos (Exportación en JSON).</li>
-                                </ul>
-                            </div>
-                        </div>
+                <!-- 6. Preguntas Frecuentes -->
+                <section id="seccion-faq" class="manual-section">
+                    <h2 class="fw-bold mb-4 text-warning"><i class="fas fa-question-circle me-2"></i>6. Preguntas Frecuentes</h2>
+
+                    <div class="manual-feature-card border-perfil mb-3">
+                        <h5 class="text-white fw-bold mb-2">¿Qué hago si mi cuenta se bloquea?</h5>
+                        <p class="text-white-50 small lh-lg mb-0">
+                            Si la cuenta se bloquea después de varios intentos fallidos al iniciar sesión, el bloqueo dura 5 minutos (en primer nivel) o 24 horas (en segundo nivel). Para quitar el bloqueo de inmediato se puede usar la opción «Desbloqueo Urgente» que aparece en el formulario de login, ingresando el número de documento, correo y teléfono registrados.
+                        </p>
+                    </div>
+
+                    <div class="manual-feature-card border-gimnasio mb-3">
+                        <h5 class="text-white fw-bold mb-2">¿Cómo puedo reportar una falla en la plataforma?</h5>
+                        <p class="text-white-50 small lh-lg mb-0">
+                            En la esquina superior derecha de la pantalla está el icono de la campana de notificaciones; al darle clic aparece la opción «Enviar Reporte» (también disponible en la pestaña «Reportar Error» dentro del perfil). Ahí se puede escribir el detalle del problema y adjuntar una captura de pantalla.
+                        </p>
+                    </div>
+
+                    <div class="manual-feature-card border-prestamos">
+                        <h5 class="text-white fw-bold mb-2">¿Por qué el sistema no me deja pedir un préstamo de implementos?</h5>
+                        <p class="text-white-50 small lh-lg mb-0">
+                            Generalmente pasa por dos motivos: porque en ese momento no hay stock disponible del implemento seleccionado, o porque la cuenta tiene una sanción activa por haber entregado tarde un préstamo anterior. El estado actual se puede revisar en la sección de Sanciones dentro del perfil o en el módulo de Inventario.
+                        </p>
                     </div>
                 </section>
-                {% endif %}
 
             </div>
         </div>

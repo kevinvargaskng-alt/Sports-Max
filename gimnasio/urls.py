@@ -45,4 +45,7 @@ urlpatterns = [
 
     # ── CP-19: Reserva de turno con control de sobrecupo ──
     path('reserva/turno/', views.crear_reserva_turno, name='crear_reserva_turno'),
+
+    # ── Reporte de Ingresos, Reservas y Picos de Asistencia ──
+    path('reportes/', views.reporte_gimnasio_view, name='reporte_gimnasio'),
 ]

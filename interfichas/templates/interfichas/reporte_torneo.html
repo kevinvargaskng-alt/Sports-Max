@@ -409,8 +409,37 @@
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 10px !important;
         box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
-        page-break-inside: avoid;
-        margin-bottom: 1rem !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        height: auto !important;
+        margin-bottom: 1.2rem !important;
+        display: block !important;
+    }
+    .row {
+        display: block !important;
+    }
+    .col-12, .col-xl-6 {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .table-responsive {
+        overflow: visible !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    .table-reporte {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    .table-reporte tbody tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
     .card-header.bg-secondary {
         background: linear-gradient(90deg, #1e3a8a 0%, #0284c7 100%) !important;
@@ -582,6 +611,13 @@
     .badge-grupo-B { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
     .badge-grupo-C { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
     .badge-grupo-D { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid #8b5cf6; }
+    .badge-hora-cronograma {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        font-weight: 600;
+        border-radius: 5px;
+    }
 
     /* Estilos de Impresión para Cronograma y Grupos */
     .tabla-cronograma-reporte {
@@ -599,6 +635,12 @@
     .badge-grupo-print-B { background: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important; }
     .badge-grupo-print-C { background: #fffbeb !important; color: #b45309 !important; border: 1px solid #fde68a !important; }
     .badge-grupo-print-D { background: #f5f3ff !important; color: #6d28d9 !important; border: 1px solid #ddd6fe !important; }
+    .badge-hora-print {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #94a3b8 !important;
+        font-weight: 700 !important;
+    }
 
 </style>
 {% endblock %}
@@ -754,8 +796,8 @@
 
                 <div class="row g-4">
                     {% for item in grupos_con_tabla %}
-                    <div class="col-12 col-xl-6">
-                        <div class="card bg-dark border-secondary h-100">
+                    <div class="col-12 mb-4">
+                        <div class="card bg-dark border-secondary">
                             <div class="card-header bg-secondary py-2 d-flex justify-content-between align-items-center">
                                 <span class="fw-bold text-white">Grupo {{ item.grupo.nombre_grupo }}</span>
                                 <span class="badge bg-dark bg-opacity-50 text-white small">{{ item.tabla|length }} Equipos</span>
@@ -912,72 +954,6 @@
             </div>
             {% endif %}
 
-            <!-- EQUIPOS PARTICIPANTES Y GRUPOS -->
-            <div class="mb-5">
-                <div class="reporte-section-title">
-                    <i class="fas fa-users"></i> Equipos Inscritos y Distribución por Grupos
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table-reporte tabla-equipos-reporte">
-                        <thead>
-                            <tr>
-                                <th>Equipo</th>
-                                <th class="text-center">Grupo</th>
-                                <th>Ficha</th>
-                                <th>Capitán</th>
-                                <th>Programa de Formación</th>
-                                <th class="text-center">Jugadores</th>
-                                <th class="text-center">Planilla de Inscripción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for eq in equipos_con_grupo %}
-                            <tr>
-                                <td class="fw-bold text-white">
-                                    <i class="fas fa-shield-alt text-info me-2"></i>{{ eq.nombre_equipo }}
-                                </td>
-                                <td class="text-center">
-                                    {% if eq.nombre_grupo %}
-                                    <span class="badge badge-grupo-tag badge-grupo-{{ eq.nombre_grupo }} badge-grupo-print-{{ eq.nombre_grupo }}">
-                                        Grupo {{ eq.nombre_grupo }}
-                                    </span>
-                                    {% else %}
-                                    <span class="badge bg-secondary text-white-50 small">Sin Grupo</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary text-white badge-ficha-print">{{ eq.ficha }}</span>
-                                </td>
-                                <td><strong class="text-white">{{ eq.capitan }}</strong></td>
-                                <td class="text-white-50 small">{{ eq.programa }}</td>
-                                <td class="text-center">
-                                    <span class="badge bg-dark border border-secondary text-info fw-bold">
-                                        {{ eq.jugadores.count }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    {% if eq.planilla_inscripcion %}
-                                    <a href="{{ eq.planilla_inscripcion.url }}" target="_blank" class="badge-planilla-ok btn btn-sm btn-outline-success py-1 px-3 fw-bold text-decoration-none">
-                                        <i class="fas fa-file-pdf text-danger"></i> Planilla Adjunta
-                                    </a>
-                                    {% else %}
-                                    <span class="badge-sin-planilla badge bg-dark border border-secondary text-white-50">
-                                        Sin planilla física
-                                    </span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="7" class="text-center text-white-50 py-4">No hay equipos inscritos en este torneo.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
             <!-- CRONOGRAMA OFICIAL DE PARTIDOS (ORDEN CRONOLÓGICO - JUGADOS PRIMERO) -->
             <div class="mb-5">
                 <div class="reporte-section-title">
@@ -989,7 +965,7 @@
                         <thead>
                             <tr>
                                 <th class="text-center" style="width: 45px;">#</th>
-                                <th style="width: 150px;">Fecha / Día</th>
+                                <th style="width: 165px;">Fecha / Hora</th>
                                 <th class="text-center" style="width: 105px;">Grupo</th>
                                 <th class="text-end" style="width: 32%;">Equipo Local</th>
                                 <th class="text-center" style="width: 110px;">Resultado</th>
@@ -1004,7 +980,14 @@
                                 <td>
                                     {% if p.fecha_partido %}
                                     <div class="fw-bold text-white">{{ p.fecha_partido|date:"d/m/Y" }}</div>
-                                    <small class="text-white-50 text-capitalize">{{ p.fecha_partido|date:"l" }}</small>
+                                    <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+                                        <small class="text-white-50 text-capitalize">{{ p.fecha_partido|date:"l" }}</small>
+                                        {% if p.hora_partido %}
+                                        <span class="badge badge-hora-cronograma badge-hora-print px-1 py-0 ms-1" style="font-size: 0.74rem;">
+                                            <i class="far fa-clock me-1"></i>{{ p.hora_partido|time:"H:i" }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
                                     {% else %}
                                     <span class="text-white-50 fst-italic small">Por programar</span>
                                     {% endif %}
@@ -1044,7 +1027,7 @@
                                     </span>
                                     {% else %}
                                     <span class="badge bg-secondary text-white-50 px-2 py-1 small">
-                                        <i class="far fa-clock me-1"></i>Pendiente
+                                        <i class="far fa-clock me-1"></i>Por jugarse
                                     </span>
                                     {% endif %}
                                 </td>

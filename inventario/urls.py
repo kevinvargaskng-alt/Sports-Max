@@ -24,4 +24,7 @@ urlpatterns = [
     # CP-21: Reportes de morosos y ejecución de bloqueos
     path('reportes/morosos/', views.reporte_prestamos_vencidos, name='reporte_morosos'),
     path('reportes/bloquear-morosos/', views.bloquear_morosos, name='bloquear_morosos'),
+
+    # Reporte general y filtrable de préstamos e inventario
+    path('reportes/', views.reporte_inventario_prestamos, name='reporte_inventario'),
 ]

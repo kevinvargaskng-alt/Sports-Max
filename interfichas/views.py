@@ -286,14 +286,37 @@ def interfichas_list(request):
             return redirect('interfichas')
 
         elif accion == 'crear_torneo':
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
             id_disc = request.POST.get('disciplina_id', '').strip()
             if not id_disc:
-                messages.error(request, "Debes seleccionar una disciplina.")
+                msg = "Debes seleccionar una disciplina."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'disciplina_id': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
             try:
-                disc_obj = get_object_or_404(Disciplina, pk=int(id_disc))
-            except (ValueError, Disciplina.DoesNotExist):
-                messages.error(request, "Disciplina inválida.")
+                disc_obj = Disciplina.objects.get(pk=int(id_disc))
+            except (ValueError, TypeError, Disciplina.DoesNotExist):
+                msg = "La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'disciplina_id': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('interfichas')
+
+            nombre_torneo = request.POST.get('nombre', '').strip()
+            if not nombre_torneo or len(nombre_torneo) < 2 or len(nombre_torneo) > 100:
+                msg = "El nombre del torneo es obligatorio y debe tener entre 2 y 100 caracteres."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('interfichas')
+
+            lugar_torneo = request.POST.get('lugar', '').strip()
+            if not lugar_torneo or len(lugar_torneo) < 2 or len(lugar_torneo) > 100:
+                msg = "El lugar del torneo es obligatorio y debe tener entre 2 y 100 caracteres."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'lugar': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
 
             fecha_str = request.POST.get('fecha')
@@ -303,26 +326,35 @@ def interfichas_list(request):
                 try:
                     fecha_val = dt_class.strptime(fecha_str, '%Y-%m-%d').date()
                     if fecha_val < django_timezone.localdate():
-                        messages.error(request, "La fecha del torneo no puede ser de días anteriores.")
+                        msg = "La fecha del torneo no puede ser de días anteriores."
+                        if is_ajax:
+                            return JsonResponse({'status': 'error', 'message': msg, 'errors': {'fecha': msg}}, status=400)
+                        messages.error(request, msg)
                         return redirect('interfichas')
                 except Exception:
-                    messages.error(request, "Fecha de torneo inválida.")
+                    msg = "Fecha de torneo inválida."
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': msg, 'errors': {'fecha': msg}}, status=400)
+                    messages.error(request, msg)
                     return redirect('interfichas')
             else:
-                messages.error(request, "La fecha del torneo es obligatoria.")
+                msg = "La fecha del torneo es obligatoria."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'fecha': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
 
             estado_torneo = request.POST.get('estado', 'activo').strip() or 'activo'
             horario_torneo = request.POST.get('horario', '08:00').strip() or '08:00'
             torneo_nuevo = TorneoInterfichas.objects.create(
-                nombre_torneo=request.POST.get('nombre'),
+                nombre_torneo=nombre_torneo,
                 fecha_torneo_fichas=fecha_val,
                 horario_torneo_fichas=horario_torneo,
-                lugar=request.POST.get('lugar'),
+                lugar=lugar_torneo,
                 disciplina=disc_obj,
                 estado=estado_torneo
             )
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+            if is_ajax:
                 return JsonResponse({
                     'status': 'success',
                     'message': 'Torneo programado correctamente.',
@@ -336,46 +368,68 @@ def interfichas_list(request):
             return redirect('interfichas')
 
         elif accion == 'inscribir_equipo':
+            import re
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
             torneo_id = (
                 request.POST.get('torneo_id', '').strip()
                 or request.POST.get('torneo_id_sel', '').strip()
             )
             if not torneo_id:
-                messages.error(request, "Debes seleccionar un torneo.")
+                msg = "Debes seleccionar un torneo."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'torneo_id': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
             try:
-                torneo_obj = get_object_or_404(
-                    TorneoInterfichas, pk=int(torneo_id))
-            except (ValueError, TorneoInterfichas.DoesNotExist):
-                messages.error(request, "Torneo no encontrado.")
+                torneo_obj = TorneoInterfichas.objects.get(pk=int(torneo_id))
+            except (ValueError, TypeError, TorneoInterfichas.DoesNotExist):
+                msg = "La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'torneo_id': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
 
             if torneo_obj.estado == 'cerrado' and not admin:
-                messages.error(request, "Este torneo ya está cerrado.")
+                msg = "Este torneo ya está cerrado."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'torneo': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
 
             ficha = request.POST.get('ficha', '').strip()
             if not ficha:
-                messages.error(
-                    request, "La ficha del capitán es obligatoria.")
+                msg = "La ficha del capitán es obligatoria."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'ficha': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
 
-            # Validar que la ficha sea numérica
-            try:
-                ficha_int = int(ficha)
-            except ValueError:
-                messages.error(
-                    request, "La ficha debe ser un número válido.")
+            # Validar que la ficha sea numérica y tenga exactamente 7 dígitos
+            if not re.match(r'^\d{7}$', ficha):
+                msg = "La ficha debe contener exactamente 7 dígitos numéricos."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'ficha': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
+
+            ficha_int = int(ficha)
 
             if _ficha_duplicada(torneo_obj, ficha):
-                messages.error(
-                    request,
-                    f"La ficha '{ficha}' ya está inscrita en el torneo "
-                    f"'{torneo_obj.nombre_torneo}'. Cada capitán solo puede "
-                    f"inscribir un equipo por torneo."
-                )
+                msg = f"La ficha '{ficha}' ya está inscrita en el torneo '{torneo_obj.nombre_torneo}'. Cada capitán solo puede inscribir un equipo por torneo."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'ficha': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
+
+            raw_capitan = request.POST.get('capitan', '').strip()
+            if not raw_capitan or len(raw_capitan) < 2 or len(raw_capitan) > 100:
+                msg = "El nombre del capitán es obligatorio y debe tener entre 2 y 100 caracteres."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'capitan': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('interfichas')
+
+            capitan = strip_dangerous_patterns(raw_capitan) or "Capitán"
 
             # Determinar si la disciplina es Fútbol o Fútsal (formato mundial)
             disc_nombre = torneo_obj.disciplina.nombre_disciplina.lower() if torneo_obj.disciplina else ""
@@ -396,13 +450,15 @@ def interfichas_list(request):
                 if not nombre_equipo:
                     nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
 
+            if len(nombre_equipo) > 100:
+                nombre_equipo = nombre_equipo[:100]
+
             nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,
                 nombre_equipo=nombre_equipo,
-                capitan=strip_dangerous_patterns(
-                    request.POST.get('capitan', '').strip()),
+                capitan=capitan,
                 ficha=ficha_int,
-                programa=request.POST.get('programa', '').strip(),
+                programa=request.POST.get('programa', '').strip()[:150],
                 disciplina=torneo_obj.disciplina,
                 usuario_registra=request.user,
                 escudo = request.FILES.get('escudo')
@@ -468,7 +524,7 @@ def interfichas_list(request):
                     equipo_visitante__in=mis_equipos_qs)
             )
             .select_related('equipo_local', 'equipo_visitante', 'torneo')
-            .order_by('fecha_partido', 'id')
+            .order_by('fecha_partido', 'hora_partido', 'id')
         )
 
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
@@ -504,9 +560,26 @@ def editar_torneo(request, id):
     torneo = get_object_or_404(TorneoInterfichas, codigo_torneo_fichas=id)
 
     if request.method == 'POST':
-        torneo.nombre_torneo = request.POST.get(
-            'nombre', torneo.nombre_torneo).strip()
-        torneo.lugar = request.POST.get('lugar',  torneo.lugar).strip()
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
+        nombre = request.POST.get('nombre', torneo.nombre_torneo).strip()
+        lugar = request.POST.get('lugar', torneo.lugar).strip()
+
+        if not nombre or len(nombre) < 2 or len(nombre) > 100:
+            msg = "El nombre del torneo debe tener entre 2 y 100 caracteres."
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre': msg}}, status=400)
+            messages.error(request, msg)
+            return redirect('interfichas')
+
+        if not lugar or len(lugar) < 2 or len(lugar) > 100:
+            msg = "El lugar del torneo debe tener entre 2 y 100 caracteres."
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': msg, 'errors': {'lugar': msg}}, status=400)
+            messages.error(request, msg)
+            return redirect('interfichas')
+
+        torneo.nombre_torneo = nombre
+        torneo.lugar = lugar
         
         fecha_str = request.POST.get('fecha')
         if fecha_str:
@@ -515,22 +588,32 @@ def editar_torneo(request, id):
             try:
                 fecha_val = dt_class.strptime(fecha_str, '%Y-%m-%d').date()
                 if fecha_val < django_timezone.localdate():
-                    messages.error(request, "La fecha del torneo no puede ser de días anteriores.")
+                    msg = "La fecha del torneo no puede ser de días anteriores."
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': msg, 'errors': {'fecha': msg}}, status=400)
+                    messages.error(request, msg)
                     return redirect('interfichas')
                 torneo.fecha_torneo_fichas = fecha_val
             except Exception:
-                messages.error(request, "Fecha de torneo inválida.")
+                msg = "Fecha de torneo inválida."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'fecha': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
 
         id_disc = request.POST.get('disciplina_id', '').strip()
         if id_disc:
             try:
-                torneo.disciplina = get_object_or_404(
-                    Disciplina, pk=int(id_disc))
-            except (ValueError, Disciplina.DoesNotExist):
-                messages.error(request, "Disciplina inválida.")
+                torneo.disciplina = Disciplina.objects.get(pk=int(id_disc))
+            except (ValueError, TypeError, Disciplina.DoesNotExist):
+                msg = "La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'disciplina_id': msg}}, status=400)
+                messages.error(request, msg)
                 return redirect('interfichas')
         torneo.save()
+        if is_ajax:
+            return JsonResponse({'status': 'success', 'message': "Torneo actualizado correctamente."})
         messages.success(request, "Torneo actualizado correctamente.")
         return redirect('interfichas')
 
@@ -1040,7 +1123,7 @@ def reporte_torneo(request, torneo_id):
         PartidoInterfichas.objects
         .filter(torneo=torneo, fase='grupo')
         .select_related('equipo_local', 'equipo_visitante', 'grupo')
-        .order_by('fecha_partido', 'id')
+        .order_by('fecha_partido', 'hora_partido', 'id')
     )
     cronograma_grupo = [p for p in partidos_grupo_qs if p.jugado] + \
                        [p for p in partidos_grupo_qs if not p.jugado]
@@ -1092,15 +1175,48 @@ def reporte_torneo(request, torneo_id):
 
 @solo_admin
 def editar_equipo(request, equipo_id):
-    equipo = get_object_or_404(EquipoInterfichas, pk=equipo_id)
+    try:
+        equipo = EquipoInterfichas.objects.get(pk=int(equipo_id))
+    except (EquipoInterfichas.DoesNotExist, ValueError, TypeError):
+        return JsonResponse({
+            'status': 'error',
+            'error': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.',
+            'errors': {'equipo_id': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'}
+        }, status=400)
+
+    # ── Bloqueo de edición post-inicio ──
+    if equipo.torneo.ha_iniciado():
+        return JsonResponse({
+            'status': 'error',
+            'error': 'Edición bloqueada: No se puede modificar el equipo porque el torneo ya ha iniciado o su fecha/hora ya transcurrió.',
+            'bloqueado': True
+        }, status=403)
+
     if request.method == 'POST':
-        equipo.nombre_equipo = request.POST.get(
-            'nombre_equipo', equipo.nombre_equipo).strip()
-        equipo.capitan = request.POST.get(
-            'capitan',       equipo.capitan).strip()
-        equipo.ficha = request.POST.get('ficha',         equipo.ficha)
-        equipo.programa = request.POST.get(
-            'programa',      equipo.programa).strip()
+        import re
+        nombre_eq = request.POST.get('nombre_equipo', equipo.nombre_equipo).strip()
+        capitan_eq = request.POST.get('capitan', equipo.capitan).strip()
+        programa_eq = request.POST.get('programa', equipo.programa).strip()
+        ficha_raw = str(request.POST.get('ficha', equipo.ficha)).strip()
+
+        if not nombre_eq or len(nombre_eq) < 2 or len(nombre_eq) > 100:
+            return JsonResponse({'status': 'error', 'error': 'El nombre del equipo debe tener entre 2 y 100 caracteres.', 'errors': {'nombre_equipo': 'Longitud inválida.'}}, status=400)
+
+        if not capitan_eq or len(capitan_eq) < 2 or len(capitan_eq) > 100:
+            return JsonResponse({'status': 'error', 'error': 'El nombre del capitán debe tener entre 2 y 100 caracteres.', 'errors': {'capitan': 'Longitud inválida.'}}, status=400)
+
+        if not re.match(r'^\d{7}$', ficha_raw):
+            return JsonResponse({
+                'status': 'error',
+                'error': 'La ficha debe contener exactamente 7 dígitos numéricos.',
+                'errors': {'ficha': 'La ficha debe contener exactamente 7 dígitos numéricos.'}
+            }, status=400)
+
+        equipo.nombre_equipo = nombre_eq
+        equipo.capitan = capitan_eq
+        equipo.ficha = int(ficha_raw)
+        equipo.programa = programa_eq[:150]
+
         # Guardar / actualizar planilla de inscripción
         planilla_file = request.FILES.get('planilla_inscripcion')
         if planilla_file:
@@ -1128,6 +1244,12 @@ def eliminar_equipo(request, equipo_id):
     equipo = get_object_or_404(EquipoInterfichas, pk=equipo_id)
     torneo_id = equipo.torneo.pk
     nombre = equipo.nombre_equipo
+
+    # ── Bloqueo de eliminación post-inicio ──
+    if equipo.torneo.ha_iniciado():
+        messages.error(request, f"Acción denegada: El torneo '{equipo.torneo.nombre_torneo}' ya ha iniciado. No se puede eliminar el equipo '{nombre}'.")
+        return redirect('gestionar_torneo', torneo_id=torneo_id)
+
     equipo.delete()
     messages.warning(request, f"Equipo '{nombre}' eliminado del torneo.")
     return redirect('gestionar_torneo', torneo_id=torneo_id)

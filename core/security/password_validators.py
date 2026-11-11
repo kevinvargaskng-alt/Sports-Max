@@ -54,10 +54,10 @@ class BreachedPasswordValidator:
 class StrongPasswordValidator:
     """
     Exige complejidad: mayúscula, minúscula, dígito y carácter especial.
-    Longitud mínima de 12 caracteres.
+    Longitud mínima de 8 caracteres.
     """
 
-    def __init__(self, min_length=12):
+    def __init__(self, min_length=8):
         self.min_length = min_length
 
     def validate(self, password, user=None):

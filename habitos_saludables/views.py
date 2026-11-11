@@ -484,22 +484,38 @@ def calcular_imc_api(request):
         data = request.POST.dict()
 
     try:
-        peso = float(data.get('peso_kg', 0))
-        estatura = float(data.get('estatura_cm', 0))
-        edad = int(data.get('edad', 0))
+        peso_raw = data.get('peso_kg')
+        estatura_raw = data.get('estatura_cm')
+        edad_raw = data.get('edad')
+
+        if peso_raw is None or peso_raw == '' or estatura_raw is None or estatura_raw == '' or edad_raw is None or edad_raw == '':
+            return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
+
+        peso = float(peso_raw)
+        estatura = float(estatura_raw)
+        edad = int(edad_raw)
         genero = data.get('genero', 'M')
         nivel_actividad = data.get('nivel_actividad', 'sedentario')
     except (TypeError, ValueError):
-        return JsonResponse({'error': 'Datos inválidos.'}, status=400)
+        return JsonResponse({'error': 'Los datos ingresados deben ser números válidos.'}, status=400)
 
-    # Validaciones de rango
+    # Validaciones específicas de cero, negativos y rangos
     errores = []
-    if not (20 <= peso <= 300):
-        errores.append('El peso debe estar entre 20 y 300 kg.')
-    if not (100 <= estatura <= 250):
-        errores.append('La estatura debe estar entre 100 y 250 cm.')
-    if not (10 <= edad <= 120):
+    if peso <= 0:
+        errores.append('El peso debe ser mayor a 0 kg (no se permiten valores de 0 o negativos).')
+    elif not (20 <= peso <= 200):
+        errores.append('El peso debe estar entre 20 y 200 kg.')
+
+    if estatura <= 0:
+        errores.append('La estatura debe ser mayor a 0 cm (no se permiten valores de 0 o negativos).')
+    elif not (100 <= estatura <= 230):
+        errores.append('La estatura debe estar entre 100 y 230 cm.')
+
+    if edad <= 0:
+        errores.append('La edad debe ser mayor a 0 años (no se permiten valores de 0 o negativos).')
+    elif not (10 <= edad <= 120):
         errores.append('La edad debe estar entre 10 y 120 años.')
+
     if errores:
         return JsonResponse({'error': errores}, status=400)
 
@@ -969,3 +985,114 @@ def dashboard_progreso(request):
         'sesiones_labels':     json.dumps([s['label'] for s in sesiones_4s]),
         'sesiones_data':       json.dumps([s['count'] for s in sesiones_4s]),
     })
+
+
+# ══════════════════════════════════════════════════════════════════════
+# REPORTE MULTIMÓDULO DE HÁBITOS SALUDABLES Y SEGUIMIENTO DE SALUD
+# ══════════════════════════════════════════════════════════════════════
+@login_required
+def reporte_habitos_view(request):
+    """
+    Reporte del Módulo de Hábitos Saludables:
+    - Filtros de visualización: 7d (Últimos 7 días), 30d (Últimos 30 días), todos, rango personalizado.
+    - Filtros adicionales: Número de ficha SENA, tipo/categoría de hábito registrado y aprendiz.
+    - Exportación a Excel (CSV UTF-8 con BOM) e impresión PDF.
+    """
+    import csv
+    from datetime import timedelta
+    from django.core.paginator import Paginator
+    from django.http import HttpResponse
+
+    hoy = timezone.localdate()
+    qs = RegistroHabitoUsuario.objects.select_related('usuario', 'habito').order_by('-fecha')
+
+    if not (request.user.is_staff or request.user.is_superuser):
+        qs = qs.filter(usuario=request.user)
+
+    # 1. Filtro de Periodo / Rango de Fechas
+    periodo = request.GET.get('periodo', 'todos').strip()
+    fecha_inicio = request.GET.get('fecha_inicio', '').strip()
+    fecha_fin = request.GET.get('fecha_fin', '').strip()
+
+    if periodo == '7d':
+        qs = qs.filter(fecha__gte=hoy - timedelta(days=7))
+    elif periodo == '30d':
+        qs = qs.filter(fecha__gte=hoy - timedelta(days=30))
+    elif periodo == 'rango':
+        if fecha_inicio:
+            qs = qs.filter(fecha__gte=fecha_inicio)
+        if fecha_fin:
+            qs = qs.filter(fecha__lte=fecha_fin)
+
+    # 2. Filtros adicionales (Ficha, Tipo de hábito, Aprendiz)
+    ficha = request.GET.get('ficha', '').strip()
+    tipo_habito = request.GET.get('tipo_habito', '').strip()
+    aprendiz = request.GET.get('aprendiz', '').strip()
+
+    if ficha:
+        qs = qs.filter(usuario__ficha__icontains=ficha)
+
+    if tipo_habito:
+        qs = qs.filter(habito__categoria=tipo_habito)
+
+    if aprendiz:
+        qs = qs.filter(
+            Q(usuario__first_name__icontains=aprendiz) |
+            Q(usuario__last_name__icontains=aprendiz) |
+            Q(usuario__numero_documento__icontains=aprendiz) |
+            Q(usuario__username__icontains=aprendiz)
+        )
+
+    total_registros = qs.count()
+    total_completados = qs.filter(completado=True).count()
+    total_pendientes = total_registros - total_completados
+    aprendices_activos = qs.values('usuario').distinct().count()
+
+    # 3. Exportación CSV / Excel
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="reporte_habitos_sportmax_{hoy.strftime("%Y%m%d")}.csv"'
+        response.write('\ufeff')
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow([
+            'Aprendiz / Usuario', 'Documento', 'Ficha SENA', 'Programa',
+            'Hábito Registrado', 'Categoría', 'Fecha Registro', 'Estado', 'Nota Personal'
+        ])
+        for reg in qs:
+            u = reg.usuario
+            writer.writerow([
+                u.get_full_name() or u.username,
+                u.numero_documento,
+                u.ficha or 'N/A',
+                u.get_programa_formacion_display() if hasattr(u, 'get_programa_formacion_display') else u.programa_formacion,
+                reg.habito.titulo,
+                reg.habito.get_categoria_display(),
+                reg.fecha.strftime('%d/%m/%Y') if reg.fecha else '',
+                'Completado' if reg.completado else 'En progreso',
+                reg.nota or '',
+            ])
+        return response
+
+    # 4. Paginación
+    paginator = Paginator(qs, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    context = {
+        'page_obj': page_obj,
+        'categorias_habito': HabitoSaludable.CATEGORIA_CHOICES,
+        'filtros': {
+            'periodo': periodo,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'ficha': ficha,
+            'tipo_habito': tipo_habito,
+            'aprendiz': aprendiz,
+        },
+        'metricas': {
+            'total_registros': total_registros,
+            'total_completados': total_completados,
+            'total_pendientes': total_pendientes,
+            'aprendices_activos': aprendices_activos,
+        }
+    }
+    return render(request, 'habitos/reporte_habitos.html', context)

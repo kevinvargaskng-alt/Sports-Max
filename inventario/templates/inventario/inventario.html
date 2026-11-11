@@ -62,6 +62,17 @@
                     </a>
                 </div>
             </div>
+            <div class="col-6 col-md-3">
+                <div class="accion-card accion-card-cyan">
+                    <div class="accion-icon-badge">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h6 class="fw-bold text-info small">REPORTES</h6>
+                    <a href="{% url 'reporte_inventario' %}" class="accion-btn accion-btn-solid">
+                        <i class="fas fa-file-export"></i>ABRIR REPORTE
+                    </a>
+                </div>
+            </div>
                         {% else %}
             <div class="col-6 col-md-3">
                 <div class="accion-card accion-card-cyan">
@@ -198,27 +209,33 @@
 
                         <!-- Badge stock / Habilitado status -->
                         {% if not e.habilitado %}
-                            <span class="stock-badge bg-secondary text-white border border-danger">
+                            <span class="stock-badge bg-secondary text-white border border-danger" tabindex="0" role="status"
+                                  data-bs-toggle="tooltip" data-bs-title="Elemento inhabilitado temporalmente para préstamos">
                                 <i class="fas fa-eye-slash me-1"></i>Inhabilitado
                             </span>
                         {% elif e.cantidad_total > 0 %}
-                            <span class="stock-badge bg-success text-white">
+                            <span class="stock-badge bg-success text-white" tabindex="0" role="status"
+                                  data-bs-toggle="tooltip" data-bs-title="{{ e.cantidad_total }} unidades disponibles para préstamo inmediato">
                                 <i class="fas fa-check me-1"></i>{{ e.cantidad_total }} disp.
                             </span>
                         {% else %}
-                            <span class="stock-badge bg-danger text-white">
+                            <span class="stock-badge bg-danger text-white" tabindex="0" role="status"
+                                  data-bs-toggle="tooltip" data-bs-title="Sin existencias disponibles en este momento">
                                 <i class="fas fa-times me-1"></i>Sin stock
                             </span>
                         {% endif %}
 
                         <!-- Contenido -->
                         <div class="p-3">
-                            <h6 class="fw-bold text-white mb-1 text-truncate">{{ e.tipo_maquina }}</h6>
-                            <p class="text-white-50 small mb-2 inv-u-1">
+                            <h6 class="fw-bold text-white mb-1 text-truncate" tabindex="0"
+                                data-bs-toggle="tooltip" data-bs-title="{{ e.tipo_maquina }}">{{ e.tipo_maquina }}</h6>
+                            <p class="text-white-50 small mb-2 inv-u-1" tabindex="0"
+                               data-bs-toggle="tooltip" data-bs-title="{{ e.descripcion|default:'Sin descripción adicional.' }}">
                                 {{ e.descripcion|default:"Sin descripción."|truncatechars:70 }}
                             </p>
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="text-white-50 small">
+                                <span class="text-white-50 small" tabindex="0"
+                                      data-bs-toggle="tooltip" data-bs-title="Responsable: {{ e.usuario_responsable.get_full_name|default:'Sin asignar' }}">
                                     <i class="fas fa-user me-1"></i>
                                     {{ e.usuario_responsable.get_full_name|default:"Sin asignar"|truncatechars:18 }}
                                 </span>
@@ -370,11 +387,14 @@
                             <td data-label="Acciones" class="text-center">
                                 {% if user.is_staff %}
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento" title="Editar" data-bs-toggle="modal" data-bs-target="#modalElemento"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
+                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-2 btn-editar-elemento"
+                                            title="Editar implemento"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar implemento deportivo"
+                                            data-bs-target="#modalElemento"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
                                     <a href="{% url 'eliminar_elemento' e.id %}"
                                        class="btn btn-danger btn-sm fw-bold px-2"
-                                       title="Eliminar"
-                                       data-bs-toggle="tooltip" data-bs-placement="top"
+                                       title="Eliminar implemento"
+                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar este implemento del inventario"
                                        data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                          <i class="fas fa-trash me-1 inv-u-12"></i>Eliminar
                                     </a>
@@ -386,7 +406,10 @@
                                             onclick="prestamoRapido('{{ e.id }}')"
                                             title="Solicitar Préstamo"
                                             {% if sanciones %}disabled{% endif %}
-                                            data-bs-toggle="tooltip" data-bs-placement="top">
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-title="{% if sanciones %}Préstamo bloqueado por sanciones activas{% else %}Solicitar préstamo de este implemento{% endif %}">
+                                         <i class="fas fa-hand-pointer me-1 inv-u-13"></i>Solicitar
+                                    </button>
                                          <i class="fas fa-hand-pointer me-1 inv-u-13"></i>Solicitar
                                     </button>
                                     {% else %}
@@ -662,19 +685,22 @@
                                 <label class="form-label fw-bold small">Nombre / Tipo de Elemento <span class="text-danger">*</span></label>
                                 <input type="text" id="inputNombreElemento" name="nombre_elemento"
                                        class="form-control custom-input"
+                                       minlength="2" maxlength="100"
                                        placeholder="Ej: Balón de Fútbol, Aro de Básquet..." required>
+                                <small class="text-white-50 small">Entre 2 y 100 caracteres.</small>
                             </div>
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <label class="form-label fw-bold small">Cantidad <span class="text-danger">* (Mínimo 1)</span></label>
+                                    <label class="form-label fw-bold small">Cantidad <span class="text-danger">* (Mínimo 1, Máximo 9999)</span></label>
                                     <input type="number" id="inputCantidadTotal" name="cantidad_total"
-                                           class="form-control custom-input input-entero-estricto" required min="1" value="1" placeholder="Mínimo 1">
-                                    <small id="feedbackCantidadTotal" class="text-danger small mt-1 d-none">La cantidad debe ser como mínimo 1.</small>
+                                           class="form-control custom-input input-entero-estricto" required min="1" max="9999" value="1" placeholder="Mínimo 1">
+                                    <small id="feedbackCantidadTotal" class="text-danger small mt-1 d-none">La cantidad debe ser como mínimo 1 y máximo 9999.</small>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold small">Fecha Adquisición</label>
-                                <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion" class="form-control custom-input">
+                                <label class="form-label fw-bold small">Fecha Adquisición <span class="text-warning small">(Máx. 1 año atrás hasta hoy)</span></label>
+                                <input type="date" id="inputFechaAdquisicion" name="fecha_adquisicion" class="form-control custom-input" min="{{ fecha_min_adquisicion }}" max="{{ fecha_max_adquisicion }}">
+                                <small id="feedbackFechaAdquisicion" class="text-white-50 small mt-1 d-block">La fecha no puede ser futura y como máximo debe ser de 1 año atrás.</small>
                             </div>
                             <div class="form-check form-switch mb-3" id="containerHabilitado inv-u-26">
                                 <input class="form-check-input" type="checkbox" id="inputHabilitado" name="habilitado" checked>
@@ -688,7 +714,6 @@
                         <label class="form-label fw-bold small">Usuario Responsable</label>
                         <select id="inputUsuarioResponsable" name="usuario_responsable"
                                 class="form-select custom-input">
-                            {# CORREGIDO: quitado "required" porque es null=True, blank=True en el modelo #}
                             <option value="">-- Sin asignar --</option>
                             {% for u in usuarios_staff %}
                             <option value="{{ u.id }}">{{ u.get_full_name }} ({{ u.numero_documento }})</option>
@@ -701,7 +726,8 @@
                         <label class="form-label fw-bold small">Descripción</label>
                         <textarea id="inputDescripcion" name="descripcion"
                                   class="form-control custom-input" rows="3"
-                                  placeholder="Características, uso recomendado, observaciones..."></textarea>
+                                  maxlength="500"
+                                  placeholder="Características, uso recomendado, observaciones (máximo 500 caracteres)..."></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-warning w-100 fw-bold py-2 mt-2 shadow-lg">
@@ -790,7 +816,7 @@
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold small">Cantidad <span class="text-danger">* (Mínimo 1)</span></label>
                             <input type="number" name="cantidad_prestada" id="inputCantPrestamo"
-                                   class="form-control custom-input input-entero-estricto" min="1" value="1" required placeholder="Mínimo 1">
+                                   class="form-control custom-input input-entero-estricto" min="1" max="9999" value="1" required placeholder="Mínimo 1">
                             <small id="stockDisponible" class="text-info mt-1 d-block"></small>
                             <small id="feedbackCantPrestamo" class="text-danger small mt-1 d-none">La cantidad a prestar debe ser como mínimo 1.</small>
                         </div>
@@ -1029,17 +1055,64 @@ if (inputCantPrestamo) {
     });
 }
 
+const inputFechaAdq = document.getElementById('inputFechaAdquisicion');
+const hoy = new Date();
+const hoyStr = hoy.toISOString().split('T')[0];
+const unAnoAtras = new Date();
+unAnoAtras.setFullYear(unAnoAtras.getFullYear() - 1);
+const unAnoAtrasStr = unAnoAtras.toISOString().split('T')[0];
+
+if (inputFechaAdq) {
+    inputFechaAdq.min = unAnoAtrasStr;
+    inputFechaAdq.max = hoyStr;
+    
+    inputFechaAdq.addEventListener('change', function() {
+        const val = this.value;
+        const feedback = document.getElementById('feedbackFechaAdquisicion');
+        if (val) {
+            if (val > hoyStr) {
+                this.setCustomValidity("La fecha de adquisición no puede ser futura.");
+                if (feedback) { feedback.textContent = "Error: La fecha de adquisición no puede ser futura."; feedback.className = "text-danger small mt-1 d-block"; }
+            } else if (val < unAnoAtrasStr) {
+                this.setCustomValidity("La fecha de adquisición no puede ser anterior a 1 año atrás.");
+                if (feedback) { feedback.textContent = "Error: La fecha no puede ser anterior a 1 año atrás (" + unAnoAtrasStr + ")."; feedback.className = "text-danger small mt-1 d-block"; }
+            } else {
+                this.setCustomValidity("");
+                if (feedback) { feedback.textContent = "Fecha de adquisición válida (dentro del rango permitido)."; feedback.className = "text-success small mt-1 d-block"; }
+            }
+        }
+    });
+}
+
 const formElemento = document.getElementById('formElemento');
 if (formElemento) {
     formElemento.addEventListener('submit', function(e) {
         const val = parseInt(inputCantTotal.value, 10);
-        if (isNaN(val) || val < 1) {
+        if (isNaN(val) || val < 1 || val > 9999) {
             e.preventDefault();
             e.stopPropagation();
             inputCantTotal.classList.add('is-invalid');
             if (feedbackCantTotal) feedbackCantTotal.classList.remove('d-none');
             inputCantTotal.focus();
             if (window.resetSubmitButton) window.resetSubmitButton(formElemento);
+            return;
+        }
+
+        if (inputFechaAdq && inputFechaAdq.value) {
+            const fVal = inputFechaAdq.value;
+            if (fVal > hoyStr || fVal < unAnoAtrasStr) {
+                e.preventDefault();
+                e.stopPropagation();
+                inputFechaAdq.classList.add('is-invalid');
+                const feedback = document.getElementById('feedbackFechaAdquisicion');
+                if (feedback) {
+                    feedback.textContent = "Error: La fecha de adquisición debe estar entre " + unAnoAtrasStr + " y " + hoyStr + ".";
+                    feedback.className = "text-danger small mt-1 d-block";
+                }
+                inputFechaAdq.focus();
+                if (window.resetSubmitButton) window.resetSubmitButton(formElemento);
+                return;
+            }
         }
     });
 }

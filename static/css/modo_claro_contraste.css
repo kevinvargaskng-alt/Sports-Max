@@ -1,0 +1,104 @@
+/* ════════════════════════════════════════════════════════════════
+   SPORTS-MAX — Corrección de contraste en MODO CLARO
+   Se carga al final del <body> para tener la última palabra sobre
+   style.css, inicio_styles.css y los parciales (header, Tux, etc.).
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Encabezado (navbar) ───────────────────────────────────── */
+html.acc-claro body nav.navbar,
+html.acc-claro body nav.navbar .hdr-navbar-container {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+html.acc-claro body nav.navbar .navbar-brand-title,
+html.acc-claro body nav.navbar .navbar-brand-title span:not(.hdr-u-3) {
+    color: #0f172a !important;
+}
+html.acc-claro body nav.navbar .navbar-brand-title .hdr-u-3 {
+    color: #1a5fb4 !important;
+}
+html.acc-claro body nav.navbar .nav-pill-center {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+html.acc-claro body nav.navbar .nav-link,
+html.acc-claro body nav.navbar .nav-link i,
+html.acc-claro body nav.navbar .hdr-icon-btn,
+html.acc-claro body nav.navbar .hdr-icon-btn i,
+html.acc-claro body nav.navbar .navbar-toggler i {
+    color: #1e293b !important;
+}
+html.acc-claro body nav.navbar .nav-pill-center .nav-link.active,
+html.acc-claro body nav.navbar .nav-pill-center .nav-link.active i {
+    background: #1a5fb4 !important;
+    color: #ffffff !important;
+}
+html.acc-claro body nav.navbar .btn-profile,
+html.acc-claro body nav.navbar .btn-profile span {
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    background: #f8fafc !important;
+}
+html.acc-claro body nav.navbar .btn-ingresar-nav,
+html.acc-claro body nav.navbar .btn-ingresar-nav span,
+html.acc-claro body nav.navbar .btn-ingresar-nav i {
+    color: #ffffff !important;
+}
+
+/* ── 2. Asistente Tux (ventana de chat) ───────────────────────── */
+html.acc-claro .chat-window {
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --surface3: #e2e8f0;
+    --border: rgba(15, 23, 42, 0.14);
+    --text: #0f172a;
+    --muted: #475569;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+}
+html.acc-claro body .chat-window .header-name { color: #0f172a !important; }
+html.acc-claro body .chat-window .header-sub,
+html.acc-claro body .chat-window .date-div,
+html.acc-claro body .chat-window .btime { color: #475569 !important; }
+html.acc-claro body .chat-window .status-pill,
+html.acc-claro body .chat-window .status-pill * { color: #047857 !important; }
+html.acc-claro body .chat-window .chip { color: #1e293b !important; }
+html.acc-claro body .chat-window .chip:hover { color: #0060dd !important; }
+html.acc-claro body .chat-window .bubble.bot,
+html.acc-claro body .chat-window .bubble.bot * { color: #0f172a !important; }
+html.acc-claro body .chat-window .bubble.user,
+html.acc-claro body .chat-window .bubble.user * { color: #ffffff !important; }
+html.acc-claro body .chat-window .typing-label { color: #0060dd !important; }
+html.acc-claro body .chat-window .chat-input { color: #0f172a !important; }
+html.acc-claro body .chat-window .chat-input::placeholder { color: #64748b !important; }
+html.acc-claro body .chat-window svg { stroke: #334155; }
+html.acc-claro body .chat-window .attach-btn:hover { background: #cbd5e1; }
+html.acc-claro body .chat-window [class*="footer"],
+html.acc-claro body .chat-window [class*="footer"] * { color: #475569 !important; }
+
+/* ── 3. Zonas oscuras del inicio (hero y cintillo) ────────────── */
+html.acc-claro body .ticker-bar,
+html.acc-claro body .ticker-bar span,
+html.acc-claro body .ticker-bar b { color: #ffffff !important; }
+html.acc-claro body .hero .hero-title,
+html.acc-claro body .hero .hero-title span { color: #ffffff !important; }
+html.acc-claro body .hero .hero-sub,
+html.acc-claro body .hero .hero-eyebrow { color: rgba(255, 255, 255, 0.92) !important; }
+
+/* ── 4. Contenedores Bootstrap que quedaban oscuros ───────────── */
+html.acc-claro body .bg-dark:not(.badge):not(.btn) {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro body .card-header.bg-secondary,
+html.acc-claro body .bg-secondary:not(.badge):not(.btn) {
+    background-color: #e2e8f0 !important;
+}
+html.acc-claro body .text-light { color: #1e293b !important; }
+html.acc-claro body .border-secondary { border-color: #cbd5e1 !important; }
+html.acc-claro body .table > :not(caption) > * > * {
+    background-color: transparent;
+    color: #1e293b !important;
+}
+html.acc-claro body .modal-content .btn-close { filter: none !important; }
+

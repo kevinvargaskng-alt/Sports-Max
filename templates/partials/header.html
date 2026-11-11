@@ -88,90 +88,191 @@
         .btn-admin-usuarios span.btn-label { display: none; }
         .btn-admin-usuarios { padding: 6px 10px; }
     }
+
+    /* ─── Alineación estricta del Header / Navbar (Requerimiento 2) ─── */
+    .hdr-navbar-container {
+        min-height: 62px;
+        background: rgba(10, 14, 20, 0.96);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--neon-border, rgba(43, 125, 233, 0.25));
+    }
+    .navbar-brand-smax {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 10px;
+        margin-right: 0 !important;
+        padding: 4px 0;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1;
+    }
+    .navbar-brand-smax img {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+        flex-shrink: 0;
+        filter: drop-shadow(0 0 6px rgba(26, 95, 180, 0.45));
+    }
+    .navbar-brand-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        font-size: clamp(0.92rem, 1.4vw, 1.15rem);
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        color: #ffffff;
+        line-height: 1;
+    }
+    .navbar-brand-divider {
+        color: rgba(255, 255, 255, 0.35);
+        font-weight: 400;
+    }
+    .hdr-actions-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    .hdr-icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(255, 255, 255, 0.85);
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        position: relative;
+    }
+    .hdr-icon-btn:hover {
+        background: rgba(43, 125, 233, 0.2);
+        border-color: rgba(43, 125, 233, 0.5);
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+    .btn-ingresar-nav {
+        height: 38px !important;
+        padding: 0 20px !important;
+        border-radius: 50px !important;
+        background: linear-gradient(135deg, #1a5fb4, #2b7de9) !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
+        color: #ffffff !important;
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.4px;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px;
+        white-space: nowrap;
+        box-shadow: 0 4px 14px rgba(26, 95, 180, 0.35);
+        transition: all 0.2s ease;
+    }
+    .btn-ingresar-nav:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(43, 125, 233, 0.5);
+        color: #ffffff !important;
+    }
+
+    /* ─── Barra Superior de Posición Actual (Criterio 18) ─── */
+    .smax-position-bar {
+        background: rgba(10, 17, 36, 0.85);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(8px);
+        font-size: 0.78rem;
+        padding: 6px 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    .smax-position-bar .breadcrumb-link {
+        color: rgba(255, 255, 255, 0.65);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .smax-position-bar .breadcrumb-link:hover {
+        color: #38bdf8;
+    }
+    .smax-position-bar .breadcrumb-sep {
+        color: rgba(255, 255, 255, 0.3);
+        margin: 0 8px;
+        font-size: 0.68rem;
+    }
+    .smax-position-bar .breadcrumb-current {
+        color: #38bdf8;
+        font-weight: 700;
+    }
+    html.acc-claro .smax-position-bar,
+    body.light-theme .smax-position-bar {
+        background: #f1f5f9 !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+    html.acc-claro .smax-position-bar .breadcrumb-link,
+    body.light-theme .smax-position-bar .breadcrumb-link {
+        color: #475569 !important;
+    }
+    html.acc-claro .smax-position-bar .breadcrumb-current,
+    body.light-theme .smax-position-bar .breadcrumb-current {
+        color: #0284c7 !important;
+    }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark p-0 hdr-u-1">
-    <div class="container-fluid d-flex align-items-center px-3 px-md-4 py-2 hdr-u-2">
+    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-lg-nowrap px-3 px-md-4 py-2 hdr-navbar-container hdr-u-2">
         
-        <a class="navbar-brand d-flex align-items-center me-auto" href="{% url 'home' %}">
-            <img src="{% static 'img/logo_sports_max.png' %}" alt="Logo Sports-Max" width="38" height="38" loading="eager" decoding="async" class="me-2" style="height: 38px; width: 38px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(26, 95, 180, 0.4));">
-            <span class="fw-bold fs-6 fs-md-5 text-white">
-                Gestión 
-                <span class="hdr-u-3">Deportiva</span>
+        <!-- 1. MARCA Y LOGOTIPO (Izquierda) -->
+        <a class="navbar-brand navbar-brand-smax" href="{% url 'home' %}" title="Ir al inicio de Sports-Max">
+            <img src="{% static 'img/logo_sports_max.png' %}" alt="Logo Sports-Max" width="38" height="38" loading="eager" decoding="async">
+            <span class="navbar-brand-title">
+                <span>SPORTS-</span><span class="hdr-u-3">MAX</span>
             </span>
         </a>
 
-        {% if user.is_authenticated %}
-        <button class="navbar-toggler border-0 shadow-none p-0 ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <i class="fas fa-bars fs-3 text-white"></i>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            {% with url_name=request.resolver_match.url_name %}
-            <div class="nav-pill-center d-none d-lg-flex">
-                <a class="nav-link {% if url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
-                    <i class="fas fa-home"></i> Inicio
-                </a>
-                <a class="nav-link {% if url_name == 'interfichas' %}active{% endif %}" href="{% url 'interfichas' %}">
-                    <i class="fas fa-trophy"></i> Inter-Fichas
-                </a>
-                <a class="nav-link {% if url_name == 'gimnasio' %}active{% endif %}" href="{% url 'gimnasio' %}">
-                    <i class="fas fa-dumbbell"></i> Gimnasio
-                </a>
-                <a class="nav-link {% if url_name == 'inventario' %}active{% endif %}" href="{% url 'inventario' %}">
-                    <i class="fas fa-box"></i> Inventario
-                </a>
-                <a class="nav-link {% if url_name == 'inicio' and request.resolver_match.namespace == 'habitos' %}active{% endif %}" href="{% url 'habitos:inicio' %}">
-                    <i class="fas fa-heartbeat me-1"></i>
-                    Hábitos Saludables
-                </a>
-            </div>
-
-            <ul class="navbar-nav d-lg-none mt-3">
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'home' %}">Inicio</a></li>
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'interfichas' %}">Inter-Fichas</a></li>
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'gimnasio' %}">Gimnasio</a></li>
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-3 px-2" href="{% url 'inventario' %}">Inventario</a></li>
-                <li class="nav-item border-bottom border-secondary">
-                    <a class="nav-link py-3 px-2" href="{% url 'habitos:inicio' %}">
-                        <i class="fas fa-heartbeat me-1"></i>
-                        Hábitos Saludables
-                    </a>
-                </li>
-            </ul>
-            {% endwith %}
-        </div>
-        {% endif %}
-
-        <div class="ms-auto ps-3 d-flex align-items-center gap-2">
+        <!-- 2. BOTÓN Y CONTROLES DE ACCIÓN (Derecha en Desktop y Móvil) -->
+        <div class="hdr-actions-group order-lg-3 ms-auto ms-lg-0">
             <!-- SWITCH MODO CLARO / OSCURO -->
-            <button id="themeToggleBtn" title="Cambiar tema claro/oscuro"
-                    class="hdr-u-4">
+            <button id="themeToggleBtn"
+                    type="button"
+                    class="hdr-icon-btn hdr-u-4"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    data-bs-title="Cambiar tema claro / oscuro"
+                    aria-label="Cambiar tema de color">
                 <i class="fas fa-sun" id="themeIcon"></i>
             </button>
             
             {% if user.is_authenticated %}
             <!-- CAMPANITA DE NOTIFICACIONES -->
-            <button class="btn-campanita hdr-u-5" id="btnCampanita"
+            <button class="hdr-icon-btn btn-campanita hdr-u-5" id="btnCampanita"
+                    type="button"
                     data-bs-toggle="modal" data-bs-target="#modalNotificacionesSistema"
+                    data-bs-placement="bottom"
                     title="Notificaciones del sistema"
-                    aria-label="Notificaciones del sistema">
+                    aria-label="Ver notificaciones del sistema ({{ notificaciones_count }} pendientes)">
                 <i class="fas fa-bell"></i>
                 {% if notificaciones_count > 0 %}
                 <span id="puntoCampanita" class="hdr-u-6">{{ notificaciones_count }}</span>
                 {% endif %}
             </button>
             <div class="dropdown">
-                <a class="btn-profile dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                <a class="btn-profile dropdown-toggle d-inline-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-label="Menú de perfil de usuario" data-bs-placement="bottom" title="Opciones de cuenta" style="height: 38px; padding: 0 14px; border-radius: 50px;">
                     {% if user.foto_perfil %}
                         <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle hdr-u-7" style="object-fit: cover; object-position: {{ user.foto_posicion }};">
                     {% else %}
                         <div class="header-avatar-initials">{{ user.iniciales }}</div>
                     {% endif %}
-                    <span class="d-none d-md-inline">{{ user.first_name|default:user.username|upper }}</span>
+                    <span class="d-none d-md-inline fw-bold small">{{ user.first_name|default:user.username|upper }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow border-secondary">
                     <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-id-badge me-2"></i>Mi Perfil</a></li>
+                    {% if user.is_staff %}
+                    <li><a class="dropdown-item text-info" href="{% url 'gestionar_usuarios' %}"><i class="fas fa-users-cog me-2"></i>Usuarios y Copias de Seguridad</a></li>
+                    {% endif %}
                     <li><hr class="dropdown-divider border-secondary"></li>
                     <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                 </ul>
@@ -182,11 +283,85 @@
                     <span id="networkAlertText">Se perdió la conexión a internet</span>
                 </div>
             </div>
+            <!-- Botón Hamburguesa Móvil -->
+            <button class="navbar-toggler border-0 shadow-none p-1 ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Abrir menú de navegación" title="Menú de navegación">
+                <i class="fas fa-bars fs-4 text-white"></i>
+            </button>
             {% else %}
-            <button class="btn-ingresar btn-sm py-2 px-3" data-bs-toggle="modal" data-bs-target="#modalForm">
-                <i class="fas fa-sign-in-alt me-1"></i> <span class="d-none d-sm-inline">Ingresar</span>
+            <button type="button" class="btn-ingresar btn-ingresar-nav" data-bs-toggle="modal" data-bs-target="#modalForm">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Ingresar</span>
             </button>
             {% endif %}
         </div>
+
+        <!-- 3. PÍLDORA DE NAVEGACIÓN CENTRAL (Centro en Desktop, Colapsable en Móvil) -->
+        {% if user.is_authenticated %}
+        <div class="collapse navbar-collapse justify-content-center order-lg-2 w-100 w-lg-auto" id="navbarNav">
+            {% with url_name=request.resolver_match.url_name current_path=request.path %}
+            <div class="nav-pill-center d-none d-lg-flex mx-auto">
+                <a class="nav-link {% if url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                    <i class="fas fa-home"></i> Inicio
+                </a>
+                <a class="nav-link {% if url_name == 'interfichas' or '/interfichas/' in current_path %}active{% endif %}" href="{% url 'interfichas' %}">
+                    <i class="fas fa-trophy"></i> Inter-Fichas
+                </a>
+                <a class="nav-link {% if url_name == 'gimnasio' or '/gimnasio/' in current_path %}active{% endif %}" href="{% url 'gimnasio' %}">
+                    <i class="fas fa-dumbbell"></i> Gimnasio
+                </a>
+                <a class="nav-link {% if url_name == 'inventario' or '/inventario/' in current_path %}active{% endif %}" href="{% url 'inventario' %}">
+                    <i class="fas fa-box"></i> Inventario
+                </a>
+                <a class="nav-link {% if request.resolver_match.namespace == 'habitos' or '/habitos/' in current_path %}active{% endif %}" href="{% url 'habitos:inicio' %}">
+                    <i class="fas fa-heartbeat me-1"></i>
+                    Hábitos Saludables
+                </a>
+            </div>
+
+            <ul class="navbar-nav d-lg-none mt-3 pb-2">
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'home' %}"><i class="fas fa-home me-2"></i>Inicio</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'interfichas' %}"><i class="fas fa-trophy me-2"></i>Inter-Fichas</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'gimnasio' %}"><i class="fas fa-dumbbell me-2"></i>Gimnasio</a></li>
+                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'inventario' %}"><i class="fas fa-box me-2"></i>Inventario</a></li>
+                <li class="nav-item">
+                    <a class="nav-link py-2 px-2" href="{% url 'habitos:inicio' %}">
+                        <i class="fas fa-heartbeat me-2"></i>Hábitos Saludables
+                    </a>
+                </li>
+            </ul>
+            {% endwith %}
+        </div>
+        {% endif %}
+
     </div>
 </nav>
+
+<!-- ── Barra Superior de Aplicación y Posición Actual (Criterio 18) ── -->
+{% if nav_posicion %}
+<div class="smax-position-bar d-print-none" role="navigation" aria-label="Posición actual en la aplicación">
+    <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center flex-wrap">
+            <a href="{% url 'home' %}" class="breadcrumb-link fw-semibold" title="Ir a la página principal de Sports-Max">
+                <i class="fas fa-shield-alt text-info me-1"></i>{{ nav_posicion.app_nombre }}
+            </a>
+            <i class="fas fa-chevron-right breadcrumb-sep" aria-hidden="true"></i>
+            {% if nav_posicion.modulo %}
+                {% if nav_posicion.modulo_url %}
+                <a href="{{ nav_posicion.modulo_url }}" class="breadcrumb-link">{{ nav_posicion.modulo }}</a>
+                {% else %}
+                <span class="breadcrumb-link">{{ nav_posicion.modulo }}</span>
+                {% endif %}
+                <i class="fas fa-chevron-right breadcrumb-sep" aria-hidden="true"></i>
+            {% endif %}
+            <span class="breadcrumb-current" aria-current="page">
+                <i class="fas {{ nav_posicion.icono_actual }} me-1"></i>{{ nav_posicion.pagina_actual }}
+            </span>
+        </div>
+        {% if user.is_authenticated %}
+        <span class="text-white-50 d-none d-md-inline" style="font-size: 0.72rem;">
+            <i class="fas fa-map-marker-alt text-info me-1"></i>Posición actual: <strong class="text-white">{{ nav_posicion.pagina_actual }}</strong>
+        </span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

@@ -352,12 +352,43 @@
                             <input type="text" class="custom-input form-control border-0 text-white" value="{{ usuario.ficha|default:'N/A' }}" disabled>
                         </div>
                         <div class="col-md-6 text-start">
-                            <label class="form-label small fw-bold text-cap">Correo electrónico</label>
-                            <input type="email" name="email" class="custom-input form-control shadow-sm" value="{{ usuario.email }}" required>
+                            <label class="form-label small fw-bold text-cap">Correo electrónico <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="custom-input form-control shadow-sm" value="{{ usuario.email }}" minlength="6" maxlength="100" required placeholder="ejemplo@sena.edu.co">
+                            <small class="text-white-50 small">Formato institucional o personal válido.</small>
                         </div>
                         <div class="col-md-6 text-start">
-                            <label class="form-label small fw-bold text-cap">Número de teléfono</label>
-                            <input type="text" name="celular" class="custom-input form-control shadow-sm" value="{{ usuario.telefono|default:'' }}" placeholder="Ej: 3001234567">
+                            <label class="form-label small fw-bold text-cap">Número de teléfono celular</label>
+                            <input type="tel" name="celular" class="custom-input form-control shadow-sm" value="{{ usuario.telefono|default:'' }}" minlength="10" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 3001234567 (10 dígitos)">
+                            <small class="text-white-50 small">Solo dígitos numéricos (exactamente 10 dígitos).</small>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN SEGURIDAD / CAMBIO DE CONTRASEÑA -->
+                    <div class="mt-4 pt-3 border-top border-secondary">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-warning fw-bold small"><i class="fas fa-lock me-2"></i>Actualizar Contraseña (Opcional)</span>
+                            <button class="btn btn-sm btn-outline-warning py-0 px-2 small" type="button" data-bs-toggle="collapse" data-bs-target="#seccionPassword" aria-expanded="false">
+                                <i class="fas fa-key me-1"></i>Cambiar Contraseña
+                            </button>
+                        </div>
+                        <div class="collapse" id="seccionPassword">
+                            <div class="p-3 bg-dark rounded-3 border border-secondary mb-2">
+                                <p class="text-white-50 small mb-3">Si deseas cambiar tu contraseña, completa los 3 campos a continuación. Requiere mínimo 8 caracteres, al menos una mayúscula, un número y un símbolo.</p>
+                                <div class="row g-2">
+                                    <div class="col-12 text-start">
+                                        <label class="form-label small fw-bold text-white-50">Contraseña Actual <span class="text-warning">*</span></label>
+                                        <input type="password" name="password_actual" class="custom-input form-control shadow-sm" maxlength="128" placeholder="Ingresa tu contraseña actual">
+                                    </div>
+                                    <div class="col-md-6 text-start">
+                                        <label class="form-label small fw-bold text-white-50">Nueva Contraseña</label>
+                                        <input type="password" name="nuevo_password" class="custom-input form-control shadow-sm" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres">
+                                    </div>
+                                    <div class="col-md-6 text-start">
+                                        <label class="form-label small fw-bold text-white-50">Confirmar Nueva Contraseña</label>
+                                        <input type="password" name="confirmar_password" class="custom-input form-control shadow-sm" minlength="8" maxlength="128" placeholder="Repite la nueva contraseña">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

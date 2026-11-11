@@ -120,19 +120,19 @@
         <div class="row g-3 mb-3">
           <div class="col-6">
             <label class="form-label" for="inputPeso">Peso (kg)</label>
-            <input type="number" id="inputPeso" class="form-control form-control-glass"
-                   min="20" max="300" step="0.1" placeholder="70.0"
+            <input type="number" id="inputPeso" class="form-control form-control-glass input-peso"
+                   min="20" max="200" step="0.1" placeholder="70.0"
                    value="{{ ultimo_seguimiento.peso_kg|default:'' }}">
           </div>
           <div class="col-6">
             <label class="form-label" for="inputEstatura">Estatura (cm)</label>
-            <input type="number" id="inputEstatura" class="form-control form-control-glass"
-                   min="100" max="250" step="0.5" placeholder="170"
+            <input type="number" id="inputEstatura" class="form-control form-control-glass input-estatura"
+                   min="100" max="230" step="1" placeholder="170"
                    value="{{ ultimo_seguimiento.estatura_cm|default:'' }}">
           </div>
           <div class="col-6">
             <label class="form-label" for="inputEdad">Edad (años)</label>
-            <input type="number" id="inputEdad" class="form-control form-control-glass"
+            <input type="number" id="inputEdad" class="form-control form-control-glass input-edad"
                    min="10" max="120" placeholder="25">
           </div>
         </div>
@@ -168,7 +168,12 @@
       <!-- Panel de resultados -->
       <div id="resultPanel" class="result-panel">
         <div class="calc-card p-4 mb-3">
-          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">Índice de Masa Corporal</h2>
+          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+            Índice de Masa Corporal
+            <i class="fas fa-info-circle ms-1 text-success" tabindex="0" role="button" aria-label="Información sobre IMC"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               data-bs-title="Relación entre masa corporal y estatura (kg/m²) según la OMS para evaluar composición corporal."></i>
+          </h2>
 
           <!-- IMC número + categoría -->
           <div class="d-flex align-items-baseline gap-3 mb-3">
@@ -190,20 +195,35 @@
           <div class="col-6">
             <div class="kpi-box">
               <div class="kpi-val text-warning" id="kpiTMB">—</div>
-              <div class="kpi-label">TMB (kcal/día)</div>
+              <div class="kpi-label">
+                TMB (kcal/día)
+                <i class="fas fa-question-circle ms-1 text-warning" tabindex="0" role="button" aria-label="Información sobre Tasa Metabólica Basal"
+                   data-bs-toggle="tooltip" data-bs-placement="top"
+                   data-bs-title="Tasa Metabólica Basal: calorías mínimas necesarias para mantener las funciones vitales en reposo."></i>
+              </div>
             </div>
           </div>
           <div class="col-6">
             <div class="kpi-box">
               <div class="kpi-val text-success" id="kpiCalorias">—</div>
-              <div class="kpi-label">Calorías objetivo</div>
+              <div class="kpi-label">
+                Calorías objetivo
+                <i class="fas fa-question-circle ms-1 text-success" tabindex="0" role="button" aria-label="Información sobre Calorías Objetivo"
+                   data-bs-toggle="tooltip" data-bs-placement="top"
+                   data-bs-title="Gasto Energético Total: calorías recomendadas diarias ajustadas a tu factor de actividad física."></i>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Macros doughnut -->
         <div class="calc-card p-4">
-          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">Distribución de macros</h2>
+          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+            Distribución de macros
+            <i class="fas fa-info-circle ms-1 text-info" tabindex="0" role="button" aria-label="Información sobre macronutrientes"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               data-bs-title="Reparto equilibrado de macronutrientes: 30% Proteínas, 45% Carbohidratos y 25% Grasas saludables."></i>
+          </h2>
           <div class="row align-items-center">
             <div class="col-5">
               <canvas id="chartMacros" height="160"></canvas>
@@ -245,16 +265,65 @@
   const CSRF = '{{ csrf_token }}';
   let chartMacros = null;
 
+  // Prevenir signos y letras en inputs numéricos
+  ['inputPeso', 'inputEstatura', 'inputEdad'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('keydown', function (e) {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+    }
+  });
+
   document.getElementById('btnCalcular').addEventListener('click', async function () {
     const btn = this;
+    const errorEl = document.getElementById('calcError');
+    errorEl.classList.add('d-none');
+
+    const pesoVal = parseFloat(document.getElementById('inputPeso').value);
+    const estaturaVal = parseFloat(document.getElementById('inputEstatura').value);
+    const edadVal = parseInt(document.getElementById('inputEdad').value, 10);
+
+    const erroresCliente = [];
+    if (isNaN(pesoVal)) {
+      erroresCliente.push('Por favor ingresa tu peso.');
+    } else if (pesoVal <= 0) {
+      erroresCliente.push('El peso debe ser mayor a 0 kg (no se permiten valores de 0 o negativos).');
+    } else if (pesoVal < 20 || pesoVal > 200) {
+      erroresCliente.push('El peso debe estar entre 20 y 200 kg.');
+    }
+
+    if (isNaN(estaturaVal)) {
+      erroresCliente.push('Por favor ingresa tu estatura.');
+    } else if (estaturaVal <= 0) {
+      erroresCliente.push('La estatura debe ser mayor a 0 cm (no se permiten valores de 0 o negativos).');
+    } else if (estaturaVal < 100 || estaturaVal > 230) {
+      erroresCliente.push('La estatura debe estar entre 100 y 230 cm.');
+    }
+
+    if (isNaN(edadVal)) {
+      erroresCliente.push('Por favor ingresa tu edad.');
+    } else if (edadVal <= 0) {
+      erroresCliente.push('La edad debe ser mayor a 0 años (no se permiten valores de 0 o negativos).');
+    } else if (edadVal < 10 || edadVal > 120) {
+      erroresCliente.push('La edad debe estar entre 10 y 120 años.');
+    }
+
+    if (erroresCliente.length > 0) {
+      errorEl.textContent = erroresCliente.join(' ');
+      errorEl.classList.remove('d-none');
+      return;
+    }
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Calculando…';
-    document.getElementById('calcError').classList.add('d-none');
 
     const payload = {
-      peso_kg:        parseFloat(document.getElementById('inputPeso').value),
-      estatura_cm:    parseFloat(document.getElementById('inputEstatura').value),
-      edad:           parseInt(document.getElementById('inputEdad').value),
+      peso_kg:        pesoVal,
+      estatura_cm:    estaturaVal,
+      edad:           edadVal,
       genero:         document.querySelector('input[name="genero"]:checked').value,
       nivel_actividad: document.getElementById('selectActividad').value,
     };
@@ -268,16 +337,16 @@
       const data = await resp.json();
 
       if (!resp.ok) {
-        const errores = Array.isArray(data.error) ? data.error.join(' ') : (data.error || 'Error desconocido');
-        document.getElementById('calcError').textContent = errores;
-        document.getElementById('calcError').classList.remove('d-none');
+        const errores = Array.isArray(data.error) ? data.error.join(' ') : (data.error || 'Error al calcular los datos.');
+        errorEl.textContent = errores;
+        errorEl.classList.remove('d-none');
         return;
       }
 
       mostrarResultados(data);
     } catch (e) {
-      document.getElementById('calcError').textContent = 'Error de red. Verifica tu conexión.';
-      document.getElementById('calcError').classList.remove('d-none');
+      errorEl.textContent = 'Error de conexión. Intenta nuevamente.';
+      errorEl.classList.remove('d-none');
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-calculator me-2"></i>Calcular ahora';
