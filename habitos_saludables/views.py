@@ -484,22 +484,38 @@ def calcular_imc_api(request):
         data = request.POST.dict()
 
     try:
-        peso = float(data.get('peso_kg', 0))
-        estatura = float(data.get('estatura_cm', 0))
-        edad = int(data.get('edad', 0))
+        peso_raw = data.get('peso_kg')
+        estatura_raw = data.get('estatura_cm')
+        edad_raw = data.get('edad')
+
+        if peso_raw is None or peso_raw == '' or estatura_raw is None or estatura_raw == '' or edad_raw is None or edad_raw == '':
+            return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
+
+        peso = float(peso_raw)
+        estatura = float(estatura_raw)
+        edad = int(edad_raw)
         genero = data.get('genero', 'M')
         nivel_actividad = data.get('nivel_actividad', 'sedentario')
     except (TypeError, ValueError):
-        return JsonResponse({'error': 'Datos inválidos.'}, status=400)
+        return JsonResponse({'error': 'Los datos ingresados deben ser números válidos.'}, status=400)
 
-    # Validaciones de rango
+    # Validaciones específicas de cero, negativos y rangos
     errores = []
-    if not (20 <= peso <= 200):
+    if peso <= 0:
+        errores.append('El peso debe ser mayor a 0 kg (no se permiten valores de 0 o negativos).')
+    elif not (20 <= peso <= 200):
         errores.append('El peso debe estar entre 20 y 200 kg.')
-    if not (100 <= estatura <= 230):
+
+    if estatura <= 0:
+        errores.append('La estatura debe ser mayor a 0 cm (no se permiten valores de 0 o negativos).')
+    elif not (100 <= estatura <= 230):
         errores.append('La estatura debe estar entre 100 y 230 cm.')
-    if not (10 <= edad <= 120):
+
+    if edad <= 0:
+        errores.append('La edad debe ser mayor a 0 años (no se permiten valores de 0 o negativos).')
+    elif not (10 <= edad <= 120):
         errores.append('La edad debe estar entre 10 y 120 años.')
+
     if errores:
         return JsonResponse({'error': errores}, status=400)
 

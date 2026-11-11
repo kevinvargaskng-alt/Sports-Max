@@ -828,8 +828,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     this.reset();
-                    const fileNameSpan = document.getElementById('fileName');
-                    if (fileNameSpan) fileNameSpan.innerText = 'Seleccionar imagen desde su equipo...';
+                    if (typeof window.quitarImagenReporte === 'function') {
+                        window.quitarImagenReporte();
+                    } else {
+                        const fileNameSpan = document.getElementById('fileName');
+                        if (fileNameSpan) fileNameSpan.innerText = 'Seleccionar imagen desde su equipo...';
+                    }
 
                     // Opcional: Cerrar el modal después de un breve retraso
                     // const modalBuzon = bootstrap.Modal.getInstance(document.getElementById('modalBuzonSugerencias'));

@@ -373,15 +373,15 @@ canvas { width: 100% !important; max-height: 220px !important; }
             <div class="col-6">
               <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-ruler-vertical text-info"></i> ESTATURA</label>
               <div class="input-group input-group-sm">
-                <input type="number" id="inputAltura" class="form-control input-estatura" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm|floatformat:0 }}{% else %}170{% endif %}" placeholder="Ej. 170" min="100" max="230" oninput="calcularEstadoFisico()">
-                <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">cm</span>
+                <input type="number" id="inputAltura" class="form-control input-estatura" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo and ultimo.estatura_cm %}{{ ultimo.estatura_cm|floatformat:0 }}{% else %}170{% endif %}" placeholder="Ej. 170" min="100" max="230" step="1" autocomplete="off" oninput="calcularEstadoFisico()">
+                <span class="input-group-text" id="spanAltura" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">cm</span>
               </div>
             </div>
             <div class="col-6">
               <label class="small text-muted mb-1" style="font-weight: bold; color: rgba(255,255,255,0.8) !important;"><i class="fas fa-weight text-warning"></i> PESO</label>
               <div class="input-group input-group-sm">
-                <input type="number" step="0.1" id="inputPeso" class="form-control input-peso" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|floatformat:'-1' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" min="20" max="200" oninput="calcularEstadoFisico()">
-                <span class="input-group-text" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">kg</span>
+                <input type="number" step="0.1" id="inputPeso" class="form-control input-peso" style="background: var(--surface2); color: #fff; border: 1px solid var(--border); border-right: none;" value="{% if ultimo %}{{ ultimo.peso_kg|floatformat:'-1' }}{% else %}70{% endif %}" placeholder="Ej. 70.5" min="20" max="200" autocomplete="off" oninput="calcularEstadoFisico()">
+                <span class="input-group-text" id="spanPeso" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-left: none;">kg</span>
               </div>
             </div>
           </div>
@@ -740,93 +740,231 @@ canvas { width: 100% !important; max-height: 220px !important; }
   }
   updateWaterUI();
 
-  // 2. Calculadora de Estado Físico
+  // 2. Calculadora de Estado Físico Robusta y Segura
   function calcularEstadoFisico() {
     const alturaInput = document.getElementById('inputAltura');
     const pesoInput = document.getElementById('inputPeso');
-    if (!alturaInput || !pesoInput) return;
-
-    // Sanitizar estatura: solo números enteros, sin letras ni negativos, máximo 3 dígitos, máximo 230
-    let rawAltura = String(alturaInput.value || '').replace(/[^0-9]/g, '');
-    if (rawAltura.length > 3) rawAltura = rawAltura.slice(0, 3);
-    if (rawAltura !== '' && parseInt(rawAltura, 10) > 230) {
-      rawAltura = '230';
-    }
-    if (alturaInput.value !== rawAltura) {
-      alturaInput.value = rawAltura;
-    }
-
-    // Sanitizar peso: solo números positivos y punto decimal opcional, máx 3 dígitos enteros, máx 1 decimal, máximo 200
-    let rawPeso = String(pesoInput.value || '').replace(',', '.').replace(/[^0-9.]/g, '');
-    const partesPeso = rawPeso.split('.');
-    let intPeso = partesPeso[0] || '';
-    if (intPeso.length > 3) intPeso = intPeso.slice(0, 3);
-    if (intPeso !== '' && parseInt(intPeso, 10) > 200) {
-      intPeso = '200';
-      rawPeso = '200';
-    } else if (partesPeso.length > 1) {
-      const decPeso = partesPeso.slice(1).join('').slice(0, 1);
-      rawPeso = intPeso + '.' + decPeso;
-    } else {
-      rawPeso = intPeso;
-    }
-    if (pesoInput.value !== rawPeso) {
-      pesoInput.value = rawPeso;
-    }
-
-    const alturaCm = parseFloat(alturaInput.value);
-    const pesoKg = parseFloat(pesoInput.value);
-
+    const spanAltura = document.getElementById('spanAltura');
+    const spanPeso = document.getElementById('spanPeso');
     const valorImcEl = document.getElementById('valorIMC');
     const mensajeEl = document.getElementById('mensajeEstado');
 
-    if (alturaCm >= 50 && alturaCm <= 230 && pesoKg >= 15 && pesoKg <= 200) {
-      const alturaM = alturaCm / 100;
-      const imc = pesoKg / (alturaM * alturaM);
-      
-      valorImcEl.innerText = imc.toFixed(1);
+    if (!alturaInput || !pesoInput || !valorImcEl || !mensajeEl) return;
 
-      let categoria = '';
-      let color = '';
-      let bg = '';
-      let border = '';
-
-      if (imc < 18.5) {
-        categoria = 'Estás por debajo de tu peso ideal';
-        color = '#5c9eff';
-        bg = 'rgba(92,158,255,0.1)';
-        border = 'rgba(92,158,255,0.3)';
-      } else if (imc < 25) {
-        categoria = 'Te encuentras en tu peso ideal';
-        color = 'var(--teal)';
-        bg = 'rgba(32,201,151,0.1)';
-        border = 'rgba(32,201,151,0.3)';
-      } else if (imc < 30) {
-        categoria = 'Estás en sobrepeso';
-        color = '#ffc107';
-        bg = 'rgba(255,193,7,0.1)';
-        border = 'rgba(255,193,7,0.3)';
+    // Helper para actualizar bordes de inputs
+    function setInputStatus(input, span, isError) {
+      if (!input) return;
+      if (isError) {
+        input.style.borderColor = '#f87171';
+        if (span) span.style.borderColor = '#f87171';
       } else {
-        categoria = 'Estás en obesidad';
-        color = '#f87171';
-        bg = 'rgba(248,113,113,0.1)';
-        border = 'rgba(248,113,113,0.3)';
+        input.style.borderColor = 'var(--border)';
+        if (span) span.style.borderColor = 'var(--border)';
       }
-
-      mensajeEl.innerText = categoria;
-      mensajeEl.style.color = color;
-      mensajeEl.style.background = bg;
-      mensajeEl.style.borderColor = border;
-      valorImcEl.style.color = color;
-    } else {
-      valorImcEl.innerText = '--';
-      mensajeEl.innerText = 'Ingresa tus datos';
-      mensajeEl.style.color = 'var(--muted)';
-      mensajeEl.style.background = 'rgba(255,255,255,0.05)';
-      mensajeEl.style.borderColor = 'var(--border)';
-      valorImcEl.style.color = 'var(--muted)';
     }
+
+    // Helper para mostrar mensajes y actualizar el panel
+    function setFeedback(imcText, imcColor, msgHtml, msgColor, msgBg, msgBorder) {
+      valorImcEl.innerText = imcText;
+      valorImcEl.style.color = imcColor;
+      mensajeEl.innerHTML = msgHtml;
+      mensajeEl.style.color = msgColor;
+      mensajeEl.style.background = msgBg;
+      mensajeEl.style.borderColor = msgBorder;
+    }
+
+    // Sanitizar altura: números y un posible punto (ej: si escriben 1.70 m)
+    let valAltura = String(alturaInput.value || '').trim();
+    valAltura = valAltura.replace(',', '.').replace(/[^0-9.]/g, '');
+    const partesAltura = valAltura.split('.');
+    if (partesAltura.length > 2) {
+      valAltura = partesAltura[0] + '.' + partesAltura.slice(1).join('');
+    }
+    // Remover ceros a la izquierda innecesarios (ej. 0170 -> 170) sin romper '0' solitario ni '0.'
+    if (/^0[0-9]+/.test(valAltura)) {
+      valAltura = valAltura.replace(/^0+/, '');
+      if (valAltura === '') valAltura = '0';
+    }
+    if (alturaInput.value !== valAltura && valAltura !== '') {
+      alturaInput.value = valAltura;
+    }
+
+    // Sanitizar peso: números y máximo 1 punto decimal con 1 decimal
+    let valPeso = String(pesoInput.value || '').trim();
+    valPeso = valPeso.replace(',', '.').replace(/[^0-9.]/g, '');
+    const partesPeso = valPeso.split('.');
+    if (partesPeso.length > 2) {
+      valPeso = partesPeso[0] + '.' + partesPeso.slice(1).join('');
+    }
+    if (/^0[0-9]+/.test(valPeso)) {
+      valPeso = valPeso.replace(/^0+/, '');
+      if (valPeso === '') valPeso = '0';
+    }
+    if (pesoInput.value !== valPeso && valPeso !== '') {
+      pesoInput.value = valPeso;
+    }
+
+    const rawA = alturaInput.value.trim();
+    const rawP = pesoInput.value.trim();
+
+    // 1. Campos vacíos
+    if (rawA === '' && rawP === '') {
+      setInputStatus(alturaInput, spanAltura, false);
+      setInputStatus(pesoInput, spanPeso, false);
+      setFeedback('--', 'var(--muted)', '<i class="fas fa-info-circle me-1"></i> Ingresa tu estatura y peso para ver tu estado físico', 'var(--muted)', 'rgba(255,255,255,0.05)', 'var(--border)');
+      return;
+    }
+    if (rawA === '') {
+      setInputStatus(alturaInput, spanAltura, true);
+      setInputStatus(pesoInput, spanPeso, false);
+      setFeedback('--', 'var(--muted)', '<i class="fas fa-pencil-alt me-1"></i> Ingresa tu estatura en cm', '#ffc107', 'rgba(255,193,7,0.1)', 'rgba(255,193,7,0.3)');
+      return;
+    }
+    if (rawP === '') {
+      setInputStatus(alturaInput, spanAltura, false);
+      setInputStatus(pesoInput, spanPeso, true);
+      setFeedback('--', 'var(--muted)', '<i class="fas fa-pencil-alt me-1"></i> Ingresa tu peso en kg', '#ffc107', 'rgba(255,193,7,0.1)', 'rgba(255,193,7,0.3)');
+      return;
+    }
+
+    const alturaNum = parseFloat(rawA);
+    const pesoNum = parseFloat(rawP);
+
+    // 2. Control de valor 0 o no numérico
+    const esCeroAltura = isNaN(alturaNum) || alturaNum === 0;
+    const esCeroPeso = isNaN(pesoNum) || pesoNum === 0;
+
+    if (esCeroAltura && esCeroPeso) {
+      setInputStatus(alturaInput, spanAltura, true);
+      setInputStatus(pesoInput, spanPeso, true);
+      setFeedback('0.0', '#f87171', '<i class="fas fa-exclamation-triangle me-1"></i> La estatura y el peso no pueden ser 0', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+
+    if (esCeroAltura) {
+      setInputStatus(alturaInput, spanAltura, true);
+      setInputStatus(pesoInput, spanPeso, false);
+      setFeedback('0.0', '#f87171', '<i class="fas fa-exclamation-triangle me-1"></i> La estatura no puede ser 0 (mínimo 100 cm)', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+
+    if (esCeroPeso) {
+      setInputStatus(alturaInput, spanAltura, false);
+      setInputStatus(pesoInput, spanPeso, true);
+      setFeedback('0.0', '#f87171', '<i class="fas fa-exclamation-triangle me-1"></i> El peso no puede ser 0 (mínimo 20 kg)', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+
+    // 3. Control de números negativos
+    if (alturaNum < 0 || pesoNum < 0) {
+      setInputStatus(alturaInput, spanAltura, alturaNum < 0);
+      setInputStatus(pesoInput, spanPeso, pesoNum < 0);
+      setFeedback('--', '#f87171', '<i class="fas fa-ban me-1"></i> No se permiten valores negativos', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+
+    // 4. Detección si ingresaron metros (ej: 1.70 en vez de 170)
+    if (alturaNum > 0 && alturaNum <= 2.5) {
+      setInputStatus(alturaInput, spanAltura, true);
+      setInputStatus(pesoInput, spanPeso, false);
+      const sug = Math.round(alturaNum * 100);
+      setFeedback('--', '#ffc107', `<i class="fas fa-lightbulb me-1"></i> Ingresa en cm (ej: <strong>${sug}</strong> para ${alturaNum}m)`, '#ffc107', 'rgba(255,193,7,0.15)', 'rgba(255,193,7,0.4)');
+      return;
+    }
+
+    // 5. Validación de rangos biológicos estándar (100-230 cm, 20-200 kg)
+    if (alturaNum < 100) {
+      setInputStatus(alturaInput, spanAltura, true);
+      setInputStatus(pesoInput, spanPeso, false);
+      setFeedback('--', '#f87171', '<i class="fas fa-ruler-vertical me-1"></i> Estatura muy baja (mínimo 100 cm)', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+    if (alturaNum > 230) {
+      setInputStatus(alturaInput, spanAltura, true);
+      setInputStatus(pesoInput, spanPeso, false);
+      setFeedback('--', '#f87171', '<i class="fas fa-ruler-vertical me-1"></i> Estatura máxima permitida: 230 cm', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+
+    if (pesoNum < 20) {
+      setInputStatus(alturaInput, spanAltura, false);
+      setInputStatus(pesoInput, spanPeso, true);
+      setFeedback('--', '#f87171', '<i class="fas fa-weight me-1"></i> Peso muy bajo (mínimo 20 kg)', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+    if (pesoNum > 200) {
+      setInputStatus(alturaInput, spanAltura, false);
+      setInputStatus(pesoInput, spanPeso, true);
+      setFeedback('--', '#f87171', '<i class="fas fa-weight me-1"></i> Peso máximo permitido: 200 kg', '#f87171', 'rgba(248,113,113,0.15)', 'rgba(248,113,113,0.4)');
+      return;
+    }
+
+    // 6. Cálculo exacto de IMC
+    setInputStatus(alturaInput, spanAltura, false);
+    setInputStatus(pesoInput, spanPeso, false);
+
+    const alturaM = alturaNum / 100;
+    const imc = pesoNum / (alturaM * alturaM);
+
+    if (!isFinite(imc) || isNaN(imc) || imc <= 0) {
+      setFeedback('--', 'var(--muted)', '<i class="fas fa-exclamation-circle me-1"></i> Verifica los datos ingresados', 'var(--muted)', 'rgba(255,255,255,0.05)', 'var(--border)');
+      return;
+    }
+
+    const imcStr = imc.toFixed(1);
+
+    let categoria = '';
+    let color = '';
+    let bg = '';
+    let border = '';
+    let icon = '';
+
+    if (imc < 18.5) {
+      categoria = 'Estás por debajo de tu peso ideal';
+      color = '#5c9eff';
+      bg = 'rgba(92,158,255,0.12)';
+      border = 'rgba(92,158,255,0.35)';
+      icon = '<i class="fas fa-arrow-down me-1"></i>';
+    } else if (imc < 25) {
+      categoria = 'Te encuentras en tu peso ideal';
+      color = 'var(--teal)';
+      bg = 'rgba(32,201,151,0.12)';
+      border = 'rgba(32,201,151,0.35)';
+      icon = '<i class="fas fa-check-circle me-1"></i>';
+    } else if (imc < 30) {
+      categoria = 'Estás en sobrepeso';
+      color = '#ffc107';
+      bg = 'rgba(255,193,7,0.12)';
+      border = 'rgba(255,193,7,0.35)';
+      icon = '<i class="fas fa-exclamation-triangle me-1"></i>';
+    } else {
+      categoria = 'Estás en obesidad';
+      color = '#f87171';
+      bg = 'rgba(248,113,113,0.12)';
+      border = 'rgba(248,113,113,0.35)';
+      icon = '<i class="fas fa-heartbeat me-1"></i>';
+    }
+
+    setFeedback(imcStr, color, `${icon} ${categoria}`, color, bg, border);
   }
+
+  // Prevenir teclas inválidas en inputs numéricos y registrar eventos
+  (function initEstadoFisicoInputs() {
+    const alturaInput = document.getElementById('inputAltura');
+    const pesoInput = document.getElementById('inputPeso');
+
+    [alturaInput, pesoInput].forEach(function(inp) {
+      if (!inp) return;
+      inp.addEventListener('keydown', function(e) {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+      inp.addEventListener('input', calcularEstadoFisico);
+      inp.addEventListener('change', calcularEstadoFisico);
+    });
+  })();
+
   calcularEstadoFisico();
 
   // 3. Frases de Motivación

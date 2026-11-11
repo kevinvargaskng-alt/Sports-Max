@@ -265,16 +265,65 @@
   const CSRF = '{{ csrf_token }}';
   let chartMacros = null;
 
+  // Prevenir signos y letras en inputs numéricos
+  ['inputPeso', 'inputEstatura', 'inputEdad'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('keydown', function (e) {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+    }
+  });
+
   document.getElementById('btnCalcular').addEventListener('click', async function () {
     const btn = this;
+    const errorEl = document.getElementById('calcError');
+    errorEl.classList.add('d-none');
+
+    const pesoVal = parseFloat(document.getElementById('inputPeso').value);
+    const estaturaVal = parseFloat(document.getElementById('inputEstatura').value);
+    const edadVal = parseInt(document.getElementById('inputEdad').value, 10);
+
+    const erroresCliente = [];
+    if (isNaN(pesoVal)) {
+      erroresCliente.push('Por favor ingresa tu peso.');
+    } else if (pesoVal <= 0) {
+      erroresCliente.push('El peso debe ser mayor a 0 kg (no se permiten valores de 0 o negativos).');
+    } else if (pesoVal < 20 || pesoVal > 200) {
+      erroresCliente.push('El peso debe estar entre 20 y 200 kg.');
+    }
+
+    if (isNaN(estaturaVal)) {
+      erroresCliente.push('Por favor ingresa tu estatura.');
+    } else if (estaturaVal <= 0) {
+      erroresCliente.push('La estatura debe ser mayor a 0 cm (no se permiten valores de 0 o negativos).');
+    } else if (estaturaVal < 100 || estaturaVal > 230) {
+      erroresCliente.push('La estatura debe estar entre 100 y 230 cm.');
+    }
+
+    if (isNaN(edadVal)) {
+      erroresCliente.push('Por favor ingresa tu edad.');
+    } else if (edadVal <= 0) {
+      erroresCliente.push('La edad debe ser mayor a 0 años (no se permiten valores de 0 o negativos).');
+    } else if (edadVal < 10 || edadVal > 120) {
+      erroresCliente.push('La edad debe estar entre 10 y 120 años.');
+    }
+
+    if (erroresCliente.length > 0) {
+      errorEl.textContent = erroresCliente.join(' ');
+      errorEl.classList.remove('d-none');
+      return;
+    }
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Calculando…';
-    document.getElementById('calcError').classList.add('d-none');
 
     const payload = {
-      peso_kg:        parseFloat(document.getElementById('inputPeso').value),
-      estatura_cm:    parseFloat(document.getElementById('inputEstatura').value),
-      edad:           parseInt(document.getElementById('inputEdad').value),
+      peso_kg:        pesoVal,
+      estatura_cm:    estaturaVal,
+      edad:           edadVal,
       genero:         document.querySelector('input[name="genero"]:checked').value,
       nivel_actividad: document.getElementById('selectActividad').value,
     };
@@ -288,16 +337,16 @@
       const data = await resp.json();
 
       if (!resp.ok) {
-        const errores = Array.isArray(data.error) ? data.error.join(' ') : (data.error || 'Error desconocido');
-        document.getElementById('calcError').textContent = errores;
-        document.getElementById('calcError').classList.remove('d-none');
+        const errores = Array.isArray(data.error) ? data.error.join(' ') : (data.error || 'Error al calcular los datos.');
+        errorEl.textContent = errores;
+        errorEl.classList.remove('d-none');
         return;
       }
 
       mostrarResultados(data);
     } catch (e) {
-      document.getElementById('calcError').textContent = 'Error de red. Verifica tu conexión.';
-      document.getElementById('calcError').classList.remove('d-none');
+      errorEl.textContent = 'Error de conexión. Intenta nuevamente.';
+      errorEl.classList.remove('d-none');
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-calculator me-2"></i>Calcular ahora';
