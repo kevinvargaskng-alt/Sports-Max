@@ -168,7 +168,12 @@
       <!-- Panel de resultados -->
       <div id="resultPanel" class="result-panel">
         <div class="calc-card p-4 mb-3">
-          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">Índice de Masa Corporal</h2>
+          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+            Índice de Masa Corporal
+            <i class="fas fa-info-circle ms-1 text-success" tabindex="0" role="button" aria-label="Información sobre IMC"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               data-bs-title="Relación entre masa corporal y estatura (kg/m²) según la OMS para evaluar composición corporal."></i>
+          </h2>
 
           <!-- IMC número + categoría -->
           <div class="d-flex align-items-baseline gap-3 mb-3">
@@ -190,20 +195,35 @@
           <div class="col-6">
             <div class="kpi-box">
               <div class="kpi-val text-warning" id="kpiTMB">—</div>
-              <div class="kpi-label">TMB (kcal/día)</div>
+              <div class="kpi-label">
+                TMB (kcal/día)
+                <i class="fas fa-question-circle ms-1 text-warning" tabindex="0" role="button" aria-label="Información sobre Tasa Metabólica Basal"
+                   data-bs-toggle="tooltip" data-bs-placement="top"
+                   data-bs-title="Tasa Metabólica Basal: calorías mínimas necesarias para mantener las funciones vitales en reposo."></i>
+              </div>
             </div>
           </div>
           <div class="col-6">
             <div class="kpi-box">
               <div class="kpi-val text-success" id="kpiCalorias">—</div>
-              <div class="kpi-label">Calorías objetivo</div>
+              <div class="kpi-label">
+                Calorías objetivo
+                <i class="fas fa-question-circle ms-1 text-success" tabindex="0" role="button" aria-label="Información sobre Calorías Objetivo"
+                   data-bs-toggle="tooltip" data-bs-placement="top"
+                   data-bs-title="Gasto Energético Total: calorías recomendadas diarias ajustadas a tu factor de actividad física."></i>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Macros doughnut -->
         <div class="calc-card p-4">
-          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">Distribución de macros</h2>
+          <h2 class="h6 text-white-50 mb-3 text-uppercase" style="letter-spacing:.08em">
+            Distribución de macros
+            <i class="fas fa-info-circle ms-1 text-info" tabindex="0" role="button" aria-label="Información sobre macronutrientes"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               data-bs-title="Reparto equilibrado de macronutrientes: 30% Proteínas, 45% Carbohidratos y 25% Grasas saludables."></i>
+          </h2>
           <div class="row align-items-center">
             <div class="col-5">
               <canvas id="chartMacros" height="160"></canvas>

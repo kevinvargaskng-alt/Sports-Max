@@ -367,6 +367,11 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2 mt-3 pt-2 border-top torneo-u-9">
+                            {% if torneo.ha_iniciado or eq.edicion_bloqueada %}
+                            <button class="btn btn-sm btn-outline-secondary flex-fill fw-bold text-uppercase d-inline-flex align-items-center justify-content-center gap-1" disabled title="Edición bloqueada: El torneo ya ha iniciado o está en curso">
+                                <i class="fas fa-lock"></i> Bloqueado
+                            </button>
+                            {% else %}
                             <button class="btn btn-sm btn-outline-info flex-fill fw-bold text-uppercase torneo-u-10"
                                     onclick="abrirEditarEquipo('{{ eq.pk }}', '{{ eq.nombre_equipo|escapejs }}', '{{ eq.capitan|escapejs }}', '{{ eq.ficha|escapejs }}', '{{ eq.programa|escapejs }}', '{% if eq.planilla_inscripcion %}{{ eq.planilla_inscripcion.url|escapejs }}{% endif %}')">
                                 <i class="fas fa-edit me-1"></i>Editar
@@ -377,6 +382,7 @@
                                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                                 </button>
                             </form>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -677,16 +683,24 @@
                             <table class="tabla-posiciones">
                                 <thead>
                                     <tr>
-                                        <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th>
-                                        <th>PP</th>
+                                        <th scope="col" data-bs-toggle="tooltip" data-bs-title="Posición en la tabla">#</th>
+                                        <th scope="col">Equipo</th>
+                                        <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Partidos Jugados">PJ</th>
+                                        <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Partidos Ganados">PG</th>
+                                        <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Partidos Empatados">PE</th>
+                                        <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Partidos Perdidos">PP</th>
                                         {% if tipo_marcador == 'sets' %}
-                                            <th>SF</th><th>SC</th>
+                                            <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Sets a Favor">SF</th>
+                                            <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Sets en Contra">SC</th>
                                         {% elif tipo_marcador == 'puntos' %}
-                                            <th>PF</th><th>PC</th>
+                                            <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Puntos a Favor">PF</th>
+                                            <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Puntos en Contra">PC</th>
                                         {% else %}
-                                            <th>GF</th><th>GC</th>
+                                            <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Goles a Favor">GF</th>
+                                            <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Goles en Contra">GC</th>
                                         {% endif %}
-                                        <th>DIF</th><th>PTS</th>
+                                        <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Diferencia de Goles / Puntos">DIF</th>
+                                        <th scope="col" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Puntos Totales Acumulados">PTS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -793,6 +807,9 @@
                                         <small class="text-white-50">{{ partido.hora_partido|time:"H:i" }}</small>
                                         {% endif %}
                                         <button class="btn btn-sm {% if partido.jugado %}btn-outline-warning{% else %}btn-outline-success{% endif %} border-0 fw-bold"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                data-bs-title="{% if partido.jugado %}Modificar marcador y estadísticas del partido{% else %}Registrar resultado oficial del encuentro{% endif %}"
+                                                aria-label="{% if partido.jugado %}Editar resultado del partido{% else %}Registrar resultado del partido{% endif %}"
                                                 onclick="abrirModalResultado('{{ partido.id }}','{{ partido.equipo_local.nombre_equipo|escapejs }}','{{ partido.equipo_visitante.nombre_equipo|escapejs }}','{{ partido.fecha_partido|default:'' }}','{{ partido.hora_partido|default:'' }}', '{{ partido.tarjetas_amarillas_local|default:0 }}', '{{ partido.tarjetas_amarillas_visitante|default:0 }}', '{{ partido.tarjetas_rojas_local|default:0 }}', '{{ partido.tarjetas_rojas_visitante|default:0 }}', '{{ partido.tarjetas_azules_local|default:0 }}', '{{ partido.tarjetas_azules_visitante|default:0 }}', '{{ partido.detalles_sanciones|escapejs }}')">
                                             <i class="fas {% if partido.jugado %}fa-edit{% else %}fa-pencil-alt{% endif %} me-1"></i>
                                             {% if partido.jugado %}Editar{% else %}Registrar{% endif %}
@@ -801,10 +818,33 @@
                                     {% if partido.tarjetas_amarillas_local or partido.tarjetas_rojas_local or partido.tarjetas_azules_local or partido.detalles_sanciones %}
                                     <div class="mt-2 small text-white-50 border-top border-secondary pt-1 w-100 torneo-u-25">
                                         <span class="fw-bold text-white"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Sanciones:</span>
-                                        {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}<span class="badge bg-warning text-dark px-2 ms-1">🟨 {{ partido.tarjetas_amarillas_local }}-{{ partido.tarjetas_amarillas_visitante }}</span>{% endif %}
-                                        {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}<span class="badge bg-danger text-white px-2 ms-1">🟥 {{ partido.tarjetas_rojas_local }}-{{ partido.tarjetas_rojas_visitante }}</span>{% endif %}
-                                        {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}<span class="badge bg-primary text-white px-2 ms-1">🟦 {{ partido.tarjetas_azules_local }}-{{ partido.tarjetas_azules_visitante }}</span>{% endif %}
-                                        {% if partido.detalles_sanciones %}<span class="d-block mt-1 ms-1">"{{ partido.detalles_sanciones }}"</span>{% endif %}
+                                        {% if partido.tarjetas_amarillas_local or partido.tarjetas_amarillas_visitante %}
+                                            <span class="badge bg-warning text-dark px-2 ms-1" tabindex="0" role="status"
+                                                  data-bs-toggle="tooltip" data-bs-placement="top"
+                                                  data-bs-title="Tarjetas amarillas: {{ partido.tarjetas_amarillas_local }} {{ partido.equipo_local.nombre_equipo }} - {{ partido.tarjetas_amarillas_visitante }} {{ partido.equipo_visitante.nombre_equipo }}">
+                                                🟨 {{ partido.tarjetas_amarillas_local }}-{{ partido.tarjetas_amarillas_visitante }}
+                                            </span>
+                                        {% endif %}
+                                        {% if partido.tarjetas_rojas_local or partido.tarjetas_rojas_visitante %}
+                                            <span class="badge bg-danger text-white px-2 ms-1" tabindex="0" role="status"
+                                                  data-bs-toggle="tooltip" data-bs-placement="top"
+                                                  data-bs-title="Tarjetas rojas: {{ partido.tarjetas_rojas_local }} {{ partido.equipo_local.nombre_equipo }} - {{ partido.tarjetas_rojas_visitante }} {{ partido.equipo_visitante.nombre_equipo }}">
+                                                🟥 {{ partido.tarjetas_rojas_local }}-{{ partido.tarjetas_rojas_visitante }}
+                                            </span>
+                                        {% endif %}
+                                        {% if partido.tarjetas_azules_local or partido.tarjetas_azules_visitante %}
+                                            <span class="badge bg-primary text-white px-2 ms-1" tabindex="0" role="status"
+                                                  data-bs-toggle="tooltip" data-bs-placement="top"
+                                                  data-bs-title="Tarjetas azules: {{ partido.tarjetas_azules_local }} {{ partido.equipo_local.nombre_equipo }} - {{ partido.tarjetas_azules_visitante }} {{ partido.equipo_visitante.nombre_equipo }}">
+                                                🟦 {{ partido.tarjetas_azules_local }}-{{ partido.tarjetas_azules_visitante }}
+                                            </span>
+                                        {% endif %}
+                                        {% if partido.detalles_sanciones %}
+                                            <span class="d-block mt-1 ms-1 fst-italic" tabindex="0"
+                                                  data-bs-toggle="tooltip" data-bs-title="Detalles arbitrales: {{ partido.detalles_sanciones }}">
+                                                "{{ partido.detalles_sanciones|truncatechars:65 }}"
+                                            </span>
+                                        {% endif %}
                                     </div>
                                     {% endif %}
                                 </div>
@@ -1124,15 +1164,15 @@
                             </select>
                         </div>
                         {% endif %}
-                        <input type="text" name="nombre_equipo" id="edit-equipo-nombre" class="form-control bg-dark text-white border-secondary torneo-u-59" required placeholder="Nombre del equipo">
+                        <input type="text" name="nombre_equipo" id="edit-equipo-nombre" class="form-control bg-dark text-white border-secondary torneo-u-59" required minlength="2" maxlength="100" placeholder="Nombre del equipo">
                     </div>
                     <div class="mb-3">
                         <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-60">Capitán</label>
-                        <input type="text" name="capitan" id="edit-equipo-capitan" class="form-control bg-dark text-white border-secondary torneo-u-61" required>
+                        <input type="text" name="capitan" id="edit-equipo-capitan" class="form-control bg-dark text-white border-secondary torneo-u-61" required minlength="2" maxlength="100" placeholder="Nombre completo del capitán">
                     </div>
                     <div class="mb-3">
                         <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-62">Ficha del Capitán</label>
-                        <input type="text" name="ficha" id="edit-equipo-ficha" class="form-control bg-dark text-white border-secondary torneo-u-63" required>
+                        <input type="text" name="ficha" id="edit-equipo-ficha" class="form-control bg-dark text-white border-secondary torneo-u-63" required minlength="7" maxlength="7" pattern="[0-9]{7}" placeholder="Ej: 2826489">
                     </div>
                     <div class="mb-3">
                         <label class="form-label small text-white-50 fw-bold text-uppercase torneo-u-64">Programa</label>
@@ -1444,6 +1484,11 @@ function agregarSet() {
 //  MODAL EDITAR EQUIPO
 // ════════════════════════════════════════════════
 function abrirEditarEquipo(id, nombre, capitan, ficha, programa, planillaUrl) {
+    const torneoIniciado = {{ torneo.ha_iniciado|yesno:"true,false" }};
+    if (torneoIniciado) {
+        alert('Edición bloqueada: El torneo ya ha comenzado o se encuentra en curso.');
+        return;
+    }
     document.getElementById('edit-equipo-nombre').value   = nombre;
     document.getElementById('edit-equipo-capitan').value  = capitan;
     document.getElementById('edit-equipo-ficha').value    = ficha;

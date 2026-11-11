@@ -138,13 +138,17 @@
                             </td>
                             {% endif %}
                             <td data-label="Novedad / Tipo" class="fw-bold">{{ s.tipo_sancion }}</td>
-                            <td data-label="Descripción" class="text-white-50 small">
+                            <td data-label="Descripción" class="text-white-50 small" tabindex="0"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ s.descripcion_sancion }}">
                                 {{ s.descripcion_sancion|truncatechars:80 }}
                             </td>
                             <td data-label="Inicio">{{ s.fecha_inicio_sancion|date:"d/m/Y" }}</td>
                             <td data-label="Fin" class="text-warning">{{ s.fecha_fin_sancion|date:"d/m/Y" }}</td>
                             <td data-label="Estado">
-                                <span class="badge-status {% if s.estado_sancion == 'Activa' %}bg-danger{% else %}bg-success{% endif %}">
+                                <span class="badge-status {% if s.estado_sancion == 'Activa' %}bg-danger{% else %}bg-success{% endif %}"
+                                      tabindex="0" role="status"
+                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                      data-bs-title="{% if s.estado_sancion == 'Activa' %}Sanción activa: préstamos deportivos temporalmente restringidos{% else %}Sanción levantada: usuario sin impedimentos de préstamo{% endif %}">
                                     {% if s.estado_sancion == 'Activa' %}
                                         <i class="fas fa-circle me-1 sanc-u-1"></i>
                                     {% else %}
@@ -155,18 +159,33 @@
                             </td>
                             {% if user.is_staff %}
                             <td data-label="Acción" class="text-center">
-                                {% if s.estado_sancion == 'Activa' %}
-                                <form method="POST" class="sanc-u-2">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="accion"        value="cerrar_sancion">
-                                    <input type="hidden" name="codigo_sancion" value="{{ s.codigo_sancion }}">
-                                    <button type="submit" class="btn btn-outline-success btn-sm fw-bold" data-confirm="¿Cerrar esta sanción?" data-confirm-title="Cerrar Sanción" data-confirm-icon="warning" data-confirm-text="Cerrar">
-                                        <i class="fas fa-lock me-1"></i>Cerrar
+                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-outline-warning btn-sm fw-bold btn-editar-sancion"
+                                            title="Editar sanción"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Modificar motivo, vigencia o estado de la sanción"
+                                            data-codigo="{{ s.codigo_sancion }}"
+                                            data-usuario-id="{{ s.usuario.id }}"
+                                            data-tipo="{{ s.tipo_sancion }}"
+                                            data-inicio="{{ s.fecha_inicio_sancion|date:'Y-m-d' }}"
+                                            data-fin="{{ s.fecha_fin_sancion|date:'Y-m-d' }}"
+                                            data-estado="{{ s.estado_sancion }}"
+                                            data-descripcion="{{ s.descripcion_sancion }}">
+                                        <i class="fas fa-edit me-1"></i>Editar
                                     </button>
-                                </form>
-                                {% else %}
-                                <span class="text-white-50 small">Cerrada</span>
-                                {% endif %}
+                                    {% if s.estado_sancion == 'Activa' %}
+                                    <form method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="accion"        value="cerrar_sancion">
+                                        <input type="hidden" name="codigo_sancion" value="{{ s.codigo_sancion }}">
+                                        <button type="submit" class="btn btn-outline-success btn-sm fw-bold"
+                                                title="Cerrar sanción"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Dar por cumplida y levantar la sanción anticipadamente"
+                                                data-confirm="¿Cerrar esta sanción?" data-confirm-title="Cerrar Sanción" data-confirm-icon="warning" data-confirm-text="Cerrar">
+                                            <i class="fas fa-lock me-1"></i>Cerrar
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
                             </td>
                             {% endif %}
                         </tr>
@@ -213,7 +232,7 @@
                     <input type="hidden" name="accion" value="crear_sancion">
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Usuario a Sancionar</label>
+                        <label class="form-label fw-bold small">Usuario a Sancionar <span class="text-danger">*</span></label>
                         <select name="usuario_id" class="form-select custom-input" required>
                             <option value="" disabled selected>-- Seleccione un usuario --</option>
                             {% for u in usuarios %}
@@ -223,24 +242,34 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Tipo de Sanción</label>
+                        <label class="form-label fw-bold small">Motivo / Tipo de Sanción <span class="text-danger">*</span></label>
                         <input type="text" name="tipo_sancion" class="form-control custom-input"
-                               placeholder="Ej: Pérdida de balón" required>
+                               minlength="3" maxlength="100"
+                               placeholder="Ej: Pérdida o daño de elemento deportivo" required>
+                        <small class="text-white-50 small">Entre 3 y 100 caracteres.</small>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label fw-bold small">Fecha Inicio</label>
+                            <label class="form-label fw-bold small">Fecha Inicio <span class="text-danger">*</span></label>
                             <input type="date" name="fecha_inicio_sancion" class="form-control custom-input" required>
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label fw-bold small">Fecha Fin</label>
+                            <label class="form-label fw-bold small">Fecha Fin <span class="text-danger">*</span></label>
                             <input type="date" name="fecha_fin_sancion" class="form-control custom-input" required>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Descripción</label>
-                        <textarea name="descripcion_sancion" class="form-control custom-input" rows="4"
-                                  placeholder="Detalla el motivo y las condiciones de la sanción..."></textarea>
+                        <label class="form-label fw-bold small">Estado Inicial</label>
+                        <select name="estado_sancion" class="form-select custom-input">
+                            <option value="Activa" selected>Activa</option>
+                            <option value="Cerrada">Cerrada</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Descripción del Motivo</label>
+                        <textarea name="descripcion_sancion" class="form-control custom-input" rows="3"
+                                  maxlength="500"
+                                  placeholder="Detalla el motivo y las condiciones de la sanción (máx. 500 caracteres)..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2">
                         <i class="fas fa-save me-2"></i>CREAR SANCIÓN
@@ -250,6 +279,87 @@
         </div>
     </div>
 </div>
+
+<!-- ══════════════════════════════════════════
+     MODAL EDITAR SANCIÓN (solo staff)
+══════════════════════════════════════════ -->
+<div class="modal fade" id="modalEditarSancion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal text-white">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-warning">
+                    <i class="fas fa-edit me-2"></i>Modificar Sanción
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-start">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="editar_sancion">
+                    <input type="hidden" name="codigo_sancion" id="editCodigoSancion">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Usuario Sancionado</label>
+                        <select name="usuario_id" id="editUsuarioId" class="form-select custom-input" required>
+                            {% for u in usuarios %}
+                            <option value="{{ u.id }}">{{ u.get_full_name }} ({{ u.numero_documento }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Motivo / Tipo de Sanción <span class="text-danger">*</span></label>
+                        <input type="text" name="tipo_sancion" id="editTipoSancion" class="form-control custom-input"
+                               minlength="3" maxlength="100" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Fecha Inicio</label>
+                            <input type="date" name="fecha_inicio_sancion" id="editInicioSancion" class="form-control custom-input" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold small">Fecha Fin</label>
+                            <input type="date" name="fecha_fin_sancion" id="editFinSancion" class="form-control custom-input" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Estado de la Sanción</label>
+                        <select name="estado_sancion" id="editEstadoSancion" class="form-select custom-input">
+                            <option value="Activa">Activa</option>
+                            <option value="Cerrada">Cerrada</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Descripción</label>
+                        <textarea name="descripcion_sancion" id="editDescripcionSancion" class="form-control custom-input" rows="3"
+                                  maxlength="500"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 mt-2">
+                        <i class="fas fa-save me-2"></i>ACTUALIZAR SANCIÓN
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.btn-editar-sancion').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('editCodigoSancion').value = this.dataset.codigo;
+            document.getElementById('editUsuarioId').value = this.dataset.usuarioId;
+            document.getElementById('editTipoSancion').value = this.dataset.tipo;
+            document.getElementById('editInicioSancion').value = this.dataset.inicio;
+            document.getElementById('editFinSancion').value = this.dataset.fin;
+            document.getElementById('editEstadoSancion').value = this.dataset.estado;
+            document.getElementById('editDescripcionSancion').value = this.dataset.descripcion || '';
+
+            new bootstrap.Modal(document.getElementById('modalEditarSancion')).show();
+        });
+    });
+});
+</script>
 {% endif %}
 
 {% endblock %}

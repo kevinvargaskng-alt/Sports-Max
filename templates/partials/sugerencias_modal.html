@@ -32,7 +32,7 @@
 
                             <div class="mt-3">
                                 <label class="form-label fw-bold text-white-50">Descripción del fallo</label>
-                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe detalladamente el error que encontraste..." required></textarea>
+                                <textarea name="comentario" rows="5" class="form-control" placeholder="Describe detalladamente el error que encontraste..." required minlength="10" maxlength="2000"></textarea>
                             </div>
 
                             <div class="mt-3">
@@ -149,7 +149,7 @@
                 <div class="modal-body">
                     <div class="mb-3 text-start">
                         <label class="form-label small fw-bold text-white-50">Nuevo comentario</label>
-                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control sug-u-4" required></textarea>
+                        <textarea name="comentario" id="inputEditComentario" rows="4" class="form-control sug-u-4" required minlength="10" maxlength="2000"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0">

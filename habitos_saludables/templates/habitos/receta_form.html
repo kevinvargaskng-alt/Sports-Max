@@ -16,7 +16,7 @@
         <div class="col-12">
           <label class="form-label text-white-50 small" for="id_titulo">Título *</label>
           <input type="text" name="titulo" id="id_titulo" class="form-control"
-                 value="{{ receta.titulo|default:'' }}" required placeholder="Ej: Ensalada de quinoa con aguacate">
+                 value="{{ receta.titulo|default:'' }}" required minlength="2" maxlength="150" placeholder="Ej: Ensalada de quinoa con aguacate">
         </div>
         <div class="col-md-6">
           <label class="form-label text-white-50 small" for="id_categoria">Categoría *</label>
@@ -36,46 +36,46 @@
         </div>
         <div class="col-12">
           <label class="form-label text-white-50 small" for="id_descripcion">Descripción breve *</label>
-          <textarea name="descripcion" id="id_descripcion" class="form-control" rows="2" required>{{ receta.descripcion|default:'' }}</textarea>
+          <textarea name="descripcion" id="id_descripcion" class="form-control" rows="2" required minlength="5" maxlength="500">{{ receta.descripcion|default:'' }}</textarea>
         </div>
         <div class="col-12">
           <label class="form-label text-white-50 small" for="id_ingredientes">Ingredientes (uno por línea) *</label>
-          <textarea name="ingredientes" id="id_ingredientes" class="form-control" rows="6" required
+          <textarea name="ingredientes" id="id_ingredientes" class="form-control" rows="6" required minlength="5" maxlength="2000"
                     placeholder="1 taza de quinoa&#10;1 aguacate maduro&#10;Jugo de 1 limón">{{ receta.ingredientes|default:'' }}</textarea>
         </div>
         <div class="col-12">
           <label class="form-label text-white-50 small" for="id_preparacion">Pasos de preparación (uno por línea) *</label>
-          <textarea name="preparacion" id="id_preparacion" class="form-control" rows="6" required
+          <textarea name="preparacion" id="id_preparacion" class="form-control" rows="6" required minlength="5" maxlength="3000"
                     placeholder="Cocinar la quinoa con el doble de agua...&#10;Cortar el aguacate en cubos...">{{ receta.preparacion|default:'' }}</textarea>
         </div>
         <div class="col-md-4">
           <label class="form-label text-white-50 small" for="id_tiempo">Tiempo de prep. (min) *</label>
           <input type="number" name="tiempo_preparacion_min" id="id_tiempo" class="form-control"
-                 min="1" value="{{ receta.tiempo_preparacion_min|default:30 }}">
+                 min="1" max="1440" value="{{ receta.tiempo_preparacion_min|default:30 }}">
         </div>
         <div class="col-md-4">
           <label class="form-label text-white-50 small" for="id_porciones">Porciones</label>
           <input type="number" name="porciones" id="id_porciones" class="form-control"
-                 min="1" value="{{ receta.porciones|default:1 }}">
+                 min="1" max="100" value="{{ receta.porciones|default:1 }}">
         </div>
         <div class="col-md-4">
           <label class="form-label text-white-50 small" for="id_calorias">Calorías/porción</label>
           <input type="number" name="calorias_por_porcion" id="id_calorias" class="form-control"
-                 min="0" value="{{ receta.calorias_por_porcion|default:'' }}" placeholder="Opcional">
+                 min="0" max="10000" value="{{ receta.calorias_por_porcion|default:'' }}" placeholder="Opcional">
         </div>
         <div class="col-md-4">
           <label class="form-label text-white-50 small" for="id_proteinas">Proteínas (g)</label>
-          <input type="number" name="proteinas_g" id="id_proteinas" class="form-control" step="0.1" min="0"
+          <input type="number" name="proteinas_g" id="id_proteinas" class="form-control" step="0.1" min="0" max="500"
                  value="{{ receta.proteinas_g|default:'' }}" placeholder="Opcional">
         </div>
         <div class="col-md-4">
           <label class="form-label text-white-50 small" for="id_carbos">Carbohidratos (g)</label>
-          <input type="number" name="carbohidratos_g" id="id_carbos" class="form-control" step="0.1" min="0"
+          <input type="number" name="carbohidratos_g" id="id_carbos" class="form-control" step="0.1" min="0" max="1000"
                  value="{{ receta.carbohidratos_g|default:'' }}" placeholder="Opcional">
         </div>
         <div class="col-md-4">
           <label class="form-label text-white-50 small" for="id_grasas">Grasas (g)</label>
-          <input type="number" name="grasas_g" id="id_grasas" class="form-control" step="0.1" min="0"
+          <input type="number" name="grasas_g" id="id_grasas" class="form-control" step="0.1" min="0" max="500"
                  value="{{ receta.grasas_g|default:'' }}" placeholder="Opcional">
         </div>
         <div class="col-12">

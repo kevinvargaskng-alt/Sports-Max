@@ -47,6 +47,38 @@ class TorneoInterfichas(models.Model):
     def __str__(self):
         return f"{self.nombre_torneo} ({self.disciplina})"
 
+    def ha_iniciado(self):
+        """
+        Retorna True si el torneo ya ha iniciado o su fecha/hora ya transcurrió:
+        1. Estado en curso, iniciado, cerrado o finalizado.
+        2. Ya existen partidos jugados en el torneo.
+        3. La fecha y hora de inicio del torneo ya transcurrió.
+        """
+        estado_normalizado = (self.estado or '').strip().lower()
+        if estado_normalizado in ['en curso', 'en_curso', 'iniciado', 'iniciada', 'cerrado', 'finalizado']:
+            return True
+
+        if hasattr(self, 'partidos') and self.partidos.filter(jugado=True).exists():
+            return True
+
+        from django.utils import timezone
+        from datetime import datetime, time
+        hoy = timezone.localdate()
+        if self.fecha_torneo_fichas < hoy:
+            return True
+        elif self.fecha_torneo_fichas == hoy:
+            hora = self.horario_torneo_fichas
+            if not isinstance(hora, time):
+                try:
+                    hora = datetime.strptime(str(hora)[:5], '%H:%M').time()
+                except Exception:
+                    hora = time(8, 0)
+            ahora = timezone.localtime(timezone.now()).time()
+            if ahora >= hora:
+                return True
+
+        return False
+
     @property
     def id(self):
         return self.pk
@@ -66,12 +98,6 @@ class EquipoInterfichas(models.Model):
     ficha = models.IntegerField()
     programa = models.CharField(max_length=150)
     nombre_equipo = models.CharField(max_length=100)
-    escudo = models.ImageField(
-        upload_to='escudos_equipos/',
-        null=True,
-        blank=True,
-        verbose_name='Escudo del equipo'
-    )
     capitan = models.CharField(max_length=100)
     torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='equipos'
@@ -91,6 +117,13 @@ class EquipoInterfichas(models.Model):
 
     def __str__(self):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
+
+    @property
+    def edicion_bloqueada(self):
+        """Retorna True si el torneo al que pertenece el equipo ya ha iniciado."""
+        if self.torneo:
+            return self.torneo.ha_iniciado()
+        return False
 
     @property
     def id(self):

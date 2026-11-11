@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reporte de Gimnasio y Asistencia — Sports-Max{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rep-filter-card {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(43, 125, 233, 0.25);
+        border-radius: 16px;
+        padding: 22px;
+        backdrop-filter: blur(12px);
+    }
+    .rep-kpi-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 18px 20px;
+        height: 100%;
+    }
+    .rep-kpi-num {
+        font-size: 1.9rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    .rep-period-btn {
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 6px 16px;
+    }
+    .peak-bar-wrap {
+        background: rgba(255, 255, 255, 0.06);
+        height: 10px;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .peak-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #1a5fb4, #38bdf8);
+    }
+    .peak-bar-fill.is-max {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+    @media print {
+        .no-print, .smax-position-bar, .navbar, footer, #acc-toggle, #help-toggle {
+            display: none !important;
+        }
+        body, .main-container, .sport-card {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container py-4">
+    <div class="container-fluid px-3 px-md-4">
+
+        <!-- ENCABEZADO -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="no-print">
+                    {% include 'partials/back_button.html' with back_url='gimnasio' back_label='Volver a Gimnasio' %}
+                </div>
+                <div>
+                    <h3 class="fw-bold text-white mb-0">
+                        <i class="fas fa-dumbbell text-warning me-2"></i>Reporte de Ingresos y Reservas — Gimnasio SENA
+                    </h3>
+                    <p class="text-white-50 small mb-0">
+                        Control de aforo, estadísticas de asistencia por ficha, programa de formación y picos horarios
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap no-print">
+                <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-success btn-sm fw-bold px-3 py-2 rounded-pill">
+                    <i class="fas fa-file-excel me-1"></i> Exportar Excel (CSV)
+                </a>
+                <button type="button" onclick="window.print()" class="btn btn-outline-info btn-sm fw-bold px-3 py-2 rounded-pill">
+                    <i class="fas fa-file-pdf me-1"></i> Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- MÉTRICAS CLAVE EN PANTALLA -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Total de Ingresos en el Periodo</div>
+                    <div class="rep-kpi-num text-info mt-1">{{ metricas.total_ingresos }}</div>
+                    <small class="text-white-50">Registros de asistencia contabilizados</small>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Aprendices / Usuarios Únicos</div>
+                    <div class="rep-kpi-num text-success mt-1">{{ metricas.aprendices_unicos }}</div>
+                    <small class="text-white-50">Personas distintas atendidas</small>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="rep-kpi-card">
+                    <div class="text-white-50 small text-uppercase fw-bold">Pico Máximo de Asistencia</div>
+                    <div class="rep-kpi-num text-warning mt-1" style="font-size: 1.5rem;">
+                        <i class="fas fa-fire me-1"></i>{{ metricas.hora_pico_principal }}
+                    </div>
+                    <small class="text-white-50">{{ metricas.max_ingresos_hora }} ingreso(s) en esta franja horaria</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISTRIBUCIÓN DE PICOS DE ASISTENCIA POR HORARIO -->
+        {% if metricas.picos_horarios %}
+        <div class="sport-card mb-4">
+            <h6 class="fw-bold text-white text-uppercase small mb-3">
+                <i class="fas fa-clock text-warning me-2"></i>Picos de Asistencia por Franja Horaria
+            </h6>
+            <div class="row g-3">
+                {% for item in metricas.picos_horarios %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                            <span class="fw-bold {% if item.es_pico %}text-warning{% else %}text-white{% endif %}">
+                                {{ item.franja }}
+                                {% if item.es_pico %}<span class="badge bg-warning text-dark ms-1">Hora Pico</span>{% endif %}
+                            </span>
+                            <span class="text-info fw-semibold">{{ item.cantidad }} ingreso(s)</span>
+                        </div>
+                        <div class="peak-bar-wrap">
+                            <div class="peak-bar-fill {% if item.es_pico %}is-max{% endif %}" style="width: {{ item.porcentaje }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- FORMULARIO DE FILTROS -->
+        <form method="GET" action="{% url 'reporte_gimnasio' %}" class="rep-filter-card mb-4 no-print" id="formReporteGym">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-25">
+                <span class="text-white fw-bold small text-uppercase">
+                    <i class="fas fa-calendar-alt text-info me-2"></i>Periodo de visualización:
+                </span>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '7d' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodoGym('7d')">
+                        Últimos 7 días
+                    </button>
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '30d' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodoGym('30d')">
+                        Últimos 30 días
+                    </button>
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'todos' or not filtros.periodo %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodoGym('todos')">
+                        Todos los registros
+                    </button>
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'rango' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodoGym('rango')">
+                        Rango personalizado
+                    </button>
+                </div>
+                <input type="hidden" name="periodo" id="inputPeriodoGym" value="{{ filtros.periodo|default:'todos' }}">
+            </div>
+
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-sm-6 col-md-2 rango-gym-group" {% if filtros.periodo != 'rango' %}style="display:none;"{% endif %}>
+                    <label class="form-label small text-white-50 fw-semibold">Desde</label>
+                    <input type="date" name="fecha_inicio" value="{{ filtros.fecha_inicio }}" class="form-control form-control-sm custom-input" onchange="document.getElementById('inputPeriodoGym').value='rango'">
+                </div>
+                <div class="col-12 col-sm-6 col-md-2 rango-gym-group" {% if filtros.periodo != 'rango' %}style="display:none;"{% endif %}>
+                    <label class="form-label small text-white-50 fw-semibold">Hasta</label>
+                    <input type="date" name="fecha_fin" value="{{ filtros.fecha_fin }}" class="form-control form-control-sm custom-input" onchange="document.getElementById('inputPeriodoGym').value='rango'">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="form-label small text-white-50 fw-semibold">Número de Ficha SENA</label>
+                    <input type="text" name="ficha" value="{{ filtros.ficha }}" class="form-control form-control-sm custom-input" placeholder="Ej: 2670006">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="form-label small text-white-50 fw-semibold">Programa de Formación</label>
+                    <select name="programa" class="form-select form-select-sm custom-input">
+                        <option value="">Todos los programas</option>
+                        {% for code, label in programas_choices %}
+                        <option value="{{ code }}" {% if filtros.programa == code %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label small text-white-50 fw-semibold">Documento o Aprendiz</label>
+                    <input type="text" name="documento" value="{{ filtros.documento }}" class="form-control form-control-sm custom-input" placeholder="Cédula o nombre...">
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                    <a href="{% url 'reporte_gimnasio' %}" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="fas fa-eraser me-1"></i> Limpiar
+                    </a>
+                    <button type="submit" class="btn btn-info btn-sm fw-bold text-dark px-4">
+                        <i class="fas fa-filter me-1"></i> Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- TABLA DE REGISTROS DE ASISTENCIA -->
+        <div class="sport-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="text-uppercase small text-white-50">
+                            <th class="ps-4">Registro</th>
+                            <th>Aprendiz</th>
+                            <th>Documento</th>
+                            <th>Ficha SENA</th>
+                            <th>Programa de Formación</th>
+                            <th>Fecha</th>
+                            <th>Horario</th>
+                            <th class="text-center pe-4">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in page_obj %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-info">#{{ r.codigo_registro }}</td>
+                            <td class="fw-bold text-white">{{ r.usuario_solicitante.get_full_name|default:r.usuario_solicitante.username|title }}</td>
+                            <td>{{ r.usuario_solicitante.numero_documento }}</td>
+                            <td>
+                                {% if r.usuario_solicitante.ficha %}
+                                <span class="badge bg-dark border border-info text-info">{{ r.usuario_solicitante.ficha }}</span>
+                                {% else %}
+                                <span class="text-white-50 small">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td class="small text-white-50">{{ r.usuario_solicitante.get_programa_formacion_display|default:r.usuario_solicitante.programa_formacion }}</td>
+                            <td>{{ r.fecha_entrada|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="text-warning fw-semibold">{{ r.hora_entrada|time:"H:i" }}</span>
+                                – {{ r.hora_salida|time:"H:i" }}
+                            </td>
+                            <td class="text-center pe-4">
+                                <span class="badge {% if r.estado == 'Activa' %}bg-success{% else %}bg-secondary{% endif %}">{{ r.estado }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-white-50">
+                                <i class="fas fa-dumbbell fa-3x mb-3 d-block opacity-50"></i>
+                                No se encontraron registros de ingreso con los filtros seleccionados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="px-4 py-3 border-top border-secondary d-flex flex-wrap justify-content-between align-items-center gap-2 no-print">
+                <span class="text-white-50 small">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} ({{ metricas.total_ingresos }} ingresos)
+                </span>
+                <nav aria-label="Paginación de reporte de gimnasio">
+                    <ul class="pagination pagination-sm mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&periodo={{ filtros.periodo }}&fecha_inicio={{ filtros.fecha_inicio }}&fecha_fin={{ filtros.fecha_fin }}&ficha={{ filtros.ficha }}&programa={{ filtros.programa }}&documento={{ filtros.documento }}">Anterior</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&periodo={{ filtros.periodo }}&fecha_inicio={{ filtros.fecha_inicio }}&fecha_fin={{ filtros.fecha_fin }}&ficha={{ filtros.ficha }}&programa={{ filtros.programa }}&documento={{ filtros.documento }}">Siguiente</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+function setPeriodoGym(valor) {
+    document.getElementById('inputPeriodoGym').value = valor;
+    const gruposRango = document.querySelectorAll('.rango-gym-group');
+    if (valor === 'rango') {
+        gruposRango.forEach(el => el.style.display = '');
+    } else {
+        gruposRango.forEach(el => el.style.display = 'none');
+        document.getElementById('formReporteGym').submit();
+    }
+}
+</script>
+{% endblock %}
+

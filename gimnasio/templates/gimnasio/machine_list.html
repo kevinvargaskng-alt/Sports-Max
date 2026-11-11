@@ -408,7 +408,7 @@
           <div class="modal-body py-3">
             <div class="mb-3">
               <label class="form-label small text-white-50 text-uppercase fw-semibold">Nombre</label>
-              <input type="text" name="nombre" class="form-control custom-input" value="{{ m.nombre }}" required>
+              <input type="text" name="nombre" class="form-control custom-input" value="{{ m.nombre }}" required minlength="2" maxlength="100">
             </div>
             <div class="row g-3 mb-3">
               <div class="col-md-6">
@@ -435,7 +435,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label small text-white-50 text-uppercase fw-semibold">Descripción</label>
-              <textarea name="descripcion" class="form-control custom-input" rows="3">{{ m.descripcion }}</textarea>
+              <textarea name="descripcion" class="form-control custom-input" rows="3" maxlength="500">{{ m.descripcion }}</textarea>
             </div>
           </div>
           <div class="modal-footer border-secondary">
@@ -486,7 +486,7 @@
         <div class="modal-body py-3">
           <div class="mb-3">
             <label class="form-label small text-white-50 text-uppercase fw-semibold">Nombre <span class="text-danger">*</span></label>
-            <input type="text" name="nombre" class="form-control custom-input" placeholder="Ej: Caminadora Pro X" required>
+            <input type="text" name="nombre" class="form-control custom-input" placeholder="Ej: Caminadora Pro X" required minlength="2" maxlength="100">
           </div>
           <div class="row g-3 mb-3">
             <div class="col-md-6">
@@ -513,7 +513,7 @@
           </div>
           <div class="mb-3">
             <label class="form-label small text-white-50 text-uppercase fw-semibold">Descripción Técnica</label>
-            <textarea name="descripcion" class="form-control custom-input" rows="3" placeholder="Especificaciones de uso..."></textarea>
+            <textarea name="descripcion" class="form-control custom-input" rows="3" placeholder="Especificaciones de uso..." maxlength="500"></textarea>
           </div>
         </div>
         <div class="modal-footer border-secondary">

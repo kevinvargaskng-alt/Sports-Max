@@ -38,20 +38,18 @@ class UsuariosAppTests(TestCase):
         self.assertIn("Sugerencia #", str(sugerencia))
 
     def test_login_por_documento_y_correo(self):
-        """Verifica que el login funcione tanto con número de documento como con correo electrónico."""
-        # Login con numero de documento (AJAX)
+        """Verifica que el login funcione con documento (<=10 caracteres) y rechace credenciales que superen 10 caracteres."""
+        # Login con numero de documento (AJAX) - 8 dígitos (permitido)
         resp_doc = self.client.post('/login/', {'username': '12345678', 'password': 'password123'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(resp_doc.status_code, 200)
         self.assertTrue(resp_doc.json().get('success'))
 
         self.client.logout()
 
-        # Login con correo electronico (AJAX)
-        resp_email = self.client.post('/login/', {'username': 'test@sena.edu.co', 'password': 'password123'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(resp_email.status_code, 200)
-        self.assertTrue(resp_email.json().get('success'))
-
-        self.client.logout()
+        # Credenciales mayores a 10 caracteres deben ser rechazadas estrictamente con HTTP 400
+        resp_largo = self.client.post('/login/', {'username': 'test@sena.edu.co', 'password': 'password123'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_largo.status_code, 400)
+        self.assertFalse(resp_largo.json().get('success'))
 
         # Login estándar sin AJAX (debe redirigir 302)
         resp_std = self.client.post('/login/', {'username': '12345678', 'password': 'password123'})
@@ -278,4 +276,186 @@ class TestUsuariosQAQC(TestCase):
         admin.refresh_from_db()
         self.assertTrue(admin.is_active)
         self.assertEqual(admin.estado, 'activo')
+
+    def test_validacion_telefono_estricto_10_digitos(self):
+        """Valida que el backend rechace teléfonos que no tengan exactamente 10 dígitos numéricos."""
+        base_payload = {
+            'tipo_documento': 'CC',
+            'numero_documento': '1098765432',
+            'nombres': 'Pepito',
+            'apellidos': 'Pérez',
+            'genero': 'M',
+            'programa_formacion': 'ADSO',
+            'email': 'pepito.perez@sena.edu.co',
+            'ficha': '2826489',
+            'contrasena': 'PasswordSegura123*',
+            'confirmar_contrasena': 'PasswordSegura123*'
+        }
+
+        # 9 dígitos (rechazado)
+        payload_corta = dict(base_payload, telefono='300123456')
+        resp = self.client.post('/registro/', payload_corta, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('telefono', resp.json().get('errors', {}))
+
+        # 11 dígitos (rechazado)
+        payload_larga = dict(base_payload, telefono='30012345678')
+        resp = self.client.post('/registro/', payload_larga, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('telefono', resp.json().get('errors', {}))
+
+        # Letras / caracteres especiales (rechazado)
+        payload_alfa = dict(base_payload, telefono='300123456a')
+        resp = self.client.post('/registro/', payload_alfa, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('telefono', resp.json().get('errors', {}))
+
+        # Exactamente 10 dígitos (aceptado)
+        payload_ok = dict(base_payload, telefono='3001234567')
+        resp = self.client.post('/registro/', payload_ok, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json().get('status') == 'success')
+
+    def test_validacion_ficha_estricta_7_digitos(self):
+        """Valida que la ficha SENA requiera exactamente 7 dígitos numéricos en backend."""
+        base_payload = {
+            'tipo_documento': 'CC',
+            'numero_documento': '1122334455',
+            'nombres': 'Ana',
+            'apellidos': 'Gómez',
+            'genero': 'F',
+            'telefono': '3109876543',
+            'programa_formacion': 'ADSO',
+            'email': 'ana.gomez@sena.edu.co',
+            'contrasena': 'PasswordSegura123*',
+            'confirmar_contrasena': 'PasswordSegura123*'
+        }
+
+        # 6 dígitos (rechazado)
+        payload_6 = dict(base_payload, ficha='267001')
+        resp = self.client.post('/registro/', payload_6, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('ficha', resp.json().get('errors', {}))
+
+        # 8 dígitos (rechazado)
+        payload_8 = dict(base_payload, ficha='26700123')
+        resp = self.client.post('/registro/', payload_8, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('ficha', resp.json().get('errors', {}))
+
+        # Alfanumérico (rechazado)
+        payload_letras = dict(base_payload, ficha='267012A')
+        resp = self.client.post('/registro/', payload_letras, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('ficha', resp.json().get('errors', {}))
+
+        # 7 dígitos exactos (aceptado)
+        payload_7 = dict(base_payload, ficha='2826489')
+        resp = self.client.post('/registro/', payload_7, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json().get('status') == 'success')
+
+    def test_login_seguridad_longitudes_e_inyecciones(self):
+        """Valida que el login rechace desbordamientos de longitud e inyecciones con HTTP 400 y detalle de error."""
+        # 1. Documento con longitud excesiva (>20 caracteres)
+        resp_largo = self.client.post('/login/', {
+            'username': '1234567890123456789012345',  # 25 caracteres
+            'password': 'Password123*'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_largo.status_code, 400)
+        self.assertIn('username', resp_largo.json().get('errors', {}))
+
+        # 2. Inyección o caracteres peligrosos en credenciales
+        resp_sqli = self.client.post('/login/', {
+            'username': "admin' OR 1=1 --",
+            'password': 'Password123*'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_sqli.status_code, 400)
+        self.assertIn('username', resp_sqli.json().get('errors', {}))
+
+        # 3. Contraseña excediendo longitud máxima (>128 caracteres)
+        resp_pass_larga = self.client.post('/login/', {
+            'username': '12345678',
+            'password': 'a' * 129
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(resp_pass_larga.status_code, 400)
+        self.assertIn('password', resp_pass_larga.json().get('errors', {}))
+
+    def test_validacion_documento_estricto_7_a_10_digitos(self):
+        """Valida que el documento de identidad requiera estrictamente entre 7 y 10 dígitos numéricos."""
+        base_data = {
+            'tipo_documento': 'CC',
+            'nombres': 'Carlos',
+            'apellidos': 'Mejía',
+            'genero': 'M',
+            'telefono': '3123456789',
+            'programa_formacion': 'ADSO',
+            'email': 'carlos.mejia@sena.edu.co',
+            'ficha': '2826489',
+            'contrasena': 'PasswordSegura123*',
+            'confirmar_contrasena': 'PasswordSegura123*'
+        }
+
+        # 1. Menos de 7 dígitos (6 dígitos) -> Rechazado con 400
+        data_corta = dict(base_data, numero_documento='123456')
+        r_corta = self.client.post('/registro/', data_corta, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_corta.status_code, 400)
+        self.assertIn('numero_documento', r_corta.json().get('errors', {}))
+
+        # 2. Más de 10 dígitos (11 dígitos) -> Rechazado con 400
+        data_larga = dict(base_data, numero_documento='12345678901')
+        r_larga = self.client.post('/registro/', data_larga, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_larga.status_code, 400)
+        self.assertIn('numero_documento', r_larga.json().get('errors', {}))
+
+        # 3. Caracteres no numéricos -> Rechazado con 400
+        data_letras = dict(base_data, numero_documento='1234567A')
+        r_letras = self.client.post('/registro/', data_letras, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_letras.status_code, 400)
+        self.assertIn('numero_documento', r_letras.json().get('errors', {}))
+
+        # 4. Longitud exacta válida de 7 dígitos -> Aceptado (200 o redirect)
+        data_7 = dict(base_data, numero_documento='1234567', email='carlos7@sena.edu.co')
+        r_7 = self.client.post('/registro/', data_7, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_7.status_code, 200)
+
+        # 5. Longitud exacta válida de 10 dígitos -> Aceptado
+        data_10 = dict(base_data, numero_documento='1234567890', email='carlos10@sena.edu.co')
+        r_10 = self.client.post('/registro/', data_10, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_10.status_code, 200)
+
+    def test_seguridad_selects_blindaje_backend(self):
+        """Valida que si se envían valores manipulados o no válidos en selects, el backend los rechace obligatoriamente."""
+        base_data = {
+            'numero_documento': '98765432',
+            'nombres': 'María',
+            'apellidos': 'Gómez',
+            'genero': 'F',
+            'telefono': '3109876543',
+            'programa_formacion': 'ADSO',
+            'email': 'maria.gomez@sena.edu.co',
+            'ficha': '2826489',
+            'contrasena': 'PasswordSegura123*',
+            'confirmar_contrasena': 'PasswordSegura123*'
+        }
+
+        # Select tipo_documento manipulado (ej. 'HACK' o 'XX')
+        data_tipo_doc_invalido = dict(base_data, tipo_documento='XX')
+        r_td = self.client.post('/registro/', data_tipo_doc_invalido, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_td.status_code, 400)
+        self.assertIn('tipo_documento', r_td.json().get('errors', {}))
+        self.assertIn('La opción seleccionada no es válida', r_td.json().get('errors', {}).get('tipo_documento', ''))
+
+        # Select genero manipulado
+        data_genero_invalido = dict(base_data, tipo_documento='CC', genero='INVALIDO')
+        r_gen = self.client.post('/registro/', data_genero_invalido, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_gen.status_code, 400)
+        self.assertIn('genero', r_gen.json().get('errors', {}))
+
+        # Select programa_formacion manipulado
+        data_prog_invalido = dict(base_data, tipo_documento='CC', genero='F', programa_formacion='PROGRAMA_INEXISTENTE')
+        r_prog = self.client.post('/registro/', data_prog_invalido, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(r_prog.status_code, 400)
+        self.assertIn('programa_formacion', r_prog.json().get('errors', {}))
+
 

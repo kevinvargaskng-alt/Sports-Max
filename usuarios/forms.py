@@ -22,11 +22,11 @@ class ValidatingPasswordResetForm(PasswordResetForm):
 
 class LoginForm(forms.Form):
     username = forms.CharField(
-        max_length=254,
+        max_length=10,
         required=True,
         error_messages={
-            'required': 'Ingresa tu número de documento o correo electrónico.',
-            'max_length': 'El campo no puede superar los 254 caracteres.'
+            'required': 'Ingresa tu número de documento o código de acceso.',
+            'max_length': 'Las credenciales no pueden superar los 10 caracteres.'
         }
     )
     password = forms.CharField(
@@ -42,7 +42,13 @@ class LoginForm(forms.Form):
     def clean_username(self):
         val = self.cleaned_data.get('username', '').strip()
         if not val:
-            raise ValidationError("Ingresa tu número de documento o correo electrónico.")
+            raise ValidationError("Ingresa tu número de documento o código de acceso.")
+        # Detección estricta contra inyección o caracteres prohibidos
+        if any(char in val for char in ['<', '>', '"', "'", ';', '--', '/*', '*/']):
+            raise ValidationError("Formato de credencial no válido o contiene caracteres no permitidos.")
+        # Longitud estricta: Máximo 10 caracteres
+        if len(val) > 10:
+            raise ValidationError("Las credenciales no pueden superar los 10 caracteres.")
         return val
 
 
@@ -52,17 +58,17 @@ class RegistroUsuarioForm(forms.Form):
         required=True,
         error_messages={
             'required': 'Selecciona tu tipo de documento.',
-            'invalid_choice': 'El tipo de documento seleccionado no es válido.'
+            'invalid_choice': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'
         }
     )
     numero_documento = forms.CharField(
-        max_length=20,
-        min_length=5,
+        max_length=10,
+        min_length=7,
         required=True,
         error_messages={
-            'required': 'Ingresa tu número de documento.',
-            'min_length': 'El número de documento debe tener al menos 5 dígitos.',
-            'max_length': 'El número de documento no puede superar los 20 caracteres.'
+            'required': 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.',
+            'min_length': 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.',
+            'max_length': 'El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.'
         }
     )
     nombres = forms.CharField(
@@ -71,8 +77,8 @@ class RegistroUsuarioForm(forms.Form):
         required=True,
         error_messages={
             'required': 'Ingresa tus nombres completos.',
-            'min_length': 'Los nombres deben contener al menos 2 caracteres.',
-            'max_length': 'Los nombres no pueden superar los 100 caracteres.'
+            'min_length': 'Este campo solo permite letras y un máximo de 100 caracteres.',
+            'max_length': 'Este campo solo permite letras y un máximo de 100 caracteres.'
         }
     )
     apellidos = forms.CharField(
@@ -81,8 +87,8 @@ class RegistroUsuarioForm(forms.Form):
         required=True,
         error_messages={
             'required': 'Ingresa tus apellidos completos.',
-            'min_length': 'Los apellidos deben contener al menos 2 caracteres.',
-            'max_length': 'Los apellidos no pueden superar los 100 caracteres.'
+            'min_length': 'Este campo solo permite letras y un máximo de 100 caracteres.',
+            'max_length': 'Este campo solo permite letras y un máximo de 100 caracteres.'
         }
     )
     genero = forms.ChoiceField(
@@ -90,17 +96,17 @@ class RegistroUsuarioForm(forms.Form):
         required=True,
         error_messages={
             'required': 'Selecciona tu género.',
-            'invalid_choice': 'Selecciona una opción válida de género.'
+            'invalid_choice': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'
         }
     )
     telefono = forms.CharField(
-        max_length=15,
-        min_length=7,
+        max_length=10,
+        min_length=10,
         required=True,
         error_messages={
-            'required': 'Ingresa un número telefónico de contacto.',
-            'min_length': 'El teléfono debe tener mínimo 7 dígitos.',
-            'max_length': 'El teléfono no puede superar los 15 dígitos.'
+            'required': 'El teléfono debe contener exactamente 10 dígitos numéricos.',
+            'min_length': 'El teléfono debe contener exactamente 10 dígitos numéricos.',
+            'max_length': 'El teléfono debe contener exactamente 10 dígitos numéricos.'
         }
     )
     programa_formacion = forms.ChoiceField(
@@ -108,26 +114,26 @@ class RegistroUsuarioForm(forms.Form):
         required=True,
         error_messages={
             'required': 'Selecciona tu programa de formación.',
-            'invalid_choice': 'El programa de formación seleccionado no es válido.'
+            'invalid_choice': 'La opción seleccionada no es válida. Por favor, elija una opción correcta de la lista.'
         }
     )
     email = forms.EmailField(
-        max_length=254,
+        max_length=100,
         required=True,
         error_messages={
             'required': 'Ingresa tu correo electrónico.',
             'invalid': 'El correo no tiene un formato válido (ej. usuario@sena.edu.co).',
-            'max_length': 'El correo electrónico no puede superar los 254 caracteres.'
+            'max_length': 'El correo electrónico no puede superar los 100 caracteres.'
         }
     )
     ficha = forms.CharField(
-        max_length=20,
-        min_length=5,
+        max_length=7,
+        min_length=7,
         required=True,
         error_messages={
-            'required': 'Ingresa el número de tu ficha SENA.',
-            'min_length': 'La ficha debe contener al menos 5 dígitos.',
-            'max_length': 'La ficha no puede superar los 20 dígitos.'
+            'required': 'La ficha debe contener exactamente 7 dígitos numéricos.',
+            'min_length': 'La ficha debe contener exactamente 7 dígitos numéricos.',
+            'max_length': 'La ficha debe contener exactamente 7 dígitos numéricos.'
         }
     )
     contrasena = forms.CharField(
@@ -150,14 +156,16 @@ class RegistroUsuarioForm(forms.Form):
 
     def clean_numero_documento(self):
         doc = self.cleaned_data.get('numero_documento', '').strip()
-        if not re.match(r'^\d+$', doc):
-            raise ValidationError("El número de documento solo debe contener números sin puntos ni espacios.")
+        if not re.match(r'^\d{7,10}$', doc):
+            raise ValidationError("El número de documento es obligatorio y debe tener entre 7 y 10 dígitos numéricos.")
         if Usuario.objects.filter(numero_documento=doc).exists():
             raise ValidationError("Este número de documento ya se encuentra registrado.")
         return doc
 
     def clean_nombres(self):
         nombres = self.cleaned_data.get('nombres', '').strip()
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\'-]+$', nombres):
+            raise ValidationError("Este campo solo permite letras y un máximo de 100 caracteres.")
         try:
             return validate_text_safe(nombres, 'nombres', max_length=100).title()
         except ValidationError as e:
@@ -165,6 +173,8 @@ class RegistroUsuarioForm(forms.Form):
 
     def clean_apellidos(self):
         apellidos = self.cleaned_data.get('apellidos', '').strip()
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\'-]+$', apellidos):
+            raise ValidationError("Este campo solo permite letras y un máximo de 100 caracteres.")
         try:
             return validate_text_safe(apellidos, 'apellidos', max_length=100).title()
         except ValidationError as e:
@@ -172,14 +182,14 @@ class RegistroUsuarioForm(forms.Form):
 
     def clean_telefono(self):
         tel = self.cleaned_data.get('telefono', '').strip()
-        if not re.match(r'^\d+$', tel):
-            raise ValidationError("El teléfono debe contener únicamente dígitos numéricos.")
+        if not re.match(r'^\d{10}$', tel):
+            raise ValidationError("El teléfono debe contener exactamente 10 dígitos numéricos.")
         return tel
 
     def clean_ficha(self):
         ficha = self.cleaned_data.get('ficha', '').strip()
-        if not re.match(r'^\d+$', ficha):
-            raise ValidationError("El número de ficha debe contener únicamente dígitos numéricos.")
+        if not re.match(r'^\d{7}$', ficha):
+            raise ValidationError("La ficha debe contener exactamente 7 dígitos numéricos.")
         return ficha
 
     def clean_email(self):
