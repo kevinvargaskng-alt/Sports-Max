@@ -524,7 +524,7 @@ def interfichas_list(request):
                     equipo_visitante__in=mis_equipos_qs)
             )
             .select_related('equipo_local', 'equipo_visitante', 'torneo')
-            .order_by('fecha_partido', 'id')
+            .order_by('fecha_partido', 'hora_partido', 'id')
         )
 
         torneos_con_equipo = mis_equipos_qs.values_list('torneo_id', flat=True)
@@ -1123,7 +1123,7 @@ def reporte_torneo(request, torneo_id):
         PartidoInterfichas.objects
         .filter(torneo=torneo, fase='grupo')
         .select_related('equipo_local', 'equipo_visitante', 'grupo')
-        .order_by('fecha_partido', 'id')
+        .order_by('fecha_partido', 'hora_partido', 'id')
     )
     cronograma_grupo = [p for p in partidos_grupo_qs if p.jugado] + \
                        [p for p in partidos_grupo_qs if not p.jugado]

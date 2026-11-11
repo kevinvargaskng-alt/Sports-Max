@@ -15,6 +15,26 @@
 
 <style>
 /* ════════════════════════════════════════════════════
+   FUENTE PARA DISLEXIA (OpenDyslexic)
+════════════════════════════════════════════════════ */
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: local('OpenDyslexic'), local('OpenDyslexic Regular'),
+         url('https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.0.8/files/opendyslexic-latin-400-normal.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: local('OpenDyslexic Bold'),
+         url('https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.0.8/files/opendyslexic-latin-700-normal.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ════════════════════════════════════════════════════
    PANEL DE ACCESIBILIDAD — ESTILOS PROPIOS
 ════════════════════════════════════════════════════ */
 
@@ -192,8 +212,8 @@
     justify-content: space-between;
 }
 .acc-theme-dot {
-    width: 44px !important;
-    height: 44px !important;
+    width: 40px !important;
+    height: 40px !important;
     border-radius: 10px !important;
     cursor: pointer;
     border: 2px solid transparent !important;
@@ -204,10 +224,6 @@
 .acc-theme-dot[data-theme=""] {
     background: linear-gradient(135deg, #0d1526, #1e293b) !important;
     border: 1px solid rgba(255,255,255,0.2) !important;
-}
-.acc-theme-dot[data-theme="acc-claro"] {
-    background: linear-gradient(135deg, #ffffff, #e2e8f0) !important;
-    border: 1px solid #cbd5e1 !important;
 }
 .acc-theme-dot[data-theme="acc-azul-noche"] {
     background: linear-gradient(135deg, #0a1128, #00d2ff) !important;
@@ -305,7 +321,7 @@
 .acc-divider { height: 1px !important; background: rgba(255,255,255,0.06) !important; margin: 12px 0 !important; }
 
 /* ════════════════════════════════════════════════════
-   TEMAS GLOBALES — REGLAS CORREGIDAS
+   TEMAS GLOBALES
 ════════════════════════════════════════════════════ */
 
 /* Proteccion de Imagenes para todos los temas */
@@ -314,103 +330,6 @@ html.acc-sepia img, html.acc-sepia picture, html.acc-sepia video,
 html.acc-alto-contraste img, html.acc-alto-contraste picture, html.acc-alto-contraste video {
     background-color: transparent !important;
 }
-
-/* ── TEMA MODO CLARO ── */
-html.acc-claro,
-html.acc-claro body {
-    background: #f8fafc !important;
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-}
-html.acc-claro body p, 
-html.acc-claro body span, 
-html.acc-claro body label, 
-html.acc-claro body div, 
-html.acc-claro body td, 
-html.acc-claro body th,
-html.acc-claro body li,
-html.acc-claro body small,
-html.acc-claro body strong,
-html.acc-claro body b {
-    color: #1e293b !important;
-}
-html.acc-claro body h1,
-html.acc-claro body h2,
-html.acc-claro body h3,
-html.acc-claro body h4,
-html.acc-claro body h5,
-html.acc-claro body h6,
-html.acc-claro .section-title,
-html.acc-claro .hero-title,
-html.acc-claro .service-title,
-html.acc-claro .text-info {
-    color: #0284c7 !important;
-}
-html.acc-claro .section-sub,
-html.acc-claro .hero-sub,
-html.acc-claro .service-desc,
-html.acc-claro .text-white-50, 
-html.acc-claro .text-muted {
-    color: #64748b !important;
-}
-html.acc-claro .sport-card, 
-html.acc-claro .main-container, 
-html.acc-claro .modal-content,
-html.acc-claro .card,
-html.acc-claro .dropdown-menu,
-html.acc-claro .table,
-html.acc-claro .list-group-item,
-html.acc-claro .navbar,
-html.acc-claro .how-step,
-html.acc-claro .step-card,
-html.acc-claro .mi-equipo-card,
-html.acc-claro .hero-aprendiz,
-html.acc-claro .jira-card,
-html.acc-claro .stat-pill,
-html.acc-claro .footer,
-html.acc-claro footer {
-    background: #ffffff !important;
-    border-color: #e2e8f0 !important;
-    color: #0f172a !important;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-}
-html.acc-claro .footer p,
-html.acc-claro .footer span,
-html.acc-claro .footer a,
-html.acc-claro footer p,
-html.acc-claro footer span,
-html.acc-claro footer a {
-    color: #475569 !important;
-}
-html.acc-claro .form-control,
-html.acc-claro .form-select,
-html.acc-claro .custom-input,
-html.acc-claro .jira-input,
-html.acc-claro .input-group-text {
-    background: #ffffff !important;
-    border-color: #cbd5e1 !important;
-    color: #0f172a !important;
-}
-html.acc-claro .form-control::placeholder { color: #94a3b8 !important; }
-/* Override Bootstrap text-white / text-white-50 en tema claro */
-html.acc-claro .text-white,
-html.acc-claro .text-white-50 { color: #1e293b !important; }
-html.acc-claro .text-white-50 { opacity: 1 !important; color: #64748b !important; }
-/* Nav links, badges, alertas, botones */
-html.acc-claro .nav-link { color: #0f172a !important; }
-html.acc-claro .nav-link.active { color: #0284c7 !important; }
-html.acc-claro .badge.bg-dark, html.acc-claro .badge.bg-secondary { background: #e2e8f0 !important; color: #0f172a !important; }
-html.acc-claro .badge.bg-success, html.acc-claro .badge.bg-primary { color: #ffffff !important; }
-html.acc-claro .alert { color: #1e293b !important; border-color: #cbd5e1 !important; }
-html.acc-claro .btn-outline-secondary { border-color: #64748b !important; color: #1e293b !important; }
-html.acc-claro .table-dark, html.acc-claro .thead-dark th { background: #e2e8f0 !important; color: #0f172a !important; }
-html.acc-claro td, html.acc-claro th { color: #1e293b !important; }
-html.acc-claro .navbar-brand, html.acc-claro .navbar-brand span { color: #0f172a !important; }
-html.acc-claro .dropdown-item { color: #1e293b !important; background: #ffffff !important; }
-html.acc-claro .dropdown-item:hover { background: #f1f5f9 !important; }
-html.acc-claro .pagination .page-link { color: #0284c7 !important; background: #ffffff !important; border-color: #cbd5e1 !important; }
-html.acc-claro .modulo-header h2, html.acc-claro .modulo-header h3 { color: #0284c7 !important; }
-html.acc-claro .modulo-header p, html.acc-claro .modulo-header span { color: #475569 !important; }
 
 /* ── TEMA AZUL NOCHE ── */
 html.acc-azul-noche,
@@ -678,17 +597,15 @@ html.acc-alto-contraste .btn-danger { background: #330000 !important; border-col
 html.acc-alto-contraste .btn-warning { background: #332200 !important; border-color: #ffcc00 !important; color: #ffcc00 !important; }
 html.acc-alto-contraste .modulo-header h2, html.acc-alto-contraste .modulo-header h3 { color: #ffff00 !important; }
 
-/* Daltonismo CORREGIDO (Evita saltos de scroll y compatibilidad con Modales) */
+/* Daltonismo (compatible con Modales) */
 html.acc-daltonismo body { filter: none !important; }
 
-/* Aplicamos el filtro al contenido principal cuando NO hay modal abierto */
 html.acc-daltonismo:not(.modal-open) body:not(.modal-open) main,
 html.acc-daltonismo:not(.modal-open) body:not(.modal-open) .container-fluid,
 html.acc-daltonismo:not(.modal-open) body:not(.modal-open) #main-wrapper {
     filter: url('#daltonismo-filter') !important;
 }
 
-/* Cuando un modal está abierto, eliminamos el filtro del contenedor principal para no romper position:fixed ni el z-index del modal */
 html.acc-daltonismo.modal-open main,
 html.acc-daltonismo body.modal-open main,
 html.acc-daltonismo.modal-open .container-fluid,
@@ -697,13 +614,11 @@ html.acc-daltonismo body.modal-open #main-wrapper {
     filter: none !important;
 }
 
-/* Aplicamos el filtro a los elementos de la página y al contenido del modal de forma independiente */
 html.acc-daltonismo body.modal-open main > *:not(.modal),
 html.acc-daltonismo .modal-content {
     filter: url('#daltonismo-filter') !important;
 }
 
-/* El panel de accesibilidad, el toggle, la estructura del modal y el backdrop se mantienen libres de distorsiones de posicionamiento */
 html.acc-daltonismo #acc-panel, 
 html.acc-daltonismo #acc-toggle,
 html.acc-daltonismo .modal,
@@ -761,14 +676,40 @@ html.acc-font-mono #modalNotificacionesSistema *:not(i):not([class*="fa-"]) {
     font-family: 'Courier New', Courier, monospace !important;
 }
 
+/* ── MODO DISLEXIA ──
+   OpenDyslexic (con respaldo Comic Sans / Verdana), más espaciado entre letras
+   y palabras, texto alineado a la izquierda, sin cursivas ni mayúsculas forzadas. */
 html.acc-font-dyslexic body,
 html.acc-font-dyslexic body *:not(#acc-panel):not(#acc-panel *):not(i):not([class*="fa-"]),
 html.acc-font-dyslexic #asistente-ia-wrap *:not(i):not([class*="fa-"]),
 html.acc-font-dyslexic .chat-window *:not(i):not([class*="fa-"]),
 html.acc-font-dyslexic #modalNotificacionesSistema *:not(i):not([class*="fa-"]) {
-    font-family: Arial, Helvetica, sans-serif !important;
-    letter-spacing: 0.05em !important;
-    word-spacing: 0.1em !important;
+    font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Neue', Verdana, sans-serif !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.25em !important;
+    text-align: left !important;
+    font-style: normal !important;
+    text-transform: none !important;
+    text-decoration-skip-ink: none;
+    font-variant-ligatures: none !important;
+    font-kerning: none !important;
+}
+html.acc-font-dyslexic p,
+html.acc-font-dyslexic li,
+html.acc-font-dyslexic td,
+html.acc-font-dyslexic .chat-window .bubble {
+    line-height: 1.9 !important;
+    max-width: 70ch;
+}
+html.acc-font-dyslexic h1, html.acc-font-dyslexic h2, html.acc-font-dyslexic h3,
+html.acc-font-dyslexic h4, html.acc-font-dyslexic h5, html.acc-font-dyslexic h6 {
+    line-height: 1.5 !important;
+}
+html.acc-font-dyslexic .btn,
+html.acc-font-dyslexic .nav-link,
+html.acc-font-dyslexic .badge {
+    letter-spacing: 0.08em !important;
+    word-spacing: 0.15em !important;
 }
 
 /* Interlineado general, IA y notificaciones */
@@ -811,9 +752,6 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
         <div class="acc-theme-row">
             <div class="acc-theme-dot active" data-theme="" title="Predeterminado acc-u-2">
                 <span class="dot-label">Default</span>
-            </div>
-            <div class="acc-theme-dot" data-theme="acc-claro" title="Modo Claro">
-                <span class="dot-label">Claro</span>
             </div>
             <div class="acc-theme-dot" data-theme="acc-azul-noche" title="Azul Noche acc-u-3">
                 <span class="dot-label">Azul Noche</span>
@@ -906,7 +844,7 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     var panel  = document.getElementById('acc-panel');
     var KEY    = 'sena_acc_prefs';
 
-    var THEMES = ['acc-claro','acc-azul-noche','acc-sepia','acc-alto-contraste','acc-daltonismo'];
+    var THEMES = ['acc-azul-noche','acc-sepia','acc-alto-contraste','acc-daltonismo'];
     var FONTS  = ['acc-font-sans','acc-font-serif','acc-font-mono','acc-font-dyslexic'];
     var SIZES  = ['acc-font-sm','acc-font-md','acc-font-lg','acc-font-xl'];
     var LINES  = ['acc-line-normal','acc-line-wide','acc-line-wider'];
@@ -921,20 +859,16 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
 
     function applyAll() {
         clearClasses(THEMES.concat(FONTS, SIZES, LINES, FOCOS));
-        if (prefs.theme) html.classList.add(prefs.theme);
-        if (prefs.theme === 'acc-claro') {
-            document.body.classList.add('light-theme');
-            localStorage.setItem('theme', 'light');
-        } else if (prefs.theme) {
+        if (prefs.theme) {
+            html.classList.add(prefs.theme);
             document.body.classList.remove('light-theme');
-            localStorage.setItem('theme', 'dark');
+            try { localStorage.setItem('theme', 'dark'); } catch(e){}
         }
         if (prefs.font)  html.classList.add(prefs.font);
         html.classList.add(SIZES[prefs.size]);
         if (prefs.line)  html.classList.add(prefs.line);
         if (prefs.foco)  html.classList.add(prefs.foco);
     }
-
 
     function save() {
         try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch(e){}
@@ -948,6 +882,9 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
                 for (var k in p) { if (prefs.hasOwnProperty(k)) prefs[k] = p[k]; }
             }
         } catch(e){}
+        // Migración: el modo claro ya no existe
+        if (THEMES.indexOf(prefs.theme) === -1) prefs.theme = '';
+        if (typeof prefs.size !== 'number' || prefs.size < 0 || prefs.size > 3) prefs.size = 1;
     }
 
     function syncUI() {
@@ -995,6 +932,10 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     document.querySelectorAll('[data-font]').forEach(function(btn) {
         btn.addEventListener('click', function() {
             prefs.font = this.dataset.font || '';
+            // Dislexia: si el interlineado está en Normal, pasar a Amplio
+            if (prefs.font === 'acc-font-dyslexic' && prefs.line === 'acc-line-normal') {
+                prefs.line = 'acc-line-wide';
+            }
             applyAll(); syncUI(); save();
         });
     });

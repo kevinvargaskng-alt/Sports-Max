@@ -145,6 +145,9 @@
     <!-- Asistente IA Tux -->
     {% include "partials/asistente_ia.html" %}
 
+    <!-- Corrección de contraste en modo claro (debe cargarse al final) -->
+    <link rel="stylesheet" href="{% static 'css/modo_claro_contraste.css' %}">
+
     {% if user.is_authenticated %}
         {% include "partials/sugerencias_modal.html" %}
         {% include "partials/notificaciones_modal.html" %}
