@@ -13,6 +13,10 @@
 <div class="main-container py-4">
     <div class="container">
 
+        {% if user.is_staff or user.is_superuser %}
+            {% include 'partials/admin_nav.html' with admin_tab='perfil' %}
+        {% endif %}
+
         <div class="sport-card mb-4 shadow-lg">
             <div class="row align-items-center p-2">
 
@@ -75,8 +79,11 @@
                             <i class="fas fa-running me-2"></i>Mi Rendimiento
                         </button>
                         {% if user.is_staff or user.is_superuser %}
-                        <a href="{% url 'gestionar_usuarios' %}" class="btn btn-outline-warning btn-sm px-4 text-cap">
+                        <a href="{% url 'gestionar_usuarios' %}" class="btn btn-outline-info btn-sm px-4 text-cap">
                             <i class="fas fa-users-cog me-2"></i>Gestionar Usuarios
+                        </a>
+                        <a href="{% url 'gestionar_backups' %}" class="btn btn-outline-warning btn-sm px-4 text-cap">
+                            <i class="fas fa-database me-2"></i>Copias de Seguridad
                         </a>
                         {% endif %}
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm px-4 text-cap">

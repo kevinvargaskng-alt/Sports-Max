@@ -1,161 +1,338 @@
 {% load static %}
 
 <style>
-    @media (max-width: 991px) {
+    /* ═══════════════════════════════════════════════════════════════
+       SPORTS-MAX — NAVBAR PREMIUM & MENÚ ADAPTATIVO (DARK + LIGHT SENA)
+       ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 991.98px) {
         .nav-pill-center {
             display: none !important;
         }
     }
 
-    .nav-pill-center {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 50px;
-        padding: 5px 20px;
-        display: flex;
-        gap: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    .nav-pill-center .nav-link {
-        color: rgba(255, 255, 255, 0.7);
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        border-radius: 30px;
-        padding: 8px 18px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .nav-pill-center .nav-link:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-    }
-
-    .nav-pill-center .nav-link.active {
-        background: var(--sena-green, #1a5fb4);
-        color: white;
-        box-shadow: 0 0 15px rgba(26, 95, 180, 0.4);
-    }
-
-    /* Balón: Ahora utiliza el color corporativo para una mejor integración */
-    .icon-balon {
-        color: var(--sena-green, #1a5fb4);
-        filter: drop-shadow(0 0 8px rgba(26, 95, 180, 0.4));
-        animation: pulse-icon 2s infinite;
-    }
-
-    @keyframes pulse-icon {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-
-    .navbar-brand span {
-        letter-spacing: -0.5px;
-        transition: 0.3s;
-    }
-    .navbar-brand:hover span { opacity: 0.8; }
-
-    /* ─── Botón Gestionar Usuarios (Admin) ─── */
-    .btn-admin-usuarios {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        border-radius: 20px;
-        border: 1.5px solid rgba(0, 210, 180, 0.55);
-        background: rgba(0, 210, 180, 0.1);
-        color: #00D4B4;
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: background 0.2s, border-color 0.2s, transform 0.15s;
-        letter-spacing: 0.3px;
-    }
-    .btn-admin-usuarios:hover {
-        background: rgba(0, 210, 180, 0.22);
-        border-color: rgba(0, 210, 180, 0.9);
-        color: #00FFE0;
-        transform: translateY(-1px);
-    }
-    .btn-admin-usuarios i { font-size: 0.8rem; }
-    @media (max-width: 576px) {
-        .btn-admin-usuarios span.btn-label { display: none; }
-        .btn-admin-usuarios { padding: 6px 10px; }
-    }
-
-    /* ─── Alineación estricta del Header / Navbar (Requerimiento 2) ─── */
+    /* Contenedor principal del Header */
     .hdr-navbar-container {
-        min-height: 62px;
-        background: rgba(10, 14, 20, 0.96);
-        backdrop-filter: blur(15px);
-        border-bottom: 1px solid var(--neon-border, rgba(43, 125, 233, 0.25));
+        min-height: 66px;
+        background: rgba(10, 15, 26, 0.94);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(56, 189, 248, 0.18);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
+        transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
+
+    /* Marca y Logotipos */
     .navbar-brand-smax {
         display: inline-flex !important;
         align-items: center !important;
         gap: 10px;
         margin-right: 0 !important;
-        padding: 4px 0;
+        padding: 4px 6px 4px 0;
         text-decoration: none;
         white-space: nowrap;
         line-height: 1;
+        transition: transform 0.2s ease;
+    }
+    .navbar-brand-smax:hover {
+        transform: translateY(-1px);
     }
     .navbar-brand-smax img {
         width: 38px;
         height: 38px;
         object-fit: contain;
         flex-shrink: 0;
-        filter: drop-shadow(0 0 6px rgba(26, 95, 180, 0.45));
+        filter: drop-shadow(0 0 6px rgba(43, 125, 233, 0.45));
+    }
+    .navbar-brand-smax img.brand-logo-sena {
+        width: 34px;
+        height: 34px;
+        filter: drop-shadow(0 0 4px rgba(57, 169, 0, 0.35));
+    }
+    .brand-logo-sep {
+        display: inline-block;
+        width: 1px;
+        height: 26px;
+        background: rgba(255, 255, 255, 0.22);
+        flex-shrink: 0;
+    }
+    html.acc-claro .brand-logo-sep,
+    body.light-theme .brand-logo-sep {
+        background: #CBD5E1;
     }
     .navbar-brand-title {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 2px;
         font-weight: 800;
-        font-size: clamp(0.92rem, 1.4vw, 1.15rem);
-        letter-spacing: 0.3px;
+        font-size: clamp(0.92rem, 1.3vw, 1.12rem);
+        letter-spacing: 0.4px;
         text-transform: uppercase;
         color: #ffffff;
         line-height: 1;
     }
-    .navbar-brand-divider {
-        color: rgba(255, 255, 255, 0.35);
-        font-weight: 400;
+    @media (max-width: 480px) {
+        .navbar-brand-smax { gap: 7px; }
+        .navbar-brand-smax img { width: 32px; height: 32px; }
+        .navbar-brand-smax img.brand-logo-sena { width: 29px; height: 29px; }
+        .brand-logo-sep { height: 22px; }
     }
+
+    /* ─── Píldora Central de Navegación (Desktop) ─── */
+    nav.navbar .nav-pill-center {
+        background: rgba(15, 23, 42, 0.75) !important;
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(148, 163, 184, 0.16) !important;
+        border-radius: 999px !important;
+        padding: 5px 8px !important;
+        display: flex;
+        align-items: center;
+        gap: 4px !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    nav.navbar .nav-pill-center .nav-link {
+        color: rgba(226, 232, 240, 0.82) !important;
+        background: transparent !important;
+        font-weight: 600 !important;
+        font-size: clamp(0.76rem, 0.85vw, 0.86rem) !important;
+        text-transform: none !important;
+        letter-spacing: 0.2px !important;
+        border-radius: 999px !important;
+        padding: 8px 14px !important;
+        display: inline-flex !important;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+        position: relative;
+        transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    }
+
+    nav.navbar .nav-pill-center .nav-link i {
+        font-size: 0.88rem;
+        opacity: 0.88;
+        transition: transform 0.22s ease, color 0.22s ease;
+    }
+
+    /* Hover suave diferenciado del estado activo */
+    nav.navbar .nav-pill-center .nav-link:hover:not(.active) {
+        background: rgba(56, 189, 248, 0.12) !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+    }
+    nav.navbar .nav-pill-center .nav-link:hover:not(.active) i {
+        color: #38bdf8 !important;
+        transform: scale(1.1);
+    }
+
+    /* Estado activo destacado con gradiente y brillo */
+    nav.navbar .nav-pill-center .nav-link.active {
+        background: linear-gradient(135deg, #2b7de9 0%, #1a5fb4 100%) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 14px rgba(43, 125, 233, 0.42) !important;
+        transform: none;
+    }
+    nav.navbar .nav-pill-center .nav-link.active i {
+        color: #ffffff !important;
+        opacity: 1;
+    }
+
+    @media (min-width: 992px) and (max-width: 1240px) {
+        nav.navbar .nav-pill-center .nav-link {
+            padding: 7px 10px !important;
+            font-size: 0.76rem !important;
+            gap: 5px;
+        }
+    }
+
+    /* ─── Dropdowns Modernos (Admin y Perfil) ─── */
+    .nav-pill-center .dropdown-toggle::after,
+    .btn-profile.dropdown-toggle::after {
+        margin-left: 3px;
+        vertical-align: middle;
+        opacity: 0.75;
+    }
+
+    .hdr-admin-dropdown {
+        min-width: 265px;
+        background: rgba(15, 23, 42, 0.97) !important;
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(148, 163, 184, 0.18) !important;
+        border-radius: 16px !important;
+        padding: 8px !important;
+        margin-top: 10px !important;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45) !important;
+        animation: hdrDropFade 0.18s ease-out;
+    }
+
+    @keyframes hdrDropFade {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hdr-dropdown-user-card {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .hdr-dropdown-user-info {
+        min-width: 0;
+        flex: 1;
+    }
+    .hdr-dropdown-user-name {
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: #f8fafc;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+    .hdr-dropdown-user-role {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #38bdf8;
+        margin-top: 2px;
+    }
+
+    .hdr-admin-dropdown .dropdown-header {
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #38bdf8;
+        padding: 7px 12px 4px;
+    }
+
+    .hdr-admin-dropdown .dropdown-item {
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.18s ease;
+    }
+    .hdr-dd-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: #38bdf8;
+        flex-shrink: 0;
+        transition: all 0.18s ease;
+    }
+    .hdr-admin-dropdown .dropdown-item:hover {
+        background: rgba(43, 125, 233, 0.16);
+        color: #ffffff;
+        transform: translateX(2px);
+    }
+    .hdr-admin-dropdown .dropdown-item:hover .hdr-dd-icon {
+        background: rgba(43, 125, 233, 0.3);
+        color: #ffffff;
+    }
+    .hdr-admin-dropdown .dropdown-item.active,
+    .hdr-admin-dropdown .dropdown-item:active {
+        background: linear-gradient(135deg, #2b7de9, #1a5fb4) !important;
+        color: #FFFFFF !important;
+    }
+    .hdr-admin-dropdown .dropdown-item.active .hdr-dd-icon,
+    .hdr-admin-dropdown .dropdown-item:active .hdr-dd-icon {
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #FFFFFF !important;
+    }
+    .hdr-admin-dropdown .dropdown-item.text-danger .hdr-dd-icon {
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+    }
+    .hdr-admin-dropdown .dropdown-item.text-danger:hover {
+        background: rgba(239, 68, 68, 0.14) !important;
+        color: #f87171 !important;
+    }
+
+    /* ─── Controles de Acción Derecha ─── */
     .hdr-actions-group {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         flex-shrink: 0;
     }
     .hdr-icon-btn {
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.04);
-        color: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.88);
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         padding: 0 !important;
-        font-size: 1rem;
+        font-size: 0.98rem;
         transition: all 0.2s ease;
         cursor: pointer;
         position: relative;
     }
     .hdr-icon-btn:hover {
-        background: rgba(43, 125, 233, 0.2);
-        border-color: rgba(43, 125, 233, 0.5);
+        background: rgba(43, 125, 233, 0.22);
+        border-color: rgba(56, 189, 248, 0.55);
         color: #ffffff;
         transform: translateY(-1px);
     }
+
+    nav.navbar .btn-profile {
+        height: 40px !important;
+        padding: 0 14px 0 7px !important;
+        border-radius: 999px !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: #f8fafc !important;
+        transition: all 0.2s ease !important;
+    }
+    nav.navbar .btn-profile:hover {
+        background: rgba(43, 125, 233, 0.18) !important;
+        border-color: rgba(56, 189, 248, 0.45) !important;
+        transform: translateY(-1px);
+    }
+    nav.navbar .btn-profile .hdr-u-7,
+    nav.navbar .btn-profile .header-avatar-initials {
+        width: 28px;
+        height: 28px;
+    }
+
+    .hdr-mobile-toggler {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important;
+        transition: all 0.2s ease;
+    }
+    .hdr-mobile-toggler:hover {
+        background: rgba(43, 125, 233, 0.2) !important;
+        border-color: rgba(56, 189, 248, 0.5) !important;
+    }
+
     .btn-ingresar-nav {
         height: 38px !important;
         padding: 0 20px !important;
@@ -180,6 +357,207 @@
         color: #ffffff !important;
     }
 
+    /* ─── Menú Móvil Rediseñado (< 992px) ─── */
+    .hdr-mobile-drawer {
+        margin-top: 12px;
+        margin-bottom: 8px;
+        padding: 12px;
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    }
+    .hdr-mobile-section-lbl {
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: rgba(148, 163, 184, 0.85);
+        padding: 4px 10px 6px;
+    }
+    .hdr-mobile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+    @media (max-width: 400px) {
+        .hdr-mobile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    nav.navbar .hdr-mobile-link {
+        display: flex !important;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        text-decoration: none !important;
+        font-size: 0.84rem !important;
+        font-weight: 600 !important;
+        color: #e2e8f0 !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.07) !important;
+        transition: all 0.2s ease;
+        min-height: 46px;
+    }
+    nav.navbar .hdr-mobile-link i {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(56, 189, 248, 0.12);
+        color: #38bdf8 !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+    nav.navbar .hdr-mobile-link:hover {
+        background: rgba(43, 125, 233, 0.15) !important;
+        border-color: rgba(56, 189, 248, 0.35) !important;
+    }
+    nav.navbar .hdr-mobile-link.active {
+        background: linear-gradient(135deg, #2b7de9 0%, #1a5fb4 100%) !important;
+        border-color: #2b7de9 !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 16px rgba(43, 125, 233, 0.32);
+    }
+    nav.navbar .hdr-mobile-link.active i {
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #ffffff !important;
+    }
+
+    /* ─── Adaptación Modo Claro Institucional SENA del Navbar & Menú ─── */
+    html.acc-claro body nav.navbar .nav-pill-center,
+    body.light-theme nav.navbar .nav-pill-center {
+        background: #F1F5F9 !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
+    html.acc-claro body nav.navbar .nav-pill-center .nav-link:not(.active),
+    body.light-theme nav.navbar .nav-pill-center .nav-link:not(.active) {
+        color: #334155 !important;
+        background: transparent !important;
+    }
+    html.acc-claro body nav.navbar .nav-pill-center .nav-link:not(.active) i,
+    body.light-theme nav.navbar .nav-pill-center .nav-link:not(.active) i {
+        color: #007832 !important;
+    }
+    html.acc-claro body nav.navbar .nav-pill-center .nav-link:hover:not(.active),
+    body.light-theme nav.navbar .nav-pill-center .nav-link:hover:not(.active) {
+        background: rgba(57, 169, 0, 0.12) !important;
+        color: #007832 !important;
+    }
+    html.acc-claro body nav.navbar .nav-pill-center .nav-link.active,
+    html.acc-claro body nav.navbar .nav-pill-center .nav-link.active i,
+    body.light-theme nav.navbar .nav-pill-center .nav-link.active,
+    body.light-theme nav.navbar .nav-pill-center .nav-link.active i {
+        background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+        color: #FFFFFF !important;
+    }
+    html.acc-claro body nav.navbar .nav-pill-center .nav-link.active i,
+    body.light-theme nav.navbar .nav-pill-center .nav-link.active i {
+        background: transparent !important;
+    }
+
+    html.acc-claro body .hdr-dropdown-user-card,
+    body.light-theme .hdr-dropdown-user-card {
+        background: #F1F8EC !important;
+        border-color: rgba(57, 169, 0, 0.25) !important;
+    }
+    html.acc-claro body .hdr-dropdown-user-name,
+    body.light-theme .hdr-dropdown-user-name {
+        color: #0F172A !important;
+    }
+    html.acc-claro body .hdr-dropdown-user-role,
+    html.acc-claro body .hdr-admin-dropdown .dropdown-header,
+    body.light-theme .hdr-dropdown-user-role,
+    body.light-theme .hdr-admin-dropdown .dropdown-header {
+        color: #007832 !important;
+    }
+    html.acc-claro body .hdr-admin-dropdown .hdr-dd-icon,
+    body.light-theme .hdr-admin-dropdown .hdr-dd-icon {
+        background: #F1F5F9;
+        color: #007832;
+    }
+    html.acc-claro body .hdr-admin-dropdown .dropdown-item:hover .hdr-dd-icon,
+    body.light-theme .hdr-admin-dropdown .dropdown-item:hover .hdr-dd-icon {
+        background: rgba(57, 169, 0, 0.18);
+        color: #007832;
+    }
+    html.acc-claro body .hdr-admin-dropdown .dropdown-item.active,
+    body.light-theme .hdr-admin-dropdown .dropdown-item.active {
+        background: linear-gradient(135deg, #39A900, #007832) !important;
+        color: #FFFFFF !important;
+    }
+    html.acc-claro body .hdr-admin-dropdown .dropdown-item.active .hdr-dd-icon,
+    body.light-theme .hdr-admin-dropdown .dropdown-item.active .hdr-dd-icon {
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #FFFFFF !important;
+    }
+    html.acc-claro body .hdr-admin-dropdown .dropdown-item.text-danger .hdr-dd-icon,
+    body.light-theme .hdr-admin-dropdown .dropdown-item.text-danger .hdr-dd-icon {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+
+    html.acc-claro body nav.navbar .btn-profile,
+    body.light-theme nav.navbar .btn-profile {
+        background: #F8FAFC !important;
+        border-color: #CBD5E1 !important;
+        color: #1E293B !important;
+    }
+    html.acc-claro body nav.navbar .btn-profile:hover,
+    body.light-theme nav.navbar .btn-profile:hover {
+        background: #F1F8EC !important;
+        border-color: #39A900 !important;
+        color: #007832 !important;
+    }
+    html.acc-claro body .hdr-mobile-toggler,
+    body.light-theme .hdr-mobile-toggler {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
+    }
+    html.acc-claro body .hdr-mobile-drawer,
+    body.light-theme .hdr-mobile-drawer {
+        background: #FFFFFF !important;
+        border-color: #CBD5E1 !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1) !important;
+    }
+    html.acc-claro body .hdr-mobile-section-lbl,
+    body.light-theme .hdr-mobile-section-lbl {
+        color: #007832 !important;
+    }
+    html.acc-claro body nav.navbar .hdr-mobile-link:not(.active),
+    body.light-theme nav.navbar .hdr-mobile-link:not(.active) {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+        color: #1E293B !important;
+    }
+    html.acc-claro body nav.navbar .hdr-mobile-link:not(.active) i,
+    body.light-theme nav.navbar .hdr-mobile-link:not(.active) i {
+        background: #E8F5E0 !important;
+        color: #007832 !important;
+    }
+    html.acc-claro body nav.navbar .hdr-mobile-link:hover:not(.active),
+    body.light-theme nav.navbar .hdr-mobile-link:hover:not(.active) {
+        background: #F1F8EC !important;
+        border-color: #39A900 !important;
+        color: #007832 !important;
+    }
+    html.acc-claro body nav.navbar .hdr-mobile-link.active,
+    body.light-theme nav.navbar .hdr-mobile-link.active {
+        background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+        border-color: #007832 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(57, 169, 0, 0.28) !important;
+    }
+    html.acc-claro body nav.navbar .hdr-mobile-link.active i,
+    body.light-theme nav.navbar .hdr-mobile-link.active i {
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #FFFFFF !important;
+    }
+
     /* ─── Barra Superior de Posición Actual (Criterio 18) ─── */
     .smax-position-bar {
         background: rgba(10, 17, 36, 0.85);
@@ -191,7 +569,7 @@
         overflow-x: hidden;
     }
     .smax-position-bar .breadcrumb-link {
-        color: rgba(255, 255, 255, 0.65);
+        color: rgba(255, 255, 255, 0.68);
         text-decoration: none;
         transition: color 0.2s ease;
     }
@@ -201,7 +579,7 @@
     .smax-position-bar .breadcrumb-sep {
         color: rgba(255, 255, 255, 0.3);
         margin: 0 8px;
-        font-size: 0.68rem;
+        font-size: 0.65rem;
     }
     .smax-position-bar .breadcrumb-current {
         color: #38bdf8;
@@ -209,25 +587,39 @@
     }
     html.acc-claro .smax-position-bar,
     body.light-theme .smax-position-bar {
-        background: #f1f5f9 !important;
-        border-bottom: 1px solid #cbd5e1 !important;
+        background: #F1F5F9 !important;
+        border-bottom: 1px solid #CBD5E1 !important;
     }
+    /* Navbar fija siempre accesible para mejor navegación */
+    nav.navbar.hdr-u-1 {
+        position: sticky !important;
+        top: 0;
+        z-index: 1030;
+    }
+    html:has(nav.navbar.hdr-u-1),
+    body:has(nav.navbar.hdr-u-1) { overflow-x: clip !important; }
     html.acc-claro .smax-position-bar .breadcrumb-link,
     body.light-theme .smax-position-bar .breadcrumb-link {
         color: #475569 !important;
     }
+    html.acc-claro .smax-position-bar .breadcrumb-link:hover,
+    body.light-theme .smax-position-bar .breadcrumb-link:hover {
+        color: #007832 !important;
+    }
     html.acc-claro .smax-position-bar .breadcrumb-current,
     body.light-theme .smax-position-bar .breadcrumb-current {
-        color: #0284c7 !important;
+        color: #007832 !important;
     }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark p-0 hdr-u-1">
+<nav class="navbar navbar-expand-lg navbar-dark p-0 hdr-u-1{% if request.resolver_match.url_name == 'home' %} navbar-fija-inicio{% endif %}">
     <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-lg-nowrap px-3 px-md-4 py-2 hdr-navbar-container hdr-u-2">
         
         <!-- 1. MARCA Y LOGOTIPO (Izquierda) -->
-        <a class="navbar-brand navbar-brand-smax" href="{% url 'home' %}" title="Ir al inicio de Sports-Max">
-            <img src="{% static 'img/logo_sports_max.png' %}" alt="Logo Sports-Max" width="38" height="38" loading="eager" decoding="async">
+        <a class="navbar-brand navbar-brand-smax" href="{% url 'home' %}" title="Ir al inicio de Sports-Max — SENA">
+            <img src="{% static 'img/logo_sports_max.png' %}" alt="Logo Sports-Max" class="brand-logo-sportsmax" width="38" height="38" loading="eager" decoding="async">
+            <span class="brand-logo-sep" aria-hidden="true"></span>
+            <img src="{% static 'img/logoSena.png' %}" alt="Logo SENA" class="brand-logo-sena" width="34" height="34" loading="eager" decoding="async">
             <span class="navbar-brand-title">
                 <span>SPORTS-</span><span class="hdr-u-3">MAX</span>
             </span>
@@ -259,22 +651,68 @@
                 <span id="puntoCampanita" class="hdr-u-6">{{ notificaciones_count }}</span>
                 {% endif %}
             </button>
+
+            <!-- MENÚ PERFIL DE USUARIO -->
             <div class="dropdown">
-                <a class="btn-profile dropdown-toggle d-inline-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-label="Menú de perfil de usuario" data-bs-placement="bottom" title="Opciones de cuenta" style="height: 38px; padding: 0 14px; border-radius: 50px;">
+                <a class="btn-profile dropdown-toggle d-inline-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menú de perfil de usuario" title="Opciones de cuenta">
                     {% if user.foto_perfil %}
                         <img src="{{ user.foto_perfil.url }}" alt="Perfil" class="rounded-circle hdr-u-7" style="object-fit: cover; object-position: {{ user.foto_posicion }};">
                     {% else %}
                         <div class="header-avatar-initials">{{ user.iniciales }}</div>
                     {% endif %}
-                    <span class="d-none d-md-inline fw-bold small">{{ user.first_name|default:user.username|upper }}</span>
+                    <span class="d-none d-xl-inline fw-bold small">{{ user.first_name|default:user.username|upper }}</span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow border-secondary">
-                    <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-id-badge me-2"></i>Mi Perfil</a></li>
-                    {% if user.is_staff %}
-                    <li><a class="dropdown-item text-info" href="{% url 'gestionar_usuarios' %}"><i class="fas fa-users-cog me-2"></i>Usuarios y Copias de Seguridad</a></li>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow hdr-admin-dropdown">
+                    <li>
+                        <div class="hdr-dropdown-user-card">
+                            {% if user.foto_perfil %}
+                                <img src="{{ user.foto_perfil.url }}" alt="Avatar" class="rounded-circle" width="36" height="36" style="object-fit: cover; object-position: {{ user.foto_posicion }};">
+                            {% else %}
+                                <div class="header-avatar-initials" style="width: 36px; height: 36px; font-size: 0.82rem;">{{ user.iniciales }}</div>
+                            {% endif %}
+                            <div class="hdr-dropdown-user-info">
+                                <div class="hdr-dropdown-user-name">{{ user.get_full_name|default:user.username }}</div>
+                                <div class="hdr-dropdown-user-role">
+                                    {% if user.is_superuser %}
+                                        <i class="fas fa-crown"></i> Superadmin
+                                    {% elif user.is_staff %}
+                                        <i class="fas fa-shield-alt"></i> Administrador
+                                    {% else %}
+                                        <i class="fas fa-user-graduate"></i> Aprendiz SENA
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}" href="{% url 'perfil' %}">
+                            <span class="hdr-dd-icon"><i class="fas fa-id-badge"></i></span>
+                            <span>Mi Perfil</span>
+                        </a>
+                    </li>
+                    {% if user.is_staff or user.is_superuser %}
+                    <li><hr class="dropdown-divider border-secondary my-1"></li>
+                    <li><h6 class="dropdown-header">Administración Rápida</h6></li>
+                    <li>
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'gestionar_usuarios' %}active{% endif %}" href="{% url 'gestionar_usuarios' %}">
+                            <span class="hdr-dd-icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Gestión de Usuarios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'gestionar_backups' %}active{% endif %}" href="{% url 'gestionar_backups' %}">
+                            <span class="hdr-dd-icon"><i class="fas fa-database"></i></span>
+                            <span>Copias de Seguridad</span>
+                        </a>
+                    </li>
                     {% endif %}
-                    <li><hr class="dropdown-divider border-secondary"></li>
-                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                    <li><hr class="dropdown-divider border-secondary my-1"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                            <span class="hdr-dd-icon"><i class="fas fa-sign-out-alt"></i></span>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </li>
                 </ul>
                 
                 <!-- ALERTA DE CONEXIÓN -->
@@ -283,9 +721,10 @@
                     <span id="networkAlertText">Se perdió la conexión a internet</span>
                 </div>
             </div>
+
             <!-- Botón Hamburguesa Móvil -->
-            <button class="navbar-toggler border-0 shadow-none p-1 ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Abrir menú de navegación" title="Menú de navegación">
-                <i class="fas fa-bars fs-4 text-white"></i>
+            <button class="navbar-toggler hdr-mobile-toggler shadow-none ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menú de navegación" title="Menú de navegación">
+                <i class="fas fa-bars fs-5 text-white"></i>
             </button>
             {% else %}
             <button type="button" class="btn-ingresar btn-ingresar-nav" data-bs-toggle="modal" data-bs-target="#modalForm">
@@ -295,40 +734,50 @@
             {% endif %}
         </div>
 
-        <!-- 3. PÍLDORA DE NAVEGACIÓN CENTRAL (Centro en Desktop, Colapsable en Móvil) -->
+        <!-- 3. PÍLDORA DE NAVEGACIÓN CENTRAL (Centro en Desktop, Drawer Moderno en Móvil) -->
         {% if user.is_authenticated %}
         <div class="collapse navbar-collapse justify-content-center order-lg-2 w-100 w-lg-auto" id="navbarNav">
             {% with url_name=request.resolver_match.url_name current_path=request.path %}
-            <div class="nav-pill-center d-none d-lg-flex mx-auto">
+            <!-- Desktop Pill Menu -->
+            <div class="nav-pill-center d-none d-lg-flex mx-auto" role="menubar" aria-label="Menú principal">
                 <a class="nav-link {% if url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
-                    <i class="fas fa-home"></i> Inicio
+                    <i class="fas fa-home"></i><span>Inicio</span>
                 </a>
                 <a class="nav-link {% if url_name == 'interfichas' or '/interfichas/' in current_path %}active{% endif %}" href="{% url 'interfichas' %}">
-                    <i class="fas fa-trophy"></i> Inter-Fichas
+                    <i class="fas fa-trophy"></i><span>Inter-Fichas</span>
                 </a>
                 <a class="nav-link {% if url_name == 'gimnasio' or '/gimnasio/' in current_path %}active{% endif %}" href="{% url 'gimnasio' %}">
-                    <i class="fas fa-dumbbell"></i> Gimnasio
+                    <i class="fas fa-dumbbell"></i><span>Gimnasio</span>
                 </a>
-                <a class="nav-link {% if url_name == 'inventario' or '/inventario/' in current_path %}active{% endif %}" href="{% url 'inventario' %}">
-                    <i class="fas fa-box"></i> Inventario
+                <a class="nav-link {% if url_name == 'inventario' or url_name == 'devoluciones' or url_name == 'sanciones' or '/inventario/' in current_path %}active{% endif %}" href="{% url 'inventario' %}">
+                    <i class="fas fa-boxes"></i><span>Inventario</span>
                 </a>
                 <a class="nav-link {% if request.resolver_match.namespace == 'habitos' or '/habitos/' in current_path %}active{% endif %}" href="{% url 'habitos:inicio' %}">
-                    <i class="fas fa-heartbeat me-1"></i>
-                    Hábitos Saludables
+                    <i class="fas fa-heartbeat"></i><span>Hábitos Saludables</span>
                 </a>
             </div>
 
-            <ul class="navbar-nav d-lg-none mt-3 pb-2">
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'home' %}"><i class="fas fa-home me-2"></i>Inicio</a></li>
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'interfichas' %}"><i class="fas fa-trophy me-2"></i>Inter-Fichas</a></li>
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'gimnasio' %}"><i class="fas fa-dumbbell me-2"></i>Gimnasio</a></li>
-                <li class="nav-item border-bottom border-secondary"><a class="nav-link py-2 px-2" href="{% url 'inventario' %}"><i class="fas fa-box me-2"></i>Inventario</a></li>
-                <li class="nav-item">
-                    <a class="nav-link py-2 px-2" href="{% url 'habitos:inicio' %}">
-                        <i class="fas fa-heartbeat me-2"></i>Hábitos Saludables
+            <!-- Mobile Drawer Menu (< 992px) -->
+            <div class="d-lg-none hdr-mobile-drawer">
+                <div class="hdr-mobile-section-lbl">Módulos Deportivos</div>
+                <div class="hdr-mobile-grid">
+                    <a class="hdr-mobile-link {% if url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                        <i class="fas fa-home"></i><span>Inicio</span>
                     </a>
-                </li>
-            </ul>
+                    <a class="hdr-mobile-link {% if url_name == 'interfichas' or '/interfichas/' in current_path %}active{% endif %}" href="{% url 'interfichas' %}">
+                        <i class="fas fa-trophy"></i><span>Inter-Fichas</span>
+                    </a>
+                    <a class="hdr-mobile-link {% if url_name == 'gimnasio' or '/gimnasio/' in current_path %}active{% endif %}" href="{% url 'gimnasio' %}">
+                        <i class="fas fa-dumbbell"></i><span>Gimnasio</span>
+                    </a>
+                    <a class="hdr-mobile-link {% if url_name == 'inventario' or url_name == 'devoluciones' or url_name == 'sanciones' or '/inventario/' in current_path %}active{% endif %}" href="{% url 'inventario' %}">
+                        <i class="fas fa-boxes"></i><span>Inventario</span>
+                    </a>
+                    <a class="hdr-mobile-link {% if request.resolver_match.namespace == 'habitos' or '/habitos/' in current_path %}active{% endif %}" href="{% url 'habitos:inicio' %}" style="grid-column: 1 / -1;">
+                        <i class="fas fa-heartbeat"></i><span>Hábitos Saludables</span>
+                    </a>
+                </div>
+            </div>
             {% endwith %}
         </div>
         {% endif %}

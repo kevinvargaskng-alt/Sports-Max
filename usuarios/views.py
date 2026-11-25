@@ -851,6 +851,32 @@ def gestionar_usuarios_view(request):
     return render(request, 'usuarios/gestionar_usuarios.html', contexto)
 
 
+@login_required(login_url='home')
+def gestionar_backups_view(request):
+    """Módulo independiente para gestión y restauración de copias de seguridad (solo administradores)."""
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, 'No tienes permisos para acceder al módulo de copias de seguridad.')
+        return redirect('perfil')
+
+    from usuarios.models import HistorialAccion
+    respaldos_qs = (
+        HistorialAccion.objects
+        .filter(accion__in=['EXPORT_DB_BACKUP', 'RESTORE_DB_BACKUP'])
+        .select_related('usuario')
+        .order_by('-fecha')
+    )
+    total_exportaciones = respaldos_qs.filter(accion='EXPORT_DB_BACKUP').count()
+    total_restauraciones = respaldos_qs.filter(accion='RESTORE_DB_BACKUP').count()
+
+    contexto = {
+        'usuario': request.user,
+        'historial_respaldos': respaldos_qs[:500],
+        'total_exportaciones': total_exportaciones,
+        'total_restauraciones': total_restauraciones,
+    }
+    return render(request, 'usuarios/gestionar_backups.html', contexto)
+
+
 @login_required
 def export_database_backup(request):
     """Genera y descarga un respaldo completo de la base de datos bajo un esquema estricto con metadatos."""
@@ -886,7 +912,7 @@ def export_database_backup(request):
         return response
     except Exception as e:
         messages.error(request, f'Error al generar el respaldo de la base de datos: {e}')
-        return redirect('perfil')
+        return redirect('gestionar_backups')
 
 
 @login_required
@@ -900,7 +926,7 @@ def restore_database_backup(request):
         backup_file = request.FILES['backup_file']
         if not backup_file.name.endswith('.json'):
             messages.error(request, "Formato de archivo inválido. Debe ser un archivo .json")
-            return redirect('gestionar_usuarios')
+            return redirect('gestionar_backups')
 
         import tempfile
         import os
@@ -920,11 +946,11 @@ def restore_database_backup(request):
                 records = parsed
             else:
                 messages.error(request, "El archivo JSON no tiene una estructura de respaldo compatible (debe contener el esquema {'version', 'timestamp', 'entity', 'data': [...]}).")
-                return redirect('gestionar_usuarios')
+                return redirect('gestionar_backups')
 
             if not isinstance(records, list):
                 messages.error(request, "Los datos del respaldo deben ser una lista de registros.")
-                return redirect('gestionar_usuarios')
+                return redirect('gestionar_backups')
 
             with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json', encoding='utf-8') as temp_file:
                 json.dump(records, temp_file, indent=2, ensure_ascii=False)
@@ -942,7 +968,7 @@ def restore_database_backup(request):
     else:
         messages.error(request, "No se ha proporcionado ningún archivo para restaurar.")
 
-    return redirect('gestionar_usuarios')
+    return redirect('gestionar_backups')
 
 @login_required(login_url='home')
 def manual_usuario_view(request):

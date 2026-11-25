@@ -7,6 +7,22 @@
 {% block extra_css %}
 <style>
 /* ── CP-10: Calculadora IMC ───────────────────────────────── */
+:root {
+  --bs-success: #166534;
+  --bs-success-rgb: 22, 101, 52;
+}
+.btn-success {
+  background-color: #166534 !important;
+  border-color: #166534 !important;
+  color: #ffffff !important;
+}
+.btn-success:hover {
+  background-color: #14532d !important;
+  border-color: #14532d !important;
+}
+.bg-success { background-color: #166534 !important; }
+.text-success { color: #2ea043 !important; }
+
 .imc-hero {
   background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1f2937 100%);
   padding: 2.5rem 0 1.5rem;
@@ -17,7 +33,7 @@
   position: absolute;
   right: -80px; top: -80px;
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(57,169,0,.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(22, 101, 52, 0.25) 0%, transparent 70%);
   pointer-events: none;
 }
 .imc-hero h1 { color: #fff; font-weight: 800; }
@@ -39,15 +55,15 @@
   transition: border-color .2s, box-shadow .2s;
 }
 .form-control-glass:focus {
-  border-color: #39A900 !important;
-  box-shadow: 0 0 0 3px rgba(57,169,0,.2) !important;
+  border-color: #238636 !important;
+  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.32) !important;
   background: rgba(255,255,255,.1) !important;
 }
 .form-label { color: rgba(255,255,255,.75); font-weight: 500; font-size: .9rem; }
 
 /* IMC meter */
 .imc-meter { position: relative; height: 18px; border-radius: 99px; overflow: hidden;
-             background: linear-gradient(90deg, #3b82f6 0%, #22c55e 25%, #f59e0b 55%, #ef4444 80%); }
+             background: linear-gradient(90deg, #3b82f6 0%, #238636 25%, #f59e0b 55%, #ef4444 80%); }
 .imc-needle {
   position: absolute; top: -4px; width: 4px; height: 26px;
   background: #fff; border-radius: 2px;
@@ -76,8 +92,8 @@
   display: inline-flex; align-items: center; gap: .35rem;
 }
 .radio-pill:checked + label {
-  background: #39A900; color: #fff; border-color: #39A900;
-  box-shadow: 0 0 12px rgba(57,169,0,.35);
+  background: #166534; color: #fff; border-color: #166534;
+  box-shadow: 0 0 12px rgba(22, 101, 52, 0.45);
 }
 </style>
 {% endblock %}
@@ -231,7 +247,7 @@
             <div class="col-7">
               <div class="d-flex flex-column gap-2">
                 <div class="d-flex justify-content-between align-items-center">
-                  <span class="d-flex align-items-center gap-2"><span style="width:12px;height:12px;border-radius:3px;background:#39A900;display:inline-block"></span><small>Proteínas</small></span>
+                  <span class="d-flex align-items-center gap-2"><span style="width:12px;height:12px;border-radius:3px;background:#238636;display:inline-block"></span><small>Proteínas</small></span>
                   <strong id="macroProteinas" class="text-success">— g</strong>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
@@ -389,7 +405,7 @@
         labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
         datasets: [{
           data: [m.proteinas_g, m.carbohidratos_g, m.grasas_g],
-          backgroundColor: ['#39A900', '#0d6efd', '#f59e0b'],
+          backgroundColor: ['#238636', '#0d6efd', '#f59e0b'],
           borderWidth: 0,
           hoverOffset: 6,
         }],

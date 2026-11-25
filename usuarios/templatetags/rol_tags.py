@@ -30,3 +30,11 @@ def rol_label(rol):
 def get_item(dictionary, key):
     """Permite acceder a un dict con clave dinámica en templates."""
     return dictionary.get(key, 0)
+
+
+@register.filter(name='in_list')
+def in_list(value, csv_list):
+    """Verifica si un valor está dentro de una lista separada por comas."""
+    if not value or not csv_list:
+        return False
+    return str(value).strip() in [item.strip() for item in str(csv_list).split(',')]

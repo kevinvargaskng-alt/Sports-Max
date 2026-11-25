@@ -4,60 +4,34 @@
 {% block title %}Sanciones - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-<style>
-    .badge-status { padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-    .sancion-card {
-        border: 1px solid #30363d;
-        border-radius: 16px;
-        background: #161b22;
-        padding: 20px;
-        margin-bottom: 16px;
-        transition: border-color 0.2s;
-    }
-    .sancion-card:hover { border-color: #58a6ff; }
-    .sancion-card.activa  { border-left: 4px solid #f85149; }
-    .sancion-card.cerrada { border-left: 4px solid #3fb950; opacity: 0.6; }
-
-    @media (max-width: 768px) {
-        thead { display: none; }
-        table, tbody, tr, td { display: block; width: 100%; }
-        tr { margin-bottom: 20px; border: 1px solid #30363d; border-radius: 16px;
-             background: #161b22; padding: 12px 0; }
-        td { padding: 10px 20px !important; border: none !important;
-             position: relative; padding-top: 34px !important; }
-        td::before { content: attr(data-label); position: absolute; top: 10px; left: 20px;
-                     font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-                     color: #58a6ff; letter-spacing: 1px; }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/inventario_styles.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
     <div class="container text-start">
-
-        <header class="modulo-header text-center mb-5">
-            <i class="fas fa-exclamation-triangle fa-3x mb-3 text-danger"></i>
-            <h2 class="fw-bold text-white">Módulo Sanciones</h2>
-            <p class="text-white-50">Registro de sanciones activas e historial</p>
-        </header>
-
-        <!-- Nav rápida -->
-        <div class="d-flex flex-wrap gap-2 mb-4">
-            <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm fw-bold">
-{% include 'partials/back_button.html' with back_url='inventario' back_label='Volver al Inventario' %}
-            </a>
-            <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm fw-bold">
-                <i class="fas fa-undo me-1"></i>Ir a Devoluciones
-            </a>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                {% include 'partials/back_button.html' with back_url='inventario' back_label='Volver al Inventario' %}
+                <a href="{% url 'devoluciones' %}" class="btn btn-outline-success btn-sm fw-bold rounded-pill px-3 py-2">
+                    <i class="fas fa-undo me-1"></i>Ir a Devoluciones
+                </a>
+            </div>
             {% if user.is_staff %}
-            <button class="btn btn-danger btn-sm fw-bold ms-auto"
+            <button class="btn btn-danger btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm"
                     data-bs-toggle="modal" data-bs-target="#modalCrearSancion">
                 <i class="fas fa-plus me-1"></i>Nueva Sanción
             </button>
             {% endif %}
         </div>
+
+        <header class="modulo-header inv-hero-header text-center mb-4">
+            <div class="inv-hero-icon inv-hero-icon-red">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="fw-bold text-white mb-1">Módulo Sanciones</h2>
+            <p class="text-white-50 mb-0">Registro de sanciones activas e historial disciplinario</p>
+        </header>
 
         <!-- ══════════════════════════════════════════
              RESUMEN ESTADÍSTICAS
@@ -109,7 +83,7 @@
             </h5>
 
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
+                <table class="table table-dark table-hover align-middle mb-0 inv-mobile-table">
                     <thead>
                         <tr>
                             <th>#</th>

@@ -1,104 +1,862 @@
 /* ════════════════════════════════════════════════════════════════
-   SPORTS-MAX — Corrección de contraste en MODO CLARO
-   Se carga al final del <body> para tener la última palabra sobre
-   style.css, inicio_styles.css y los parciales (header, Tux, etc.).
+   SPORTS-MAX — MODO CLARO SENA (Institucional + Estética Deportiva)
+   Paleta oficial SENA + energía deportiva:
+   - Verde SENA principal : #39A900
+   - Verde SENA oscuro    : #007832
+   - Naranja deportivo    : #FF6B00
+   - Fondos claros        : #F8FAFC / #FFFFFF
+   - Texto alto contraste : #1E293B
+   Se carga al final del <body> para garantizar consistencia global.
    ════════════════════════════════════════════════════════════════ */
 
-/* ── 1. Encabezado (navbar) ───────────────────────────────────── */
+/* ── 1. Variables base en Modo Claro SENA ──────────────────────── */
+html.acc-claro,
+html.acc-claro body,
+body.light-theme {
+    --sena-primary: #39A900;
+    --sena-secondary: #007832;
+    --sena-accent: #FF6B00;
+    --primary-dark: #F8FAFC;
+    --card-bg: #FFFFFF;
+    --neon-border: rgba(0, 120, 50, 0.25);
+    --text-white: #1E293B;
+    /* Variables compartidas del módulo Hábitos Saludables */
+    --acid: #39A900;
+    --acid-hover: #007832;
+    --acid-text: #007832;
+    --acid-dim: rgba(57, 169, 0, 0.1);
+    --acid-glow: rgba(57, 169, 0, 0.28);
+    --teal: #007832;
+    --teal-dim: rgba(0, 120, 50, 0.1);
+    --surface: #F8FAFC;
+    --surface2: #FFFFFF;
+    --surface3: #F1F5F9;
+    --border: #CBD5E1;
+    --border-h: #94A3B8;
+    --border-hover: #39A900;
+    --muted: #475569;
+    background-color: #F8FAFC !important;
+    background-image: none !important;
+    color: #1E293B !important;
+}
+
+/* ── 2. Encabezado (Navbar Institucional Claro) ────────────────── */
 html.acc-claro body nav.navbar,
-html.acc-claro body nav.navbar .hdr-navbar-container {
-    background: #ffffff !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+html.acc-claro body nav.navbar .hdr-navbar-container,
+body.light-theme nav.navbar,
+body.light-theme nav.navbar .hdr-navbar-container {
+    background: #FFFFFF !important;
+    border-bottom: 2px solid #39A900 !important;
+    box-shadow: 0 4px 16px rgba(30, 41, 59, 0.08) !important;
 }
 html.acc-claro body nav.navbar .navbar-brand-title,
-html.acc-claro body nav.navbar .navbar-brand-title span:not(.hdr-u-3) {
-    color: #0f172a !important;
+html.acc-claro body nav.navbar .navbar-brand-title span:not(.hdr-u-3),
+body.light-theme nav.navbar .navbar-brand-title,
+body.light-theme nav.navbar .navbar-brand-title span:not(.hdr-u-3) {
+    color: #1E293B !important;
 }
-html.acc-claro body nav.navbar .navbar-brand-title .hdr-u-3 {
-    color: #1a5fb4 !important;
+html.acc-claro body nav.navbar .navbar-brand-title .hdr-u-3,
+body.light-theme nav.navbar .navbar-brand-title .hdr-u-3 {
+    color: #39A900 !important;
 }
-html.acc-claro body nav.navbar .nav-pill-center {
-    background: #f1f5f9 !important;
-    border-color: #e2e8f0 !important;
+html.acc-claro body nav.navbar .nav-pill-center,
+body.light-theme nav.navbar .nav-pill-center {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
 }
 html.acc-claro body nav.navbar .nav-link,
 html.acc-claro body nav.navbar .nav-link i,
 html.acc-claro body nav.navbar .hdr-icon-btn,
 html.acc-claro body nav.navbar .hdr-icon-btn i,
-html.acc-claro body nav.navbar .navbar-toggler i {
-    color: #1e293b !important;
+html.acc-claro body nav.navbar .navbar-toggler i,
+body.light-theme nav.navbar .nav-link,
+body.light-theme nav.navbar .nav-link i {
+    color: #1E293B !important;
+}
+html.acc-claro body nav.navbar .nav-pill-center .nav-link:hover,
+html.acc-claro body nav.navbar .nav-pill-center .nav-link:hover i,
+body.light-theme nav.navbar .nav-pill-center .nav-link:hover,
+body.light-theme nav.navbar .nav-pill-center .nav-link:hover i {
+    color: #007832 !important;
+    background: rgba(57, 169, 0, 0.1) !important;
 }
 html.acc-claro body nav.navbar .nav-pill-center .nav-link.active,
-html.acc-claro body nav.navbar .nav-pill-center .nav-link.active i {
-    background: #1a5fb4 !important;
-    color: #ffffff !important;
+body.light-theme nav.navbar .nav-pill-center .nav-link.active {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 3px 10px rgba(57, 169, 0, 0.28) !important;
+}
+html.acc-claro body nav.navbar .nav-pill-center .nav-link.active i,
+body.light-theme nav.navbar .nav-pill-center .nav-link.active i {
+    color: #FFFFFF !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 html.acc-claro body nav.navbar .btn-profile,
-html.acc-claro body nav.navbar .btn-profile span {
-    color: #0f172a !important;
-    border-color: #cbd5e1 !important;
-    background: #f8fafc !important;
+html.acc-claro body nav.navbar .btn-profile span,
+body.light-theme nav.navbar .btn-profile,
+body.light-theme nav.navbar .btn-profile span {
+    color: #1E293B !important;
+    border-color: #CBD5E1 !important;
+    background: #F8FAFC !important;
 }
 html.acc-claro body nav.navbar .btn-ingresar-nav,
 html.acc-claro body nav.navbar .btn-ingresar-nav span,
 html.acc-claro body nav.navbar .btn-ingresar-nav i {
-    color: #ffffff !important;
+    background: linear-gradient(135deg, #39A900, #007832) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .smax-position-bar {
+    background: #F8FAFC !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    color: #475569 !important;
+}
+html.acc-claro body .smax-position-bar a,
+html.acc-claro body .smax-position-bar .smax-pos-current {
+    color: #007832 !important;
 }
 
-/* ── 2. Asistente Tux (ventana de chat) ───────────────────────── */
-html.acc-claro .chat-window {
-    --surface: #ffffff;
-    --surface2: #f1f5f9;
-    --surface3: #e2e8f0;
-    --border: rgba(15, 23, 42, 0.14);
-    --text: #0f172a;
-    --muted: #475569;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+/* ── 3. Footer SENA Institucional ──────────────────────────────── */
+html.acc-claro body footer.bg-dark,
+body.light-theme footer.bg-dark {
+    background: #007832 !important;
+    color: #FFFFFF !important;
+    border-top: 3px solid #39A900 !important;
 }
-html.acc-claro body .chat-window .header-name { color: #0f172a !important; }
+html.acc-claro body footer *,
+body.light-theme footer * {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* ── 4. Asistente Tux (ventana de chat) ────────────────────────── */
+html.acc-claro .chat-window {
+    --surface: #FFFFFF;
+    --surface2: #F1F5F9;
+    --surface3: #E2E8F0;
+    --border: rgba(30, 41, 59, 0.14);
+    --text: #1E293B;
+    --muted: #475569;
+    --accent: #39A900;
+    box-shadow: 0 20px 50px rgba(30, 41, 59, 0.22);
+}
+html.acc-claro body .chat-window .header-name { color: #1E293B !important; }
 html.acc-claro body .chat-window .header-sub,
 html.acc-claro body .chat-window .date-div,
 html.acc-claro body .chat-window .btime { color: #475569 !important; }
 html.acc-claro body .chat-window .status-pill,
-html.acc-claro body .chat-window .status-pill * { color: #047857 !important; }
-html.acc-claro body .chat-window .chip { color: #1e293b !important; }
-html.acc-claro body .chat-window .chip:hover { color: #0060dd !important; }
+html.acc-claro body .chat-window .status-pill * { color: #007832 !important; }
+html.acc-claro body .chat-window .chip { color: #1E293B !important; }
+html.acc-claro body .chat-window .chip:hover { color: #007832 !important; border-color: #39A900 !important; }
 html.acc-claro body .chat-window .bubble.bot,
-html.acc-claro body .chat-window .bubble.bot * { color: #0f172a !important; }
+html.acc-claro body .chat-window .bubble.bot * { color: #1E293B !important; }
 html.acc-claro body .chat-window .bubble.user,
-html.acc-claro body .chat-window .bubble.user * { color: #ffffff !important; }
-html.acc-claro body .chat-window .typing-label { color: #0060dd !important; }
-html.acc-claro body .chat-window .chat-input { color: #0f172a !important; }
-html.acc-claro body .chat-window .chat-input::placeholder { color: #64748b !important; }
+html.acc-claro body .chat-window .bubble.user * { background: #007832 !important; color: #FFFFFF !important; }
+html.acc-claro body .chat-window .typing-label { color: #007832 !important; }
+html.acc-claro body .chat-window .chat-input { color: #1E293B !important; }
+html.acc-claro body .chat-window .chat-input::placeholder { color: #64748B !important; }
 html.acc-claro body .chat-window svg { stroke: #334155; }
-html.acc-claro body .chat-window .attach-btn:hover { background: #cbd5e1; }
+html.acc-claro body .chat-window .attach-btn:hover { background: #CBD5E1; }
 html.acc-claro body .chat-window [class*="footer"],
 html.acc-claro body .chat-window [class*="footer"] * { color: #475569 !important; }
 
-/* ── 3. Zonas oscuras del inicio (hero y cintillo) ────────────── */
+/* ── 5. Zonas oscuras del inicio (hero y cintillo) ─────────────── */
 html.acc-claro body .ticker-bar,
 html.acc-claro body .ticker-bar span,
-html.acc-claro body .ticker-bar b { color: #ffffff !important; }
+html.acc-claro body .ticker-bar b { color: #FFFFFF !important; }
 html.acc-claro body .hero .hero-title,
-html.acc-claro body .hero .hero-title span { color: #ffffff !important; }
+html.acc-claro body .hero .hero-title span { color: #FFFFFF !important; }
 html.acc-claro body .hero .hero-sub,
-html.acc-claro body .hero .hero-eyebrow { color: rgba(255, 255, 255, 0.92) !important; }
+html.acc-claro body .hero .hero-eyebrow { color: #FFFFFF !important; }
 
-/* ── 4. Contenedores Bootstrap que quedaban oscuros ───────────── */
-html.acc-claro body .bg-dark:not(.badge):not(.btn) {
-    background-color: #f1f5f9 !important;
-    border-color: #cbd5e1 !important;
+/* ── 6. Semántica de colores deportivos SENA y contraste ───────── */
+html.acc-claro body .text-info { color: #007832 !important; }
+html.acc-claro body .text-warning { color: #C25100 !important; }
+html.acc-claro body .text-light { color: #1E293B !important; }
+html.acc-claro body .border-secondary { border-color: #CBD5E1 !important; }
+html.acc-claro body .btn-outline-info {
+    color: #007832 !important;
+    border-color: #39A900 !important;
+}
+html.acc-claro body .btn-outline-info:hover {
+    background: #39A900 !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .btn-outline-warning {
+    color: #C25100 !important;
+    border-color: #FF6B00 !important;
+}
+html.acc-claro body .btn-outline-warning:hover {
+    background: #FF6B00 !important;
+    border-color: #FF6B00 !important;
+    color: #FFFFFF !important;
+}
+
+/* ── 7. Contenedores Bootstrap, tarjetas y tablas ──────────────── */
+html.acc-claro body .bg-dark:not(.badge):not(.btn):not(footer) {
+    background-color: #F1F5F9 !important;
+    border-color: #CBD5E1 !important;
+    color: #1E293B !important;
 }
 html.acc-claro body .card-header.bg-secondary,
 html.acc-claro body .bg-secondary:not(.badge):not(.btn) {
-    background-color: #e2e8f0 !important;
+    background-color: #E2E8F0 !important;
+    color: #1E293B !important;
 }
-html.acc-claro body .text-light { color: #1e293b !important; }
-html.acc-claro body .border-secondary { border-color: #cbd5e1 !important; }
 html.acc-claro body .table > :not(caption) > * > * {
     background-color: transparent;
-    color: #1e293b !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .modal-content {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
 }
 html.acc-claro body .modal-content .btn-close { filter: none !important; }
+html.acc-claro body .modal-sport-header {
+    background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .modal-sport-header *,
+html.acc-claro body .modal-sport-header .modal-title {
+    color: #FFFFFF !important;
+}
+html.acc-claro body .modal-sport-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
 
+/* ── 8. Módulo Inter-Fichas en Modo Claro SENA ─────────────────── */
+html.acc-claro body .main-card,
+html.acc-claro body .grupo-container-card,
+html.acc-claro body .team-card-sport,
+html.acc-claro body .torneo-filter-bar {
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    color: #1E293B !important;
+    box-shadow: 0 6px 20px rgba(30, 41, 59, 0.06) !important;
+}
+html.acc-claro body .main-card .text-success { color: #007832 !important; }
+html.acc-claro body .torneo-filter-btn {
+    background: #F8FAFC !important;
+    color: #1E293B !important;
+    border-color: #CBD5E1 !important;
+}
+html.acc-claro body .torneo-filter-btn.active,
+html.acc-claro body .torneo-filter-btn:hover {
+    background: #39A900 !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .table-torneos thead th {
+    background: #F1F8EC !important;
+    color: #007832 !important;
+    border-bottom: 2px solid #39A900 !important;
+}
+html.acc-claro body .table-torneos tbody tr:hover {
+    background: rgba(57, 169, 0, 0.05) !important;
+}
+html.acc-claro body .view-mode-btn {
+    color: #1E293B !important;
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+}
+html.acc-claro body .view-mode-btn.active {
+    background: #39A900 !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+
+/* ── 9. Fondos oscuros definidos en línea (style="...") ─────────── */
+html.acc-claro body [style*="background:#161b22"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #161b22"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#161b22"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #161b22"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#0d1117"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #0d1117"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#0d1117"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #0d1117"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#0f172a"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #0f172a"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#0f172a"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #0f172a"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#1e293b"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #1e293b"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#1e293b"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #1e293b"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#21262d"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #21262d"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#21262d"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #21262d"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#1c2230"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #1c2230"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#1c2230"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #1c2230"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#1a2236"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #1a2236"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#1a2236"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #1a2236"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#1e2937"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #1e2937"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#1e2937"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #1e2937"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background:#1a1f2e"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background: #1a1f2e"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color:#1a1f2e"]:not(.modal-backdrop):not(#acc-panel):not(.hero),
+html.acc-claro body [style*="background-color: #1a1f2e"]:not(.modal-backdrop):not(#acc-panel):not(.hero) {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border-color: #CBD5E1 !important;
+}
+
+/* ── 10. Menús desplegables del Navbar y Dropdowns Bootstrap ───── */
+html.acc-claro body .dropdown-menu,
+html.acc-claro body .dropdown-menu-dark,
+html.acc-claro body .hdr-admin-dropdown {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+    box-shadow: 0 12px 30px rgba(30, 41, 59, 0.14) !important;
+}
+html.acc-claro body .dropdown-menu .dropdown-item,
+html.acc-claro body .dropdown-menu-dark .dropdown-item {
+    color: #1E293B !important;
+}
+html.acc-claro body .dropdown-menu .dropdown-item:hover,
+html.acc-claro body .dropdown-menu-dark .dropdown-item:hover {
+    background: #F1F8EC !important;
+    color: #007832 !important;
+}
+html.acc-claro body .dropdown-menu .dropdown-item.text-danger,
+html.acc-claro body .dropdown-menu-dark .dropdown-item.text-danger {
+    color: #DC2626 !important;
+}
+html.acc-claro body .dropdown-menu .dropdown-divider,
+html.acc-claro body .dropdown-menu-dark .dropdown-divider {
+    border-color: #E2E8F0 !important;
+}
+html.acc-claro body .hdr-icon-btn {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .hdr-icon-btn:hover {
+    background: rgba(57, 169, 0, 0.12) !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+html.acc-claro body .smax-position-bar .text-white,
+html.acc-claro body .smax-position-bar .text-white-50 {
+    color: #475569 !important;
+}
+html.acc-claro body .smax-position-bar strong.text-white {
+    color: #007832 !important;
+}
+
+/* ── 11. Hábitos Saludables (IMC, Progreso, Sueño, Rutinas, Recetas, Salud, Educativo, Notif, Reportes) ── */
+html.acc-claro body .hero-wrap,
+html.acc-claro body .imc-hero,
+html.acc-claro body .progreso-hero,
+html.acc-claro body .sueno-hero,
+html.acc-claro body .rutinas-hero,
+html.acc-claro body .recetas-hero,
+html.acc-claro body .notif-hero,
+html.acc-claro body .roles-hero {
+    background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 10px 28px rgba(0, 120, 50, 0.2) !important;
+}
+html.acc-claro body .hero-wrap h1,
+html.acc-claro body .hero-wrap h1 span,
+html.acc-claro body .hero-wrap h2,
+html.acc-claro body .hero-wrap p,
+html.acc-claro body .hero-wrap .text-white,
+html.acc-claro body .hero-wrap .hero-big-icon,
+html.acc-claro body .imc-hero h1,
+html.acc-claro body .imc-hero h1 i,
+html.acc-claro body .imc-hero p,
+html.acc-claro body .imc-hero .breadcrumb-item,
+html.acc-claro body .imc-hero .breadcrumb-item a,
+html.acc-claro body .progreso-hero h1,
+html.acc-claro body .progreso-hero h1 i,
+html.acc-claro body .progreso-hero p,
+html.acc-claro body .sueno-hero h1,
+html.acc-claro body .sueno-hero h1 i,
+html.acc-claro body .sueno-hero p,
+html.acc-claro body .rutinas-hero h1,
+html.acc-claro body .rutinas-hero h1 i,
+html.acc-claro body .rutinas-hero p,
+html.acc-claro body .recetas-hero h1,
+html.acc-claro body .recetas-hero h1 i,
+html.acc-claro body .recetas-hero p,
+html.acc-claro body .notif-hero h1,
+html.acc-claro body .notif-hero h1 i,
+html.acc-claro body .notif-hero p,
+html.acc-claro body .roles-hero h1,
+html.acc-claro body .roles-hero p {
+    color: #FFFFFF !important;
+    text-shadow: none !important;
+}
+html.acc-claro body .hero-wrap .hero-badge {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid {
+    background: #FFFFFF !important;
+    color: #007832 !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16) !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid i {
+    color: #007832 !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid:hover {
+    background: #F1F8EC !important;
+    color: #005C25 !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.26) !important;
+    border-color: #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+
+/* Encabezados secundarios .page-header (Dashboard, Salud, Educativo) */
+html.acc-claro body .page-header {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F1F8EC 100%) !important;
+    border-bottom: 3px solid #39A900 !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+html.acc-claro body .page-header h1 {
+    color: #0F172A !important;
+    text-shadow: none !important;
+}
+html.acc-claro body .page-header h1 i {
+    color: #39A900 !important;
+}
+html.acc-claro body .page-header .subtitle,
+html.acc-claro body .page-header .hab-sal-u-1,
+html.acc-claro body .page-header .edu-u-1 {
+    color: #475569 !important;
+}
+
+/* Botones principales institucionales SENA en Hábitos */
+html.acc-claro body .btn-acid,
+html.acc-claro body *:not(.hero-wrap) > .btn-primary-acid {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 16px rgba(57, 169, 0, 0.25) !important;
+}
+html.acc-claro body .btn-acid:hover,
+html.acc-claro body *:not(.hero-wrap) > .btn-primary-acid:hover {
+    filter: brightness(1.06);
+    color: #FFFFFF !important;
+}
+
+/* Tarjetas, paneles y contenedores de Hábitos Saludables */
+html.acc-claro body .calc-card,
+html.acc-claro body .kpi-box,
+html.acc-claro body .kpi-card,
+html.acc-claro body .chart-card,
+html.acc-claro body .sueno-card,
+html.acc-claro body .rutina-card,
+html.acc-claro body .notif-card,
+html.acc-claro body .receta-card,
+html.acc-claro body .info-card,
+html.acc-claro body .interactive-widget,
+html.acc-claro body .pyramid-item,
+html.acc-claro body .rep-kpi-card,
+html.acc-claro body .stat-box,
+html.acc-claro body .stat-card,
+html.acc-claro body .content-card,
+html.acc-claro body .material-card,
+html.acc-claro body .rep-filter-card,
+html.acc-claro body .quick-btn,
+html.acc-claro body .admin-action-btn,
+html.acc-claro body .machine-card-grid,
+html.acc-claro body .torneo-hero-stat-card,
+html.acc-claro body .hero-aprendiz,
+html.acc-claro body .team-info-grid,
+html.acc-claro body .manual-section,
+html.acc-claro body .manual-figure,
+html.acc-claro body .cookie-modal-glass,
+html.acc-claro body .smax-dialog {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+    box-shadow: 0 6px 20px rgba(30, 41, 59, 0.07) !important;
+}
+html.acc-claro body .imc-live-card {
+    background: linear-gradient(145deg, #F1F8EC 0%, #FFFFFF 100%) !important;
+    border: 1.5px solid #86EFAC !important;
+    color: #1E293B !important;
+    box-shadow: 0 8px 24px rgba(0, 120, 50, 0.08) !important;
+}
+html.acc-claro body .nav-card:hover,
+html.acc-claro body .content-card:hover,
+html.acc-claro body .receta-card:hover,
+html.acc-claro body .rutina-card:hover,
+html.acc-claro body .interactive-widget:hover,
+html.acc-claro body .pyramid-item:hover,
+html.acc-claro body .material-card:hover {
+    border-color: #39A900 !important;
+    box-shadow: 0 12px 28px rgba(0, 120, 50, 0.12) !important;
+    color: #0F172A !important;
+}
+
+/* Sub-cajas internas, alertas y widgets interactivos */
+html.acc-claro body .detail-item,
+html.acc-claro body .tracking-card .tc-stat,
+html.acc-claro body #liveImcAlertBox,
+html.acc-claro body .edu-u-41 {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .edu-u-44 {
+    background: #F0FDF4 !important;
+    border-left: 4px solid #39A900 !important;
+}
+html.acc-claro body .hab-water-info-box,
+html.acc-claro body .hab-imc-msg-box,
+html.acc-claro body .hab-sal-u-4 {
+    background: #F0FDF4 !important;
+    border: 1px solid #86EFAC !important;
+    color: #14532D !important;
+}
+html.acc-claro body .consent-banner,
+html.acc-claro body .alert-habeas {
+    background: #FFFBEB !important;
+    border: 1px solid #FCD34D !important;
+    color: #78350F !important;
+}
+html.acc-claro body .consent-banner p,
+html.acc-claro body .alert-habeas p,
+html.acc-claro body .hab-dash-u-4 {
+    color: #78350F !important;
+}
+html.acc-claro body .consent-banner strong,
+html.acc-claro body .alert-habeas strong,
+html.acc-claro body .hab-dash-u-5 {
+    color: #B45309 !important;
+}
+html.acc-claro body .alert-dark {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #334155 !important;
+}
+html.acc-claro body .water-progress-track,
+html.acc-claro body .barra-progreso,
+html.acc-claro body .range-slider {
+    background: #E2E8F0 !important;
+}
+html.acc-claro body .push-toggle:not(.on) {
+    background: #CBD5E1 !important;
+}
+html.acc-claro body .push-toggle.on {
+    background: #39A900 !important;
+}
+html.acc-claro body .imc-needle {
+    background: #0F172A !important;
+    border: 1px solid #FFFFFF !important;
+}
+
+/* Textos de tarjetas educativas, salud, nutrición y seguimiento */
+html.acc-claro body .nav-card h6,
+html.acc-claro body .tracking-card h5,
+html.acc-claro body .no-tracking-card h5,
+html.acc-claro body .library-banner h5,
+html.acc-claro body .content-card h5,
+html.acc-claro body .material-card h5,
+html.acc-claro body .pyramid-item h6,
+html.acc-claro body .edu-u-8,
+html.acc-claro body .edu-u-15,
+html.acc-claro body .edu-u-20,
+html.acc-claro body .edu-u-36,
+html.acc-claro body .edu-u-43,
+html.acc-claro body .edu-u-45,
+html.acc-claro body .hab-sal-u-5,
+html.acc-claro body .hab-sal-u-45,
+html.acc-claro body .hab-data-u-4,
+html.acc-claro body .hab-water-info-list,
+html.acc-claro body .hab-widget-field-lbl,
+html.acc-claro body .hab-motivational-quote,
+html.acc-claro body .peso-cambio-igual {
+    color: #1E293B !important;
+}
+html.acc-claro body .pyramid-item img,
+html.acc-claro body .edu-u-26,
+html.acc-claro body .edu-u-51 {
+    background: #F1F8EC !important;
+    border-color: #CBD5E1 !important;
+}
+
+/* Tabla de Historial de Salud (.table-dark-glass) */
+html.acc-claro body .table-dark-glass {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06) !important;
+}
+html.acc-claro body .table-dark-glass th {
+    background: #F1F8EC !important;
+    color: #007832 !important;
+    border-bottom: 2px solid #39A900 !important;
+}
+html.acc-claro body .table-dark-glass td,
+html.acc-claro body .table-dark-glass tr {
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+}
+html.acc-claro body .table-dark-glass .table-hover tbody tr:hover td {
+    background-color: rgba(57, 169, 0, 0.05) !important;
+}
+
+/* Badges y Píldoras de Hábitos, Rutinas, Recetas y Reportes */
+html.acc-claro body .badge-green,
+html.acc-claro body .badge-acid,
+html.acc-claro body .badge-teal,
+html.acc-claro body .imc-normal,
+html.acc-claro body .badge-salud-verde,
+html.acc-claro body .admin-header .badge-admin,
+html.acc-claro body .admin-section-title .badge-admin {
+    background: #DCFCE7 !important;
+    color: #007832 !important;
+    border-color: #86EFAC !important;
+}
+html.acc-claro body .badge-blue,
+html.acc-claro body .imc-bajo {
+    background: #E0F2FE !important;
+    color: #0369A1 !important;
+    border-color: #7DD3FC !important;
+}
+html.acc-claro body .badge-yellow,
+html.acc-claro body .imc-sobrepeso {
+    background: #FEF3C7 !important;
+    color: #B45309 !important;
+    border-color: #FCD34D !important;
+}
+html.acc-claro body .rutina-card .badge.bg-dark,
+html.acc-claro body .receta-card .badge.bg-dark,
+html.acc-claro body .badge.bg-dark.rounded-pill {
+    background: #F1F5F9 !important;
+    color: #334155 !important;
+    border-color: #CBD5E1 !important;
+}
+html.acc-claro body .rutina-card .badge.bg-dark.border-success,
+html.acc-claro body .receta-card .badge.bg-dark.border-success,
+html.acc-claro body .badge.bg-dark.border-success,
+html.acc-claro body .badge.bg-dark.border-info {
+    background: #F1F8EC !important;
+    color: #007832 !important;
+    border-color: #86EFAC !important;
+}
+html.acc-claro body .rep-period-btn:not(.active) {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #334155 !important;
+}
+html.acc-claro body .rep-period-btn:hover:not(.active) {
+    background: #F1F8EC !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+html.acc-claro body .rep-period-btn.active {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+
+html.acc-claro body .form-control,
+html.acc-claro body .form-select,
+html.acc-claro body .form-control-glass,
+html.acc-claro body .custom-input,
+html.acc-claro body .auth-input,
+html.acc-claro body .search-box,
+html.acc-claro body .search-input,
+html.acc-claro body .score-input,
+html.acc-claro body .set-input,
+html.acc-claro body .input-group-text {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .form-control::placeholder,
+html.acc-claro body .form-control-glass::placeholder,
+html.acc-claro body .custom-input::placeholder,
+html.acc-claro body .auth-input::placeholder,
+html.acc-claro body .search-box::placeholder,
+html.acc-claro body .search-input::placeholder {
+    color: #64748B !important;
+}
+html.acc-claro body .form-control:focus,
+html.acc-claro body .form-select:focus,
+html.acc-claro body .form-control-glass:focus,
+html.acc-claro body .auth-input:focus,
+html.acc-claro body .search-box:focus,
+html.acc-claro body .search-input:focus {
+    border-color: #39A900 !important;
+    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.2) !important;
+}
+html.acc-claro body .form-label,
+html.acc-claro body .auth-label,
+html.acc-claro body .kpi-label,
+html.acc-claro body .kpi-box .kpi-label,
+html.acc-claro body .stat-box .stat-lbl,
+html.acc-claro body .page-header .subtitle,
+html.acc-claro body .material-card .meta,
+html.acc-claro body .auth-subtitle,
+html.acc-claro body .manual-figure figcaption,
+html.acc-claro body .consent-banner p {
+    color: #475569 !important;
+}
+html.acc-claro body .auth-title,
+html.acc-claro body .smax-dialog-title,
+html.acc-claro body .equipo-nombre,
+html.acc-claro body .resultado-display,
+html.acc-claro body .maquina-nombre,
+html.acc-claro body .adm-hub-title,
+html.acc-claro body .date-group-title,
+html.acc-claro body .aprendiz-val,
+html.acc-claro body .team-title-name,
+html.acc-claro body .consent-banner strong,
+html.acc-claro body .manual-section h4 {
+    color: #1E293B !important;
+}
+html.acc-claro body .radio-pill + label,
+html.acc-claro body .filter-pill,
+html.acc-claro body .btn-ghost,
+html.acc-claro body .dia-chip.pendiente,
+html.acc-claro body .player-chip-item,
+html.acc-claro body .smax-dialog-btn.secondary,
+html.acc-claro body .btn-cookie-outline,
+html.acc-claro body .manual-nav-link {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #334155 !important;
+}
+html.acc-claro body .radio-pill:checked + label,
+html.acc-claro body .filter-pill.active,
+html.acc-claro body .manual-nav-link.active {
+    background: #39A900 !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+
+/* ── 12. Tablas, DataTables, Pestañas y Estados Vacíos ─────────── */
+html.acc-claro body .table-user thead th,
+html.acc-claro body .tabla-posiciones thead th,
+html.acc-claro body .manual-meta-table th {
+    background: #F1F8EC !important;
+    color: #007832 !important;
+    border-bottom: 2px solid #39A900 !important;
+}
+html.acc-claro body .tabla-posiciones tbody td,
+html.acc-claro body .manual-meta-table td,
+html.acc-claro body .dt-empty,
+html.acc-claro body .empty-state {
+    color: #334155 !important;
+}
+html.acc-claro body .dt-container .dt-length label,
+html.acc-claro body .dt-container .dt-search label,
+html.acc-claro body .dt-container .dt-info {
+    color: #334155 !important;
+}
+html.acc-claro body .dt-container .dt-length select,
+html.acc-claro body .dt-container .dt-search input,
+html.acc-claro body .dt-container .dt-paging .dt-paging-button {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .nav-tabs .nav-link {
+    color: #475569 !important;
+}
+html.acc-claro body .nav-tabs .nav-link.active {
+    background: #FFFFFF !important;
+    color: #007832 !important;
+    border-color: #CBD5E1 #CBD5E1 #FFFFFF !important;
+}
+html.acc-claro body .list-group-item {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+}
+html.acc-claro body .card:not(.bg-success):not(.bg-primary):not(.bg-danger):not(.bg-warning) {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+}
+html.acc-claro body .card-header:not(.bg-success):not(.bg-primary):not(.bg-danger):not(.bg-warning):not(.modal-sport-header) {
+    background: #F8FAFC !important;
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+}
+html.acc-claro body .date-group-header {
+    background: #F1F8EC !important;
+    border-color: #CBD5E1 !important;
+}
+html.acc-claro body .maquina-img-wrap {
+    background: #F1F5F9 !important;
+}
+
+/* Proteger texto blanco en botones de acción y badges de color */
+html.acc-claro body .btn-info,
+body.light-theme .btn-info {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .btn-info:hover,
+html.acc-claro body .btn-info:focus,
+body.light-theme .btn-info:hover,
+body.light-theme .btn-info:focus {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .badge.bg-info,
+html.acc-claro body .progress-bar.bg-info,
+body.light-theme .badge.bg-info,
+body.light-theme .progress-bar.bg-info {
+    background-color: #0d6efd !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .btn-success,
+html.acc-claro body .btn-success *,
+html.acc-claro body .btn-primary,
+html.acc-claro body .btn-primary *,
+html.acc-claro body .btn-info,
+html.acc-claro body .btn-info *,
+html.acc-claro body .btn-danger,
+html.acc-claro body .btn-danger *,
+html.acc-claro body .badge.bg-success,
+html.acc-claro body .badge.bg-primary,
+html.acc-claro body .badge.bg-info,
+html.acc-claro body .badge.bg-info *,
+html.acc-claro body .badge.bg-danger,
+html.acc-claro body .badge.bg-dark,
+html.acc-claro body .stock-badge.bg-success,
+html.acc-claro body .stock-badge.bg-success *,
+html.acc-claro body .stock-badge.bg-danger,
+html.acc-claro body .stock-badge.bg-danger *,
+html.acc-claro body .stock-badge.bg-secondary,
+html.acc-claro body .stock-badge.bg-secondary *,
+html.acc-claro body .badge-status.bg-success,
+html.acc-claro body .badge-status.bg-success *,
+html.acc-claro body .badge-status.bg-danger,
+html.acc-claro body .badge-status.bg-danger * {
+    color: #FFFFFF !important;
+}
+
+/* Iconos de calendario y hora visibles en inputs claros */
+html.acc-claro body input[type="date"]::-webkit-calendar-picker-indicator,
+html.acc-claro body input[type="time"]::-webkit-calendar-picker-indicator,
+body.light-theme input[type="date"]::-webkit-calendar-picker-indicator,
+body.light-theme input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: none !important;
+}

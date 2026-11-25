@@ -4,6 +4,7 @@
 {% block title %}Reporte de Préstamos e Inventario — Sports-Max{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/inventario_styles.css' %}">
 <style>
     .rep-filter-card {
         background: rgba(15, 23, 42, 0.75);
@@ -13,26 +14,41 @@
         backdrop-filter: blur(12px);
     }
     .rep-kpi-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 16px 20px;
-        transition: transform 0.2s ease, border-color 0.2s ease;
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 18px 20px;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .rep-kpi-card:hover {
         transform: translateY(-2px);
-        border-color: rgba(43, 125, 233, 0.4);
+        border-color: rgba(43, 125, 233, 0.45);
     }
     .rep-kpi-num {
-        font-size: 1.85rem;
+        font-size: 1.9rem;
         font-weight: 800;
         line-height: 1.1;
     }
     .rep-period-btn {
         border-radius: 50px;
         font-size: 0.78rem;
-        font-weight: 600;
+        font-weight: 700;
         padding: 6px 16px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: rgba(255, 255, 255, 0.04);
+        color: #e2e8f0;
+        transition: all 0.2s ease;
+    }
+    .rep-period-btn:hover {
+        border-color: #38bdf8;
+        color: #ffffff;
+        background: rgba(56, 189, 248, 0.14);
+    }
+    .rep-period-btn.active {
+        background: linear-gradient(135deg, #2b7de9, #1a5fb4);
+        border-color: #2b7de9;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(43, 125, 233, 0.35);
     }
     @media print {
         .no-print, .smax-position-bar, .navbar, footer, #acc-toggle, #help-toggle {
@@ -56,7 +72,7 @@
     <div class="container-fluid px-3 px-md-4">
 
         <!-- ENCABEZADO DEL REPORTE -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="no-print">
                     {% include 'partials/back_button.html' with back_url='inventario' back_label='Volver a Inventario' %}
@@ -119,16 +135,16 @@
                     <i class="fas fa-calendar-alt text-info me-2"></i>Periodo de visualización:
                 </span>
                 <div class="d-flex flex-wrap gap-2">
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '7d' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('7d')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '7d' %}active{% endif %}" onclick="setPeriodo('7d')">
                         Últimos 7 días
                     </button>
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '30d' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('30d')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '30d' %}active{% endif %}" onclick="setPeriodo('30d')">
                         Últimos 30 días
                     </button>
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'todos' or not filtros.periodo %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('todos')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'todos' or not filtros.periodo %}active{% endif %}" onclick="setPeriodo('todos')">
                         Todos los registros
                     </button>
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'rango' %}btn-info text-dark{% else %}btn-outline-light{% endif %}" onclick="setPeriodo('rango')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'rango' %}active{% endif %}" onclick="setPeriodo('rango')">
                         Rango personalizado
                     </button>
                 </div>
@@ -185,7 +201,7 @@
                     <a href="{% url 'reporte_inventario' %}" class="btn btn-outline-secondary btn-sm px-3">
                         <i class="fas fa-eraser me-1"></i> Limpiar
                     </a>
-                    <button type="submit" class="btn btn-info btn-sm fw-bold text-dark px-4">
+                    <button type="submit" class="btn btn-info btn-inv-solicitar btn-sm fw-bold text-dark px-4">
                         <i class="fas fa-filter me-1"></i> Aplicar Filtros
                     </button>
                 </div>

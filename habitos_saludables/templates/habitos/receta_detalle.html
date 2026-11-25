@@ -6,20 +6,30 @@
 
 {% block extra_css %}
 <style>
+:root {
+  --bs-success: #166534;
+  --bs-success-rgb: 22, 101, 52;
+}
+.bg-success { background-color: #166534 !important; }
+.text-success { color: #2ea043 !important; }
+.border-success { border-color: #238636 !important; }
+.btn-outline-success { color: #2ea043 !important; border-color: #238636 !important; }
+.btn-outline-success:hover { background-color: #166534 !important; border-color: #166534 !important; color: #ffffff !important; }
+
 .receta-hero-img {
   height: 340px; object-fit: cover; width: 100%; border-radius: 1.1rem;
   box-shadow: 0 16px 48px rgba(0,0,0,.4);
 }
 .receta-hero-placeholder {
   height: 340px; border-radius: 1.1rem;
-  background: linear-gradient(135deg, rgba(57,169,0,.1), rgba(13,110,253,.1));
+  background: linear-gradient(135deg, rgba(22, 101, 52, 0.18), rgba(13,110,253,.1));
   display: flex; align-items: center; justify-content: center; font-size: 8rem;
 }
-.ingrediente-check input[type="checkbox"] { accent-color: #39A900; width: 18px; height: 18px; }
+.ingrediente-check input[type="checkbox"] { accent-color: #166534; width: 18px; height: 18px; }
 .ingrediente-check.checked label { text-decoration: line-through; opacity: .5; }
 .paso-num {
   width: 32px; height: 32px; border-radius: 50%;
-  background: linear-gradient(135deg, #39A900, #2d8000);
+  background: linear-gradient(135deg, #166534, #14532d);
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: .85rem; color: #fff; flex-shrink: 0;
 }
@@ -100,7 +110,7 @@
         <div class="d-flex flex-column gap-2">
           {% if receta.proteinas_g %}
           <div class="d-flex justify-content-between">
-            <span class="text-muted small"><span style="color:#39A900">■</span> Proteínas</span>
+            <span class="text-muted small"><span style="color:#2ea043">■</span> Proteínas</span>
             <strong class="text-success small">{{ receta.proteinas_g }} g</strong>
           </div>
           {% endif %}
@@ -150,7 +160,7 @@ new Chart(document.getElementById('chartMacros'), {
     labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
     datasets: [{
       data: [{{ receta.proteinas_g|default:0 }}, {{ receta.carbohidratos_g|default:0 }}, {{ receta.grasas_g|default:0 }}],
-      backgroundColor: ['#39A900', '#0d6efd', '#f59e0b'],
+      backgroundColor: ['#238636', '#0d6efd', '#f59e0b'],
       borderWidth: 0, hoverOffset: 6,
     }],
   },

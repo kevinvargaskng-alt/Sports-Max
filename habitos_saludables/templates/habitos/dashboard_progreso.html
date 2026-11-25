@@ -7,6 +7,13 @@
 {% block extra_css %}
 <style>
 /* ── CP-14: Dashboard de Progreso ────────────────────────── */
+:root {
+  --bs-success: #166534;
+  --bs-success-rgb: 22, 101, 52;
+}
+.bg-success { background-color: #166534 !important; }
+.text-success { color: #2ea043 !important; }
+
 .progreso-hero {
   background: linear-gradient(135deg, #060818 0%, #0d1117 50%, #0d1f0d 100%);
   padding: 2.5rem 0 1.5rem;
@@ -30,7 +37,7 @@
   width: 120px; height: 120px; border-radius: 50%;
   opacity: .08;
 }
-.kpi-card.verde::after  { background: #39A900; }
+.kpi-card.verde::after  { background: #166534; }
 .kpi-card.azul::after   { background: #0d6efd; }
 .kpi-card.morado::after { background: #a855f7; }
 .kpi-card.naranja::after { background: #f59e0b; }
@@ -56,9 +63,9 @@
 .timeline-item:last-child { border: none; }
 .timeline-dot {
   width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(57,169,0,.15); border: 1px solid rgba(57,169,0,.4);
+  background: rgba(22, 101, 52, 0.22); border: 1px solid rgba(35, 134, 54, 0.55);
   display: flex; align-items: center; justify-content: center;
-  color: #39A900; flex-shrink: 0;
+  color: #2ea043; flex-shrink: 0;
 }
 
 /* Animación al hacer scroll (IntersectionObserver) */
@@ -208,12 +215,16 @@
 (function () {
   'use strict';
 
+  const isLightMode = document.body.classList.contains('light-theme') || document.documentElement.classList.contains('acc-claro');
+  const tickColor = isLightMode ? '#475569' : 'rgba(255,255,255,.5)';
+  const gridColor = isLightMode ? 'rgba(15, 23, 42, .08)' : 'rgba(255,255,255,.05)';
+
   const DEFAULTS_CHART = {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: 'rgba(255,255,255,.5)', font: { size: 11 } } },
-      y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: 'rgba(255,255,255,.5)', font: { size: 11 } } },
+      x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+      y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
     },
   };
 
@@ -229,12 +240,12 @@
         datasets: [{
           label: 'Peso (kg)',
           data: pesosData,
-          borderColor: '#39A900',
-          backgroundColor: 'rgba(57,169,0,.1)',
+          borderColor: '#2ea043',
+          backgroundColor: 'rgba(22, 101, 52, 0.2)',
           fill: true,
           tension: .4,
           pointRadius: 4,
-          pointBackgroundColor: '#39A900',
+          pointBackgroundColor: '#2ea043',
         }],
       },
       options: {

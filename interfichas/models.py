@@ -110,9 +110,6 @@ class EquipoInterfichas(models.Model):
     )
     fecha_inscripcion = models.DateField(auto_now_add=True)
     estado = models.CharField(max_length=20, default='Inscrito')
-    planilla_inscripcion = models.FileField(
-        upload_to='planillas_inscripciones/', null=True, blank=True, verbose_name="Planilla de Inscripción"
-    )
     escudo = models.ImageField(upload_to='escudos/', null=True, blank=True)
 
     def __str__(self):

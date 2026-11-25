@@ -20,7 +20,8 @@
 @font-face {
     font-family: 'OpenDyslexic';
     src: local('OpenDyslexic'), local('OpenDyslexic Regular'),
-         url('https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.0.8/files/opendyslexic-latin-400-normal.woff2') format('woff2');
+         url('{% static "fonts/OpenDyslexic-Regular.woff" %}') format('woff'),
+         url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -28,7 +29,8 @@
 @font-face {
     font-family: 'OpenDyslexic';
     src: local('OpenDyslexic Bold'),
-         url('https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.0.8/files/opendyslexic-latin-700-normal.woff2') format('woff2');
+         url('{% static "fonts/OpenDyslexic-Bold.woff" %}') format('woff'),
+         url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -860,8 +862,11 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     function applyAll() {
         clearClasses(THEMES.concat(FONTS, SIZES, LINES, FOCOS));
         if (prefs.theme) {
+            html.classList.remove('acc-claro');
             html.classList.add(prefs.theme);
             document.body.classList.remove('light-theme');
+            var iconEl = document.getElementById('themeIcon');
+            if (iconEl) iconEl.className = 'fas fa-sun';
             try { localStorage.setItem('theme', 'dark'); } catch(e){}
         }
         if (prefs.font)  html.classList.add(prefs.font);
@@ -921,11 +926,37 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     });
 
     /* ── Temas ── */
+    var THEME_NAMES = {
+        '': 'Modo Claro Institucional SENA activado',
+        'acc-azul-noche': 'Tema Azul Noche activado',
+        'acc-sepia': 'Tema Sepia activado',
+        'acc-alto-contraste': 'Tema Alto Contraste activado',
+        'acc-daltonismo': 'Filtro de Daltonismo activado'
+    };
     document.querySelectorAll('.acc-theme-dot').forEach(function(dot) {
         dot.addEventListener('click', function() {
             prefs.theme = this.dataset.theme || '';
-            applyAll(); syncUI(); save();
+            applyAll();
+            if (!prefs.theme) {
+                if (typeof window.applySportsMaxTheme === 'function') {
+                    window.applySportsMaxTheme(true);
+                } else {
+                    html.classList.add('acc-claro');
+                    document.body.classList.add('light-theme');
+                }
+                try { localStorage.setItem('theme', 'light'); } catch(e){}
+            }
+            syncUI(); save();
+            if (typeof window.showThemeChangeToast === 'function') {
+                window.showThemeChangeToast(THEME_NAMES[prefs.theme] || 'Tema actualizado', 'fas fa-palette');
+            }
         });
+    });
+
+    /* Sincronizar cuando se cambia el tema desde el botón del encabezado */
+    window.addEventListener('sportsmax:theme-changed', function() {
+        prefs.theme = '';
+        syncUI();
     });
 
     /* ── Fuentes ── */
@@ -970,8 +1001,19 @@ html.acc-foco *:not(#acc-panel):not(#acc-panel *):focus {
     /* ── Restablecer ── */
     document.getElementById('acc-reset-all').addEventListener('click', function() {
         prefs = { theme:'', font:'', size:1, line:'acc-line-normal', foco:'' };
-        applyAll(); syncUI(); save();
+        applyAll();
+        if (typeof window.applySportsMaxTheme === 'function') {
+            window.applySportsMaxTheme(true);
+        } else {
+            html.classList.add('acc-claro');
+            document.body.classList.add('light-theme');
+        }
+        try { localStorage.setItem('theme', 'light'); } catch(e){}
+        syncUI(); save();
         stopSpeech();
+        if (typeof window.showThemeChangeToast === 'function') {
+            window.showThemeChangeToast('Modo Claro Institucional SENA restablecido', 'fas fa-rotate-left');
+        }
     });
 
     /* ══════════════════════════════════════════════

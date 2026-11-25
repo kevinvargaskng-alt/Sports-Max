@@ -17,9 +17,10 @@ def _resolver_posicion_actual(request):
         'politica_privacidad': ('Legal', None, 'Política de Privacidad', 'fa-user-shield'),
         'terminos_condiciones': ('Legal', None, 'Términos y Condiciones', 'fa-file-contract'),
         'politica_cookies': ('Legal', None, 'Política de Cookies', 'fa-cookie-bite'),
-        # Usuarios
+        # Usuarios y Administración
         'perfil': ('Mi Cuenta', '/perfil/', 'Mi Perfil', 'fa-id-badge'),
-        'gestionar_usuarios': ('Administración', '/perfil/', 'Gestión de Usuarios y Copias de Seguridad', 'fa-users-cog'),
+        'gestionar_usuarios': ('Administración', '/perfil/', 'Gestión de Usuarios', 'fa-users-cog'),
+        'gestionar_backups': ('Administración', '/perfil/', 'Copias de Seguridad y Restauración', 'fa-database'),
         'password_reset': ('Seguridad', '/', 'Recuperar Contraseña', 'fa-key'),
         'password_reset_done': ('Seguridad', '/', 'Correo de Recuperación Enviado', 'fa-envelope-open-text'),
         'password_reset_confirm': ('Seguridad', '/', 'Nueva Contraseña', 'fa-lock'),
@@ -74,6 +75,10 @@ def _resolver_posicion_actual(request):
         modulo, modulo_url, actual, icono = mapa_habitos[url_name]
     elif url_name in mapa_urls:
         modulo, modulo_url, actual, icono = mapa_urls[url_name]
+    elif path.startswith('/backups/'):
+        modulo, modulo_url, actual, icono = ('Administración', '/perfil/', 'Copias de Seguridad y Restauración', 'fa-database')
+    elif path.startswith('/usuarios/'):
+        modulo, modulo_url, actual, icono = ('Administración', '/perfil/', 'Gestión de Usuarios', 'fa-users-cog')
     elif path.startswith('/interfichas/'):
         modulo, modulo_url, actual, icono = ('Inter-Fichas', '/interfichas/', 'Gestión de Torneos', 'fa-trophy')
     elif path.startswith('/gimnasio/'):

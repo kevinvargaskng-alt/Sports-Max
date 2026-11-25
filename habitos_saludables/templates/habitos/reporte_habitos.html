@@ -5,9 +5,25 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --bs-success: #166534;
+        --bs-success-rgb: 22, 101, 52;
+    }
+    .btn-success {
+        background-color: #166534 !important;
+        border-color: #166534 !important;
+        color: #ffffff !important;
+    }
+    .btn-success:hover {
+        background-color: #14532d !important;
+        border-color: #14532d !important;
+    }
+    .bg-success { background-color: #166534 !important; }
+    .text-success { color: #2ea043 !important; }
+
     .rep-filter-card {
         background: rgba(15, 23, 42, 0.75);
-        border: 1px solid rgba(32, 201, 151, 0.25);
+        border: 1px solid rgba(35, 134, 54, 0.35);
         border-radius: 16px;
         padding: 22px;
         backdrop-filter: blur(12px);
@@ -27,8 +43,23 @@
     .rep-period-btn {
         border-radius: 50px;
         font-size: 0.78rem;
-        font-weight: 600;
+        font-weight: 700;
         padding: 6px 16px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: rgba(255, 255, 255, 0.04);
+        color: #e2e8f0;
+        transition: all 0.2s ease;
+    }
+    .rep-period-btn:hover {
+        border-color: #2ea043;
+        color: #ffffff;
+        background: rgba(35, 134, 54, 0.18);
+    }
+    .rep-period-btn.active {
+        background: linear-gradient(135deg, #39A900, #007832);
+        border-color: #007832;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(57, 169, 0, 0.28);
     }
     @media print {
         .no-print, .smax-position-bar, .navbar, footer, #acc-toggle, #help-toggle {
@@ -110,16 +141,16 @@
                     <i class="fas fa-calendar-alt text-success me-2"></i>Periodo de visualización:
                 </span>
                 <div class="d-flex flex-wrap gap-2">
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '7d' %}btn-success text-white{% else %}btn-outline-light{% endif %}" onclick="setPeriodoHab('7d')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '7d' %}active{% endif %}" onclick="setPeriodoHab('7d')">
                         Últimos 7 días
                     </button>
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '30d' %}btn-success text-white{% else %}btn-outline-light{% endif %}" onclick="setPeriodoHab('30d')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == '30d' %}active{% endif %}" onclick="setPeriodoHab('30d')">
                         Últimos 30 días
                     </button>
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'todos' or not filtros.periodo %}btn-success text-white{% else %}btn-outline-light{% endif %}" onclick="setPeriodoHab('todos')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'todos' or not filtros.periodo %}active{% endif %}" onclick="setPeriodoHab('todos')">
                         Todos los registros
                     </button>
-                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'rango' %}btn-success text-white{% else %}btn-outline-light{% endif %}" onclick="setPeriodoHab('rango')">
+                    <button type="button" class="btn btn-sm rep-period-btn {% if filtros.periodo == 'rango' %}active{% endif %}" onclick="setPeriodoHab('rango')">
                         Rango personalizado
                     </button>
                 </div>

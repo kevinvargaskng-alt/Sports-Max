@@ -1,0 +1,309 @@
+/* ════════════════════════════════════════════════════════════════
+   SPORTS-MAX — Modo claro AUTOGENERADO
+   Cubre los componentes que tenían fondo oscuro fijo (#161b22, #0d1117,
+   #0f172a...) y quedaban con texto ilegible al activar el modo claro.
+   Los ajustes manuales y excepciones están en modo_claro_contraste.css
+   ════════════════════════════════════════════════════════════════ */
+
+html.acc-claro .modulo-header {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .msc-tag {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .maq-thumb {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro #tablaRegistros tr {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro #tablaHistorial tr {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro #tablaMaquinas tr {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .gym-u-31 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .date-group-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .adm-hub-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .adm-hub-card:hover {
+    background: #eef5ff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .adm-nav-btn {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .table-torneos thead th {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .sport-search-wrap input {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .expansion-row td {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .catalogo-card .no-img-cat {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro tr.main-row {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .inv-u-25 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro #modalBuzonSugerencias .form-select {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro #modalBuzonSugerencias .form-control {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .prf-u-10 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .prf-u-14 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .prf-u-16 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .prf-u-18 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .table thead {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .notif-modal-content {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .part-u-1 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .part-u-2 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .part-u-13 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-3 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-40 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-42 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-46 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-47 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-49 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-50 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-53 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-54 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-55 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-56 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-58 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-59 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-61 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-63 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-65 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .torneo-u-67 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .sanc-u-3 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .sug-u-1 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .sug-u-3 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .sug-u-4 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .sug-u-5 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .gest-u-15 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .gest-u-19 {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .nav-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .panel {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .tracking-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .no-tracking-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .library-banner {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html.acc-claro .admin-section {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+html.acc-claro .form-select option { background: #ffffff; color: #0f172a; }
+
+/* ── Transición suave entre modo oscuro y claro ── */
+body, main, .sport-card, .card, .modal-content, .navbar, .table, .form-control, .form-select,
+.catalogo-card, .maquina-card, .stat-mini, .panel, .nav-card, footer {
+    transition: background-color .3s ease, color .3s ease, border-color .3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+    body, main, .sport-card, .card, .modal-content, .navbar, .table, .form-control, .form-select,
+    .catalogo-card, .maquina-card, .stat-mini, .panel, .nav-card, footer { transition: none; }
+}

@@ -98,9 +98,9 @@
 
 /* Eliminar cualquier rastro de azul en los botones del modal de error */
 #modalBuzonSugerencias .btn-enviar-reporte {
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-hover)) !important;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7) !important;
     border: none !important;
-    color: #050814 !important;
+    color: #ffffff !important;
 }
 
 /* Estilo para la inicial si no hay foto */

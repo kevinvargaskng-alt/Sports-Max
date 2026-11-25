@@ -18,8 +18,47 @@
     --danger: #ff4d4f;
     --success: #2b7de9;
     --warning: #ffc107;
-    --info: #2b7de9;
+    --info: #0d6efd;
+    --bs-info: #0d6efd;
+    --bs-info-rgb: 13, 110, 253;
     --font-display: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Unificar azul info (#0dcaf0 cian chillón -> #0d6efd azul Préstamos) en todo el sistema */
+.btn-info,
+.btn.btn-info {
+    --bs-btn-bg: #0d6efd;
+    --bs-btn-border-color: #0d6efd;
+    --bs-btn-hover-bg: #0b5ed7;
+    --bs-btn-hover-border-color: #0a58ca;
+    --bs-btn-active-bg: #0a58ca;
+    --bs-btn-active-border-color: #0a53be;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-active-color: #ffffff;
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: #ffffff !important;
+}
+.btn-info i,
+.btn-info span {
+    color: #ffffff !important;
+}
+.badge.bg-info,
+.progress-bar.bg-info {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+.badge.bg-info i,
+.badge.bg-info span {
+    color: #ffffff !important;
 }
 
 /* Ocultar icono de ojo nativo de Edge/IE para evitar el bug del doble ojo */
@@ -28,24 +67,29 @@ input[type="password"]::-ms-clear {
     display: none !important;
 }
 
-/* ── MODO CLARO (LIGHT THEME) ────────── */
+/* ── MODO CLARO SENA (LIGHT THEME) ────────── */
 body.light-theme,
 html.acc-claro,
 html.acc-claro body {
-    --primary-dark: #f8fafc;
-    --text-white: #0f172a;
-    --glass-bg: rgba(43, 125, 233, 0.05);
-    --neon-border: rgba(43, 125, 233, 0.4);
-    --card-bg: rgba(0, 0, 0, 0.03);
+    --primary-dark: #F8FAFC;
+    --text-white: #1E293B;
+    --accent-blue: #39A900;
+    --accent-hover: #007832;
+    --sena-primary: #39A900;
+    --sena-secondary: #007832;
+    --sena-orange: #FF6B00;
+    --glass-bg: rgba(57, 169, 0, 0.06);
+    --neon-border: rgba(0, 120, 50, 0.28);
+    --card-bg: #FFFFFF;
 }
 
 body.light-theme .sport-card,
 body.light-theme .catalogo-card,
 body.light-theme .maquina-card {
-    background: #ffffff !important;
-    color: #0f172a !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+    box-shadow: 0 8px 24px rgba(30, 41, 59, 0.07) !important;
 }
 
 body.light-theme .text-white-50 {
@@ -53,29 +97,29 @@ body.light-theme .text-white-50 {
 }
 
 body.light-theme .navbar {
-    background: #ffffff !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    background: #FFFFFF !important;
+    border-bottom: 2px solid #39A900 !important;
 }
 
 body.light-theme .navbar-brand span,
 body.light-theme .nav-link,
 body.light-theme .nav-link i {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .nav-pill-center .nav-link.active {
-    background: rgba(43, 125, 233, 0.15) !important;
-    color: #2b7de9 !important;
+    background: #39A900 !important;
+    color: #FFFFFF !important;
 }
 
 /* Override Gym / Gimnasio page elements in Light Mode */
 body.light-theme .gym-clock-wrap {
-    background: rgba(43, 125, 233, 0.05) !important;
-    border-color: rgba(43, 125, 233, 0.2) !important;
+    background: rgba(57, 169, 0, 0.06) !important;
+    border-color: rgba(57, 169, 0, 0.28) !important;
 }
 
 body.light-theme .gym-clock {
-    color: #2b7de9 !important;
+    color: #007832 !important;
 }
 
 body.light-theme .gym-date {
@@ -83,12 +127,12 @@ body.light-theme .gym-date {
 }
 
 body.light-theme .gym-nav-card {
-    background: #ffffff !important;
-    border-color: #cbd5e1 !important;
+    background: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
 }
 
 body.light-theme .gym-nav-card .nav-label {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .gym-nav-card .nav-sub {
@@ -96,26 +140,26 @@ body.light-theme .gym-nav-card .nav-sub {
 }
 
 body.light-theme .res-picker {
-    background: rgba(43, 125, 233, 0.03) !important;
-    border-color: rgba(43, 125, 233, 0.15) !important;
+    background: rgba(57, 169, 0, 0.04) !important;
+    border-color: rgba(57, 169, 0, 0.22) !important;
 }
 
 body.light-theme .res-picker .picker-label {
-    color: #2b7de9 !important;
+    color: #007832 !important;
 }
 
 body.light-theme .res-picker input[type=date],
 body.light-theme .res-picker input[type=time],
 body.light-theme .adm-input,
 body.light-theme .search-wrap input {
-    background: #ffffff !important;
-    border-color: #cbd5e1 !important;
-    color: #0f172a !important;
+    background: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .stat-mini {
-    background: #ffffff !important;
-    border-color: #cbd5e1 !important;
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
 }
 
 body.light-theme .stat-mini .stat-lbl {
@@ -124,26 +168,26 @@ body.light-theme .stat-mini .stat-lbl {
 
 body.light-theme .btn-estado,
 body.light-theme .btn-dia {
-    background: #ffffff !important;
-    border-color: #cbd5e1 !important;
+    background: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
     color: #475569 !important;
 }
 
 body.light-theme .btn-estado.sel,
 body.light-theme .btn-dia.active {
-    background: rgba(43, 125, 233, 0.1) !important;
-    border-color: #2b7de9 !important;
-    color: #2b7de9 !important;
+    background: rgba(57, 169, 0, 0.12) !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
 }
 
 body.light-theme .btn-estado:hover,
 body.light-theme .btn-dia:hover {
-    border-color: #2b7de9 !important;
-    color: #2b7de9 !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
 }
 
 body.light-theme .text-white {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .text-white-50 {
@@ -154,28 +198,28 @@ body.light-theme h5.text-info,
 body.light-theme h5.text-success,
 body.light-theme h5.text-danger,
 body.light-theme h5.text-warning {
-    color: #2b7de9 !important;
+    color: #007832 !important;
 }
 
 body.light-theme .table {
-    --bs-table-bg: #ffffff !important;
-    --bs-table-hover-bg: #f1f5f9 !important;
-    color: #0f172a !important;
+    --bs-table-bg: #FFFFFF !important;
+    --bs-table-hover-bg: rgba(57, 169, 0, 0.05) !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .table-dark {
-    background-color: #ffffff !important;
-    color: #0f172a !important;
+    background-color: #FFFFFF !important;
+    color: #1E293B !important;
 }
 
 body.light-theme th {
-    color: #475569 !important;
-    border-bottom: 2px solid #e2e8f0 !important;
+    color: #007832 !important;
+    border-bottom: 2px solid #39A900 !important;
 }
 
 body.light-theme td {
-    color: #0f172a !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    color: #1E293B !important;
+    border-bottom: 1px solid #E2E8F0 !important;
 }
 
 body.light-theme .btn-trash {
@@ -183,92 +227,93 @@ body.light-theme .btn-trash {
 }
 
 body.light-theme .btn-trash:hover {
-    color: #ff4d4f !important;
-    background: rgba(255, 77, 79, 0.1) !important;
+    color: #dc2626 !important;
+    background: rgba(220, 38, 38, 0.1) !important;
 }
 
 /* Light Theme overrides for Header and Main Home Page */
 body.light-theme .navbar .container-fluid {
-    background: #ffffff !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
 }
 
 body.light-theme .navbar-brand span {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .navbar-brand span span {
-    color: #1a5fb4 !important;
+    color: #39A900 !important;
 }
 
 body.light-theme .btn-profile {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .hero {
-    background: #0b1528 !important;
+    background: #00421b !important;
 }
 
 body.light-theme .hero-bg {
     background-image: url('../img/hero_bg.png') !important;
     background-size: cover !important;
     background-position: center !important;
-    opacity: 0.75 !important;
+    opacity: 0.72 !important;
 }
 
 body.light-theme .hero-overlay {
-    background: linear-gradient(to top, rgba(11, 21, 40, 0.95) 0%, rgba(11, 21, 40, 0.45) 14%, transparent 28%) !important;
+    background: linear-gradient(135deg, rgba(0, 72, 30, 0.85) 0%, rgba(0, 120, 50, 0.45) 55%, rgba(15, 23, 42, 0.6) 100%) !important;
 }
 
 body.light-theme .hero-title {
-    color: #ffffff !important;
+    color: #FFFFFF !important;
 }
 
 body.light-theme .hero-title .outline {
-    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.45) !important;
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.55) !important;
     color: transparent !important;
 }
 
 body.light-theme .hero-sub {
-    color: rgba(255, 255, 255, 0.88) !important;
+    color: rgba(255, 255, 255, 0.92) !important;
 }
 
 body.light-theme .btn-outline-sport {
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
 body.light-theme .btn-outline-sport:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-    color: #ffffff !important;
+    background: #FF6B00 !important;
+    border-color: #FF6B00 !important;
+    color: #FFFFFF !important;
 }
 
 body.light-theme .scanner-btn {
-    background: rgba(26, 95, 180, 0.08) !important;
-    border-color: rgba(26, 95, 180, 0.5) !important;
-    color: #1a5fb4 !important;
+    background: rgba(57, 169, 0, 0.08) !important;
+    border-color: rgba(57, 169, 0, 0.5) !important;
+    color: #007832 !important;
 }
 
 body.light-theme .scanner-btn:hover,
 body.light-theme .scanner-btn:active {
-    background: rgba(26, 95, 180, 0.16) !important;
-    color: #0d3875 !important;
+    background: rgba(57, 169, 0, 0.16) !important;
+    color: #005c25 !important;
 }
 
 body.light-theme .sena-verified-badge {
-    background: rgba(26, 95, 180, 0.08) !important;
-    border-color: rgba(26, 95, 180, 0.3) !important;
-    color: #1a5fb4 !important;
+    background: rgba(57, 169, 0, 0.1) !important;
+    border-color: rgba(57, 169, 0, 0.35) !important;
+    color: #007832 !important;
 }
 
 body.light-theme .countdown-strip {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
 }
 
 body.light-theme .countdown-title,
 body.light-theme .countdown-num {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .countdown-unit {
@@ -276,12 +321,12 @@ body.light-theme .countdown-unit {
 }
 
 body.light-theme .service-card {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
 }
 
 body.light-theme .service-title {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .service-desc {
@@ -289,13 +334,13 @@ body.light-theme .service-desc {
 }
 
 body.light-theme .match-feature {
-    background: rgba(43, 125, 233, 0.05) !important;
-    border-color: rgba(43, 125, 233, 0.2) !important;
+    background: rgba(57, 169, 0, 0.06) !important;
+    border-color: rgba(57, 169, 0, 0.28) !important;
 }
 
 body.light-theme .match-team,
 body.light-theme .match-date {
-    color: #0f172a !important;
+    color: #1E293B !important;
 }
 
 body.light-theme .section-title,
@@ -1546,8 +1591,8 @@ body.light-theme .hdr-u-5:hover {
 }
 
 .hab-sal-u-4 {
-    background: rgba(200, 255, 0, 0.05);
-    border: 1px solid rgba(200, 255, 0, 0.15);
+    background: rgba(22, 101, 52, 0.14);
+    border: 1px solid rgba(35, 134, 54, 0.35);
 }
 
 .hab-sal-u-5 {
@@ -2581,33 +2626,33 @@ body.light-theme .hdr-u-5:hover {
     box-shadow: 0 4px 10px rgba(43, 125, 233, 0.3);
 }
 
-/* Adaptación a Modo Claro (Light Theme) */
+/* Adaptación a Modo Claro (Light Theme SENA) */
 body.light-theme .btn-regresar {
-    color: #1e293b !important;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.01) 100%) !important;
-    border: 1px solid rgba(15, 23, 42, 0.15) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    color: #1E293B !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.06);
 }
 
 body.light-theme .btn-regresar:hover {
-    color: #ffffff !important;
-    background: linear-gradient(135deg, #2b7de9 0%, #1f64c8 100%) !important;
-    border-color: #2b7de9 !important;
-    box-shadow: 0 8px 20px rgba(43, 125, 233, 0.35);
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border-color: #007832 !important;
+    box-shadow: 0 8px 20px rgba(57, 169, 0, 0.3);
 }
 
 
 /* Corregir botón outline pequeño de hábitos en modo claro */
 body.light-theme .btn-outline-sm {
-    color: #475569 !important;
-    border-color: rgba(0, 0, 0, 0.15) !important;
+    color: #334155 !important;
+    border-color: #CBD5E1 !important;
 }
 
 body.light-theme .btn-outline-sm:hover,
 body.light-theme .btn-outline-sm.active {
-    border-color: #2b7de9 !important;
-    background: rgba(43, 125, 233, 0.08) !important;
-    color: #2b7de9 !important;
+    border-color: #166534 !important;
+    background: rgba(22, 101, 52, 0.1) !important;
+    color: #166534 !important;
 }
 
 /* ============================================================
@@ -2619,7 +2664,7 @@ body.light-theme .btn-outline-sm.active {
 .hero-wrap {
     background: rgba(15, 23, 42, 0.82) !important;
     backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+    border: 1px solid rgba(35, 134, 54, 0.45) !important;
     border-radius: 24px !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
 }
@@ -2641,20 +2686,20 @@ body.light-theme .btn-outline-sm.active {
 .panel:hover,
 .tracking-card:hover,
 .admin-action-btn:hover {
-    border-color: rgba(52, 211, 153, 0.5) !important;
-    box-shadow: 0 12px 28px rgba(52, 211, 153, 0.15) !important;
+    border-color: rgba(35, 134, 54, 0.6) !important;
+    box-shadow: 0 12px 28px rgba(22, 101, 52, 0.28) !important;
 }
 
 .habitos-card-premium:hover {
     transform: translateY(-5px);
-    border-color: rgba(52, 211, 153, 0.5);
-    box-shadow: 0 12px 28px rgba(52, 211, 153, 0.15);
+    border-color: rgba(35, 134, 54, 0.6);
+    box-shadow: 0 12px 28px rgba(22, 101, 52, 0.28);
 }
 
 .badge-salud-verde {
-    background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(52, 211, 153, 0.3);
+    background: rgba(20, 83, 45, 0.72);
+    color: #d1fae5;
+    border: 1px solid rgba(35, 134, 54, 0.65);
     border-radius: 20px;
     padding: 5px 12px;
     font-weight: 700;
@@ -2778,8 +2823,6 @@ body {
     }
 }
 
-}
-
 .profile-cropper-wrapper {
     width: 140px;
     height: 140px;
@@ -2862,33 +2905,33 @@ body {
     box-shadow: 0 4px 10px rgba(43, 125, 233, 0.3);
 }
 
-/* Adaptación a Modo Claro (Light Theme) */
+/* Adaptación a Modo Claro (Light Theme SENA) */
 body.light-theme .btn-regresar {
-    color: #1e293b !important;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.01) 100%) !important;
-    border: 1px solid rgba(15, 23, 42, 0.15) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    color: #1E293B !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.06);
 }
 
 body.light-theme .btn-regresar:hover {
-    color: #ffffff !important;
-    background: linear-gradient(135deg, #2b7de9 0%, #1f64c8 100%) !important;
-    border-color: #2b7de9 !important;
-    box-shadow: 0 8px 20px rgba(43, 125, 233, 0.35);
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border-color: #007832 !important;
+    box-shadow: 0 8px 20px rgba(57, 169, 0, 0.3);
 }
 
 
 /* Corregir botón outline pequeño de hábitos en modo claro */
 body.light-theme .btn-outline-sm {
-    color: #475569 !important;
-    border-color: rgba(0, 0, 0, 0.15) !important;
+    color: #334155 !important;
+    border-color: #CBD5E1 !important;
 }
 
 body.light-theme .btn-outline-sm:hover,
 body.light-theme .btn-outline-sm.active {
-    border-color: #2b7de9 !important;
-    background: rgba(43, 125, 233, 0.08) !important;
-    color: #2b7de9 !important;
+    border-color: #166534 !important;
+    background: rgba(22, 101, 52, 0.1) !important;
+    color: #166534 !important;
 }
 
 /* ============================================================
@@ -2900,7 +2943,7 @@ body.light-theme .btn-outline-sm.active {
 .hero-wrap {
     background: rgba(15, 23, 42, 0.82) !important;
     backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+    border: 1px solid rgba(35, 134, 54, 0.45) !important;
     border-radius: 24px !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
 }
@@ -2922,20 +2965,20 @@ body.light-theme .btn-outline-sm.active {
 .panel:hover,
 .tracking-card:hover,
 .admin-action-btn:hover {
-    border-color: rgba(52, 211, 153, 0.5) !important;
-    box-shadow: 0 12px 28px rgba(52, 211, 153, 0.15) !important;
+    border-color: rgba(35, 134, 54, 0.6) !important;
+    box-shadow: 0 12px 28px rgba(22, 101, 52, 0.28) !important;
 }
 
 .habitos-card-premium:hover {
     transform: translateY(-5px);
-    border-color: rgba(52, 211, 153, 0.5);
-    box-shadow: 0 12px 28px rgba(52, 211, 153, 0.15);
+    border-color: rgba(35, 134, 54, 0.6);
+    box-shadow: 0 12px 28px rgba(22, 101, 52, 0.28);
 }
 
 .badge-salud-verde {
-    background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(52, 211, 153, 0.3);
+    background: rgba(20, 83, 45, 0.72);
+    color: #d1fae5;
+    border: 1px solid rgba(35, 134, 54, 0.65);
     border-radius: 20px;
     padding: 5px 12px;
     font-weight: 700;

@@ -6,7 +6,8 @@
 {% block extra_css %}
 <style>
 :root {
-  --acid: #C8FF00;
+  --acid: #166534;
+  --acid-hover: #1e7e34;
   --surface: #0A0C0E;
   --surface2: #111316;
   --border: rgba(255,255,255,0.07);
@@ -23,14 +24,14 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 }
 
 .btn-acid {
-  background: var(--acid); color: #0A0C0E;
+  background: var(--acid); color: #ffffff;
   font-weight: 700; font-size: 0.85rem; letter-spacing: 0.03em;
   padding: 12px 24px; border-radius: 11px; border: none;
   text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
-  transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; white-space: nowrap; cursor: pointer;
   margin-top: 1rem;
 }
-.btn-acid:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,255,0,0.25); color: #0A0C0E; }
+.btn-acid:hover { transform: translateY(-2px); background: var(--acid-hover); box-shadow: 0 8px 24px rgba(22, 101, 52, 0.45); color: #ffffff; }
 
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }

@@ -6,6 +6,12 @@
 
 {% block extra_css %}
 <style>
+:root {
+  --bs-success: #166534;
+  --bs-success-rgb: 22, 101, 52;
+}
+.text-success { color: #2ea043 !important; }
+
 .sueno-hero {
   background: linear-gradient(135deg, #0a0015 0%, #1a0030 50%, #0d1117 100%);
   padding: 2.5rem 0 1.5rem; position: relative; overflow: hidden;
@@ -170,11 +176,16 @@
     const ctx = document.getElementById('chartSueno').getContext('2d');
     if (chartSueno) chartSueno.destroy();
 
+    const isLight = document.body.classList.contains('light-theme') || document.documentElement.classList.contains('acc-claro');
+    const tickCol = isLight ? '#475569' : 'rgba(255,255,255,.6)';
+    const gridCol = isLight ? 'rgba(15, 23, 42, .08)' : 'rgba(255,255,255,.06)';
+    const emptyBarCol = isLight ? 'rgba(148, 163, 184, .25)' : 'rgba(255,255,255,.1)';
+
     const colores = data.horas.map(h => {
-      if (h === null) return 'rgba(255,255,255,.1)';
-      if (h >= 7 && h <= 9) return 'rgba(57,169,0,.8)';
-      if (h >= 5) return 'rgba(245,158,11,.8)';
-      return 'rgba(239,68,68,.8)';
+      if (h === null) return emptyBarCol;
+      if (h >= 7 && h <= 9) return isLight ? '#39A900' : 'rgba(22, 101, 52, 0.85)';
+      if (h >= 5) return 'rgba(245,158,11,.85)';
+      return 'rgba(239,68,68,.85)';
     });
 
     chartSueno = new Chart(ctx, {
@@ -203,11 +214,11 @@
           },
         },
         scales: {
-          x: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: 'rgba(255,255,255,.6)' } },
+          x: { grid: { color: gridCol }, ticks: { color: tickCol } },
           y: {
             min: 0, max: 12,
-            grid: { color: 'rgba(255,255,255,.06)' },
-            ticks: { color: 'rgba(255,255,255,.6)', callback: v => v + 'h' },
+            grid: { color: gridCol },
+            ticks: { color: tickCol, callback: v => v + 'h' },
           },
         },
       },
@@ -220,7 +231,7 @@
             const yPos = y.getPixelForValue(val);
             ctx.save();
             ctx.setLineDash([6, 4]);
-            ctx.strokeStyle = i === 0 ? 'rgba(57,169,0,.5)' : 'rgba(57,169,0,.25)';
+            ctx.strokeStyle = i === 0 ? 'rgba(35, 134, 54, 0.65)' : 'rgba(35, 134, 54, 0.35)';
             ctx.lineWidth = 1.5;
             ctx.beginPath(); ctx.moveTo(left, yPos); ctx.lineTo(right, yPos); ctx.stroke();
             ctx.restore();

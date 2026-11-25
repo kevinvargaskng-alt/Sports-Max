@@ -16,7 +16,9 @@ urlpatterns = [
     path('usuarios/', views.gestionar_usuarios_view, name='gestionar_usuarios'),
     # CP-16: Gestión de Roles dedicada
     # path('roles/', views.gestion_roles_view, name='gestion_roles'),
-    
+
+    # ─── COPIAS DE SEGURIDAD (módulo independiente, solo admin) ───────────────
+    path('backups/', views.gestionar_backups_view, name='gestionar_backups'),
     path('backup/', views.export_database_backup, name='database_backup'),
     path('backup/restore/', views.restore_database_backup, name='database_restore'),
 

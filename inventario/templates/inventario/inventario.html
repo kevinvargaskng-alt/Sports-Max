@@ -4,22 +4,23 @@
 {% block title %}Inventario - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
 <link rel="stylesheet" href="{% static 'css/inventario_styles.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
     <div class="container text-start">
-        <div class="mb-4">
+        <div class="mb-3">
             {% include 'partials/back_button.html' with back_url='home' back_label='Volver' %}
         </div>
 
         <!-- HEADER -->
-        <header class="modulo-header text-center mb-5">
-            <i class="fas fa-boxes fa-3x mb-3 text-warning"></i>
-            <h2 class="fw-bold text-white">Módulo Inventario</h2>
-            <p class="text-white-50">Gestión de existencias para <strong>{{ user.get_full_name }}</strong></p>
+        <header class="modulo-header inv-hero-header text-center mb-4">
+            <div class="inv-hero-icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <h2 class="fw-bold text-white mb-1">Módulo Inventario</h2>
+            <p class="text-white-50 mb-0">Gestión de implementos y préstamos para <strong>{{ user.get_full_name|default:user.username }}</strong></p>
         </header>
 
         <!-- ══════════════════════════════════════════
@@ -268,7 +269,7 @@
                             {% else %}
                                 {% if e.cantidad_total > 0 %}
                                 <button type="button"
-                                        class="btn btn-info btn-sm w-100 fw-bold text-dark inv-u-5"
+                                        class="btn btn-info btn-inv-solicitar btn-sm w-100 fw-bold text-dark inv-u-5"
                                         onclick="prestamoRapido('{{ e.id }}')"
                                         {% if sanciones %}disabled title="Tienes sanciones activas"{% endif %}>
                                     <i class="fas fa-hand-holding me-1"></i>Solicitar Préstamo
@@ -402,14 +403,12 @@
                                 {% else %}
                                     {% if e.cantidad_total > 0 %}
                                     <button type="button"
-                                            class="btn btn-info btn-sm fw-bold px-2 text-dark"
+                                            class="btn btn-info btn-inv-solicitar btn-sm fw-bold px-2 text-dark"
                                             onclick="prestamoRapido('{{ e.id }}')"
                                             title="Solicitar Préstamo"
                                             {% if sanciones %}disabled{% endif %}
                                             data-bs-toggle="tooltip" data-bs-placement="top"
                                             data-bs-title="{% if sanciones %}Préstamo bloqueado por sanciones activas{% else %}Solicitar préstamo de este implemento{% endif %}">
-                                         <i class="fas fa-hand-pointer me-1 inv-u-13"></i>Solicitar
-                                    </button>
                                          <i class="fas fa-hand-pointer me-1 inv-u-13"></i>Solicitar
                                     </button>
                                     {% else %}
@@ -421,7 +420,7 @@
 
                         <!-- Fila expandida -->
                         <tr class="expansion-row inv-u-15">
-                            <td colspan="7">
+                            <td colspan="6">
                                 <div class="detail-panel">
                                     {% if e.imagen %}
                                         <img src="{{ e.imagen.url }}" alt="{{ e.tipo_maquina }}">
@@ -480,7 +479,7 @@
                                             {% else %}
                                             {% if e.cantidad_total > 0 %}
                                             <button type="button"
-                                                    class="btn btn-info btn-sm fw-bold px-2 text-dark"
+                                                    class="btn btn-info btn-inv-solicitar btn-sm fw-bold px-2 text-dark"
                                                     onclick="prestamoRapido('{{ e.id }}')"
                                                     title="Solicitar Préstamo"
                                                     {% if sanciones %}disabled{% endif %}
@@ -498,7 +497,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-white-50">
+                            <td colspan="6" class="text-center py-5 text-white-50">
                                 <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
                                 No hay elementos registrados en el inventario.
                             </td>
@@ -582,10 +581,7 @@
                 </h5>
                 {# Contador de activos #}
                 <span class="badge bg-primary">
-                    {% with activos_count=0 %}
-                    {% for p in prestamos %}{% if p.estado_prestamo == 'Activo' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
-                    {% endwith %}
-                    en curso
+                    {{ prestamos|length }} registro(s)
                 </span>
             </div>
             <div class="table-responsive">

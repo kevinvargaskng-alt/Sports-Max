@@ -1,0 +1,183 @@
+<!-- ══════════════════════════════════════════════════════════
+     Flechas flotantes de desplazamiento rápido (arriba / abajo)
+     Fijadas al lado derecho en la mitad vertical; visibles al desplazarse.
+     ══════════════════════════════════════════════════════════ -->
+<style>
+#smax-scroll-nav {
+    position: fixed;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1035;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+#smax-scroll-nav .smax-scroll-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(74, 158, 255, 0.55);
+    background: rgba(13, 21, 38, 0.92);
+    color: #ffffff;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: scale(0.7);
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease, background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+#smax-scroll-nav .smax-scroll-btn.visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+#smax-scroll-nav .smax-scroll-btn:hover {
+    background: #2b7de9;
+    border-color: #ffffff;
+}
+#smax-scroll-nav .smax-scroll-btn:focus-visible {
+    outline: 3px solid #f9c52c;
+    outline-offset: 3px;
+}
+/* Modo claro SENA */
+html.acc-claro #smax-scroll-nav .smax-scroll-btn,
+body.light-theme #smax-scroll-nav .smax-scroll-btn {
+    background: rgba(255, 255, 255, 0.96);
+    color: #007832;
+    border: 2px solid #39A900;
+    box-shadow: 0 6px 18px rgba(30, 41, 59, 0.18);
+}
+html.acc-claro #smax-scroll-nav .smax-scroll-btn:hover,
+body.light-theme #smax-scroll-nav .smax-scroll-btn:hover {
+    background: #39A900;
+    border-color: #007832;
+    color: #ffffff;
+}
+html.acc-claro #smax-scroll-nav .smax-scroll-btn:active,
+body.light-theme #smax-scroll-nav .smax-scroll-btn:active {
+    background: #FF6B00;
+    border-color: #FF6B00;
+    color: #ffffff;
+}
+@media (max-width: 575.98px) {
+    #smax-scroll-nav { right: 10px; top: 50%; transform: translateY(-50%); }
+    #smax-scroll-nav .smax-scroll-btn { width: 40px; height: 40px; font-size: 0.95rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #smax-scroll-nav .smax-scroll-btn { transition: none; }
+}
+@media print { #smax-scroll-nav { display: none !important; } }
+</style>
+
+<div id="smax-scroll-nav" role="group" aria-label="Desplazamiento rápido de la página">
+    <button type="button" id="smax-scroll-top" class="smax-scroll-btn"
+            aria-label="Ir al inicio de la página" title="Ir arriba">
+        <i class="fas fa-chevron-up" aria-hidden="true"></i>
+    </button>
+    <button type="button" id="smax-scroll-bottom" class="smax-scroll-btn"
+            aria-label="Ir al final de la página" title="Ir abajo">
+        <i class="fas fa-chevron-down" aria-hidden="true"></i>
+    </button>
+</div>
+
+<script>
+(function () {
+    var nav = document.getElementById('smax-scroll-nav');
+    var btnTop = document.getElementById('smax-scroll-top');
+    var btnBottom = document.getElementById('smax-scroll-bottom');
+    if (!nav || !btnTop || !btnBottom) return;
+
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var behavior = reduce ? 'auto' : 'smooth';
+    var lastY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var hideTimer = null;
+    var interactuando = false;
+    var HIDE_DELAY = 1500;
+
+    function ocultar() {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+        btnTop.classList.remove('visible');
+        btnBottom.classList.remove('visible');
+    }
+
+    function programarOcultado() {
+        clearTimeout(hideTimer);
+        if (!interactuando) {
+            hideTimer = setTimeout(ocultar, HIDE_DELAY);
+        }
+    }
+
+    function mostrarAlDesplazar() {
+        var doc = document.documentElement;
+        var maxScroll = doc.scrollHeight - window.innerHeight;
+        var y = window.pageYOffset || doc.scrollTop || 0;
+        var paginaLarga = maxScroll > 240;
+        if (!paginaLarga) {
+            ocultar();
+            return;
+        }
+        btnTop.classList.toggle('visible', y > 80);
+        btnBottom.classList.toggle('visible', y < maxScroll - 80);
+        programarOcultado();
+    }
+
+    function verificarAltura() {
+        var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        if (maxScroll <= 240) {
+            ocultar();
+        }
+    }
+
+    nav.addEventListener('mouseenter', function () {
+        interactuando = true;
+        clearTimeout(hideTimer);
+    });
+    nav.addEventListener('focusin', function () {
+        interactuando = true;
+        clearTimeout(hideTimer);
+    });
+    nav.addEventListener('mouseleave', function () {
+        interactuando = false;
+        programarOcultado();
+    });
+    nav.addEventListener('focusout', function (e) {
+        if (!nav.contains(e.relatedTarget)) {
+            interactuando = false;
+            programarOcultado();
+        }
+    });
+
+    btnTop.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: behavior });
+        this.blur();
+        interactuando = false;
+        programarOcultado();
+    });
+    btnBottom.addEventListener('click', function () {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: behavior });
+        this.blur();
+        interactuando = false;
+        programarOcultado();
+    });
+
+    window.addEventListener('scroll', function () {
+        var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+        if (y === lastY) return;
+        lastY = y;
+        mostrarAlDesplazar();
+    }, { passive: true });
+    window.addEventListener('resize', verificarAltura);
+    // Las páginas con contenido dinámico (tablas, modales) cambian de alto
+    if ('ResizeObserver' in window) new ResizeObserver(verificarAltura).observe(document.body);
+    ocultar();
+})();
+</script>
+

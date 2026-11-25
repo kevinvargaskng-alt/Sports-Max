@@ -7,6 +7,23 @@
 {% block extra_css %}
 <style>
 /* ── CP-11: Seguimiento de Rutinas ───────────────────────── */
+:root {
+  --bs-success: #166534;
+  --bs-success-rgb: 22, 101, 52;
+}
+.btn-success {
+  background-color: #166534 !important;
+  border-color: #166534 !important;
+  color: #ffffff !important;
+}
+.btn-success:hover {
+  background-color: #14532d !important;
+  border-color: #14532d !important;
+}
+.bg-success { background-color: #166534 !important; }
+.text-success { color: #2ea043 !important; }
+.border-success { border-color: #238636 !important; }
+
 .rutinas-hero {
   background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0f1f0f 100%);
   padding: 2.5rem 0 1.5rem; position: relative; overflow: hidden;
@@ -15,7 +32,7 @@
   content: '';
   position: absolute; right: 0; top: 0; bottom: 0;
   width: 50%;
-  background: radial-gradient(ellipse at 80% 50%, rgba(57,169,0,.12) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 80% 50%, rgba(22, 101, 52, 0.22) 0%, transparent 70%);
 }
 .rutinas-hero h1 { color: #fff; font-weight: 800; position: relative; }
 .rutinas-hero p  { color: rgba(255,255,255,.6); position: relative; }
@@ -43,10 +60,10 @@
   cursor: default;
 }
 .dia-chip:hover { transform: scale(1.1); }
-.dia-chip.completado { background: #39A900; color: #fff; box-shadow: 0 0 10px rgba(57,169,0,.5); }
+.dia-chip.completado { background: #166534; color: #fff; box-shadow: 0 0 10px rgba(22, 101, 52, 0.55); }
 .dia-chip.omitido   { background: rgba(239,68,68,.2); color: #ef4444; border: 1px solid rgba(239,68,68,.4); }
 .dia-chip.pendiente { background: rgba(255,255,255,.08); color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.1); }
-.dia-chip.hoy       { border: 2px solid #39A900; }
+.dia-chip.hoy       { border: 2px solid #238636; }
 
 /* Rutina card */
 .rutina-card {
@@ -55,7 +72,7 @@
   border-radius: 1rem;
   transition: transform .25s, box-shadow .25s, border-color .25s;
 }
-.rutina-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.3); border-color: rgba(57,169,0,.4); }
+.rutina-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.3); border-color: rgba(35, 134, 54, 0.55); }
 
 /* Ejercicio checks */
 .ejercicio-item {
@@ -63,20 +80,20 @@
   padding: .6rem .75rem; border-radius: .5rem;
   cursor: pointer; transition: background .15s;
 }
-.ejercicio-item:hover { background: rgba(57,169,0,.07); }
-.ejercicio-item input[type="checkbox"] { accent-color: #39A900; width: 18px; height: 18px; }
+.ejercicio-item:hover { background: rgba(22, 101, 52, 0.16); }
+.ejercicio-item input[type="checkbox"] { accent-color: #166534; width: 18px; height: 18px; }
 .ejercicio-item.checked { opacity: .6; text-decoration: line-through; }
 
 /* FAB */
 .fab-registrar {
   position: fixed; bottom: 5.5rem; right: 1.5rem; z-index: 1050;
   width: 58px; height: 58px; border-radius: 50%;
-  background: linear-gradient(135deg, #39A900, #2d8000);
-  color: #fff; border: none; box-shadow: 0 8px 24px rgba(57,169,0,.45);
+  background: linear-gradient(135deg, #166534, #14532d);
+  color: #fff; border: none; box-shadow: 0 8px 24px rgba(22, 101, 52, 0.45);
   font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
   transition: transform .2s, box-shadow .2s;
 }
-.fab-registrar:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 12px 32px rgba(57,169,0,.6); }
+.fab-registrar:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 12px 32px rgba(22, 101, 52, 0.65); }
 
 /* Progress bar semanal */
 .barra-progreso {
@@ -85,7 +102,7 @@
 }
 .barra-progreso-inner {
   height: 100%; border-radius: 99px;
-  background: linear-gradient(90deg, #39A900, #86efac);
+  background: linear-gradient(90deg, #166534, #2ea043);
   transition: width 1s cubic-bezier(.34,1.56,.64,1);
 }
 
@@ -205,7 +222,7 @@
 <!-- MODAL REGISTRAR SESIÓN -->
 <div class="modal fade" id="modalSesion" tabindex="-1" aria-labelledby="modalSesionLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background:#1a1f2e;border:1px solid rgba(57,169,0,.3)">
+    <div class="modal-content" style="background:#1a1f2e;border:1px solid rgba(35, 134, 54, 0.45)">
       <div class="modal-header border-0">
         <h4 class="modal-title text-white" id="modalSesionLabel">
           <i class="fas fa-stopwatch text-success me-2"></i>Registrar Sesión
@@ -215,7 +232,7 @@
       <div class="modal-body">
         <div class="mb-3">
           <label class="form-label text-white-50 small">Rutina realizada</label>
-          <select id="selectRutinaModal" class="form-select" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)">
+          <select id="selectRutinaModal" class="form-select" style="background:#0d1117;color:#e0e0e0;border-color:rgba(35, 134, 54, 0.45)">
             {% for rutina in rutinas %}
             <option value="{{ rutina.pk }}">{{ rutina.nombre }}</option>
             {% endfor %}
@@ -224,20 +241,18 @@
         <div class="row g-3 mb-3">
           <div class="col-6">
             <label class="form-label text-white-50 small" for="inputFechaSesion">Fecha</label>
-            <input type="date" id="inputFechaSesion" class="form-control" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)"
+            <input type="date" id="inputFechaSesion" class="form-control" style="background:#0d1117;color:#e0e0e0;border-color:rgba(35, 134, 54, 0.45)"
                    value="{{ hoy|date:'Y-m-d' }}">
           </div>
           <div class="col-6">
             <label class="form-label text-white-50 small" for="inputDuracion">Duración (min)</label>
-            <input type="number" id="inputDuracion" class="form-control" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)"
+            <input type="number" id="inputDuracion" class="form-control" style="background:#0d1117;color:#e0e0e0;border-color:rgba(35, 134, 54, 0.45)"
                    min="1" max="300" placeholder="45">
           </div>
         </div>
         <div class="mb-3">
           <label class="form-label text-white-50 small">Nivel de esfuerzo</label>
           <div class="d-flex gap-2">
-            {% for val, label in "1:😴 Fácil,2:🙂 Normal,3:😤 Moderado,4:🥵 Difícil,5:💪 Máximo"|split:"," %}
-            {% endfor %}
             <!-- Stars estrellas de esfuerzo -->
             <div class="d-flex gap-2" id="estrellas-esfuerzo">
               {% for i in "12345" %}
@@ -252,7 +267,7 @@
         </div>
         <div class="mb-1">
           <label class="form-label text-white-50 small" for="inputNotas">Notas (opcional)</label>
-          <textarea id="inputNotas" class="form-control" rows="2" style="background:#0d1117;color:#e0e0e0;border-color:rgba(57,169,0,.3)"
+          <textarea id="inputNotas" class="form-control" rows="2" style="background:#0d1117;color:#e0e0e0;border-color:rgba(35, 134, 54, 0.45)"
                     placeholder="¿Cómo te fue hoy?"></textarea>
         </div>
       </div>
@@ -368,7 +383,7 @@
     const container = document.getElementById('confettiContainer');
     container.innerHTML = '';
     container.style.display = 'block';
-    const colores = ['#39A900','#0d6efd','#f59e0b','#ef4444','#a855f7','#06b6d4'];
+    const colores = ['#166534','#0d6efd','#f59e0b','#ef4444','#a855f7','#06b6d4'];
     for (let i = 0; i < 60; i++) {
       const piece = document.createElement('div');
       piece.className = 'confetti-piece';

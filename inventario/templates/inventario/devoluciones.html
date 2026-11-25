@@ -4,9 +4,8 @@
 {% block title %}Devoluciones - Gestión Deportiva{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/inventario_styles.css' %}">
 <style>
-    .badge-status { padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
     #panelNovedad { display: none; }
 
     /* Highlight del select cuando viene preseleccionado */
@@ -14,45 +13,32 @@
         border-color: #2ea043 !important;
         box-shadow: 0 0 0 3px rgba(46,160,67,0.25) !important;
     }
-
-    @media (max-width: 768px) {
-        thead { display: none; }
-        table, tbody, tr, td { display: block; width: 100%; }
-        tr { margin-bottom: 20px; border: 1px solid #30363d; border-radius: 16px;
-             background: #161b22; padding: 12px 0; }
-        td { padding: 10px 20px !important; border: none !important;
-             position: relative; padding-top: 34px !important; }
-        td::before { content: attr(data-label); position: absolute; top: 10px; left: 20px;
-                     font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-                     color: #58a6ff; letter-spacing: 1px; }
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="main-container py-4">
     <div class="container text-start">
-
-        <header class="modulo-header text-center mb-5">
-            <i class="fas fa-undo fa-3x mb-3 text-success"></i>
-            <h2 class="fw-bold text-white">Módulo Devoluciones</h2>
-            <p class="text-white-50">
-                {% if user.is_staff %}
-                    Gestión de devoluciones de todos los usuarios
-                {% else %}
-                    Registra la entrega de tus elementos prestados, <strong>{{ user.get_full_name }}</strong>
-                {% endif %}
-            </p>
-        </header>
-
-        <div class="d-flex flex-wrap gap-2 mb-4">
-            <a href="{% url 'inventario' %}" class="btn btn-outline-secondary btn-sm fw-bold">
-{% include 'partials/back_button.html' with back_url='inventario' back_label='Volver al Inventario' %}
-            </a>
-            <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm fw-bold">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            {% include 'partials/back_button.html' with back_url='inventario' back_label='Volver al Inventario' %}
+            <a href="{% url 'sanciones' %}" class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3 py-2">
                 <i class="fas fa-exclamation-triangle me-1"></i>Ver Sanciones
             </a>
         </div>
+
+        <header class="modulo-header inv-hero-header text-center mb-4">
+            <div class="inv-hero-icon inv-hero-icon-green">
+                <i class="fas fa-undo"></i>
+            </div>
+            <h2 class="fw-bold text-white mb-1">Módulo Devoluciones</h2>
+            <p class="text-white-50 mb-0">
+                {% if user.is_staff %}
+                    Gestión de devoluciones de todos los usuarios
+                {% else %}
+                    Registra la entrega de tus elementos prestados, <strong>{{ user.get_full_name|default:user.username }}</strong>
+                {% endif %}
+            </p>
+        </header>
 
         <!-- ══════════════════════════════════════════
              FORMULARIO DEVOLUCIÓN
@@ -167,7 +153,7 @@
                 {% if user.is_staff %}Historial General de Devoluciones{% else %}Mis Devoluciones{% endif %}
             </h5>
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
+                <table class="table table-dark table-hover align-middle mb-0 inv-mobile-table">
                     <thead>
                         <tr>
                             <th>#</th>

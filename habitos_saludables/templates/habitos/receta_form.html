@@ -3,6 +3,25 @@
 
 {% block title %}Formulario Receta — Sports-Max SENA{% endblock %}
 
+{% block extra_css %}
+<style>
+:root {
+  --bs-success: #166534;
+  --bs-success-rgb: 22, 101, 52;
+}
+.btn-success {
+  background-color: #166534 !important;
+  border-color: #166534 !important;
+  color: #ffffff !important;
+}
+.btn-success:hover {
+  background-color: #14532d !important;
+  border-color: #14532d !important;
+}
+.text-success { color: #2ea043 !important; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
   <h1 class="h3 text-white fw-bold mb-4">
