@@ -42,18 +42,22 @@
   width: 100%;
   height: 210px;
   overflow: hidden;
-  background: #0f172a;
+  background: #ffffff;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .machine-card-img-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.4s ease;
 }
 
 .machine-card-grid:hover .machine-card-img-wrap img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 /* Overlay de la imagen */
@@ -63,8 +67,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60%;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);
+  height: 38%;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.72), transparent);
   pointer-events: none;
 }
 

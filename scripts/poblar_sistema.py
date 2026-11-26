@@ -158,22 +158,22 @@ def poblar_datos():
     # ─────────────────────────────────────────────────────────────
     print("[-] Poblando Inventario de Elementos Deportivos...")
     elementos_info = [
-        ("Balón de Fútbol Golty N° 5", "balones", "Estante A1", 15),
-        ("Balón de Baloncesto Molten", "balones", "Estante A2", 10),
-        ("Balón de Voleibol Mikasa", "balones", "Estante A3", 12),
-        ("Set de Raquetas y Pelotas Ping Pong", "raquetas", "Gaveta B1", 8),
-        ("Colchoneta Gimnasia Alta Densidad", "colchonetas", "Zona Colchonetas", 20),
-        ("Set de Pesas Mancuernas 10kg", "pesas", "Rack de Fuerza", 6),
-        ("Cinta Métrica Profesional 50m", "medicion", "Gaveta C1", 4),
-        ("Cronómetro Digital Deportivo", "medicion", "Gaveta C2", 8),
-        ("Juego de Ajedrez Profesional con Tablero", "juegos_mesa", "Armario D1", 10),
-        ("Red de Voleibol Reglamentaria", "redes", "Estante E1", 3),
+        ("Balón de Fútbol Golty N° 5", "balones", "Estante A1", 15, "elementos_deportivos/balon_futbol_golty.jpg"),
+        ("Balón de Baloncesto Molten", "balones", "Estante A2", 10, "elementos_deportivos/balon_baloncesto_molten.jpg"),
+        ("Balón de Voleibol Mikasa", "balones", "Estante A3", 12, "elementos_deportivos/balon_voleibol_mikasa.jpg"),
+        ("Set de Raquetas y Pelotas Ping Pong", "raquetas", "Gaveta B1", 8, "elementos_deportivos/raquetas_ping_pong.jpg"),
+        ("Colchoneta Gimnasia Alta Densidad", "colchonetas", "Zona Colchonetas", 20, "elementos_deportivos/colchoneta_gimnasia.jpg"),
+        ("Set de Pesas Mancuernas 10kg", "pesas", "Rack de Fuerza", 6, "elementos_deportivos/pesas_mancuernas_10kg.jpg"),
+        ("Cinta Métrica Profesional 50m", "medicion", "Gaveta C1", 4, "elementos_deportivos/cinta_metrica_50m.jpg"),
+        ("Cronómetro Digital Deportivo", "medicion", "Gaveta C2", 8, "elementos_deportivos/cronometro_digital.jpg"),
+        ("Juego de Ajedrez Profesional con Tablero", "juegos_mesa", "Armario D1", 10, "elementos_deportivos/ajedrez_profesional.jpg"),
+        ("Red de Voleibol Reglamentaria", "redes", "Estante E1", 3, "elementos_deportivos/red_voleibol.jpg"),
     ]
     elementos_objs = []
     usuarios_staff = [u for u in usuarios_creados if u.is_staff]
     hoy = timezone.localdate()
 
-    for nom, cat, ubi, cant in elementos_info:
+    for nom, cat, ubi, cant, img_rel in elementos_info:
         # Fecha de adquisición: válida, menor o igual a hoy y como máximo 1 año atrás
         dias_adq = random.randint(10, 300)
         fecha_adq = hoy - timedelta(days=dias_adq)
@@ -186,10 +186,14 @@ def poblar_datos():
                 'ubicacion': ubi,
                 'habilitado': True,
                 'fecha_adquisicion': fecha_adq,
+                'imagen': img_rel,
                 'descripcion': f'Implemento deportivo oficial: {nom}. Apto para entrenamientos y torneos interfichas.',
                 'usuario_responsable': random.choice(usuarios_staff) if usuarios_staff else admin_user
             }
         )
+        if not e.imagen:
+            e.imagen = img_rel
+            e.save(update_fields=['imagen'])
         elementos_objs.append(e)
     print(f"[OK] {len(elementos_objs)} Elementos deportivos en inventario listos.")
 
@@ -400,31 +404,40 @@ def poblar_datos():
 
     # Máquinas
     maquinas_lista = [
-        ("Caminadora Eléctrica Pro", "cardio", "Cardio", "Disponible"),
-        ("Bicicleta Estática Profesional", "cardio", "Cardio", "Disponible"),
-        ("Prensa de Piernas 45 Grados", "fuerza", "Fuerza", "Disponible"),
-        ("Press de Pecho Plano", "fuerza", "Fuerza", "Disponible"),
-        ("Multiestación Multifuerza 8 Puestos", "funcional", "Funcional", "Disponible"),
-        ("Elíptica Magnética", "cardio", "Cardio", "En Mantenimiento"),
+        ("Caminadora Eléctrica Pro", "cardio", "Cardio", "Disponible", "maquinas/caminadora.jpg"),
+        ("Bicicleta Estática Profesional", "cardio", "Cardio", "Disponible", "maquinas/bicicleta.jpg"),
+        ("Prensa de Piernas 45 Grados", "fuerza", "Fuerza", "Disponible", "maquinas/prensa_piernas.jpg"),
+        ("Press de Pecho Plano", "fuerza", "Fuerza", "Disponible", "maquinas/press_banca.jpg"),
+        ("Multiestación Multifuerza 8 Puestos", "funcional", "Funcional", "Disponible", "maquinas/multifuerza.jpg"),
+        ("Elíptica Magnética", "cardio", "Cardio", "En Mantenimiento", "maquinas/eliptica.jpg"),
     ]
-    for nom_m, cat_m, tip_m, est_m in maquinas_lista:
-        Maquina.objects.get_or_create(
+    for nom_m, cat_m, tip_m, est_m, img_m in maquinas_lista:
+        m_obj, _ = Maquina.objects.get_or_create(
             nombre=nom_m,
             defaults={
                 'categoria': cat_m,
                 'estado': 'disponible' if est_m == 'Disponible' else 'mantenimiento',
+                'imagen': img_m,
                 'descripcion': f'Equipo biomecánico para entrenamiento de {cat_m}.'
             }
         )
-        Machine.objects.get_or_create(
+        if not m_obj.imagen:
+            m_obj.imagen = img_m
+            m_obj.save(update_fields=['imagen'])
+
+        mc_obj, _ = Machine.objects.get_or_create(
             nombre=nom_m,
             defaults={
                 'tipo': tip_m,
                 'estado': est_m,
+                'imagen': img_m,
                 'descripcion': f'Máquina para acondicionamiento físico categoría {tip_m}.',
                 'fecha_adquisicion': hoy - timedelta(days=random.randint(20, 280))
             }
         )
+        if not mc_obj.imagen:
+            mc_obj.imagen = img_m
+            mc_obj.save(update_fields=['imagen'])
 
     # Reservas de gimnasio
     for idx, u in enumerate(aprendices[:6], 1):

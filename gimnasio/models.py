@@ -131,18 +131,27 @@ class Maquina(models.Model):
     def imagen_url(self):
         if self.imagen:
             return self.imagen.url
-        # Mapea nombres de máquinas por defecto a sus respectivas imágenes estáticas
-        mapping = {
-            'caminadora': 'caminadora.jpg',
-            'bicicleta estática': 'bicicleta.jpg',
-            'elíptica': 'eliptica.jpg',
-            'press de banca': 'press_banca.jpg',
-            'multiestación': 'multifuerza.jpg',
-            'rack de sentadillas': 'rack_sentadillas.jpg',
-            'remo': 'remo.jpg',
-            'zona trx / colchonetas': 'trx_colchonetas.jpg'
-        }
-        filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
+        n = self.nombre.lower()
+        if 'caminadora' in n:
+            filename = 'caminadora.jpg'
+        elif 'bicicleta' in n:
+            filename = 'bicicleta.jpg'
+        elif 'elíptica' in n or 'eliptica' in n:
+            filename = 'eliptica.jpg'
+        elif 'prensa' in n:
+            filename = 'prensa_piernas.jpg'
+        elif 'press' in n or 'banca' in n or 'pecho' in n:
+            filename = 'press_banca.jpg'
+        elif 'multiestación' in n or 'multiestacion' in n or 'multifuerza' in n:
+            filename = 'multifuerza.jpg'
+        elif 'rack' in n or 'sentadilla' in n:
+            filename = 'rack_sentadillas.jpg'
+        elif 'remo' in n:
+            filename = 'remo.jpg'
+        elif 'trx' in n or 'colchoneta' in n:
+            filename = 'trx_colchonetas.jpg'
+        else:
+            filename = 'mancuernas.jpg'
         return f"/static/img/maquinas/{filename}"
 
 
@@ -210,14 +219,23 @@ class Machine(models.Model):
     def imagen_url(self):
         if self.imagen:
             return self.imagen.url
-        mapping = {
-            'caminadora': 'caminadora.jpg',
-            'bicicleta estática': 'bicicleta.jpg',
-            'elíptica': 'eliptica.jpg',
-            'press de banca': 'press_banca.jpg',
-            'multiestación': 'multifuerza.jpg',
-            'rack de sentadillas': 'rack_sentadillas.jpg',
-            'remo': 'remo.jpg',
-        }
-        filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
+        n = self.nombre.lower()
+        if 'caminadora' in n:
+            filename = 'caminadora.jpg'
+        elif 'bicicleta' in n:
+            filename = 'bicicleta.jpg'
+        elif 'elíptica' in n or 'eliptica' in n:
+            filename = 'eliptica.jpg'
+        elif 'prensa' in n:
+            filename = 'prensa_piernas.jpg'
+        elif 'press' in n or 'banca' in n or 'pecho' in n:
+            filename = 'press_banca.jpg'
+        elif 'multiestación' in n or 'multiestacion' in n or 'multifuerza' in n:
+            filename = 'multifuerza.jpg'
+        elif 'rack' in n or 'sentadilla' in n:
+            filename = 'rack_sentadillas.jpg'
+        elif 'remo' in n:
+            filename = 'remo.jpg'
+        else:
+            filename = 'mancuernas.jpg'
         return f"/static/img/maquinas/{filename}"
