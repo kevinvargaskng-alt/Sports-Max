@@ -10,6 +10,8 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Variables base en Modo Claro SENA ──────────────────────── */
+html[data-theme="light"],
+html[data-theme="light"] body,
 html.acc-claro,
 html.acc-claro body,
 body.light-theme {
@@ -208,20 +210,26 @@ html.acc-claro body .table > :not(caption) > * > * {
     background-color: transparent;
     color: #1E293B !important;
 }
+html[data-theme="light"] body .modal-content,
 html.acc-claro body .modal-content {
     background: #FFFFFF !important;
     color: #1E293B !important;
     border: 1px solid #CBD5E1 !important;
 }
+html[data-theme="light"] body .modal-content .btn-close,
 html.acc-claro body .modal-content .btn-close { filter: none !important; }
+html[data-theme="light"] body .modal-sport-header,
 html.acc-claro body .modal-sport-header {
     background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
     color: #FFFFFF !important;
 }
+html[data-theme="light"] body .modal-sport-header *,
+html[data-theme="light"] body .modal-sport-header .modal-title,
 html.acc-claro body .modal-sport-header *,
 html.acc-claro body .modal-sport-header .modal-title {
     color: #FFFFFF !important;
 }
+html[data-theme="light"] body .modal-sport-header .btn-close,
 html.acc-claro body .modal-sport-header .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%) !important;
 }
@@ -854,9 +862,104 @@ html.acc-claro body .badge-status.bg-danger * {
 }
 
 /* Iconos de calendario y hora visibles en inputs claros */
+html[data-theme="light"] body input[type="date"]::-webkit-calendar-picker-indicator,
+html[data-theme="light"] body input[type="time"]::-webkit-calendar-picker-indicator,
 html.acc-claro body input[type="date"]::-webkit-calendar-picker-indicator,
 html.acc-claro body input[type="time"]::-webkit-calendar-picker-indicator,
 body.light-theme input[type="date"]::-webkit-calendar-picker-indicator,
 body.light-theme input[type="time"]::-webkit-calendar-picker-indicator {
     filter: none !important;
+}
+
+/* ── 13. Regla Global de Alto Contraste para Manual, Ayuda, Legales y Créditos (Modo Claro) ── */
+html[data-theme="light"] body main .text-white:not(.btn):not(.badge):not(.skip-to-content),
+html.acc-claro body main .text-white:not(.btn):not(.badge):not(.skip-to-content),
+body.light-theme main .text-white:not(.btn):not(.badge):not(.skip-to-content) {
+    color: #1E293B;
+}
+html[data-theme="light"] body main h1.text-white,
+html[data-theme="light"] body main h2.text-white,
+html[data-theme="light"] body main h3.text-white,
+html[data-theme="light"] body main h4.text-white,
+html[data-theme="light"] body main h5.text-white,
+html[data-theme="light"] body main h6.text-white,
+html.acc-claro body main h1.text-white,
+html.acc-claro body main h2.text-white,
+html.acc-claro body main h3.text-white,
+html.acc-claro body main h4.text-white,
+html.acc-claro body main h5.text-white,
+html.acc-claro body main h6.text-white,
+body.light-theme main h1.text-white,
+body.light-theme main h2.text-white,
+body.light-theme main h3.text-white,
+body.light-theme main h4.text-white,
+body.light-theme main h5.text-white,
+body.light-theme main h6.text-white {
+    color: #1E293B !important;
+}
+html[data-theme="light"] body main p.text-white-50,
+html[data-theme="light"] body main li.text-white-50,
+html[data-theme="light"] body main ul.text-white-50,
+html[data-theme="light"] body main ol.text-white-50,
+html[data-theme="light"] body main small.text-white-50,
+html[data-theme="light"] body main span.text-white-50,
+html[data-theme="light"] body main div.text-white-50,
+html.acc-claro body main p.text-white-50,
+html.acc-claro body main li.text-white-50,
+html.acc-claro body main ul.text-white-50,
+html.acc-claro body main ol.text-white-50,
+html.acc-claro body main small.text-white-50,
+html.acc-claro body main span.text-white-50,
+html.acc-claro body main div.text-white-50,
+body.light-theme main p.text-white-50,
+body.light-theme main li.text-white-50,
+body.light-theme main ul.text-white-50,
+body.light-theme main ol.text-white-50,
+body.light-theme main small.text-white-50,
+body.light-theme main span.text-white-50,
+body.light-theme main div.text-white-50 {
+    color: #334155 !important;
+}
+html[data-theme="light"] body main ul.text-white-50 li,
+html.acc-claro body main ul.text-white-50 li,
+body.light-theme main ul.text-white-50 li,
+html[data-theme="light"] body main ol.text-white-50 li,
+html.acc-claro body main ol.text-white-50 li,
+body.light-theme main ol.text-white-50 li {
+    color: #334155 !important;
+}
+
+/* Re-proteger texto blanco legítimo sobre banners/heroes oscuros o verdes SENA */
+html[data-theme="light"] body .hero h1,
+html[data-theme="light"] body .hero p,
+html[data-theme="light"] body .hero span,
+html.acc-claro body .hero h1,
+html.acc-claro body .hero p,
+html.acc-claro body .hero span,
+body.light-theme .hero h1,
+body.light-theme .hero p,
+body.light-theme .hero span,
+html[data-theme="light"] body .hero-wrap h1,
+html[data-theme="light"] body .hero-wrap h2,
+html[data-theme="light"] body .hero-wrap p,
+html.acc-claro body .hero-wrap h1,
+html.acc-claro body .hero-wrap h2,
+html.acc-claro body .hero-wrap p,
+html[data-theme="light"] body .imc-hero h1,
+html[data-theme="light"] body .imc-hero p,
+html[data-theme="light"] body .progreso-hero h1,
+html[data-theme="light"] body .progreso-hero p,
+html[data-theme="light"] body .sueno-hero h1,
+html[data-theme="light"] body .sueno-hero p,
+html[data-theme="light"] body .rutinas-hero h1,
+html[data-theme="light"] body .rutinas-hero p,
+html[data-theme="light"] body .recetas-hero h1,
+html[data-theme="light"] body .recetas-hero p,
+html[data-theme="light"] body .notif-hero h1,
+html[data-theme="light"] body .notif-hero p,
+html[data-theme="light"] body .roles-hero h1,
+html[data-theme="light"] body .roles-hero p,
+html.acc-claro body .sport-card-content *,
+body.light-theme .sport-card-content * {
+    color: #FFFFFF !important;
 }

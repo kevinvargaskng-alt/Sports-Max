@@ -1,11 +1,14 @@
 // inicio.js
 document.addEventListener('DOMContentLoaded', function () {
 
-    // === INICIALIZAR TOOLTIPS DE BOOTSTRAP ===
+    // === INICIALIZAR TOOLTIPS DE BOOTSTRAP (SIN DUPLICADOS) ===
     if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-            new bootstrap.Tooltip(tooltipTriggerEl);
+            bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl, {
+                trigger: 'hover focus',
+                boundary: 'viewport'
+            });
         });
     }
 

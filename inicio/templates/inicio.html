@@ -253,11 +253,16 @@
 <div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content custom-modal">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bolder text-white fs-4 ini-u-36">
+      <div class="modal-header border-0 pb-2 d-flex align-items-center justify-content-between">
+        <h5 class="modal-title fw-bolder text-white fs-4 ini-u-36 mb-0">
           <i class="fas fa-shield-alt me-2 ini-u-37"></i>Acceso al sistema
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="auth-theme-toggle-btn" data-smax-theme-toggle="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cambiar Modo Claro / Oscuro" aria-label="Cambiar Modo Claro / Oscuro">
+            <i class="fas fa-moon smax-theme-sync-icon"></i>
+          </button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
       </div>
       <div class="modal-body pt-2">
         <ul class="nav nav-pills nav-fill mb-4 gap-2" id="authTabs" role="tablist">
@@ -453,8 +458,8 @@
                 <div class="col-md-6">
                   <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="form-label fw-semibold text-white small text-uppercase ini-u-75 mb-0">Contraseña <span class="text-danger">*</span></label>
-                    <button type="button" class="btn btn-link text-decoration-none btn-sm p-0 mb-0" id="btnSugerirClave" style="font-size: 0.72rem; color: #1a5fb4; font-weight: 700;">
-                      <i class="fas fa-magic"></i> Sugerir clave
+                    <button type="button" class="btn btn-link text-decoration-none btn-sm p-0 mb-0 btn-sugerir-clave" id="btnSugerirClave">
+                      <i class="fas fa-magic me-1"></i>Sugerir clave
                     </button>
                   </div>
                   <div class="input-group has-validation">
@@ -511,7 +516,7 @@
                   data-bs-toggle="modal" data-bs-target="#modalDesbloqueoUrgente">
             <i class="fas fa-user-shield me-2"></i>DESBLOQUEO URGENTE (DATOS PERSONALES)
           </button>
-          <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-sm btn-cerrar-bloqueo" data-bs-dismiss="modal">
             Cerrar
           </button>
         </div>

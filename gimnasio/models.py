@@ -99,6 +99,38 @@ class FechaIngreso(models.Model):
         return str(self.fecha)
 
 
+def _resolver_imagen_maquina(imagen_field, nombre, categoria=''):
+    """Resuelve la URL válida de imagen de una máquina con respaldo estático garantizado."""
+    if imagen_field and getattr(imagen_field, 'name', ''):
+        try:
+            if imagen_field.storage.exists(imagen_field.name):
+                return imagen_field.url
+        except Exception:
+            pass
+
+    nombre_norm = (nombre or '').lower()
+    reglas_keywords = [
+        (('bicicleta', 'spinning', 'ciclo', 'estática', 'estatica'), 'bicicleta.jpg'),
+        (('caminadora', 'trotadora', 'banda caminadora', 'correr'), 'caminadora.jpg'),
+        (('elíptica', 'eliptica', 'escaladora'), 'eliptica.jpg'),
+        (('press', 'banca', 'pecho'), 'press_banca.jpg'),
+        (('sentadilla', 'prensa', 'pierna', 'rack', 'smith', 'hack'), 'rack_sentadillas.jpg'),
+        (('remo', 'espalda', 'dorsal', 'jalón', 'jalon'), 'remo.jpg'),
+        (('trx', 'colchoneta', 'funcional', 'abdom', 'kettlebell', ' Rusa', 'flexibilidad', 'estiramiento', 'yoga'), 'trx_colchonetas.jpg'),
+        (('multi', 'polea', 'fuerza', 'mancuerna', 'pesa', 'barra'), 'multifuerza.jpg'),
+    ]
+    for keywords, filename in reglas_keywords:
+        if any(kw in nombre_norm for kw in keywords):
+            return f"/static/img/maquinas/{filename}"
+
+    cat_norm = (categoria or '').lower()
+    if 'cardio' in cat_norm:
+        return "/static/img/maquinas/caminadora.jpg"
+    if 'funcional' in cat_norm or 'flexibilidad' in cat_norm:
+        return "/static/img/maquinas/trx_colchonetas.jpg"
+    return "/static/img/maquinas/multifuerza.jpg"
+
+
 class Maquina(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
@@ -129,30 +161,7 @@ class Maquina(models.Model):
 
     @property
     def imagen_url(self):
-        if self.imagen:
-            return self.imagen.url
-        n = self.nombre.lower()
-        if 'caminadora' in n:
-            filename = 'caminadora.jpg'
-        elif 'bicicleta' in n:
-            filename = 'bicicleta.jpg'
-        elif 'elíptica' in n or 'eliptica' in n:
-            filename = 'eliptica.jpg'
-        elif 'prensa' in n:
-            filename = 'prensa_piernas.jpg'
-        elif 'press' in n or 'banca' in n or 'pecho' in n:
-            filename = 'press_banca.jpg'
-        elif 'multiestación' in n or 'multiestacion' in n or 'multifuerza' in n:
-            filename = 'multifuerza.jpg'
-        elif 'rack' in n or 'sentadilla' in n:
-            filename = 'rack_sentadillas.jpg'
-        elif 'remo' in n:
-            filename = 'remo.jpg'
-        elif 'trx' in n or 'colchoneta' in n:
-            filename = 'trx_colchonetas.jpg'
-        else:
-            filename = 'mancuernas.jpg'
-        return f"/static/img/maquinas/{filename}"
+        return _resolver_imagen_maquina(self.imagen, self.nombre, self.categoria)
 
 
 class Machine(models.Model):
@@ -217,25 +226,4 @@ class Machine(models.Model):
 
     @property
     def imagen_url(self):
-        if self.imagen:
-            return self.imagen.url
-        n = self.nombre.lower()
-        if 'caminadora' in n:
-            filename = 'caminadora.jpg'
-        elif 'bicicleta' in n:
-            filename = 'bicicleta.jpg'
-        elif 'elíptica' in n or 'eliptica' in n:
-            filename = 'eliptica.jpg'
-        elif 'prensa' in n:
-            filename = 'prensa_piernas.jpg'
-        elif 'press' in n or 'banca' in n or 'pecho' in n:
-            filename = 'press_banca.jpg'
-        elif 'multiestación' in n or 'multiestacion' in n or 'multifuerza' in n:
-            filename = 'multifuerza.jpg'
-        elif 'rack' in n or 'sentadilla' in n:
-            filename = 'rack_sentadillas.jpg'
-        elif 'remo' in n:
-            filename = 'remo.jpg'
-        else:
-            filename = 'mancuernas.jpg'
-        return f"/static/img/maquinas/{filename}"
+        return _resolver_imagen_maquina(self.imagen, self.nombre, self.tipo)

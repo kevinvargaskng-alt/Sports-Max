@@ -116,6 +116,17 @@ class EquipoInterfichas(models.Model):
         return f"{self.nombre_equipo} - Ficha: {self.ficha}"
 
     @property
+    def escudo_url(self):
+        """Retorna la URL del escudo solo si el archivo existe en almacenamiento."""
+        if self.escudo and getattr(self.escudo, 'name', ''):
+            try:
+                if self.escudo.storage.exists(self.escudo.name):
+                    return self.escudo.url
+            except Exception:
+                pass
+        return ''
+
+    @property
     def edicion_bloqueada(self):
         """Retorna True si el torneo al que pertenece el equipo ya ha iniciado."""
         if self.torneo:

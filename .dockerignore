@@ -1,0 +1,39 @@
+# Secretos y entornos locales (NUNCA dentro de la imagen)
+.env
+.env.*
+!.env.example
+.venv
+venv/
+env/
+
+# Control de versiones e IDE
+.git
+.github
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+
+# Datos locales y temporales
+db.sqlite3
+db.sqlite3-journal
+logs/
+scratch/
+docs/
+media/
+staticfiles/
+*.log
+*.pkl
+*.joblib
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Node / SO
+node_modules/
+Thumbs.db
+.DS_Store

@@ -337,7 +337,7 @@
         height: 38px !important;
         padding: 0 20px !important;
         border-radius: 50px !important;
-        background: linear-gradient(135deg, #1a5fb4, #2b7de9) !important;
+        background: linear-gradient(135deg, #39A900, #007832) !important;
         border: 1px solid rgba(255, 255, 255, 0.22) !important;
         color: #ffffff !important;
         font-size: 0.85rem !important;
@@ -348,12 +348,13 @@
         justify-content: center !important;
         gap: 8px;
         white-space: nowrap;
-        box-shadow: 0 4px 14px rgba(26, 95, 180, 0.35);
+        box-shadow: 0 4px 14px rgba(57, 169, 0, 0.35);
         transition: all 0.2s ease;
     }
     .btn-ingresar-nav:hover {
+        background: linear-gradient(135deg, #007832, #005C25) !important;
         transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(43, 125, 233, 0.5);
+        box-shadow: 0 6px 18px rgba(0, 120, 50, 0.48);
         color: #ffffff !important;
     }
 
@@ -749,7 +750,7 @@
                 <a class="nav-link {% if url_name == 'gimnasio' or '/gimnasio/' in current_path %}active{% endif %}" href="{% url 'gimnasio' %}">
                     <i class="fas fa-dumbbell"></i><span>Gimnasio</span>
                 </a>
-                <a class="nav-link {% if url_name == 'inventario' or url_name == 'devoluciones' or url_name == 'sanciones' or '/inventario/' in current_path %}active{% endif %}" href="{% url 'inventario' %}">
+                <a class="nav-link {% if url_name == 'inventario' or url_name == 'devoluciones' or url_name == 'sanciones' or url_name == 'reporte_prestamos' or current_path|slice:':12' == '/inventario/' %}active{% endif %}" href="{% url 'inventario' %}">
                     <i class="fas fa-boxes"></i><span>Inventario</span>
                 </a>
                 <a class="nav-link {% if request.resolver_match.namespace == 'habitos' or '/habitos/' in current_path %}active{% endif %}" href="{% url 'habitos:inicio' %}">
@@ -770,7 +771,7 @@
                     <a class="hdr-mobile-link {% if url_name == 'gimnasio' or '/gimnasio/' in current_path %}active{% endif %}" href="{% url 'gimnasio' %}">
                         <i class="fas fa-dumbbell"></i><span>Gimnasio</span>
                     </a>
-                    <a class="hdr-mobile-link {% if url_name == 'inventario' or url_name == 'devoluciones' or url_name == 'sanciones' or '/inventario/' in current_path %}active{% endif %}" href="{% url 'inventario' %}">
+                    <a class="hdr-mobile-link {% if url_name == 'inventario' or url_name == 'devoluciones' or url_name == 'sanciones' or url_name == 'reporte_prestamos' or current_path|slice:':12' == '/inventario/' %}active{% endif %}" href="{% url 'inventario' %}">
                         <i class="fas fa-boxes"></i><span>Inventario</span>
                     </a>
                     <a class="hdr-mobile-link {% if request.resolver_match.namespace == 'habitos' or '/habitos/' in current_path %}active{% endif %}" href="{% url 'habitos:inicio' %}" style="grid-column: 1 / -1;">
