@@ -170,6 +170,422 @@
 }
 
 /* ═══════════════════════════════════════════
+   ESTILOS EN PANTALLA: MODO CLARO SENA
+   ═══════════════════════════════════════════ */
+html[data-theme="light"] .reporte-card,
+html.acc-claro .reporte-card,
+body.light-theme .reporte-card {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+html[data-theme="light"] .reporte-header-banner,
+html.acc-claro .reporte-header-banner,
+body.light-theme .reporte-header-banner {
+    background: linear-gradient(135deg, #0A2540 0%, #0284C7 55%, #10B981 100%) !important;
+    border-bottom: 3px solid #10B981 !important;
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] .reporte-header-banner *,
+html.acc-claro .reporte-header-banner *,
+body.light-theme .reporte-header-banner * {
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] .reporte-header-banner h1,
+html[data-theme="light"] .reporte-header-banner h1.text-white,
+html.acc-claro .reporte-header-banner h1,
+html.acc-claro .reporte-header-banner h1.text-white,
+body.light-theme .reporte-header-banner h1,
+body.light-theme .reporte-header-banner h1.text-white {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-theme="light"] .reporte-header-banner p,
+html[data-theme="light"] .reporte-header-banner p strong,
+html[data-theme="light"] .reporte-header-banner .text-white-50,
+html.acc-claro .reporte-header-banner p,
+html.acc-claro .reporte-header-banner p strong,
+html.acc-claro .reporte-header-banner .text-white-50,
+body.light-theme .reporte-header-banner p,
+body.light-theme .reporte-header-banner p strong,
+body.light-theme .reporte-header-banner .text-white-50 {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+html[data-theme="light"] .reporte-header-banner .text-info,
+html.acc-claro .reporte-header-banner .text-info,
+body.light-theme .reporte-header-banner .text-info {
+    color: #7DD3FC !important;
+}
+
+html[data-theme="light"] .reporte-header-banner .text-warning,
+html.acc-claro .reporte-header-banner .text-warning,
+body.light-theme .reporte-header-banner .text-warning {
+    color: #FDE047 !important;
+}
+
+html[data-theme="light"] .reporte-header-banner .text-danger,
+html.acc-claro .reporte-header-banner .text-danger,
+body.light-theme .reporte-header-banner .text-danger {
+    color: #FCA5A5 !important;
+}
+
+html[data-theme="light"] .reporte-header-banner .badge-torneo-code,
+html.acc-claro .reporte-header-banner .badge-torneo-code,
+body.light-theme .reporte-header-banner .badge-torneo-code {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] .no-print .btn-outline-secondary,
+html.acc-claro .no-print .btn-outline-secondary,
+body.light-theme .no-print .btn-outline-secondary {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] .no-print .btn-outline-secondary:hover,
+html.acc-claro .no-print .btn-outline-secondary:hover,
+body.light-theme .no-print .btn-outline-secondary:hover {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border-color: #94A3B8 !important;
+}
+
+/* Grilla y Cajas KPI en Modo Claro */
+html[data-theme="light"] .kpi-stat-box,
+html.acc-claro .kpi-stat-box,
+body.light-theme .kpi-stat-box {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+html[data-theme="light"] .kpi-equipos,
+html.acc-claro .kpi-equipos,
+body.light-theme .kpi-equipos {
+    background: #F0F9FF !important;
+    border: 1px solid #BAE6FD !important;
+    border-top: 4px solid #0284C7 !important;
+}
+
+html[data-theme="light"] .kpi-equipos .kpi-stat-num,
+html.acc-claro .kpi-equipos .kpi-stat-num,
+body.light-theme .kpi-equipos .kpi-stat-num {
+    color: #0284C7 !important;
+}
+
+html[data-theme="light"] .kpi-partidos,
+html.acc-claro .kpi-partidos,
+body.light-theme .kpi-partidos {
+    background: #FFFBEB !important;
+    border: 1px solid #FDE68A !important;
+    border-top: 4px solid #F59E0B !important;
+}
+
+html[data-theme="light"] .kpi-partidos .kpi-stat-num,
+html.acc-claro .kpi-partidos .kpi-stat-num,
+body.light-theme .kpi-partidos .kpi-stat-num {
+    color: #D97706 !important;
+}
+
+html[data-theme="light"] .kpi-jugados,
+html.acc-claro .kpi-jugados,
+body.light-theme .kpi-jugados {
+    background: #ECFDF5 !important;
+    border: 1px solid #A7F3D0 !important;
+    border-top: 4px solid #10B981 !important;
+}
+
+html[data-theme="light"] .kpi-jugados .kpi-stat-num,
+html.acc-claro .kpi-jugados .kpi-stat-num,
+body.light-theme .kpi-jugados .kpi-stat-num {
+    color: #059669 !important;
+}
+
+html[data-theme="light"] .kpi-campeon,
+html.acc-claro .kpi-campeon,
+body.light-theme .kpi-campeon {
+    background: #FEFCE8 !important;
+    border: 1px solid #FEF08A !important;
+    border-top: 4px solid #EAB308 !important;
+}
+
+html[data-theme="light"] .kpi-campeon .kpi-stat-num,
+html.acc-claro .kpi-campeon .kpi-stat-num,
+body.light-theme .kpi-campeon .kpi-stat-num {
+    color: #CA8A04 !important;
+}
+
+html[data-theme="light"] .kpi-stat-label,
+html.acc-claro .kpi-stat-label,
+body.light-theme .kpi-stat-label {
+    color: #334155 !important;
+}
+
+html[data-theme="light"] .kpi-stat-sub,
+html.acc-claro .kpi-stat-sub,
+body.light-theme .kpi-stat-sub {
+    color: #64748B !important;
+}
+
+/* Títulos de sección */
+html[data-theme="light"] .reporte-section-title,
+html.acc-claro .reporte-section-title,
+body.light-theme .reporte-section-title {
+    color: #0F172A !important;
+    border-bottom: 2.5px solid #0284C7 !important;
+}
+
+html[data-theme="light"] .reporte-section-title i,
+html.acc-claro .reporte-section-title i,
+body.light-theme .reporte-section-title i {
+    color: #0284C7 !important;
+}
+
+/* Cuadro de Honor */
+html[data-theme="light"] .reporte-card .card.bg-dark,
+html.acc-claro .reporte-card .card.bg-dark,
+body.light-theme .reporte-card .card.bg-dark {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] .reporte-card .card.bg-dark.border-warning,
+html.acc-claro .reporte-card .card.bg-dark.border-warning,
+body.light-theme .reporte-card .card.bg-dark.border-warning {
+    border: 2px solid #F59E0B !important;
+    background: #FFFDF5 !important;
+}
+
+html[data-theme="light"] .reporte-card .card.bg-dark.border-info,
+html.acc-claro .reporte-card .card.bg-dark.border-info,
+body.light-theme .reporte-card .card.bg-dark.border-info {
+    border: 2px solid #0284C7 !important;
+    background: #F8FBFE !important;
+}
+
+html[data-theme="light"] .reporte-card .card.bg-dark.border-success,
+html.acc-claro .reporte-card .card.bg-dark.border-success,
+body.light-theme .reporte-card .card.bg-dark.border-success {
+    border: 2px solid #10B981 !important;
+    background: #F6FEF9 !important;
+}
+
+html[data-theme="light"] .reporte-card .card.bg-dark.border-secondary,
+html.acc-claro .reporte-card .card.bg-dark.border-secondary,
+body.light-theme .reporte-card .card.bg-dark.border-secondary {
+    border: 2px solid #94A3B8 !important;
+    background: #F8FAFC !important;
+}
+
+html[data-theme="light"] .reporte-card .card.bg-dark h5.text-white,
+html.acc-claro .reporte-card .card.bg-dark h5.text-white,
+body.light-theme .reporte-card .card.bg-dark h5.text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] .reporte-card .card.bg-dark small.text-white-50,
+html.acc-claro .reporte-card .card.bg-dark small.text-white-50,
+body.light-theme .reporte-card .card.bg-dark small.text-white-50 {
+    color: #475569 !important;
+}
+
+/* Tablas de Posiciones de Grupos */
+html[data-theme="light"] .reporte-card .card.bg-dark.border-secondary,
+html.acc-claro .reporte-card .card.bg-dark.border-secondary,
+body.light-theme .reporte-card .card.bg-dark.border-secondary {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+}
+
+html[data-theme="light"] .reporte-card .card-header.bg-secondary,
+html.acc-claro .reporte-card .card-header.bg-secondary,
+body.light-theme .reporte-card .card-header.bg-secondary {
+    background: linear-gradient(90deg, #1E3A8A 0%, #0284C7 100%) !important;
+    color: #FFFFFF !important;
+    border-bottom: none !important;
+}
+
+html[data-theme="light"] .reporte-card .card-header.bg-secondary .badge.bg-dark,
+html.acc-claro .reporte-card .card-header.bg-secondary .badge.bg-dark,
+body.light-theme .reporte-card .card-header.bg-secondary .badge.bg-dark {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] .table-reporte,
+html.acc-claro .table-reporte,
+body.light-theme .table-reporte {
+    background: #FFFFFF !important;
+}
+
+html[data-theme="light"] .table-reporte thead th,
+html.acc-claro .table-reporte thead th,
+body.light-theme .table-reporte thead th {
+    background: #F1F5F9 !important;
+    color: #334155 !important;
+    border-bottom: 2px solid #CBD5E1 !important;
+}
+
+html[data-theme="light"] .table-reporte tbody tr,
+html.acc-claro .table-reporte tbody tr,
+body.light-theme .table-reporte tbody tr {
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+html[data-theme="light"] .table-reporte tbody tr:nth-child(even),
+html.acc-claro .table-reporte tbody tr:nth-child(even),
+body.light-theme .table-reporte tbody tr:nth-child(even) {
+    background: #F8FAFC !important;
+}
+
+html[data-theme="light"] .table-reporte tbody tr:hover,
+html.acc-claro .table-reporte tbody tr:hover,
+body.light-theme .table-reporte tbody tr:hover {
+    background: #EFF6FF !important;
+}
+
+html[data-theme="light"] .table-reporte td,
+html.acc-claro .table-reporte td,
+body.light-theme .table-reporte td {
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] .table-reporte td .text-white,
+html.acc-claro .table-reporte td .text-white,
+body.light-theme .table-reporte td .text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] .table-reporte td .text-white-50,
+html.acc-claro .table-reporte td .text-white-50,
+body.light-theme .table-reporte td .text-white-50 {
+    color: #64748B !important;
+}
+
+html[data-theme="light"] .table-reporte td.text-white-50,
+html.acc-claro .table-reporte td.text-white-50,
+body.light-theme .table-reporte td.text-white-50 {
+    color: #64748B !important;
+}
+
+html[data-theme="light"] .badge-pos-n,
+html.acc-claro .badge-pos-n,
+body.light-theme .badge-pos-n {
+    background: #E2E8F0 !important;
+    color: #475569 !important;
+}
+
+/* Fase Eliminatoria */
+html[data-theme="light"] .fase-box-cuartos.bg-dark,
+html[data-theme="light"] .fase-box-semifinal.bg-dark,
+html[data-theme="light"] .fase-box-final.bg-dark,
+html.acc-claro .fase-box-cuartos.bg-dark,
+html.acc-claro .fase-box-semifinal.bg-dark,
+html.acc-claro .fase-box-final.bg-dark,
+body.light-theme .fase-box-cuartos.bg-dark,
+body.light-theme .fase-box-semifinal.bg-dark,
+body.light-theme .fase-box-final.bg-dark {
+    background: #F8FAFC !important;
+    border: 1.5px solid #CBD5E1 !important;
+}
+
+html[data-theme="light"] .fase-box-final.bg-dark,
+html.acc-claro .fase-box-final.bg-dark,
+body.light-theme .fase-box-final.bg-dark {
+    border: 1.5px solid #F59E0B !important;
+    background: #FFFDF5 !important;
+}
+
+html[data-theme="light"] .partido-row-reporte,
+html.acc-claro .partido-row-reporte,
+body.light-theme .partido-row-reporte {
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
+}
+
+html[data-theme="light"] .partido-row-reporte.border-warning,
+html.acc-claro .partido-row-reporte.border-warning,
+body.light-theme .partido-row-reporte.border-warning {
+    border-color: #F59E0B !important;
+}
+
+html[data-theme="light"] .partido-row-reporte .text-white,
+html.acc-claro .partido-row-reporte .text-white,
+body.light-theme .partido-row-reporte .text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] .partido-row-reporte .text-white-50,
+html.acc-claro .partido-row-reporte .text-white-50,
+body.light-theme .partido-row-reporte .text-white-50 {
+    color: #64748B !important;
+}
+
+/* Cronograma de Partidos */
+html[data-theme="light"] .tabla-cronograma-reporte td.text-white,
+html[data-theme="light"] .tabla-cronograma-reporte td .text-white,
+html.acc-claro .tabla-cronograma-reporte td.text-white,
+html.acc-claro .tabla-cronograma-reporte td .text-white,
+body.light-theme .tabla-cronograma-reporte td.text-white,
+body.light-theme .tabla-cronograma-reporte td .text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] .tabla-cronograma-reporte td.text-white-50,
+html[data-theme="light"] .tabla-cronograma-reporte td .text-white-50,
+html.acc-claro .tabla-cronograma-reporte td.text-white-50,
+html.acc-claro .tabla-cronograma-reporte td .text-white-50,
+body.light-theme .tabla-cronograma-reporte td.text-white-50,
+body.light-theme .tabla-cronograma-reporte td .text-white-50 {
+    color: #64748B !important;
+}
+
+html[data-theme="light"] .tabla-cronograma-reporte .badge.bg-dark,
+html.acc-claro .tabla-cronograma-reporte .badge.bg-dark,
+body.light-theme .tabla-cronograma-reporte .badge.bg-dark {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #475569 !important;
+}
+
+html[data-theme="light"] .badge-hora-cronograma,
+html.acc-claro .badge-hora-cronograma,
+body.light-theme .badge-hora-cronograma {
+    background: #EFF6FF !important;
+    color: #1D4ED8 !important;
+    border: 1px solid #BFDBFE !important;
+}
+
+/* Firmas */
+html[data-theme="light"] .firmas-reporte .border-top,
+html.acc-claro .firmas-reporte .border-top,
+body.light-theme .firmas-reporte .border-top {
+    border-color: #CBD5E1 !important;
+}
+
+html[data-theme="light"] .firmas-reporte p.text-white,
+html.acc-claro .firmas-reporte p.text-white,
+body.light-theme .firmas-reporte p.text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] .firmas-reporte small.text-white-50,
+html.acc-claro .firmas-reporte small.text-white-50,
+body.light-theme .firmas-reporte small.text-white-50 {
+    color: #64748B !important;
+}
+
+/* ═══════════════════════════════════════════
    ESTILOS DE IMPRESIÓN (PDF / PRINT CON COLOR VIBRANTE)
    ═══════════════════════════════════════════ */
 @media print {

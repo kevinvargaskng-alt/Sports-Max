@@ -5,6 +5,54 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/contenido_educativo_styles.css' %}">
+<style>
+    .prevencion-guide {
+        padding: 1.5rem;
+        margin: 0 0 1.5rem;
+        border: 1px solid #BBF7D0;
+        border-radius: 18px;
+        background: linear-gradient(145deg, #F0FDF4 0%, #FFFFFF 72%);
+        color: #1E293B;
+        box-shadow: 0 10px 26px rgba(22, 101, 52, 0.08);
+    }
+    .prevencion-guide h2 { color: #166534; font-weight: 800; }
+    .prevencion-guide-intro { color: #475569; }
+    .prevencion-tip {
+        height: 100%;
+        padding: 1rem;
+        border: 1px solid #DDEBE0;
+        border-radius: 14px;
+        background: #FFFFFF;
+    }
+    .prevencion-tip i { color: #15803D; font-size: 1.15rem; }
+    .prevencion-tip h3 { margin: .55rem 0 .35rem; color: #166534; font-size: 1rem; font-weight: 750; }
+    .prevencion-tip p { margin: 0; color: #475569; font-size: .9rem; line-height: 1.55; }
+    .prevencion-sources { color: #475569; font-size: .82rem; }
+    .prevencion-sources a { color: #166534; font-weight: 650; }
+    html[data-theme="dark"] .prevencion-guide,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-guide {
+        background: linear-gradient(145deg, #10251B, #0F172A 72%);
+        border-color: rgba(74, 222, 128, .28);
+        color: #E2E8F0;
+    }
+    html[data-theme="dark"] .prevencion-guide h2,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-guide h2,
+    html[data-theme="dark"] .prevencion-tip h3,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-tip h3 { color: #86EFAC; }
+    html[data-theme="dark"] .prevencion-guide-intro,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-guide-intro,
+    html[data-theme="dark"] .prevencion-tip p,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-tip p,
+    html[data-theme="dark"] .prevencion-sources,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-sources { color: #CBD5E1; }
+    html[data-theme="dark"] .prevencion-tip,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-tip {
+        background: #17231D;
+        border-color: rgba(148, 163, 184, .2);
+    }
+    html[data-theme="dark"] .prevencion-sources a,
+    html:not([data-theme="light"]).acc-azul-noche .prevencion-sources a { color: #86EFAC; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -39,6 +87,50 @@
             <input type="text" id="habitsSearch" class="search-input" placeholder="Buscar hábito...">
         </div>
     </div>
+    {% if categoria_activa == 'prevencion' %}
+    <section class="prevencion-guide reveal" aria-labelledby="prevencion-title">
+        <div class="d-flex align-items-start gap-3 mb-3">
+            <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width:42px;height:42px;background:#DCFCE7;color:#15803D;">
+                <i class="fas fa-shield-virus" aria-hidden="true"></i>
+            </span>
+            <div>
+                <h2 id="prevencion-title" class="h4 mb-1">Prevención de enfermedades</h2>
+                <p class="prevencion-guide-intro mb-0">Pequeñas acciones cotidianas ayudan a reducir riesgos y cuidar tu bienestar.</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-hands-wash" aria-hidden="true"></i>
+                    <h3>Higiene de manos</h3>
+                    <p>Lávate con agua y jabón, especialmente antes de comer y después de ir al baño. Esta práctica ayuda a disminuir la transmisión de algunas infecciones.</p>
+                </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-syringe" aria-hidden="true"></i>
+                    <h3>Vacunación al día</h3>
+                    <p>Consulta tu carné y pregunta en tu IPS cuáles vacunas corresponden a tu edad, antecedentes y condiciones de salud.</p>
+                </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-apple-alt" aria-hidden="true"></i>
+                    <h3>Hábitos protectores</h3>
+                    <p>Procura una alimentación variada, actividad física regular, sueño suficiente y evita el tabaco. Adapta tus hábitos a tus necesidades.</p>
+                </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-user-md" aria-hidden="true"></i>
+                    <h3>Revisiones oportunas</h3>
+                    <p>Pregunta al personal de salud qué controles o pruebas preventivas son adecuados para ti, según tu edad y antecedentes.</p>
+                </article>
+            </div>
+        </div>
+        <p class="small mt-3 mb-2 text-muted">Estas recomendaciones son generales y no reemplazan la valoración de un profesional de salud.</p>
+    </section>
+    {% endif %}
     <div class="row g-4">
         {% for habito in habitos %}
         <div class="col-md-6 col-lg-4 habit-card reveal">
@@ -50,7 +142,9 @@
             </a>
         </div>
         {% empty %}
+        {% if categoria_activa != 'prevencion' %}
         <div class="col-12"><p class="edu-u-5">No hay hábitos disponibles en esta categoría.</p></div>
+        {% endif %}
         {% endfor %}
     </div>
 

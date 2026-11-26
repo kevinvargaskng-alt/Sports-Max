@@ -259,12 +259,14 @@
                                         data-bs-toggle="modal" data-bs-target="#modalElemento">
                                     <i class="fas fa-edit me-1"></i>Editar
                                 </button>
-                                <a href="{% url 'eliminar_elemento' e.id %}"
-                                   class="btn btn-outline-danger btn-sm fw-bold inv-u-4"
+                                <form method="post" action="{% url 'eliminar_elemento' e.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm fw-bold inv-u-4"
                                    data-confirm="¿Eliminar «{{ e.tipo_maquina }}»?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar"
                                    title="Eliminar">
                                     <i class="fas fa-trash me-1"></i>Eliminar
-                                </a>
+                                    </button>
+                                </form>
                             </div>
                             {% else %}
                                 {% if e.cantidad_total > 0 %}
@@ -392,13 +394,15 @@
                                             title="Editar implemento"
                                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar implemento deportivo"
                                             data-bs-target="#modalElemento"><i class="fas fa-edit me-1 inv-u-11"></i>Editar</button>
-                                    <a href="{% url 'eliminar_elemento' e.id %}"
-                                       class="btn btn-danger btn-sm fw-bold px-2"
+                                    <form method="post" action="{% url 'eliminar_elemento' e.id %}" class="d-inline">
+                                       {% csrf_token %}
+                                       <button type="submit" class="btn btn-danger btn-sm fw-bold px-2"
                                        title="Eliminar implemento"
                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar este implemento del inventario"
                                        data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                          <i class="fas fa-trash me-1 inv-u-12"></i>Eliminar
-                                    </a>
+                                       </button>
+                                    </form>
                                 </div>
                                 {% else %}
                                     {% if e.cantidad_total > 0 %}
@@ -469,13 +473,15 @@
                                                     data-bs-toggle="modal" data-bs-target="#modalElemento">
                                                 <i class="fas fa-edit me-1"></i>Editar
                                             </button>
-                                            <a href="{% url 'eliminar_elemento' e.id %}"
-                                               class="btn btn-danger btn-sm fw-bold px-2"
+                                            <form method="post" action="{% url 'eliminar_elemento' e.id %}" class="d-inline">
+                                               {% csrf_token %}
+                                               <button type="submit" class="btn btn-danger btn-sm fw-bold px-2"
                                                title="Eliminar"
                                                data-bs-toggle="tooltip" data-bs-placement="top"
                                                data-confirm="¿Eliminar este elemento del inventario?" data-confirm-title="Eliminar Elemento" data-confirm-icon="danger" data-confirm-text="Eliminar">
                                                 <i class="fas fa-trash me-1"></i>Eliminar
-                                            </a>
+                                               </button>
+                                            </form>
                                             {% else %}
                                             {% if e.cantidad_total > 0 %}
                                             <button type="button"

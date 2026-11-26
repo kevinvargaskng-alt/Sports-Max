@@ -1,7 +1,8 @@
 import uuid
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
+from core.validators import validador_nombre_con_numeros
 
 # Punto 1: ElementoDeportivo
 
@@ -11,10 +12,12 @@ class ElementoDeportivo(models.Model):
 
     # Estos son los campos que tu Admin está pidiendo:
     tipo_maquina = models.CharField(
-        max_length=100, verbose_name="Tipo de Máquina/Elemento")
+        max_length=100, validators=[validador_nombre_con_numeros],
+        verbose_name="Tipo de Máquina/Elemento")
     cantidad_total = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1, message="La cantidad total debe ser como mínimo 1.")],
+        validators=[MinValueValidator(1, message="La cantidad total debe ser como mínimo 1."),
+                    MaxValueValidator(9999, message="La cantidad total no puede superar 9999.")],
         verbose_name="Cantidad Total"
     )
     estado_general = models.CharField(max_length=50, default='Buen estado')
@@ -72,7 +75,8 @@ class Prestamo(models.Model):
         ElementoDeportivo, on_delete=models.CASCADE, null=True, blank=True)
     cantidad_prestada = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1, message="La cantidad prestada debe ser como mínimo 1.")],
+        validators=[MinValueValidator(1, message="La cantidad prestada debe ser como mínimo 1."),
+                    MaxValueValidator(50, message="La cantidad prestada no puede superar 50.")],
         verbose_name="Cantidad Prestada"
     )
     fecha_devolucion = models.DateField(null=True, blank=True)
@@ -80,7 +84,8 @@ class Prestamo(models.Model):
     hora_prestamo = models.TimeField(auto_now_add=True)
     dias_prestamo = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1, message="Los días de préstamo deben ser como mínimo 1.")],
+        validators=[MinValueValidator(1, message="Los días de préstamo deben ser como mínimo 1."),
+                    MaxValueValidator(15, message="El préstamo no puede superar 15 días.")],
         verbose_name="Días de Préstamo"
     )
     estado_prestamo = models.CharField(max_length=30, default='Activo')
@@ -116,7 +121,8 @@ class Devolucion(models.Model):
         Prestamo, on_delete=models.CASCADE, related_name='devoluciones')
     cantidad_devuelta = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1, message="La cantidad devuelta debe ser como mínimo 1.")],
+        validators=[MinValueValidator(1, message="La cantidad devuelta debe ser como mínimo 1."),
+                    MaxValueValidator(50, message="La cantidad devuelta no puede superar 50.")],
         verbose_name="Cantidad Devuelta"
     )
     fecha_devolucion = models.DateField(auto_now_add=True)
@@ -162,3 +168,12 @@ class Sancion(models.Model):
     fecha_fin_sancion = models.DateField()
     estado_sancion = models.CharField(max_length=30, default='Activa')
     descripcion_sancion = models.TextField(blank=True)
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if (self.fecha_inicio_sancion and self.fecha_fin_sancion
+                and self.fecha_fin_sancion < self.fecha_inicio_sancion):
+            raise ValidationError({
+                'fecha_fin_sancion': 'La fecha fin no puede ser anterior a la fecha inicio.'
+            })
+        super().clean()

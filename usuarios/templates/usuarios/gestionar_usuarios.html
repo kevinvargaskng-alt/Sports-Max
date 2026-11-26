@@ -139,6 +139,33 @@
         border-color: #007832 !important;
         color: #FFFFFF !important;
     }
+    .card-footer-sena {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    .card-footer-text {
+        color: rgba(255, 255, 255, 0.45);
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+    html[data-theme="light"] .sport-card,
+    html.acc-claro .sport-card,
+    body.light-theme .sport-card {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+    }
+    html[data-theme="light"] .card-footer-sena,
+    html.acc-claro .card-footer-sena,
+    body.light-theme .card-footer-sena {
+        background: #007832 !important;
+        border-top: 1px solid #006329 !important;
+    }
+    html[data-theme="light"] .card-footer-text,
+    html.acc-claro .card-footer-text,
+    body.light-theme .card-footer-text {
+        color: #FFFFFF !important;
+        font-weight: 600;
+    }
 
     /* ── RESPONSIVIDAD MÓVIL ── */
     @media (max-width: 768px) {
@@ -198,19 +225,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- MENÚ PRINCIPAL DE ADMINISTRACIÓN -->
-        {% include 'partials/admin_nav.html' with admin_tab='usuarios' %}
-
-        <!-- MENSAJES -->
-        {% if messages %}
-        {% for msg in messages %}
-        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show mb-3 gest-u-4" role="alert">
-            <i class="fas fa-info-circle me-2 text-info"></i>{{ msg }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
 
         <!-- PANEL DE REPORTES, FILTROS DE FECHA Y FICHA SENA -->
         <form method="GET" action="{% url 'gestionar_usuarios' %}" class="sport-card mb-4 p-3 p-md-4" id="formReporteUsuarios">
@@ -418,9 +432,46 @@
                 </table>
             </div>
 
+            {% if pagina_usuarios.paginator.num_pages > 1 %}
+            <nav class="users-pagination px-3 py-3 border-top" aria-label="Paginación de usuarios">
+                <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <span class="users-pagination-info small">
+                        Mostrando {{ pagina_usuarios.start_index }}–{{ pagina_usuarios.end_index }} de {{ pagina_usuarios.paginator.count }} usuarios
+                    </span>
+                    <ul class="pagination pagination-sm mb-0 align-items-center justify-content-center">
+                        {% if pagina_usuarios.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if parametros_paginacion %}{{ parametros_paginacion }}&amp;{% endif %}page={{ pagina_usuarios.previous_page_number }}" aria-label="Página anterior" title="Anterior">
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i><span class="visually-hidden">Anterior</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link" aria-hidden="true"><i class="fas fa-chevron-left"></i></span></li>
+                        {% endif %}
+
+                        {% for numero_pagina in pagina_usuarios.paginator.page_range %}
+                        <li class="page-item {% if numero_pagina == pagina_usuarios.number %}active{% endif %}">
+                            <a class="page-link" href="?{% if parametros_paginacion %}{{ parametros_paginacion }}&amp;{% endif %}page={{ numero_pagina }}" {% if numero_pagina == pagina_usuarios.number %}aria-current="page"{% endif %}>{{ numero_pagina }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if pagina_usuarios.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if parametros_paginacion %}{{ parametros_paginacion }}&amp;{% endif %}page={{ pagina_usuarios.next_page_number }}" aria-label="Página siguiente" title="Siguiente">
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i><span class="visually-hidden">Siguiente</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link" aria-hidden="true"><i class="fas fa-chevron-right"></i></span></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+            {% endif %}
+
             <!-- PIE -->
-            <div class="px-4 py-3 border-top border-secondary d-flex justify-content-end align-items-center">
-                <span class="text-white-50 small">Sistema Deportivo SENA Centro Minero</span>
+            <div class="card-footer-sena px-4 py-3 border-top d-flex justify-content-center align-items-center text-center">
+                <span class="card-footer-text small">Sistema Deportivo SENA Centro Minero</span>
             </div>
         </div>
 
@@ -443,11 +494,11 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-white-50">Nombres</label>
-                            <input type="text" name="first_name" id="editNombre" class="custom-input form-control" required>
+                            <input type="text" name="first_name" id="editNombre" class="custom-input form-control" required minlength="2" maxlength="150" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*" inputmode="text">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-white-50">Apellidos</label>
-                            <input type="text" name="last_name" id="editApellido" class="custom-input form-control" required>
+                            <input type="text" name="last_name" id="editApellido" class="custom-input form-control" required minlength="2" maxlength="150" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*" inputmode="text">
                         </div>
                         <div class="col-12">
                             <label class="form-label small fw-bold text-white-50">Correo electrónico</label>
@@ -546,7 +597,14 @@
 
     // --- DATATABLES: usuarios ---
     document.addEventListener('DOMContentLoaded', function () {
-        smaxDataTable('#tablaUsuarios', { order: [] });
+        smaxDataTable('#tablaUsuarios', {
+            order: [],
+            paging: false,
+            searching: false,
+            info: false,
+            lengthChange: false,
+            layout: { topStart: null, topEnd: null, bottomStart: null, bottomEnd: null }
+        });
     });
 
     // --- MODAL EDITAR ---

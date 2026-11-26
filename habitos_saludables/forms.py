@@ -5,9 +5,10 @@ forms.py - Formularios del módulo Hábitos Saludables SENA
 from django import forms
 from django.core.exceptions import ValidationError
 from core.security.file_upload import validate_uploaded_file
+from core.validators import limpiar_texto_largo
 from .models import (
     SeguimientoSalud, MaterialApoyo, PiramideNutricional,
-    HabitoSaludable, RutinaFisica, HabeasDataConsent
+    HabitoSaludable, RutinaFisica, HabeasDataConsent, RecetaSaludable
 )
 
 
@@ -200,6 +201,11 @@ class SeguimientoSaludForm(forms.ModelForm):
 
         return cleaned
 
+    def clean_observaciones(self):
+        return limpiar_texto_largo(
+            self.cleaned_data.get('observaciones', ''), 500, 'Las observaciones'
+        )
+
 
 class MaterialApoyoForm(forms.ModelForm):
     """Formulario para subir material de apoyo (admin/instructor)."""
@@ -247,6 +253,53 @@ class MaterialApoyoForm(forms.ModelForm):
                     'Tipo de archivo no permitido o archivo inválido.')
         return cleaned
 
+    # REVISAR: títulos y nombres de autor pueden contener puntuación legítima;
+    # se permite texto libre, pero se eliminan etiquetas y se respeta la longitud.
+    def clean_titulo(self):
+        return limpiar_texto_largo(self.cleaned_data.get('titulo', ''), 250, 'El título')
+
+    def clean_descripcion(self):
+        return limpiar_texto_largo(self.cleaned_data.get('descripcion', ''), 1000, 'La descripción')
+
+    def clean_autor(self):
+        return limpiar_texto_largo(self.cleaned_data.get('autor', ''), 150, 'El autor')
+
+
+class RecetaSaludableForm(forms.ModelForm):
+    tiempo_preparacion_min = forms.IntegerField(min_value=1, max_value=1440)
+    porciones = forms.IntegerField(min_value=1, max_value=100)
+    calorias_por_porcion = forms.IntegerField(min_value=0, max_value=10000, required=False)
+    proteinas_g = forms.DecimalField(min_value=0, max_value=500, required=False, max_digits=5, decimal_places=1)
+    carbohidratos_g = forms.DecimalField(min_value=0, max_value=1000, required=False, max_digits=5, decimal_places=1)
+    grasas_g = forms.DecimalField(min_value=0, max_value=500, required=False, max_digits=5, decimal_places=1)
+
+    class Meta:
+        model = RecetaSaludable
+        fields = [
+            'titulo', 'descripcion', 'ingredientes', 'preparacion',
+            'tiempo_preparacion_min', 'porciones', 'calorias_por_porcion',
+            'proteinas_g', 'carbohidratos_g', 'grasas_g', 'categoria',
+            'objetivo', 'imagen',
+        ]
+
+    def clean_titulo(self):
+        return limpiar_texto_largo(self.cleaned_data.get('titulo', ''), 250, 'El título')
+
+    def clean_descripcion(self):
+        return limpiar_texto_largo(self.cleaned_data.get('descripcion', ''), 500, 'La descripción')
+
+    def clean_ingredientes(self):
+        return limpiar_texto_largo(self.cleaned_data.get('ingredientes', ''), 2000, 'Los ingredientes')
+
+    def clean_preparacion(self):
+        return limpiar_texto_largo(self.cleaned_data.get('preparacion', ''), 3000, 'La preparación')
+
+    def clean_imagen(self):
+        imagen = self.cleaned_data.get('imagen')
+        if imagen:
+            validate_uploaded_file(imagen, allowed_types='image')
+        return imagen
+
 
 class BuscarMaterialForm(forms.Form):
     """Formulario de búsqueda/filtro para la biblioteca."""
@@ -264,3 +317,6 @@ class BuscarMaterialForm(forms.Form):
         choices=[('', 'Todos los tipos')] + MaterialApoyo.TIPO_CHOICES,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+
+    def clean_q(self):
+        return limpiar_texto_largo(self.cleaned_data.get('q', ''), 100, 'La búsqueda')

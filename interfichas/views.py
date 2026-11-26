@@ -4,6 +4,9 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.exceptions import ValidationError
+import re
+from core.validators import validar_letras, normalizar_espacios
 import random
 from itertools import combinations
 from .models import (
@@ -429,7 +432,14 @@ def interfichas_list(request):
                 messages.error(request, msg)
                 return redirect('interfichas')
 
-            capitan = strip_dangerous_patterns(raw_capitan) or "Capitán"
+            try:
+                capitan = validar_letras(normalizar_espacios(raw_capitan))
+            except ValidationError:
+                msg = "El nombre del capitán solo puede contener letras y espacios."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'capitan': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('interfichas')
 
             # Determinar si la disciplina es Fútbol o Fútsal (formato mundial)
             disc_nombre = torneo_obj.disciplina.nombre_disciplina.lower() if torneo_obj.disciplina else ""
@@ -451,7 +461,38 @@ def interfichas_list(request):
                     nombre_equipo = f"Equipo {torneo_obj.equipos.count() + 1}"
 
             if len(nombre_equipo) > 100:
-                nombre_equipo = nombre_equipo[:100]
+                msg = "El nombre del equipo no puede superar 100 caracteres."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre_equipo': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('interfichas')
+            if not re.fullmatch(r'[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ]+(?:[ -][A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ]+)*', nombre_equipo):
+                msg = "El nombre del equipo solo puede contener letras, números, espacios y guiones."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre_equipo': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('interfichas')
+
+            nombres_jugadores = request.POST.getlist('jugadores[]')
+            documentos_jugadores = request.POST.getlist('documentos[]')
+            for idx, nombre in enumerate(nombres_jugadores):
+                if not nombre.strip():
+                    continue
+                try:
+                    nombres_jugadores[idx] = validar_letras(normalizar_espacios(nombre))
+                except ValidationError:
+                    msg = f"El nombre del jugador {idx + 1} solo puede contener letras y espacios."
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': msg, 'errors': {'jugadores': msg}}, status=400)
+                    messages.error(request, msg)
+                    return redirect('interfichas')
+                documento = documentos_jugadores[idx].strip() if idx < len(documentos_jugadores) else ''
+                if documento and not re.fullmatch(r'\d{6,10}', documento):
+                    msg = f"El documento del jugador {idx + 1} debe tener entre 6 y 10 dígitos."
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': msg, 'errors': {'documentos': msg}}, status=400)
+                    messages.error(request, msg)
+                    return redirect('interfichas')
 
             nuevo_equipo = EquipoInterfichas.objects.create(
                 torneo=torneo_obj,
@@ -465,9 +506,6 @@ def interfichas_list(request):
             )
 
             # Guardar jugadores con documento y consentimiento
-            nombres_jugadores = request.POST.getlist('jugadores[]')
-            documentos_jugadores = request.POST.getlist('documentos[]')
-
             for idx, nombre in enumerate(nombres_jugadores):
                 if nombre.strip():
                     doc = ''
@@ -1062,6 +1100,9 @@ def cerrar_torneo(request, codigo_torneo):
 
     if request.method == 'POST':
         ganador_id = request.POST.get('ganador_id')
+        subcampeon_id = request.POST.get('subcampeon_id')
+        valla_id = request.POST.get('valla_menos_vencida_id')
+        juego_limpio_id = request.POST.get('balance_juego_limpio_id')
         accion = request.POST.get('accion')
 
         if not ganador_id:
@@ -1070,13 +1111,43 @@ def cerrar_torneo(request, codigo_torneo):
 
         try:
             ganador = get_object_or_404(
-                EquipoInterfichas, id=int(ganador_id), torneo=torneo)
-        except (ValueError, EquipoInterfichas.DoesNotExist):
+                EquipoInterfichas, pk=int(ganador_id), torneo=torneo)
+        except (ValueError, TypeError, EquipoInterfichas.DoesNotExist):
             messages.error(request, "Equipo ganador inválido.")
             return redirect('interfichas')
 
+        subcampeon = None
+        if subcampeon_id:
+            try:
+                subcampeon = EquipoInterfichas.objects.filter(
+                    pk=int(subcampeon_id), torneo=torneo).first()
+            except (ValueError, TypeError):
+                pass
+
+        valla = None
+        if valla_id:
+            try:
+                valla = EquipoInterfichas.objects.filter(
+                    pk=int(valla_id), torneo=torneo).first()
+            except (ValueError, TypeError):
+                pass
+
+        juego_limpio = None
+        if juego_limpio_id:
+            try:
+                juego_limpio = EquipoInterfichas.objects.filter(
+                    pk=int(juego_limpio_id), torneo=torneo).first()
+            except (ValueError, TypeError):
+                pass
+
         resultado, _ = ResultadoTorneo.objects.update_or_create(
-            torneo=torneo, defaults={'ganador': ganador}
+            torneo=torneo,
+            defaults={
+                'ganador': ganador,
+                'subcampeon': subcampeon,
+                'valla_menos_vencida': valla,
+                'balance_juego_limpio': juego_limpio,
+            }
         )
 
         if accion == 'archivar':
@@ -1085,7 +1156,7 @@ def cerrar_torneo(request, codigo_torneo):
             torneo.estado = 'cerrado'
             torneo.save()
             messages.success(
-                request, f'Torneo "{torneo.nombre_torneo}" cerrado y archivado.')
+                request, f'Torneo "{torneo.nombre_torneo}" cerrado y archivado exitosamente.')
         else:
             messages.success(
                 request, f'¡{ganador.nombre_equipo} declarado ganador!')
@@ -1192,10 +1263,14 @@ def editar_equipo(request, equipo_id):
         programa_eq = request.POST.get('programa', equipo.programa).strip()
         ficha_raw = str(request.POST.get('ficha', equipo.ficha)).strip()
 
-        if not nombre_eq or len(nombre_eq) < 2 or len(nombre_eq) > 100:
-            return JsonResponse({'status': 'error', 'error': 'El nombre del equipo debe tener entre 2 y 100 caracteres.', 'errors': {'nombre_equipo': 'Longitud inválida.'}}, status=400)
+        if not nombre_eq or len(nombre_eq) < 2 or len(nombre_eq) > 100 or not re.fullmatch(r'[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ]+(?:[ -][A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ]+)*', nombre_eq):
+            return JsonResponse({'status': 'error', 'error': 'El nombre del equipo solo puede contener letras, números, espacios y guiones (2 a 100 caracteres).', 'errors': {'nombre_equipo': 'Formato o longitud inválida.'}}, status=400)
 
-        if not capitan_eq or len(capitan_eq) < 2 or len(capitan_eq) > 100:
+        try:
+            capitan_eq = validar_letras(normalizar_espacios(capitan_eq))
+        except ValidationError:
+            return JsonResponse({'status': 'error', 'error': 'El nombre del capitán solo puede contener letras y espacios.', 'errors': {'capitan': 'Formato inválido.'}}, status=400)
+        if len(capitan_eq) < 2 or len(capitan_eq) > 100:
             return JsonResponse({'status': 'error', 'error': 'El nombre del capitán debe tener entre 2 y 100 caracteres.', 'errors': {'capitan': 'Longitud inválida.'}}, status=400)
 
         if not re.match(r'^\d{7}$', ficha_raw):

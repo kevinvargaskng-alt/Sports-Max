@@ -6,12 +6,17 @@ from django.views.decorators.http import require_POST
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from core.security.file_upload import validate_uploaded_file
+from core.validators import validador_nombre_con_numeros, limpiar_texto_largo
 from .models import Reserva, GimnasioConfig, FechaIngreso, Maquina, FranjaHoraria, Machine
 import json
 
 
 def es_admin(user):
     return user.is_staff or user.is_superuser
+
+
+def puede_controlar_sala(user):
+    return es_admin(user) or getattr(user, 'rol', '') == 'instructor'
 
 
 @login_required
@@ -50,11 +55,9 @@ def gimnasio_list(request):
     else:
         es_fin_de_semana = dia_semana in [5, 6]
 
-    esta_abierto = (
-        horario_ok
-        and not es_fin_de_semana
-        and not es_festivo
-        and estado_manual
+    esta_abierto = estado_manual and (
+        config.apertura_manual
+        or (horario_ok and not es_fin_de_semana and not es_festivo)
     )
 
     if request.method == 'POST':
@@ -234,6 +237,7 @@ def admin_disponibilidad(request):
             return redirect('gimnasio')
 
         config.estado = estado
+        config.apertura_manual = False
         config.dias_habilitados = dias
         config.horario_apertura = horario_apertura
         config.horario_cierre = horario_cierre
@@ -340,7 +344,7 @@ def cancelar_reserva_admin(request, id):
 
 # ── CERRAR / ABRIR GIMNASIO ─────────────────────────────────
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(puede_controlar_sala)
 def cerrar_gimnasio(request):
     config = GimnasioConfig.get_config()
 
@@ -349,9 +353,11 @@ def cerrar_gimnasio(request):
 
         if accion == 'cerrar':
             config.estado = 'cerrada'
+            config.apertura_manual = False
             messages.error(request, 'El gimnasio fue cerrado.')
         elif accion == 'abrir':
             config.estado = 'abierta'
+            config.apertura_manual = True
             messages.success(request, 'El gimnasio fue abierto.')
 
         config.actualizado_por = request.user
@@ -422,6 +428,16 @@ def crear_maquina(request):
         request.session['seccion_admin'] = 'maquinas'
         return redirect('gimnasio')
 
+    try:
+        nombre = validador_nombre_con_numeros(nombre) or nombre
+        descripcion = limpiar_texto_largo(descripcion, 2000, 'La descripción')
+    except ValidationError as exc:
+        messages.error(request, exc.messages[0])
+        if next_param == 'machine_list':
+            return redirect('machine_list')
+        request.session['seccion_admin'] = 'maquinas'
+        return redirect('gimnasio')
+
     # Crear en el modelo Machine
     Machine.objects.create(
         nombre=nombre,
@@ -467,6 +483,23 @@ def editar_maquina(request, pk):
         request.session['seccion_admin'] = 'maquinas'
         return redirect('gimnasio')
 
+    try:
+        nombre = validador_nombre_con_numeros(nombre) or nombre
+    except ValidationError as exc:
+        messages.error(request, exc.messages[0])
+        if next_param == 'machine_list':
+            return redirect('machine_list')
+        request.session['seccion_admin'] = 'maquinas'
+        return redirect('gimnasio')
+
+    try:
+        descripcion_limpia = limpiar_texto_largo(
+            request.POST.get('descripcion', ''), 2000, 'La descripción'
+        )
+    except ValidationError as exc:
+        messages.error(request, exc.messages[0])
+        return redirect('machine_list' if next_param == 'machine_list' else 'gimnasio')
+
     imagen_val = None
     if request.FILES.get('imagen'):
         try:
@@ -495,7 +528,7 @@ def editar_maquina(request, pk):
         machine.nombre = nombre
         machine.tipo = request.POST.get('categoria', machine.tipo)
         machine.estado = request.POST.get('estado', machine.estado)
-        machine.descripcion = request.POST.get('descripcion', '').strip()
+        machine.descripcion = descripcion_limpia
         if imagen_val:
             machine.imagen = imagen_val
         machine.save()
@@ -504,7 +537,7 @@ def editar_maquina(request, pk):
         maquina.nombre = nombre
         maquina.categoria = request.POST.get('categoria', maquina.categoria).lower()
         maquina.estado = request.POST.get('estado', maquina.estado)
-        maquina.descripcion = request.POST.get('descripcion', '').strip()
+        maquina.descripcion = descripcion_limpia
         if imagen_val:
             maquina.imagen = imagen_val
         maquina.save()
@@ -620,6 +653,28 @@ def api_aforo_turnos(request):
     ahora = timezone.localtime(timezone.now())
     hoy = ahora.date()
 
+    apertura_min = config.horario_apertura.hour * 60 + config.horario_apertura.minute
+    cierre_min = config.horario_cierre.hour * 60 + config.horario_cierre.minute
+    ahora_min = ahora.hour * 60 + ahora.minute
+    horario_ok = apertura_min <= ahora_min < cierre_min
+    dia_map = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom']
+    dia_codigo = dia_map[ahora.weekday()]
+    dias_habilitados = config.dias_habilitados or []
+    dia_habilitado = dia_codigo in dias_habilitados if dias_habilitados else ahora.weekday() not in (5, 6)
+    festivos_2026 = {
+        '01-01', '01-06', '03-23', '04-02', '04-03', '05-01',
+        '05-18', '06-08', '06-15', '06-29', '07-20', '08-07',
+        '08-17', '10-12', '11-02', '11-16', '12-08', '12-25'
+    }
+    esta_abierto = config.estado == 'abierta' and (
+        config.apertura_manual
+        or (
+            horario_ok
+            and dia_habilitado
+            and ahora.strftime('%m-%d') not in festivos_2026
+        )
+    )
+
     reservas_activas_hoy = Reserva.objects.filter(
         fecha_entrada=hoy,
         estado__in=['Activa', 'Confirmada', 'Pendiente']
@@ -650,6 +705,7 @@ def api_aforo_turnos(request):
         'fecha': hoy.isoformat(),
         'hora_actual': ahora.strftime('%H:%M'),
         'estado_gimnasio': config.estado,
+        'esta_abierto': esta_abierto,
         'capacidad_maxima': capacidad,
         'ocupacion_actual': ocupacion_actual,
         'cupos_disponibles': cupos_disponibles,

@@ -386,7 +386,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-54">Nombres <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-55"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" placeholder="Tus nombres" autocomplete="given-name">
+                    <input type="text" class="form-control custom-input text-capitalize" name="nombres" id="id_nombres" required minlength="2" maxlength="100" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*" inputmode="text" placeholder="Tus nombres" autocomplete="given-name">
                     <div class="invalid-feedback text-danger small mt-1" id="err_nombres"></div>
                   </div>
                 </div>
@@ -394,7 +394,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-57">Apellidos <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-58"><i class="fas fa-user text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" placeholder="Tus apellidos" autocomplete="family-name">
+                    <input type="text" class="form-control custom-input text-capitalize" name="apellidos" id="id_apellidos" required minlength="2" maxlength="100" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*" inputmode="text" placeholder="Tus apellidos" autocomplete="family-name">
                     <div class="invalid-feedback text-danger small mt-1" id="err_apellidos"></div>
                   </div>
                 </div>
@@ -416,7 +416,7 @@
                   <label class="form-label fw-semibold text-white small text-uppercase ini-u-63">Teléfono <span class="text-danger">*</span></label>
                   <div class="input-group has-validation">
                     <span class="input-group-text bg-transparent custom-input ini-u-64"><i class="fas fa-phone text-white-50"></i></span>
-                    <input type="text" class="form-control custom-input" name="telefono" id="id_telefono" required minlength="10" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 3101234567" autocomplete="tel">
+                    <input type="tel" class="form-control custom-input" name="telefono" id="id_telefono" required minlength="10" maxlength="10" pattern="3[0-9]{9}" inputmode="numeric" placeholder="Ej: 3101234567" autocomplete="tel">
                     <div class="invalid-feedback text-danger small mt-1" id="err_telefono"></div>
                   </div>
                 </div>
@@ -548,7 +548,7 @@
           </div>
           <div class="mb-4">
             <label class="form-label small fw-bold text-white-50">TELÉFONO REGISTRADO</label>
-            <input type="text" name="telefono" class="form-control custom-input" required minlength="10" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 3001234567">
+            <input type="tel" name="telefono" class="form-control custom-input" required minlength="10" maxlength="10" pattern="3[0-9]{9}" inputmode="numeric" placeholder="Ej: 3001234567">
           </div>
           <button type="submit" class="btn w-100 py-3 fw-bold text-white ini-u-92">
             <i class="fas fa-unlock me-2"></i>VERIFICAR Y DESBLOQUEAR

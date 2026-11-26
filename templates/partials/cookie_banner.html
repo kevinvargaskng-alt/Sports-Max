@@ -1,7 +1,8 @@
 {% load static %}
 <!-- ═══════════════════════════════════════════════════════════
      BANNER DE CONSENTIMIENTO DE COOKIES (SPORTS-MAX SENA)
-     ESTILO: GLASSMORPHISM ATLETA & NEÓN AZUL/VERDE SENA
+     PALETA INSTITUCIONAL SENA: Verde #39A900, Oscuro #007832, Acento #FF6B00
+     Soporte Dual: Modo Claro y Modo Oscuro con Alto Contraste
      ═══════════════════════════════════════════════════════════ -->
 <div id="senaCookieBanner" class="position-fixed bottom-0 start-0 end-0 p-3" style="z-index: 1060; display: none;" role="region" aria-label="Aviso de Cookies y Privacidad">
     <div class="container">
@@ -14,12 +15,12 @@
                         </div>
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                                <span class="badge badge-sena-pill">Privacidad & Seguridad</span>
-                                <h2 class="h6 fw-bold text-white mb-0">Gestión de Cookies en Sports-Max</h2>
+                                <span class="badge badge-sena-pill">Privacidad & Seguridad SENA</span>
+                                <h2 class="h6 fw-bold cookie-title mb-0">Gestión de Cookies en Sports-Max</h2>
                             </div>
-                            <p class="small text-white-50 mb-0">
+                            <p class="small cookie-desc mb-0">
                                 Utilizamos cookies técnicas esenciales para garantizar tu sesión segura, y cookies opcionales para recordar tus ajustes de accesibilidad y optimizar el rendimiento del sistema deportivo.
-                                <a href="{% url 'politica_cookies' %}" class="cookie-link-accent ms-1" target="_blank" rel="noopener noreferrer">Ver política</a>.
+                                <a href="{% url 'politica_cookies' %}" class="cookie-link-accent ms-1" target="_blank" rel="noopener noreferrer">Ver política completa</a>.
                             </p>
                         </div>
                     </div>
@@ -43,20 +44,20 @@
 <!-- MODAL DE PREFERENCIAS DE COOKIES -->
 <div class="modal fade" id="modalConfigCookies" tabindex="-1" aria-labelledby="labelConfigCookies" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content cookie-modal-glass text-white">
-            <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+        <div class="modal-content cookie-modal-glass">
+            <div class="modal-header cookie-modal-header border-bottom pb-3">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="cookie-modal-icon">
-                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    <div class="cookie-modal-icon" aria-hidden="true">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3 class="modal-title h5 fw-bold text-white mb-0" id="labelConfigCookies">
+                    <h3 class="modal-title h5 fw-bold cookie-title mb-0" id="labelConfigCookies">
                         Panel de Preferencias de Privacidad
                     </h3>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
+                <button type="button" class="btn-close cookie-modal-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
             </div>
-            <div class="modal-body py-4">
-                <p class="small text-white-50 mb-3">
+            <div class="modal-body cookie-modal-body py-4">
+                <p class="small cookie-desc mb-3">
                     Personaliza qué categorías de cookies permites en tu navegador. Las cookies técnicas son estrictamente obligatorias para la autenticación y protección contra ataques informáticos.
                 </p>
 
@@ -64,13 +65,13 @@
                 <div class="p-3 mb-3 rounded-3 cookie-category-card">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-lock text-info" aria-hidden="true"></i>
-                            <h4 class="h6 fw-bold mb-0 text-white">Cookies Técnicas y de Autenticación</h4>
+                            <i class="fas fa-lock text-sena-green" aria-hidden="true"></i>
+                            <h4 class="h6 fw-bold mb-0 cookie-cat-title">Cookies Técnicas y de Autenticación</h4>
                         </div>
-                        <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 px-2 py-1">Obligatorias</span>
+                        <span class="badge badge-cat-obligatoria px-2 py-1">Obligatorias</span>
                     </div>
-                    <p class="small text-white-50 mb-0">
-                        Gestionan tu sesión activa de usuario (`sessionid`), protección anti-falsificación CSRF (`csrftoken`) y control de acceso.
+                    <p class="small cookie-desc mb-0">
+                        Gestionan tu sesión activa de usuario (<code>sessionid</code>), protección anti-falsificación CSRF (<code>csrftoken</code>) y control de seguridad.
                     </p>
                 </div>
 
@@ -78,16 +79,16 @@
                 <div class="p-3 mb-3 rounded-3 cookie-category-card">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-palette text-success" aria-hidden="true"></i>
-                            <h4 class="h6 fw-bold mb-0 text-white">Preferencias de Tema & Accesibilidad</h4>
+                            <i class="fas fa-palette text-sena-green" aria-hidden="true"></i>
+                            <h4 class="h6 fw-bold mb-0 cookie-cat-title">Preferencias de Tema & Accesibilidad</h4>
                         </div>
                         <div class="form-check form-switch m-0">
                             <input class="form-check-input cookie-switch" type="checkbox" id="cookiePrefPersonalizacion" checked style="cursor: pointer;">
                             <label class="visually-hidden" for="cookiePrefPersonalizacion">Permitir cookies de personalización</label>
                         </div>
                     </div>
-                    <p class="small text-white-50 mb-0">
-                        Guardan tu modo de visualización preferido (modo oscuro / claro) y los ajustes del panel de accesibilidad sensorial SENA.
+                    <p class="small cookie-desc mb-0">
+                        Guardan tu modo de visualización preferido (modo claro / oscuro) y los ajustes del panel de accesibilidad sensorial SENA.
                     </p>
                 </div>
 
@@ -95,20 +96,20 @@
                 <div class="p-3 rounded-3 cookie-category-card">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-chart-line text-warning" aria-hidden="true"></i>
-                            <h4 class="h6 fw-bold mb-0 text-white">Métricas Anónimas de Rendimiento</h4>
+                            <i class="fas fa-chart-line text-sena-orange" aria-hidden="true"></i>
+                            <h4 class="h6 fw-bold mb-0 cookie-cat-title">Métricas Anónimas de Rendimiento</h4>
                         </div>
                         <div class="form-check form-switch m-0">
                             <input class="form-check-input cookie-switch" type="checkbox" id="cookiePrefAnaliticas" style="cursor: pointer;">
                             <label class="visually-hidden" for="cookiePrefAnaliticas">Permitir cookies analíticas</label>
                         </div>
                     </div>
-                    <p class="small text-white-50 mb-0">
+                    <p class="small cookie-desc mb-0">
                         Monitorean la velocidad de carga y rendimiento de forma 100% anónima para optimizar la plataforma sin fines publicitarios.
                     </p>
                 </div>
             </div>
-            <div class="modal-footer border-top border-secondary border-opacity-25 pt-3 d-flex justify-content-between">
+            <div class="modal-footer cookie-modal-footer border-top pt-3 d-flex justify-content-between">
                 <button type="button" id="btnRejectModalCookies" class="btn btn-cookie-outline btn-sm px-3" data-bs-dismiss="modal">
                     Rechazar Opcionales
                 </button>
@@ -121,29 +122,45 @@
 </div>
 
 <style>
-/* ── ESTILOS INTEGRADOS COOKIES SPORTS-MAX ────────── */
+/* ═══════════════════════════════════════════════════════════
+   ESTILOS COOKIES SPORTS-MAX SENA (MODO OSCURO PREDETERMINADO)
+   ═══════════════════════════════════════════════════════════ */
 .cookie-banner-glass {
-    background: rgba(11, 15, 25, 0.94) !important;
+    background: rgba(11, 15, 25, 0.96) !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(43, 125, 233, 0.35) !important;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(43, 125, 233, 0.15) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(43, 125, 233, 0.15) !important;
+    color: #F8FAFC !important;
 }
 
 .cookie-modal-glass {
-    background: rgba(13, 21, 38, 0.97) !important;
+    background: rgba(13, 21, 38, 0.98) !important;
     backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid rgba(43, 125, 233, 0.3) !important;
+    border: 1px solid rgba(43, 125, 233, 0.35) !important;
     border-radius: 20px !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85) !important;
+    color: #F8FAFC !important;
+}
+
+.cookie-title {
+    color: #FFFFFF !important;
+}
+
+.cookie-desc {
+    color: #94A3B8 !important;
+}
+
+.cookie-cat-title {
+    color: #F1F5F9 !important;
 }
 
 .cookie-icon-wrapper {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(43, 125, 233, 0.2), rgba(57, 169, 0, 0.2));
+    background: linear-gradient(135deg, rgba(43, 125, 233, 0.2), rgba(57, 169, 0, 0.15));
     border: 1px solid rgba(43, 125, 233, 0.4);
     display: flex;
     align-items: center;
@@ -154,26 +171,34 @@
 }
 
 .cookie-modal-icon {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
-    background: rgba(43, 125, 233, 0.15);
-    border: 1px solid rgba(43, 125, 233, 0.3);
+    background: rgba(43, 125, 233, 0.18);
+    border: 1px solid rgba(43, 125, 233, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #60a5fa;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .badge-sena-pill {
-    background: rgba(43, 125, 233, 0.15);
-    color: #60a5fa;
-    border: 1px solid rgba(43, 125, 233, 0.3);
+    background: rgba(43, 125, 233, 0.18);
+    color: #93c5fd;
+    border: 1px solid rgba(43, 125, 233, 0.4);
     border-radius: 20px;
     padding: 3px 10px;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+.badge-cat-obligatoria {
+    background: rgba(43, 125, 233, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(43, 125, 233, 0.45);
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
 .cookie-link-accent {
@@ -186,18 +211,18 @@
 }
 
 .cookie-category-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: border-color 0.2s ease, background 0.2s ease;
 }
 .cookie-category-card:hover {
-    background: rgba(43, 125, 233, 0.05);
-    border-color: rgba(43, 125, 233, 0.25);
+    background: rgba(43, 125, 233, 0.08);
+    border-color: rgba(43, 125, 233, 0.35);
 }
 
 .btn-cookie-primary {
     background: linear-gradient(135deg, #1a5fb4, #2b7de9) !important;
-    color: #ffffff !important;
+    color: #FFFFFF !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(43, 125, 233, 0.35);
@@ -207,37 +232,218 @@
     background: linear-gradient(135deg, #1f64c8, #3b82f6) !important;
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(43, 125, 233, 0.5);
+    color: #FFFFFF !important;
 }
 
 .btn-cookie-secondary {
-    background: rgba(43, 125, 233, 0.1) !important;
+    background: rgba(43, 125, 233, 0.12) !important;
     color: #93c5fd !important;
-    border: 1px solid rgba(43, 125, 233, 0.35) !important;
+    border: 1px solid rgba(43, 125, 233, 0.4) !important;
     border-radius: 10px;
     transition: all 0.25s ease;
 }
 .btn-cookie-secondary:hover {
-    background: rgba(43, 125, 233, 0.2) !important;
-    color: #ffffff !important;
-    border-color: rgba(43, 125, 233, 0.6) !important;
+    background: rgba(43, 125, 233, 0.22) !important;
+    color: #FFFFFF !important;
+    border-color: #2b7de9 !important;
 }
 
 .btn-cookie-outline {
-    background: rgba(255, 255, 255, 0.03) !important;
-    color: rgba(255, 255, 255, 0.75) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 10px;
     transition: all 0.25s ease;
 }
 .btn-cookie-outline:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
 .cookie-switch:checked {
     background-color: #2b7de9 !important;
     border-color: #2b7de9 !important;
     box-shadow: 0 0 10px rgba(43, 125, 233, 0.5) !important;
+}
+
+.text-sena-green {
+    color: #4ADE80 !important;
+}
+
+.text-sena-orange {
+    color: #FF6B00 !important;
+}
+
+.cookie-modal-header,
+.cookie-modal-footer {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.cookie-modal-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+.cookie-modal-close:hover {
+    opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ADAPTACIÓN COMPLETA PARA MODO CLARO (LIGHT THEME)
+   Alto Contraste Institucional SENA (#39A900, #007832, #FF6B00)
+   ═══════════════════════════════════════════════════════════ */
+html[data-theme="light"] #senaCookieBanner .cookie-banner-glass,
+html.acc-claro #senaCookieBanner .cookie-banner-glass,
+body.light-theme #senaCookieBanner .cookie-banner-glass {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.16), 0 0 20px rgba(57, 169, 0, 0.12) !important;
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] .cookie-modal-glass,
+html.acc-claro .cookie-modal-glass,
+body.light-theme .cookie-modal-glass {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.22) !important;
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] .cookie-title,
+html.acc-claro .cookie-title,
+body.light-theme .cookie-title {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] .cookie-desc,
+html.acc-claro .cookie-desc,
+body.light-theme .cookie-desc {
+    color: #475569 !important;
+}
+
+html[data-theme="light"] .cookie-cat-title,
+html.acc-claro .cookie-cat-title,
+body.light-theme .cookie-cat-title {
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] .cookie-icon-wrapper,
+html.acc-claro .cookie-icon-wrapper,
+body.light-theme .cookie-icon-wrapper {
+    background: #F0FDF4 !important;
+    border: 1.5px solid #86EFAC !important;
+    color: #007832 !important;
+}
+
+html[data-theme="light"] .cookie-modal-icon,
+html.acc-claro .cookie-modal-icon,
+body.light-theme .cookie-modal-icon {
+    background: #F0FDF4 !important;
+    border: 1px solid #86EFAC !important;
+    color: #007832 !important;
+}
+
+html[data-theme="light"] .badge-sena-pill,
+html.acc-claro .badge-sena-pill,
+body.light-theme .badge-sena-pill {
+    background: #F0FDF4 !important;
+    color: #007832 !important;
+    border: 1px solid #86EFAC !important;
+}
+
+html[data-theme="light"] .badge-cat-obligatoria,
+html.acc-claro .badge-cat-obligatoria,
+body.light-theme .badge-cat-obligatoria {
+    background: #F0FDF4 !important;
+    color: #007832 !important;
+    border: 1px solid #86EFAC !important;
+}
+
+html[data-theme="light"] .cookie-link-accent,
+html.acc-claro .cookie-link-accent,
+body.light-theme .cookie-link-accent {
+    color: #007832 !important;
+}
+html[data-theme="light"] .cookie-link-accent:hover,
+html.acc-claro .cookie-link-accent:hover,
+body.light-theme .cookie-link-accent:hover {
+    color: #39A900 !important;
+}
+
+html[data-theme="light"] .cookie-category-card,
+html.acc-claro .cookie-category-card,
+body.light-theme .cookie-category-card {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+}
+html[data-theme="light"] .cookie-category-card:hover,
+html.acc-claro .cookie-category-card:hover,
+body.light-theme .cookie-category-card:hover {
+    background: #F0FDF4 !important;
+    border-color: #86EFAC !important;
+}
+
+html[data-theme="light"] .btn-cookie-outline,
+html.acc-claro .btn-cookie-outline,
+body.light-theme .btn-cookie-outline {
+    background: #F8FAFC !important;
+    color: #334155 !important;
+    border: 1px solid #CBD5E1 !important;
+}
+html[data-theme="light"] .btn-cookie-outline:hover,
+html.acc-claro .btn-cookie-outline:hover,
+body.light-theme .btn-cookie-outline:hover {
+    background: #E2E8F0 !important;
+    color: #0F172A !important;
+    border-color: #94A3B8 !important;
+}
+
+html[data-theme="light"] .btn-cookie-secondary,
+html.acc-claro .btn-cookie-secondary,
+body.light-theme .btn-cookie-secondary {
+    background: #F0FDF4 !important;
+    color: #007832 !important;
+    border: 1.5px solid #86EFAC !important;
+}
+html[data-theme="light"] .btn-cookie-secondary:hover,
+html.acc-claro .btn-cookie-secondary:hover,
+body.light-theme .btn-cookie-secondary:hover {
+    background: #DCFCE7 !important;
+    color: #005A24 !important;
+    border-color: #39A900 !important;
+}
+
+html[data-theme="light"] .cookie-modal-header,
+html[data-theme="light"] .cookie-modal-footer,
+html.acc-claro .cookie-modal-header,
+html.acc-claro .cookie-modal-footer,
+body.light-theme .cookie-modal-header,
+body.light-theme .cookie-modal-footer {
+    border-color: #E2E8F0 !important;
+}
+
+html[data-theme="light"] .cookie-modal-close,
+html.acc-claro .cookie-modal-close,
+body.light-theme .cookie-modal-close {
+    filter: none !important;
+    opacity: 0.7;
+}
+html[data-theme="light"] .cookie-modal-close:hover,
+html.acc-claro .cookie-modal-close:hover,
+body.light-theme .cookie-modal-close:hover {
+    opacity: 1;
+}
+
+html[data-theme="light"] .text-sena-green,
+html.acc-claro .text-sena-green,
+body.light-theme .text-sena-green {
+    color: #007832 !important;
+}
+
+html[data-theme="light"] .text-sena-orange,
+html.acc-claro .text-sena-orange,
+body.light-theme .text-sena-orange {
+    color: #FF6B00 !important;
 }
 </style>

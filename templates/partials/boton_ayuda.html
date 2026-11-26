@@ -33,7 +33,10 @@ function downloadManualGlobal() {
 }
 
 function _iniciarDescargaFondo() {
-    const toastHtml = `<div id="print-toast" style="position:fixed; top:20px; right:20px; background:linear-gradient(135deg, #39A900, #007832); color:#fff; padding:12px 20px; border-radius:12px; z-index:99999; box-shadow: 0 6px 20px rgba(0,120,50,0.35); font-weight:bold; font-family:sans-serif;">Preparando documento PDF...</div>`;
+    const isLight = document.body.classList.contains('light-theme') || document.documentElement.classList.contains('acc-claro');
+    const toastBg = isLight ? 'linear-gradient(135deg, #39A900, #007832)' : 'linear-gradient(135deg, #0277bd, #00d2ff)';
+    const toastShadow = isLight ? 'rgba(0,120,50,0.35)' : 'rgba(0,210,255,0.35)';
+    const toastHtml = `<div id="print-toast" style="position:fixed; top:20px; right:20px; background:${toastBg}; color:#fff; padding:12px 20px; border-radius:12px; z-index:99999; box-shadow: 0 6px 20px ${toastShadow}; font-weight:bold; font-family:sans-serif;">Preparando documento PDF...</div>`;
     document.body.insertAdjacentHTML('beforeend', toastHtml);
 
     fetch("{% url 'ayuda' %}")
@@ -95,7 +98,7 @@ function _iniciarDescargaFondo() {
 </script>
 
 <style>
-/* ── Botón flotante de ayuda ── */
+/* ── Botón flotante de ayuda (Modo Oscuro: Azul Deportivo / Modo Claro: Verde SENA) ── */
 #help-toggle {
     position: fixed !important;
     bottom: 28px !important;
@@ -104,10 +107,10 @@ function _iniciarDescargaFondo() {
     width: 54px !important;
     height: 54px !important;
     border-radius: 50% !important;
-    background: linear-gradient(135deg, #39A900, #007832) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, #0277bd, #00d2ff) !important;
+    color: #ffffff !important;
     border: 2px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 6px 22px rgba(0, 120, 50, 0.42) !important;
+    box-shadow: 0 6px 22px rgba(0, 210, 255, 0.45) !important;
     cursor: pointer;
     display: flex !important;
     align-items: center !important;
@@ -119,8 +122,27 @@ function _iniciarDescargaFondo() {
 
 #help-toggle:hover {
     transform: scale(1.1) rotate(-12deg) !important;
+    background: linear-gradient(135deg, #01579b, #00b0ff) !important;
+    box-shadow: 0 8px 28px rgba(0, 210, 255, 0.65) !important;
+    color: #ffffff !important;
+}
+
+/* ── Adaptación Modo Claro (Verde SENA) ── */
+html[data-theme="light"] #help-toggle,
+html.acc-claro #help-toggle,
+body.light-theme #help-toggle {
+    background: linear-gradient(135deg, #39A900, #007832) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 22px rgba(0, 120, 50, 0.42) !important;
+    color: #ffffff !important;
+}
+
+html[data-theme="light"] #help-toggle:hover,
+html.acc-claro #help-toggle:hover,
+body.light-theme #help-toggle:hover {
+    background: linear-gradient(135deg, #007832, #005C25) !important;
     box-shadow: 0 8px 28px rgba(57, 169, 0, 0.6) !important;
-    color: #fff !important;
+    color: #ffffff !important;
 }
 
 /* Ajustes de responsividad para pantallas pequeñas */

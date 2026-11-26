@@ -3,12 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.http import JsonResponse
+from django.db.models import Sum
 from django.utils import timezone
 from .models import ElementoDeportivo, Prestamo, Devolucion, Sancion
 from datetime import datetime, date, timedelta
 from usuarios.models import Usuario, Notificacion
 from django.core.exceptions import ValidationError
 from core.security.file_upload import validate_uploaded_file
+from core.validators import validador_nombre_con_numeros
 
 
 def _validar_fecha_adquisicion(fecha_str):
@@ -79,6 +81,14 @@ def inventario_list(request):
             nombre_elemento = request.POST.get('nombre_elemento', '').strip()
             if not nombre_elemento or len(nombre_elemento) < 2 or len(nombre_elemento) > 100:
                 msg = "El nombre del elemento es obligatorio y debe tener entre 2 y 100 caracteres."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre_elemento': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('inventario')
+            try:
+                validador_nombre_con_numeros(nombre_elemento)
+            except ValidationError:
+                msg = "El nombre del elemento solo puede contener letras, números, espacios y guiones."
                 if is_ajax:
                     return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre_elemento': msg}}, status=400)
                 messages.error(request, msg)
@@ -177,6 +187,14 @@ def inventario_list(request):
                 nombre_elemento = request.POST.get('nombre_elemento', '').strip()
                 if not nombre_elemento or len(nombre_elemento) < 2 or len(nombre_elemento) > 100:
                     msg = "El nombre del elemento es obligatorio y debe tener entre 2 y 100 caracteres."
+                    if is_ajax:
+                        return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre_elemento': msg}}, status=400)
+                    messages.error(request, msg)
+                    return redirect('inventario')
+                try:
+                    validador_nombre_con_numeros(nombre_elemento)
+                except ValidationError:
+                    msg = "El nombre del elemento solo puede contener letras, números, espacios y guiones."
                     if is_ajax:
                         return JsonResponse({'status': 'error', 'message': msg, 'errors': {'nombre_elemento': msg}}, status=400)
                     messages.error(request, msg)
@@ -413,6 +431,16 @@ def devoluciones_list(request):
             prestamo__usuario=request.user
         ).order_by('-fecha_devolucion')
 
+    # Para devoluciones parciales, solo permitir devolver las unidades pendientes.
+    prestamos_activos = prestamos_activos.annotate(
+        cantidad_devuelta_total=Sum('devoluciones__cantidad_devuelta')
+    )
+    for prestamo_activo in prestamos_activos:
+        prestamo_activo.cantidad_pendiente = max(
+            0,
+            prestamo_activo.cantidad_prestada - (prestamo_activo.cantidad_devuelta_total or 0)
+        )
+
     if request.method == 'POST':
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
         accion = request.POST.get('accion')
@@ -441,6 +469,13 @@ def devoluciones_list(request):
             tipo_novedad = request.POST.get('tipo_novedad_devolucion', '')
             observaciones = request.POST.get('observaciones_devolucion', '').strip()
 
+            if tiene_novedad and not tipo_novedad:
+                msg = "Selecciona el tipo de novedad antes de registrar la devolución."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': msg, 'errors': {'tipo_novedad_devolucion': msg}}, status=400)
+                messages.error(request, msg)
+                return redirect('devoluciones')
+
             if len(observaciones) > 500:
                 msg = "Las observaciones no pueden superar los 500 caracteres."
                 if is_ajax:
@@ -463,8 +498,12 @@ def devoluciones_list(request):
                 )
 
             # Validar cantidad
-            if cantidad_devuelta > prestamo.cantidad_prestada:
-                msg = f"La cantidad a devolver no puede superar la prestada ({prestamo.cantidad_prestada})."
+            cantidad_ya_devuelta = prestamo.devoluciones.aggregate(
+                total=Sum('cantidad_devuelta')
+            )['total'] or 0
+            cantidad_pendiente = prestamo.cantidad_prestada - cantidad_ya_devuelta
+            if cantidad_devuelta > cantidad_pendiente:
+                msg = f"La cantidad a devolver no puede superar lo pendiente ({cantidad_pendiente})."
                 if is_ajax:
                     return JsonResponse({'status': 'error', 'message': msg, 'errors': {'cantidad_devuelta': msg}}, status=400)
                 messages.error(request, msg)
@@ -482,20 +521,23 @@ def devoluciones_list(request):
                 observaciones_devolucion=observaciones,
             )
 
-            # Restaurar stock
+            # Algunos préstamos históricos pueden no tener elemento asociado.
+            # La devolución debe guardarse aunque no haya stock que restaurar.
             elemento = prestamo.elemento
-            elemento.cantidad_total += cantidad_devuelta
-            elemento.save()
+            nombre_elemento = elemento.tipo_maquina if elemento else "Elemento no identificado"
+            if elemento:
+                elemento.cantidad_total += cantidad_devuelta
+                elemento.save(update_fields=['cantidad_total'])
 
             # ── Notificación automática a Administradores (BD y campana) ──
             admins_activos = Usuario.objects.filter(is_staff=True, is_active=True)
             novedad_txt = f" (Novedad: {tipo_novedad} - {observaciones})" if tiene_novedad and tipo_novedad else ""
             notif_tipo = 'warning' if tiene_novedad else 'info'
             notif_icono = 'fa-exclamation-triangle' if tiene_novedad else 'fa-undo'
-            notif_titulo = f"Devolución: {elemento.tipo_maquina}"
+            notif_titulo = f"Devolución: {nombre_elemento}"
             notif_mensaje = (
                 f"El usuario {prestamo.usuario.get_full_name()} ({prestamo.usuario.numero_documento}) "
-                f"ha registrado la devolución de {cantidad_devuelta} unidad(es) de '{elemento.tipo_maquina}'. "
+                f"ha registrado la devolución de {cantidad_devuelta} unidad(es) de '{nombre_elemento}'. "
                 f"Estado: {estado_elemento or 'Bueno'}.{novedad_txt}"
             )
             for admin_user in admins_activos:
@@ -513,20 +555,21 @@ def devoluciones_list(request):
                 Sancion.objects.create(
                     usuario=prestamo.usuario,
                     devolucion=devolucion_creada,
-                    tipo_sancion=f"{tipo_novedad} de {elemento.tipo_maquina}",
+                    # El nombre del elemento también se guarda en el motivo (máx. 100 caracteres).
+                    tipo_sancion=f"{tipo_novedad} de {nombre_elemento}"[:100],
                     fecha_inicio_sancion=date.today(),
                     fecha_fin_sancion=date.today() + timedelta(days=30),
                     estado_sancion='Activa',
                     descripcion_sancion=(
                         f"Sanción automática por {tipo_novedad.lower()} del elemento "
-                        f"'{elemento.tipo_maquina}'. Préstamo #{prestamo.codigo_prestamo}. "
+                        f"'{nombre_elemento}'. Préstamo #{prestamo.codigo_prestamo}. "
                         f"Observación: {observaciones}"
                     ),
                 )
                 Notificacion.objects.create(
                     usuario=prestamo.usuario,
                     titulo=f"Sanción registrada por {tipo_novedad.lower()}",
-                    mensaje=f"Se ha generado una sanción preventiva de 30 días asociada a la devolución con novedad de '{elemento.tipo_maquina}'.",
+                    mensaje=f"Se ha generado una sanción preventiva de 30 días asociada a la devolución con novedad de '{nombre_elemento}'.",
                     tipo='danger',
                     icono='fa-gavel',
                     enlace='/inventario/sanciones/'
@@ -536,9 +579,10 @@ def devoluciones_list(request):
                     f"Se generó una sanción automática de 30 días por {tipo_novedad.lower()} del elemento."
                 )
 
-            # Marcar préstamo como devuelto
-            prestamo.estado_prestamo = 'Devuelto'
-            prestamo.save()
+            # Mantener activo el préstamo hasta devolver todas las unidades.
+            if cantidad_ya_devuelta + cantidad_devuelta >= prestamo.cantidad_prestada:
+                prestamo.estado_prestamo = 'Devuelto'
+                prestamo.save(update_fields=['estado_prestamo'])
 
             messages.success(request, "Devolución registrada correctamente.")
             return redirect('devoluciones')
@@ -766,6 +810,11 @@ def editar_elemento(request, id):
         if not tipo_maquina or len(tipo_maquina) < 2 or len(tipo_maquina) > 100:
             messages.error(request, "El nombre del elemento es obligatorio y debe tener entre 2 y 100 caracteres.")
             return redirect('inventario')
+        try:
+            validador_nombre_con_numeros(tipo_maquina)
+        except ValidationError:
+            messages.error(request, "El nombre del elemento solo puede contener letras, números, espacios y guiones.")
+            return redirect('inventario')
 
         cantidad_raw = request.POST.get('cantidad_total')
         try:
@@ -818,8 +867,9 @@ def eliminar_prestamo(request, id):
     # Restaurar stock si el préstamo estaba activo
     if prestamo.estado_prestamo == 'Activo':
         elemento = prestamo.elemento
-        elemento.cantidad_total += prestamo.cantidad_prestada
-        elemento.save()
+        if elemento:
+            elemento.cantidad_total += prestamo.cantidad_prestada
+            elemento.save(update_fields=['cantidad_total'])
 
     prestamo.delete()
     messages.info(request, "Préstamo eliminado y stock restaurado.")

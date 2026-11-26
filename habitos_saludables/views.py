@@ -20,7 +20,7 @@ from .models import (
 )
 from .forms import (
     SeguimientoSaludForm, MaterialApoyoForm,
-    BuscarMaterialForm, HabeasDataForm
+    BuscarMaterialForm, HabeasDataForm, RecetaSaludableForm
 )
 
 
@@ -633,26 +633,19 @@ def crear_receta(request):
         raise PermissionDenied
 
     if request.method == 'POST':
-        campos = ['titulo', 'descripcion', 'ingredientes', 'preparacion',
-                  'tiempo_preparacion_min', 'porciones', 'categoria', 'objetivo',
-                  'calorias_por_porcion', 'proteinas_g', 'carbohidratos_g', 'grasas_g']
-        datos = {c: request.POST.get(c, '') for c in campos}
-        datos['autor'] = request.user
-        datos['activa'] = True
-        if 'imagen' in request.FILES:
-            datos['imagen'] = request.FILES['imagen']
-        try:
-            # Convertir nulos
-            for campo_num in ['calorias_por_porcion', 'proteinas_g', 'carbohidratos_g', 'grasas_g']:
-                if not datos[campo_num]:
-                    datos[campo_num] = None
-            receta = RecetaSaludable.objects.create(**datos)
+        form = RecetaSaludableForm(request.POST, request.FILES)
+        if form.is_valid():
+            receta = form.save(commit=False)
+            receta.autor = request.user
+            receta.activa = True
+            receta.save()
             messages.success(request, f'Receta "{receta.titulo}" creada exitosamente.')
             return redirect('habitos:detalle_receta', pk=receta.pk)
-        except Exception as e:
-            messages.error(request, f'Error al guardar la receta: {e}')
+    else:
+        form = RecetaSaludableForm()
 
     return render(request, 'habitos/receta_form.html', {
+        'form': form,
         'accion': 'Crear',
         'categorias': RecetaSaludable.CATEGORIA_CHOICES,
         'objetivos':  RecetaSaludable.OBJETIVO_CHOICES,
@@ -669,23 +662,16 @@ def editar_receta(request, pk):
 
     receta = get_object_or_404(RecetaSaludable, pk=pk)
     if request.method == 'POST':
-        campos = ['titulo', 'descripcion', 'ingredientes', 'preparacion',
-                  'tiempo_preparacion_min', 'porciones', 'categoria', 'objetivo',
-                  'calorias_por_porcion', 'proteinas_g', 'carbohidratos_g', 'grasas_g']
-        for c in campos:
-            val = request.POST.get(c)
-            if val is not None:
-                setattr(receta, c, val if val else None)
-        if 'imagen' in request.FILES:
-            receta.imagen = request.FILES['imagen']
-        try:
-            receta.save()
+        form = RecetaSaludableForm(request.POST, request.FILES, instance=receta)
+        if form.is_valid():
+            receta = form.save()
             messages.success(request, f'Receta "{receta.titulo}" actualizada.')
             return redirect('habitos:detalle_receta', pk=receta.pk)
-        except Exception as e:
-            messages.error(request, f'Error al actualizar: {e}')
+    else:
+        form = RecetaSaludableForm(instance=receta)
 
     return render(request, 'habitos/receta_form.html', {
+        'form': form,
         'receta': receta,
         'accion': 'Editar',
         'categorias': RecetaSaludable.CATEGORIA_CHOICES,

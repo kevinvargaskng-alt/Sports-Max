@@ -179,6 +179,24 @@ canvas { width: 100% !important; max-height: 220px !important; }
 .water-cup.filled { opacity: 1; filter: grayscale(0); transform: scale(1.15) translateY(-2px); }
 .water-cup.filled:active { transform: scale(0.95); }
 .water-cup.locked { opacity: 0.4 !important; filter: grayscale(0.85) !important; transform: scale(1) translateY(0) !important; cursor: not-allowed !important; }
+html[data-theme="light"] .water-cup,
+html.acc-claro .water-cup,
+body.light-theme .water-cup {
+  opacity: 0.58;
+  filter: grayscale(0.45) drop-shadow(0 1px 1px rgba(30, 41, 59, 0.2));
+}
+html[data-theme="light"] .water-cup.filled,
+html.acc-claro .water-cup.filled,
+body.light-theme .water-cup.filled {
+  opacity: 1;
+  filter: grayscale(0) drop-shadow(0 1px 2px rgba(2, 132, 199, 0.24));
+}
+html[data-theme="light"] .water-cup.locked,
+html.acc-claro .water-cup.locked,
+body.light-theme .water-cup.locked {
+  opacity: 0.5 !important;
+  filter: grayscale(0.45) drop-shadow(0 1px 1px rgba(30, 41, 59, 0.16)) !important;
+}
 .goal-reached-anim { animation: pulseGoal 0.6s ease-in-out; }
 @keyframes pulseGoal {
   0% { transform: scale(1); }

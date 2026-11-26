@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 import re
 
 from core.security.validators import validate_email_strict, validate_text_safe
+from core.validators import normalizar_espacios
 from .models import Usuario
 
 
@@ -150,7 +151,7 @@ class RegistroUsuarioForm(forms.Form):
     confirmar_contrasena = forms.CharField(
         min_length=8,
         max_length=128,
-        required=False,
+        required=True,
         widget=forms.PasswordInput
     )
 
@@ -163,18 +164,18 @@ class RegistroUsuarioForm(forms.Form):
         return doc
 
     def clean_nombres(self):
-        nombres = self.cleaned_data.get('nombres', '').strip()
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\'-]+$', nombres):
-            raise ValidationError("Este campo solo permite letras y un máximo de 100 caracteres.")
+        nombres = normalizar_espacios(self.cleaned_data.get('nombres', ''))
+        if not re.fullmatch(r'[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?:\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*', nombres):
+            raise ValidationError("El nombre solo puede contener letras y espacios.")
         try:
             return validate_text_safe(nombres, 'nombres', max_length=100).title()
         except ValidationError as e:
             raise ValidationError(str(e.message if hasattr(e, 'message') else e))
 
     def clean_apellidos(self):
-        apellidos = self.cleaned_data.get('apellidos', '').strip()
-        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\'-]+$', apellidos):
-            raise ValidationError("Este campo solo permite letras y un máximo de 100 caracteres.")
+        apellidos = normalizar_espacios(self.cleaned_data.get('apellidos', ''))
+        if not re.fullmatch(r'[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?:\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*', apellidos):
+            raise ValidationError("Los apellidos solo pueden contener letras y espacios.")
         try:
             return validate_text_safe(apellidos, 'apellidos', max_length=100).title()
         except ValidationError as e:
@@ -182,8 +183,8 @@ class RegistroUsuarioForm(forms.Form):
 
     def clean_telefono(self):
         tel = self.cleaned_data.get('telefono', '').strip()
-        if not re.match(r'^\d{10}$', tel):
-            raise ValidationError("El teléfono debe contener exactamente 10 dígitos numéricos.")
+        if not re.fullmatch(r'3\d{9}', tel):
+            raise ValidationError("El teléfono debe tener 10 dígitos y comenzar por 3.")
         return tel
 
     def clean_ficha(self):

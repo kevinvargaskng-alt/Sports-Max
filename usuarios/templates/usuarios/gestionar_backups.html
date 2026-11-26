@@ -60,6 +60,26 @@
         border: 1.5px solid #E2E8F0;
         box-shadow: 0 8px 24px rgba(30, 41, 59, 0.06);
     }
+    html.acc-claro .backup-card .text-white,
+    body.light-theme .backup-card .text-white,
+    html.acc-claro h4.text-white,
+    body.light-theme h4.text-white {
+        color: #0F172A !important;
+    }
+    html.acc-claro .backup-card .text-white-50,
+    body.light-theme .backup-card .text-white-50,
+    html.acc-claro p.text-white-50,
+    body.light-theme p.text-white-50,
+    html.acc-claro span.text-white-50,
+    body.light-theme span.text-white-50,
+    html.acc-claro td.text-white-50,
+    body.light-theme td.text-white-50 {
+        color: #475569 !important;
+    }
+    html.acc-claro .form-label.text-white-50,
+    body.light-theme .form-label.text-white-50 {
+        color: #334155 !important;
+    }
     html.acc-claro .backup-kpi-pill,
     body.light-theme .backup-kpi-pill {
         background: #F0FDF4;
@@ -71,6 +91,23 @@
         background: #FFF7ED;
         border-color: #FDBA74;
         color: #C25100;
+    }
+    html.acc-claro #tablaRespaldos,
+    body.light-theme #tablaRespaldos {
+        background-color: #FFFFFF !important;
+        color: #1E293B !important;
+    }
+    html.acc-claro #tablaRespaldos th,
+    body.light-theme #tablaRespaldos th {
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
+        border-bottom: 2px solid #CBD5E1 !important;
+    }
+    html.acc-claro #tablaRespaldos td,
+    body.light-theme #tablaRespaldos td {
+        background-color: #FFFFFF !important;
+        color: #334155 !important;
+        border-bottom: 1px solid #E2E8F0 !important;
     }
 </style>
 {% endblock %}
@@ -104,9 +141,6 @@
                 </a>
             </div>
         </div>
-
-        <!-- MENÚ PRINCIPAL DE ADMINISTRACIÓN -->
-        {% include 'partials/admin_nav.html' with admin_tab='backups' %}
 
         <!-- MENSAJES -->
         {% if messages %}
