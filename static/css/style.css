@@ -912,13 +912,28 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     color: white;
 }
 
-.tooltip-inner {
-    background: rgba(11, 14, 20, 0.95) !important;
+.tooltip .tooltip-inner {
+    background-color: #0F172A !important;
     backdrop-filter: blur(10px);
-    border: 1px solid var(--neon-border) !important;
-    color: var(--text-white) !important;
-    border-radius: 10px !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(57, 169, 0, 0.45) !important;
+    color: #F8FAFC !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    max-width: min(280px, 88vw) !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45) !important;
+}
+html[data-theme="light"] .tooltip .tooltip-inner,
+html.acc-claro .tooltip .tooltip-inner,
+body.light-theme .tooltip .tooltip-inner {
+    background-color: #1E293B !important;
+    color: #FFFFFF !important;
+    border: 1px solid #39A900 !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22) !important;
 }
 
 /* ============================================================

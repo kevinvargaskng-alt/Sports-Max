@@ -23,9 +23,24 @@ if not SECRET_KEY:
 # DEBUG controlado por variable de entorno (default: False = seguro)
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-# ALLOWED_HOSTS desde .env — NUNCA usar '*' en producción
+# ALLOWED_HOSTS desde variable de entorno (.env local o panel de la nube).
+#   · Pruebas rápidas en la nube : ALLOWED_HOSTS=*
+#   · Producción (recomendado)   : ALLOWED_HOSTS=proyecto2026.onrender.com
 _allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(',') if h.strip()]
+
+# Render inyecta automáticamente su dominio público en esta variable.
+_render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if _render_host and '*' not in ALLOWED_HOSTS and _render_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_render_host)
+
+# Orígenes HTTPS confiables para formularios POST (login, registro, etc.)
+#   Ej.: CSRF_TRUSTED_ORIGINS=https://proyecto2026.onrender.com
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+]
+if _render_host:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{_render_host}')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,6 +72,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# WhiteNoise: sirve CSS/JS/imágenes estáticas en la nube (gunicorn no los sirve).
+# Va justo debajo de SecurityMiddleware. Se activa solo si el paquete está instalado,
+# así el entorno local sigue funcionando aunque aún no hayas hecho pip install.
+import importlib.util
+USE_WHITENOISE = importlib.util.find_spec('whitenoise') is not None
+if USE_WHITENOISE:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
 ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
@@ -80,6 +103,25 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # ═══════════════════════════════════════════════════════════
 #  BASE DE DATOS (dinámica: MySQL/PostgreSQL/SQLite)
 # ═══════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────
+#  CONEXIÓN CON MYSQL WORKBENCH (DESARROLLO LOCAL) — COMENTADA
+#  Mientras el proyecto se sube a Docker/la nube NO se usa MySQL local
+#  (127.0.0.1 de tu PC no es accesible desde el contenedor): si DB_NAME y
+#  DB_USER no están definidos, se usa SQLite automáticamente (ver abajo).
+#
+#  Para volver a conectar con Workbench, define estas variables en tu .env:
+#
+#      # DB_ENGINE=django.db.backends.mysql
+#      # DB_NAME=nombre_de_tu_esquema      # el que ves en Workbench
+#      # DB_USER=root
+#      # DB_PASSWORD=tu_clave
+#      # DB_HOST=127.0.0.1
+#      # DB_PORT=3306
+#
+#  (Quita los "#" para activarlas. El driver PyMySQL ya está configurado en
+#  core/__init__.py.) Para la nube usa una base gestionada (PostgreSQL de
+#  Render, MySQL de Railway/Aiven, etc.) con DB_HOST/DB_PORT de ese servicio.
+# ─────────────────────────────────────────────────────────────
 DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.mysql')
 DB_NAME = os.environ.get('DB_NAME')
 DB_USER = os.environ.get('DB_USER')
@@ -145,6 +187,14 @@ USE_TZ = True
 # ═══════════════════════════════════════════════════════════
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # destino de collectstatic
+
+if USE_WHITENOISE:
+    STORAGES = {
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        # Compresión sin "manifest": evita errores si algún CSS referencia un archivo ausente
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+    }
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

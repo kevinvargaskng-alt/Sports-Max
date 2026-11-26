@@ -109,9 +109,9 @@
         font-style: italic;
     }
 
-    .border-perfil    { border-left-color: #0dcaf0 !important; }
+    .border-perfil    { border-left-color: #0d6efd !important; }
     .border-gimnasio  { border-left-color: #dc3545 !important; }
-    .border-prestamos { border-left-color: #ffc107 !important; }
+    .border-prestamos { border-left-color: #FF6B00 !important; }
     .border-torneos   { border-left-color: #0d6efd !important; }
     .border-habitos   { border-left-color: #39A900 !important; }
 
@@ -119,6 +119,136 @@
 
     .manual-sidebar::-webkit-scrollbar { width: 6px; }
     .manual-sidebar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+    /* ── Adaptación Modo Claro Institucional SENA (Manual de Usuario) ── */
+    html[data-theme="light"] .manual-sidebar,
+    html.acc-claro .manual-sidebar,
+    body.light-theme .manual-sidebar {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06) !important;
+    }
+    html[data-theme="light"] .manual-sidebar h5,
+    html.acc-claro .manual-sidebar h5,
+    body.light-theme .manual-sidebar h5 {
+        color: #1E293B !important;
+    }
+    html[data-theme="light"] .manual-nav-link,
+    html.acc-claro .manual-nav-link,
+    body.light-theme .manual-nav-link {
+        color: #334155 !important;
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+    }
+    html[data-theme="light"] .manual-nav-link:hover,
+    html[data-theme="light"] .manual-nav-link.active,
+    html.acc-claro .manual-nav-link:hover,
+    html.acc-claro .manual-nav-link.active,
+    body.light-theme .manual-nav-link:hover,
+    body.light-theme .manual-nav-link.active {
+        background: #F1F8EC !important;
+        border-color: #39A900 !important;
+        color: #007832 !important;
+        font-weight: 700;
+    }
+    html[data-theme="light"] .manual-meta-table,
+    html.acc-claro .manual-meta-table,
+    body.light-theme .manual-meta-table {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    }
+    html[data-theme="light"] .manual-meta-table th,
+    html.acc-claro .manual-meta-table th,
+    body.light-theme .manual-meta-table th {
+        background: #F1F8EC !important;
+        color: #007832 !important;
+        border-color: #CBD5E1 !important;
+    }
+    html[data-theme="light"] .manual-meta-table td,
+    html.acc-claro .manual-meta-table td,
+    body.light-theme .manual-meta-table td {
+        background: #FFFFFF !important;
+        color: #1E293B !important;
+        border-color: #E2E8F0 !important;
+    }
+    html[data-theme="light"] .manual-section,
+    html.acc-claro .manual-section,
+    body.light-theme .manual-section {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+        color: #334155 !important;
+    }
+    html[data-theme="light"] .manual-section h1,
+    html.acc-claro .manual-section h1,
+    body.light-theme .manual-section h1 {
+        color: #007832 !important;
+    }
+    html[data-theme="light"] .manual-section h2,
+    html.acc-claro .manual-section h2,
+    body.light-theme .manual-section h2 {
+        border-bottom-color: #E2E8F0 !important;
+        color: #1E293B !important;
+    }
+    html[data-theme="light"] .manual-section p,
+    html[data-theme="light"] .manual-section li,
+    html.acc-claro .manual-section p,
+    html.acc-claro .manual-section li,
+    body.light-theme .manual-section p,
+    body.light-theme .manual-section li {
+        color: #334155 !important;
+    }
+    html[data-theme="light"] .manual-section strong,
+    html.acc-claro .manual-section strong,
+    body.light-theme .manual-section strong {
+        color: #1E293B !important;
+    }
+    html[data-theme="light"] .manual-feature-card,
+    html.acc-claro .manual-feature-card,
+    body.light-theme .manual-feature-card {
+        background: #F8FAFC !important;
+        border-top: 1px solid #E2E8F0;
+        border-right: 1px solid #E2E8F0;
+        border-bottom: 1px solid #E2E8F0;
+    }
+    html[data-theme="light"] .manual-feature-card h5,
+    html.acc-claro .manual-feature-card h5,
+    body.light-theme .manual-feature-card h5 {
+        color: #1E293B !important;
+        border-bottom-color: #CBD5E1 !important;
+    }
+    html[data-theme="light"] .manual-figure,
+    html.acc-claro .manual-figure,
+    body.light-theme .manual-figure {
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+    }
+    html[data-theme="light"] .manual-figure img,
+    html.acc-claro .manual-figure img,
+    body.light-theme .manual-figure img {
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1) !important;
+        border: 1px solid #CBD5E1;
+    }
+    html[data-theme="light"] .manual-figure figcaption,
+    html.acc-claro .manual-figure figcaption,
+    body.light-theme .manual-figure figcaption {
+        color: #475569 !important;
+    }
+    html[data-theme="light"] .manual-section .alert-danger,
+    html.acc-claro .manual-section .alert-danger,
+    body.light-theme .manual-section .alert-danger {
+        background: #FEF2F2 !important;
+        border-color: #FECACA !important;
+        color: #7F1D1D !important;
+    }
+    html[data-theme="light"] .manual-section .alert-secondary,
+    html.acc-claro .manual-section .alert-secondary,
+    body.light-theme .manual-section .alert-secondary {
+        background: #F1F8EC !important;
+        border-color: #86EFAC !important;
+        color: #1E293B !important;
+    }
 </style>
 {% endblock %}
 

@@ -99,6 +99,38 @@ class FechaIngreso(models.Model):
         return str(self.fecha)
 
 
+def _resolver_imagen_maquina(imagen_field, nombre, categoria=''):
+    """Resuelve la URL válida de imagen de una máquina con respaldo estático garantizado."""
+    if imagen_field and getattr(imagen_field, 'name', ''):
+        try:
+            if imagen_field.storage.exists(imagen_field.name):
+                return imagen_field.url
+        except Exception:
+            pass
+
+    nombre_norm = (nombre or '').lower()
+    reglas_keywords = [
+        (('bicicleta', 'spinning', 'ciclo', 'estática', 'estatica'), 'bicicleta.jpg'),
+        (('caminadora', 'trotadora', 'banda caminadora', 'correr'), 'caminadora.jpg'),
+        (('elíptica', 'eliptica', 'escaladora'), 'eliptica.jpg'),
+        (('press', 'banca', 'pecho'), 'press_banca.jpg'),
+        (('sentadilla', 'prensa', 'pierna', 'rack', 'smith', 'hack'), 'rack_sentadillas.jpg'),
+        (('remo', 'espalda', 'dorsal', 'jalón', 'jalon'), 'remo.jpg'),
+        (('trx', 'colchoneta', 'funcional', 'abdom', 'kettlebell', ' Rusa', 'flexibilidad', 'estiramiento', 'yoga'), 'trx_colchonetas.jpg'),
+        (('multi', 'polea', 'fuerza', 'mancuerna', 'pesa', 'barra'), 'multifuerza.jpg'),
+    ]
+    for keywords, filename in reglas_keywords:
+        if any(kw in nombre_norm for kw in keywords):
+            return f"/static/img/maquinas/{filename}"
+
+    cat_norm = (categoria or '').lower()
+    if 'cardio' in cat_norm:
+        return "/static/img/maquinas/caminadora.jpg"
+    if 'funcional' in cat_norm or 'flexibilidad' in cat_norm:
+        return "/static/img/maquinas/trx_colchonetas.jpg"
+    return "/static/img/maquinas/multifuerza.jpg"
+
+
 class Maquina(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
@@ -129,21 +161,7 @@ class Maquina(models.Model):
 
     @property
     def imagen_url(self):
-        if self.imagen:
-            return self.imagen.url
-        # Mapea nombres de máquinas por defecto a sus respectivas imágenes estáticas
-        mapping = {
-            'caminadora': 'caminadora.jpg',
-            'bicicleta estática': 'bicicleta.jpg',
-            'elíptica': 'eliptica.jpg',
-            'press de banca': 'press_banca.jpg',
-            'multiestación': 'multifuerza.jpg',
-            'rack de sentadillas': 'rack_sentadillas.jpg',
-            'remo': 'remo.jpg',
-            'zona trx / colchonetas': 'trx_colchonetas.jpg'
-        }
-        filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
-        return f"/static/img/maquinas/{filename}"
+        return _resolver_imagen_maquina(self.imagen, self.nombre, self.categoria)
 
 
 class Machine(models.Model):
@@ -208,16 +226,4 @@ class Machine(models.Model):
 
     @property
     def imagen_url(self):
-        if self.imagen:
-            return self.imagen.url
-        mapping = {
-            'caminadora': 'caminadora.jpg',
-            'bicicleta estática': 'bicicleta.jpg',
-            'elíptica': 'eliptica.jpg',
-            'press de banca': 'press_banca.jpg',
-            'multiestación': 'multifuerza.jpg',
-            'rack de sentadillas': 'rack_sentadillas.jpg',
-            'remo': 'remo.jpg',
-        }
-        filename = mapping.get(self.nombre.lower(), 'mancuernas.jpg')
-        return f"/static/img/maquinas/{filename}"
+        return _resolver_imagen_maquina(self.imagen, self.nombre, self.tipo)

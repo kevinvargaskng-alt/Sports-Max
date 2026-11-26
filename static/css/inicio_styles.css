@@ -1,9 +1,10 @@
 :root {
-    --sena-green: #1a5fb4;
+    --sena-green: #39A900;
+    --sena-green-dark: #007832;
     --sena-dark: var(--primary-dark);
     --sena-card: var(--card-bg);
     --sena-border: var(--neon-border);
-    --accent: #1a5fb4;
+    --accent: #39A900;
     --accent2: var(--warning);
   }
 
@@ -576,19 +577,60 @@
     margin-right: 6px;
     border-radius: 8px !important;
   }
+  .auth-theme-toggle-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    color: #E2E8F0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+  .auth-theme-toggle-btn:hover {
+    background: rgba(57, 169, 0, 0.18);
+    border-color: #39A900;
+    color: #FFFFFF;
+  }
+  .btn-sugerir-clave {
+    font-size: 0.74rem !important;
+    color: #4ADE80 !important;
+    font-weight: 700 !important;
+    transition: color 0.2s ease;
+  }
+  .btn-sugerir-clave:hover,
+  .btn-sugerir-clave:focus {
+    color: #39A900 !important;
+    text-decoration: underline !important;
+  }
+  .btn-cerrar-bloqueo {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #E2E8F0;
+    background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+  }
+  .btn-cerrar-bloqueo:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+  }
   .custom-input {
     background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
     color: #fff !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
   .custom-input:focus {
     background: rgba(255,255,255,0.08) !important;
-    border-color: #2b7de9 !important;
-    box-shadow: 0 0 0 3px rgba(43, 125, 233, 0.2) !important;
+    border-color: #39A900 !important;
+    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.22) !important;
     outline: none !important;
   }
 
-  /* Desactivar cualquier borde y checkmark verde de validación en los modales de inicio */
+  /* Desactivar cualquier borde y checkmark automático de validación en los modales de inicio */
   #modalForm .form-control.is-valid,
   #modalForm .form-select.is-valid,
   #modalForm .was-validated .form-control:valid,
@@ -601,47 +643,41 @@
   }
   #modalForm .form-control.is-valid:focus,
   #modalForm .was-validated .form-control:valid:focus {
-    border-color: #2b7de9 !important;
-    box-shadow: 0 0 0 3px rgba(43, 125, 233, 0.2) !important;
+    border-color: #39A900 !important;
+    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.22) !important;
   }
 
   .nav-pills .nav-link {
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.6);
-    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.72);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    letter-spacing: 1px;
+    font-size: 15px;
+    letter-spacing: 0.8px;
     font-weight: 700;
     transition: all 0.2s ease;
   }
+  .nav-pills .nav-link:hover:not(.active) {
+    background: rgba(57, 169, 0, 0.14);
+    border-color: rgba(57, 169, 0, 0.45);
+    color: #FFFFFF;
+  }
   .nav-pills .nav-link.active {
-    background: #2b7de9 !important;
-    color: #fff !important;
-    box-shadow: 0 4px 14px rgba(43, 125, 233, 0.35);
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(57, 169, 0, 0.35);
   }
 
-  /* ── ESCÁNER DE CARNET ── */
+  /* ── ESCÁNER DE CARNET SENA ── */
   .scanner-btn {
     width: 100%;
-    background: rgba(43, 125, 233, 0.1);
-    border: 1.5px dashed rgba(43, 125, 233, 0.45);
+    background: rgba(57, 169, 0, 0.1);
+    border: 1.5px dashed rgba(57, 169, 0, 0.5);
     border-radius: 8px;
     padding: 12px 18px;
-    color: #93c5fd;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.2s;
-    margin-bottom: 16px;
-    color: #7eb3e8;
+    color: #4ADE80;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 15px;
     font-weight: 700;
@@ -652,24 +688,24 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     margin-bottom: 20px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
   .scanner-btn:hover, .scanner-btn:active {
-    background: rgba(26,95,180,0.22);
-    border-color: rgba(26,95,180,0.8);
-    color: #fff;
+    background: rgba(57, 169, 0, 0.22);
+    border-color: #39A900;
+    color: #FFFFFF;
   }
 
   /* Wrapper del visor de cámara */
   #scannerWrapper {
     display: none;
     margin-bottom: 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
-    border: 2px solid rgba(26,95,180,0.5);
+    border: 2px solid rgba(57, 169, 0, 0.6);
     position: relative;
   }
   #scannerWrapper.active { display: block; }
@@ -739,21 +775,21 @@
     display: none;
     align-items: center;
     gap: 10px;
-    background: rgba(26,95,180,0.15);
-    border: 1px solid rgba(26,95,180,0.4);
-    border-radius: 6px;
+    background: rgba(57, 169, 0, 0.14);
+    border: 1px solid rgba(57, 169, 0, 0.45);
+    border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 20px;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    color: #7eb3e8;
+    color: #4ADE80;
   }
   .sena-verified-badge.show { display: flex; }
   .sena-verified-badge .badge-icon {
     width: 36px; height: 36px;
-    background: var(--sena-green);
+    background: #39A900;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -766,18 +802,18 @@
     display: block;
     font-size: 11px;
     font-weight: 400;
-    opacity: 0.7;
+    opacity: 0.8;
     letter-spacing: 1px;
     text-transform: uppercase;
   }
 
   /* Input verificado (readonly visual) */
   .input-verified {
-    border-color: rgba(26,95,180,0.6) !important;
-    background: rgba(26,95,180,0.08) !important;
+    border-color: rgba(57, 169, 0, 0.65) !important;
+    background: rgba(57, 169, 0, 0.08) !important;
   }
   .input-verified:focus {
-    border-color: rgba(26,95,180,0.8) !important;
+    border-color: #39A900 !important;
   }
 
   /* Botón cerrar y cambiar cámara escáner */
@@ -799,7 +835,7 @@
   #btnCerrarScanner { right: 8px; }
   #btnCambiarCamara { left: 8px; }
   #btnCerrarScanner:hover, #btnCambiarCamara:hover {
-    background: rgba(26,95,180,0.8);
+    background: #007832;
   }
 
   /* Spinner de carga cámara */
@@ -880,7 +916,7 @@
 .ini-u-34 { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; text-transform:uppercase; margin-bottom:10px; }
 .ini-u-35 { font-size:14px; color:rgba(255,255,255,0.45); line-height:1.65; }
 .ini-u-36 { font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; text-transform:uppercase; }
-.ini-u-37 { color:var(--sena-green); }
+.ini-u-37 { color:#39A900; }
 .ini-u-38 { letter-spacing:0.5px; }
 .ini-u-39 { border-right:none; }
 .ini-u-40 { box-shadow:none; }
@@ -888,19 +924,21 @@
 .ini-u-42 { border-right:none; }
 .ini-u-43 { box-shadow:none; }
 .ini-u-44 { border-left:none; }
-.ini-u-45 { color:var(--sena-green); }
-.ini-u-46 { background:#2b7de9; color:#fff; letter-spacing:1px; border-radius:6px; font-family:'Barlow Condensed',sans-serif; font-size:16px; border:none; transition:all 0.2s ease; }
-.ini-u-46:hover { background:#1f64c8; color:#fff; transform:translateY(-1px); }
-.ini-u-85 { background:#2b7de9; color:#fff; letter-spacing:1px; border-radius:6px; font-family:'Barlow Condensed',sans-serif; font-size:16px; border:none; transition:all 0.2s ease; }
-.ini-u-85:hover { background:#1f64c8; color:#fff; transform:translateY(-1px); }
+.ini-u-45 { color:#4ADE80; transition: color 0.2s ease; }
+.ini-u-45:hover { color:#39A900 !important; text-decoration: underline !important; }
+.ini-u-46 { background:#39A900 !important; color:#fff !important; letter-spacing:1px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-size:16px; border:1px solid #007832 !important; transition:all 0.2s ease; box-shadow: 0 4px 14px rgba(57, 169, 0, 0.28); }
+.ini-u-46:hover, .ini-u-46:focus { background:#007832 !important; color:#fff !important; transform:translateY(-1px); box-shadow: 0 6px 18px rgba(0, 120, 50, 0.4); }
+.ini-u-47 { color: #39A900; }
+.ini-u-85 { background:#39A900 !important; color:#fff !important; letter-spacing:1px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-size:16px; border:1px solid #007832 !important; transition:all 0.2s ease; box-shadow: 0 4px 14px rgba(57, 169, 0, 0.28); }
+.ini-u-85:hover, .ini-u-85:focus { background:#007832 !important; color:#fff !important; transform:translateY(-1px); box-shadow: 0 6px 18px rgba(0, 120, 50, 0.4); }
 .ini-u-86 { background:linear-gradient(145deg,#1a0a0a,#2d1010);border:1px solid #f85149;border-radius:16px; }
 .ini-u-87 { color:#f85149; }
 .ini-u-88 { color:rgba(255,255,255,0.8); }
 .ini-u-89 { background:#f85149;color:#fff; }
-.ini-u-90 { background:linear-gradient(145deg,#0f1a2e,#1a2d4a);border:1px solid #2b7de9;border-radius:16px; }
-.ini-u-91 { color:#2b7de9; }
-.ini-u-92 { background:#2b7de9;letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;font-size:16px;border:none;border-radius:6px;transition:all 0.2s ease;}
-.ini-u-92:hover { background:#1f64c8; }
+.ini-u-90 { background:linear-gradient(145deg,#0d1b14,#132a1f);border:1px solid #39A900;border-radius:16px; }
+.ini-u-91 { color:#39A900; }
+.ini-u-92 { background:#39A900 !important; color:#fff !important; letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;font-size:16px;border:1px solid #007832 !important;border-radius:8px;transition:all 0.2s ease; box-shadow: 0 4px 14px rgba(57, 169, 0, 0.28); }
+.ini-u-92:hover, .ini-u-92:focus { background:#007832 !important; color:#fff !important; transform:translateY(-1px); }
 
 /* ════════════════════════════════════════════════════
    MODO CLARO — Override total para inicio_styles.css
@@ -1159,21 +1197,37 @@ html.acc-claro .btn-primary-sport,
 body.light-theme .btn-primary-sport { background: #39A900 !important; color: #FFFFFF !important; border-color: #007832 !important; }
 html.acc-claro .btn-primary-sport:hover,
 body.light-theme .btn-primary-sport:hover { background: #007832 !important; }
+html[data-theme="light"] .ini-u-46,
 html.acc-claro .ini-u-46,
 body.light-theme .ini-u-46,
+html[data-theme="light"] .ini-u-85,
 html.acc-claro .ini-u-85,
 body.light-theme .ini-u-85,
+html[data-theme="light"] .ini-u-92,
 html.acc-claro .ini-u-92,
 body.light-theme .ini-u-92 {
     background: #39A900 !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+html[data-theme="light"] .ini-u-46:hover,
+html.acc-claro .ini-u-46:hover,
+body.light-theme .ini-u-46:hover,
+html[data-theme="light"] .ini-u-85:hover,
+html.acc-claro .ini-u-85:hover,
+body.light-theme .ini-u-85:hover,
+html[data-theme="light"] .ini-u-92:hover,
+html.acc-claro .ini-u-92:hover,
+body.light-theme .ini-u-92:hover {
+    background: #007832 !important;
     color: #FFFFFF !important;
 }
 
 /* ── Textos genéricos claros en todo el inicio ── */
 html.acc-claro body p,
 body.light-theme p,
-html.acc-claro body span:not(.countdown-num):not(.stat-num):not(.hero-title *):not(.sport-card *),
-body.light-theme span:not(.countdown-num):not(.stat-num):not(.hero-title *):not(.sport-card *),
+html.acc-claro body span:not(.countdown-num):not(.stat-num):not(.hero-title *):not(.sport-card *):not(.btn *):not(#modalForm button *):not(.badge *):not(.sena-verified-badge .badge-icon *),
+body.light-theme span:not(.countdown-num):not(.stat-num):not(.hero-title *):not(.sport-card *):not(.btn *):not(#modalForm button *):not(.badge *):not(.sena-verified-badge .badge-icon *),
 html.acc-claro body small,
 body.light-theme small,
 html.acc-claro body label,
@@ -1194,29 +1248,210 @@ body.light-theme h5,
 html.acc-claro body h6,
 body.light-theme h6 { color: #007832 !important; }
 
-/* ── Modal ── */
+/* ── Modal de Login, Registro y Desbloqueo (Modo Claro SENA) ── */
+html[data-theme="light"] .modal-content,
 html.acc-claro .modal-content,
-body.light-theme .modal-content { background: #FFFFFF !important; color: #1E293B !important; }
+body.light-theme .modal-content,
+html[data-theme="light"] #modalForm .custom-modal,
+html.acc-claro #modalForm .custom-modal,
+body.light-theme #modalForm .custom-modal {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16) !important;
+}
+html[data-theme="light"] .modal-header,
 html.acc-claro .modal-header,
-body.light-theme .modal-header { background: #F8FAFC !important; border-color: #E2E8F0 !important; }
+body.light-theme .modal-header {
+    background: #F8FAFC !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+html[data-theme="light"] .modal-title,
 html.acc-claro .modal-title,
-body.light-theme .modal-title { color: #007832 !important; }
-html.acc-claro .nav-tabs .nav-link,
-body.light-theme .nav-tabs .nav-link { color: #475569 !important; }
-html.acc-claro .nav-tabs .nav-link.active,
-body.light-theme .nav-tabs .nav-link.active { color: #007832 !important; border-color: #39A900 #39A900 #FFFFFF !important; font-weight: 700; }
+body.light-theme .modal-title {
+    color: #1E293B !important;
+}
+html[data-theme="light"] .ini-u-37,
+html.acc-claro .ini-u-37,
+body.light-theme .ini-u-37 {
+    color: #39A900 !important;
+}
+html[data-theme="light"] .auth-theme-toggle-btn,
+html.acc-claro .auth-theme-toggle-btn,
+body.light-theme .auth-theme-toggle-btn {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html[data-theme="light"] .auth-theme-toggle-btn:hover,
+html.acc-claro .auth-theme-toggle-btn:hover,
+body.light-theme .auth-theme-toggle-btn:hover {
+    background: #F0FDF4 !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+html[data-theme="light"] #modalForm .nav-pills .nav-link,
+html.acc-claro #modalForm .nav-pills .nav-link,
+body.light-theme #modalForm .nav-pills .nav-link {
+    background: #F1F5F9 !important;
+    border: 1px solid #E2E8F0 !important;
+    color: #334155 !important;
+}
+html[data-theme="light"] #modalForm .nav-pills .nav-link i,
+html.acc-claro #modalForm .nav-pills .nav-link i,
+body.light-theme #modalForm .nav-pills .nav-link i {
+    color: #007832 !important;
+}
+html[data-theme="light"] #modalForm .nav-pills .nav-link:hover:not(.active),
+html.acc-claro #modalForm .nav-pills .nav-link:hover:not(.active),
+body.light-theme #modalForm .nav-pills .nav-link:hover:not(.active) {
+    background: #F0FDF4 !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+html[data-theme="light"] #modalForm .nav-pills .nav-link.active,
+html.acc-claro #modalForm .nav-pills .nav-link.active,
+body.light-theme #modalForm .nav-pills .nav-link.active,
+html[data-theme="light"] #modalForm .nav-pills .nav-link.active i,
+html.acc-claro #modalForm .nav-pills .nav-link.active i,
+body.light-theme #modalForm .nav-pills .nav-link.active i {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+html[data-theme="light"] #modalForm .nav-pills .nav-link.active i,
+html.acc-claro #modalForm .nav-pills .nav-link.active i,
+body.light-theme #modalForm .nav-pills .nav-link.active i {
+    background: transparent !important;
+}
+html[data-theme="light"] #modalForm .form-label,
+html.acc-claro #modalForm .form-label,
+body.light-theme #modalForm .form-label,
+html[data-theme="light"] #modalDesbloqueoUrgente .form-label,
+html.acc-claro #modalDesbloqueoUrgente .form-label,
+body.light-theme #modalDesbloqueoUrgente .form-label {
+    color: #1E293B !important;
+}
+html[data-theme="light"] #modalForm .custom-input,
+html.acc-claro #modalForm .custom-input,
+body.light-theme #modalForm .custom-input,
+html[data-theme="light"] #modalDesbloqueoUrgente .custom-input,
+html.acc-claro #modalDesbloqueoUrgente .custom-input,
+body.light-theme #modalDesbloqueoUrgente .custom-input,
 html.acc-claro .form-control,
 body.light-theme .form-control,
 html.acc-claro .form-select,
 body.light-theme .form-select,
 html.acc-claro .input-group-text,
 body.light-theme .input-group-text {
-    background: #FFFFFF !important;
-    border-color: #CBD5E1 !important;
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
     color: #1E293B !important;
 }
+html[data-theme="light"] #modalForm .custom-input:focus,
+html.acc-claro #modalForm .custom-input:focus,
+body.light-theme #modalForm .custom-input:focus,
+html[data-theme="light"] #modalDesbloqueoUrgente .custom-input:focus,
+html.acc-claro #modalDesbloqueoUrgente .custom-input:focus,
+body.light-theme #modalDesbloqueoUrgente .custom-input:focus,
+html[data-theme="light"] #modalForm .form-control.is-valid:focus,
+html.acc-claro #modalForm .form-control.is-valid:focus,
+body.light-theme #modalForm .form-control.is-valid:focus {
+    background: #FFFFFF !important;
+    border-color: #39A900 !important;
+    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.2) !important;
+    color: #1E293B !important;
+}
+html[data-theme="light"] #modalForm .input-group-text i,
+html.acc-claro #modalForm .input-group-text i,
+body.light-theme #modalForm .input-group-text i,
+html[data-theme="light"] #modalForm #togglePassword i,
+html.acc-claro #modalForm #togglePassword i,
+body.light-theme #modalForm #togglePassword i,
+html[data-theme="light"] #modalForm #togglePassword2 i,
+html.acc-claro #modalForm #togglePassword2 i,
+body.light-theme #modalForm #togglePassword2 i,
+html[data-theme="light"] #modalForm #togglePassword3 i,
+html.acc-claro #modalForm #togglePassword3 i,
+body.light-theme #modalForm #togglePassword3 i {
+    color: #007832 !important;
+}
+html[data-theme="light"] #modalForm .custom-input::placeholder,
+html.acc-claro #modalForm .custom-input::placeholder,
+body.light-theme #modalForm .custom-input::placeholder,
 html.acc-claro .form-control::placeholder,
-body.light-theme .form-control::placeholder { color: #94A3B8 !important; }
+body.light-theme .form-control::placeholder {
+    color: #64748B !important;
+}
+html[data-theme="light"] .ini-u-45,
+html.acc-claro .ini-u-45,
+body.light-theme .ini-u-45,
+html[data-theme="light"] .btn-sugerir-clave,
+html.acc-claro .btn-sugerir-clave,
+body.light-theme .btn-sugerir-clave {
+    color: #007832 !important;
+}
+html[data-theme="light"] .ini-u-45:hover,
+html.acc-claro .ini-u-45:hover,
+body.light-theme .ini-u-45:hover,
+html[data-theme="light"] .btn-sugerir-clave:hover,
+html.acc-claro .btn-sugerir-clave:hover,
+body.light-theme .btn-sugerir-clave:hover {
+    color: #39A900 !important;
+}
+html[data-theme="light"] .scanner-btn,
+html.acc-claro .scanner-btn,
+body.light-theme .scanner-btn {
+    background: #F0FDF4 !important;
+    border: 1.5px dashed #39A900 !important;
+    color: #007832 !important;
+}
+html[data-theme="light"] .scanner-btn i,
+html.acc-claro .scanner-btn i,
+body.light-theme .scanner-btn i,
+html[data-theme="light"] .scanner-btn span,
+html.acc-claro .scanner-btn span,
+body.light-theme .scanner-btn span {
+    color: #007832 !important;
+}
+html[data-theme="light"] .scanner-btn:hover,
+html.acc-claro .scanner-btn:hover,
+body.light-theme .scanner-btn:hover {
+    background: #DCFCE7 !important;
+    border-color: #007832 !important;
+}
+html[data-theme="light"] .sena-verified-badge,
+html.acc-claro .sena-verified-badge,
+body.light-theme .sena-verified-badge {
+    background: #F0FDF4 !important;
+    border: 1px solid #86EFAC !important;
+    color: #007832 !important;
+}
+html[data-theme="light"] .sena-verified-badge .badge-icon i,
+html.acc-claro .sena-verified-badge .badge-icon i,
+body.light-theme .sena-verified-badge .badge-icon i,
+html[data-theme="light"] #btnRegistroText,
+html.acc-claro #btnRegistroText,
+body.light-theme #btnRegistroText {
+    color: #FFFFFF !important;
+}
+html[data-theme="light"] .btn-cerrar-bloqueo,
+html.acc-claro .btn-cerrar-bloqueo,
+body.light-theme .btn-cerrar-bloqueo {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #334155 !important;
+}
+html[data-theme="light"] .btn-cerrar-bloqueo:hover,
+html.acc-claro .btn-cerrar-bloqueo:hover,
+body.light-theme .btn-cerrar-bloqueo:hover {
+    background: #E2E8F0 !important;
+    color: #1E293B !important;
+}
+html.acc-claro .nav-tabs .nav-link,
+body.light-theme .nav-tabs .nav-link { color: #475569 !important; }
+html.acc-claro .nav-tabs .nav-link.active,
+body.light-theme .nav-tabs .nav-link.active { color: #007832 !important; border-color: #39A900 #39A900 #FFFFFF !important; font-weight: 700; }
 
 /* ── Dropdowns en inicio ── */
 html.acc-claro .dropdown-menu,

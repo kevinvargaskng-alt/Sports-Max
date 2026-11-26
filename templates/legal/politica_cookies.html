@@ -86,9 +86,7 @@
             </div>
 
             <div class="text-center">
-                <a href="{% url 'home' %}" class="btn btn-outline-light px-4 py-2">
-                    <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Volver al Inicio
-                </a>
+                {% include 'partials/back_button.html' with back_url='home' back_label='Volver al Inicio' %}
             </div>
         </div>
     </div>

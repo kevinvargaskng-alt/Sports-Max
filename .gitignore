@@ -5,9 +5,11 @@ db.sqlite3
 db.sqlite3-journal
 media
 
-# Django Migrations
-**/migrations/*.py
-!**/migrations/__init__.py
+# Django Migrations — SE VERSIONAN (necesarias para crear las tablas en Docker/la nube)
+# (antes estaban ignoradas, lo que dejaba la base de datos vacía en el despliegue)
+
+# Archivos generados por collectstatic
+staticfiles/
 
 # Assets
 node_modules/

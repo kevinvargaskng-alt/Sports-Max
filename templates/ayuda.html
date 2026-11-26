@@ -119,13 +119,120 @@
     }
 
     /* Paleta de Colores Alineada con los Módulos */
-    .border-perfil    { border-left-color: #0dcaf0 !important; }
+    .border-perfil    { border-left-color: #0d6efd !important; }
     .border-gimnasio  { border-left-color: #dc3545 !important; }
-    .border-prestamos { border-left-color: #ffc107 !important; }
+    .border-prestamos { border-left-color: #FF6B00 !important; }
     .border-torneos   { border-left-color: #0d6efd !important; }
     .border-habitos   { border-left-color: #39A900 !important; }
 
     .text-sena-green { color: #39A900 !important; }
+
+    /* ── Adaptación Modo Claro Institucional SENA (Centro de Ayuda y Manual) ── */
+    html[data-theme="light"] #contenido-manual-pdf,
+    html.acc-claro #contenido-manual-pdf,
+    body.light-theme #contenido-manual-pdf {
+        color: #334155 !important;
+    }
+    html[data-theme="light"] #contenido-manual-pdf h2,
+    html.acc-claro #contenido-manual-pdf h2,
+    body.light-theme #contenido-manual-pdf h2 {
+        color: #1E293B !important;
+        border-bottom-color: #E2E8F0 !important;
+    }
+    html[data-theme="light"] .manual-meta-table,
+    html.acc-claro .manual-meta-table,
+    body.light-theme .manual-meta-table {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    html[data-theme="light"] .manual-meta-table th,
+    html.acc-claro .manual-meta-table th,
+    body.light-theme .manual-meta-table th {
+        background: #F1F8EC !important;
+        color: #007832 !important;
+        border-color: #CBD5E1 !important;
+    }
+    html[data-theme="light"] .manual-meta-table td,
+    html.acc-claro .manual-meta-table td,
+    body.light-theme .manual-meta-table td {
+        background: #FFFFFF !important;
+        color: #1E293B !important;
+        border-color: #E2E8F0 !important;
+    }
+    html[data-theme="light"] .manual-section,
+    html.acc-claro .manual-section,
+    body.light-theme .manual-section {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+        color: #334155 !important;
+    }
+    html[data-theme="light"] .manual-section h1,
+    html.acc-claro .manual-section h1,
+    body.light-theme .manual-section h1 {
+        color: #007832 !important;
+    }
+    html[data-theme="light"] .manual-section h4,
+    html[data-theme="light"] .manual-feature-card h5,
+    html.acc-claro .manual-section h4,
+    html.acc-claro .manual-feature-card h5,
+    body.light-theme .manual-section h4,
+    body.light-theme .manual-feature-card h5 {
+        color: #1E293B !important;
+        border-bottom-color: #CBD5E1 !important;
+    }
+    html[data-theme="light"] .manual-section p,
+    html[data-theme="light"] .manual-section li,
+    html.acc-claro .manual-section p,
+    html.acc-claro .manual-section li,
+    body.light-theme .manual-section p,
+    body.light-theme .manual-section li {
+        color: #334155 !important;
+    }
+    html[data-theme="light"] .manual-section strong,
+    html.acc-claro .manual-section strong,
+    body.light-theme .manual-section strong {
+        color: #1E293B !important;
+    }
+    html[data-theme="light"] .manual-feature-card,
+    html.acc-claro .manual-feature-card,
+    body.light-theme .manual-feature-card {
+        background: #F8FAFC !important;
+        border-top: 1px solid #E2E8F0;
+        border-right: 1px solid #E2E8F0;
+        border-bottom: 1px solid #E2E8F0;
+    }
+    html[data-theme="light"] .manual-figure,
+    html.acc-claro .manual-figure,
+    body.light-theme .manual-figure {
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+    }
+    html[data-theme="light"] .manual-figure img,
+    html.acc-claro .manual-figure img,
+    body.light-theme .manual-figure img {
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1) !important;
+        border: 1px solid #CBD5E1;
+    }
+    html[data-theme="light"] .manual-figure figcaption,
+    html.acc-claro .manual-figure figcaption,
+    body.light-theme .manual-figure figcaption {
+        color: #475569 !important;
+    }
+    html[data-theme="light"] .manual-section .alert-danger,
+    html.acc-claro .manual-section .alert-danger,
+    body.light-theme .manual-section .alert-danger {
+        background: #FEF2F2 !important;
+        border-color: #FECACA !important;
+        color: #7F1D1D !important;
+    }
+    html[data-theme="light"] .manual-section .alert-secondary,
+    html.acc-claro .manual-section .alert-secondary,
+    body.light-theme .manual-section .alert-secondary {
+        background: #F1F8EC !important;
+        border-color: #86EFAC !important;
+        color: #1E293B !important;
+    }
 
     /* ═══════════════════════════════════════════
        ESTILOS DE IMPRESIÓN / DESCARGA PDF

@@ -5,20 +5,80 @@
 
 {% block extra_css %}
 <style>
-/* ── MÓDULO DE MÁQUINAS: ESTILO DEPORTIVO Y CUADROS CON IMAGEN GRANDE ── */
+/* ── MÓDULO DE MÁQUINAS: ESTILO DEPORTIVO SENA Y CUADROS CON IMAGEN GRANDE ── */
 .inventory-header {
-  background: linear-gradient(135deg, rgba(26,95,180,0.25) 0%, rgba(15,23,42,0.95) 100%);
-  border: 1px solid var(--neon-border);
+  background: linear-gradient(135deg, rgba(0, 120, 50, 0.35) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(57, 169, 0, 0.35);
   border-radius: 20px;
   padding: 2rem;
   margin-bottom: 2rem;
   backdrop-filter: blur(15px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+.inventory-module-pill {
+  background: rgba(57, 169, 0, 0.22);
+  border: 1px solid rgba(57, 169, 0, 0.5);
+  color: #86EFAC;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  border-radius: 999px;
+}
+.inventory-back-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #FFFFFF !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.inventory-back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #FFFFFF;
+  color: #FFFFFF !important;
+}
+.inventory-kpi-box {
+  min-width: 108px;
+  text-align: center;
+  padding: 0.55rem 0.95rem;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.inventory-kpi-box .kpi-val {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #FFFFFF;
+}
+.inventory-kpi-box .kpi-lbl {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+}
+.inventory-kpi-box.kpi-disponible {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(52, 211, 153, 0.38);
+}
+.inventory-kpi-box.kpi-disponible .kpi-val,
+.inventory-kpi-box.kpi-disponible .kpi-lbl {
+  color: #4ADE80;
+}
+.inventory-kpi-box.kpi-mantenimiento {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+.inventory-kpi-box.kpi-mantenimiento .kpi-val,
+.inventory-kpi-box.kpi-mantenimiento .kpi-lbl {
+  color: #FBBF24;
 }
 
 /* Tarjetas en Cuadros */
 .machine-card-grid {
-  background: rgba(22, 33, 54, 0.7);
+  background: rgba(22, 33, 54, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
   overflow: hidden;
@@ -26,45 +86,73 @@
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(15px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 .machine-card-grid:hover {
-  transform: translateY(-6px);
-  border-color: rgba(43, 125, 233, 0.5);
-  box-shadow: 0 18px 40px rgba(43, 125, 233, 0.25);
+  transform: translateY(-5px);
+  border-color: #39A900;
+  box-shadow: 0 16px 36px rgba(0, 120, 50, 0.22);
 }
 
-/* Imagen Grande de la Tarjeta */
+/* Imagen Grande de la Tarjeta + Fallback elegante */
 .machine-card-img-wrap {
   position: relative;
   width: 100%;
-  height: 210px;
+  height: 215px;
   overflow: hidden;
-  background: #0f172a;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .machine-card-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   transition: transform 0.4s ease;
 }
 
-.machine-card-grid:hover .machine-card-img-wrap img {
-  transform: scale(1.08);
+.machine-img-fallback {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+  background: linear-gradient(135deg, #007832 0%, #1E293B 100%);
+}
+.machine-img-fallback i {
+  font-size: 2.8rem;
+  color: #86EFAC;
+}
+.machine-img-fallback span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #FFFFFF !important;
+  z-index: 2;
 }
 
-/* Overlay de la imagen */
+.machine-card-grid:hover .machine-card-img-wrap img {
+  transform: scale(1.06);
+}
+
+/* Overlay inferior sutil de la imagen */
 .machine-card-img-wrap::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60%;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);
+  height: 48%;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.78), transparent);
   pointer-events: none;
 }
 
@@ -93,6 +181,7 @@
   text-transform: uppercase;
   padding: 0.32rem 0.75rem;
   border-radius: 50rem;
+  color: #FFFFFF !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(8px);
 }
@@ -121,23 +210,126 @@
   transform: translateY(-2px);
 }
 
-/* Botones de cambio de vista (Cuadros vs Tabla) */
+/* Botones SENA y cambio de vista (Cuadros vs Tabla) */
+.btn-sena-machine {
+  background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+  border: 1px solid #007832 !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+.btn-sena-machine:hover {
+  background: linear-gradient(135deg, #007832 0%, #005C25 100%) !important;
+  color: #FFFFFF !important;
+  transform: translateY(-1px);
+}
 .view-toggle-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  padding: 0.4rem 0.9rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #E2E8F0;
+  padding: 0.42rem 0.95rem;
   border-radius: 10px;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .view-toggle-btn.active, .view-toggle-btn:hover {
-  background: var(--accent-blue, #1a5fb4);
-  border-color: var(--accent-blue, #1a5fb4);
-  color: #fff;
+  background: #39A900 !important;
+  border-color: #007832 !important;
+  color: #FFFFFF !important;
+}
+
+/* ── MODO CLARO INSTITUCIONAL SENA EN CATÁLOGO DE MÁQUINAS ── */
+html[data-theme="light"] .inventory-header,
+html.acc-claro .inventory-header,
+body.light-theme .inventory-header {
+  background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+  border: 1px solid #007832 !important;
+  box-shadow: 0 12px 30px rgba(0, 120, 50, 0.22) !important;
+}
+html[data-theme="light"] .inventory-header h1,
+html[data-theme="light"] .inventory-header h1 i,
+html[data-theme="light"] .inventory-header p,
+html.acc-claro .inventory-header h1,
+html.acc-claro .inventory-header h1 i,
+html.acc-claro .inventory-header p,
+body.light-theme .inventory-header h1,
+body.light-theme .inventory-header h1 i,
+body.light-theme .inventory-header p {
+  color: #FFFFFF !important;
+}
+html[data-theme="light"] .inventory-module-pill,
+html.acc-claro .inventory-module-pill,
+body.light-theme .inventory-module-pill {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  color: #FFFFFF !important;
+}
+html[data-theme="light"] .inventory-back-btn,
+html.acc-claro .inventory-back-btn,
+body.light-theme .inventory-back-btn {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: #FFFFFF !important;
+}
+html[data-theme="light"] .inventory-back-btn:hover,
+html.acc-claro .inventory-back-btn:hover,
+body.light-theme .inventory-back-btn:hover {
+  background: #FFFFFF !important;
+  color: #007832 !important;
+}
+html[data-theme="light"] .inventory-kpi-box,
+html.acc-claro .inventory-kpi-box,
+body.light-theme .inventory-kpi-box {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+html[data-theme="light"] .inventory-kpi-box .kpi-val,
+html.acc-claro .inventory-kpi-box .kpi-val,
+body.light-theme .inventory-kpi-box .kpi-val {
+  color: #FFFFFF !important;
+}
+html[data-theme="light"] .inventory-kpi-box .kpi-lbl,
+html.acc-claro .inventory-kpi-box .kpi-lbl,
+body.light-theme .inventory-kpi-box .kpi-lbl {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+html[data-theme="light"] .inventory-kpi-box.kpi-mantenimiento,
+html.acc-claro .inventory-kpi-box.kpi-mantenimiento,
+body.light-theme .inventory-kpi-box.kpi-mantenimiento {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #FCD34D !important;
+}
+html[data-theme="light"] .inventory-kpi-box.kpi-mantenimiento .kpi-val,
+html[data-theme="light"] .inventory-kpi-box.kpi-mantenimiento .kpi-lbl,
+html.acc-claro .inventory-kpi-box.kpi-mantenimiento .kpi-val,
+html.acc-claro .inventory-kpi-box.kpi-mantenimiento .kpi-lbl,
+body.light-theme .inventory-kpi-box.kpi-mantenimiento .kpi-val,
+body.light-theme .inventory-kpi-box.kpi-mantenimiento .kpi-lbl {
+  color: #B45309 !important;
+}
+html[data-theme="light"] .view-toggle-btn:not(.active),
+html.acc-claro .view-toggle-btn:not(.active),
+body.light-theme .view-toggle-btn:not(.active) {
+  background: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #334155 !important;
+}
+html[data-theme="light"] .machine-card-img-wrap,
+html.acc-claro .machine-card-img-wrap,
+body.light-theme .machine-card-img-wrap {
+  background: #F1F5F9 !important;
+}
+html[data-theme="light"] .machine-card-body h5,
+html.acc-claro .machine-card-body h5,
+body.light-theme .machine-card-body h5 {
+  color: #1E293B !important;
+}
+html[data-theme="light"] .machine-card-body p,
+html.acc-claro .machine-card-body p,
+body.light-theme .machine-card-body p {
+  color: #334155 !important;
 }
 </style>
 {% endblock %}
@@ -148,16 +340,16 @@
   <!-- CABECERA -->
   <div class="inventory-header d-flex flex-wrap justify-content-between align-items-center gap-3">
     <div>
-      <div class="d-flex align-items-center gap-2 mb-2">
-        <span class="badge bg-primary text-uppercase px-3 py-2" style="letter-spacing: 1.5px;">
-          <i class="fas fa-boxes-packing me-1"></i> Módulo Gimnasio
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+        <span class="inventory-module-pill text-uppercase px-3 py-1">
+          <i class="fas fa-dumbbell me-1"></i> Módulo Gimnasio
         </span>
-        <a href="{% url 'gimnasio' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+        <a href="{% url 'gimnasio' %}" class="btn btn-sm inventory-back-btn rounded-pill px-3">
           <i class="fas fa-arrow-left me-1"></i> Volver al Gimnasio
         </a>
       </div>
       <h1 class="h2 fw-bold text-white mb-1">
-        <i class="fas fa-dumbbell text-primary me-2"></i>Catálogo e Inventario de Máquinas
+        <i class="fas fa-dumbbell me-2"></i>Catálogo e Inventario de Máquinas
       </h1>
       <p class="text-white-50 mb-0 small">
         Equipamiento técnico del Centro Deportivo SENA — Vista en cuadros con imagen ampliada y fichas de estado.
@@ -167,30 +359,30 @@
     <!-- Acciones y Contadores -->
     <div class="d-flex flex-wrap align-items-center gap-3">
       {% if user.is_staff or user.is_superuser %}
-      <button type="button" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow" data-bs-toggle="modal" data-bs-target="#modalCrearMachine">
+      <button type="button" class="btn btn-light text-success px-4 py-2 fw-bold rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCrearMachine">
         <i class="fas fa-plus-circle me-1"></i> Nueva Máquina
       </button>
       {% endif %}
 
-      <div class="d-flex gap-2">
-        <div class="text-center px-3 py-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-          <span class="d-block h4 fw-bold text-white mb-0">{{ total_count }}</span>
-          <small class="text-white-50 text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Total Equipos</small>
+      <div class="d-flex gap-2 flex-wrap">
+        <div class="inventory-kpi-box">
+          <span class="kpi-val">{{ total_count }}</span>
+          <small class="kpi-lbl">Total Equipos</small>
         </div>
-        <div class="text-center px-3 py-2 rounded-3" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3);">
-          <span class="d-block h4 fw-bold text-success mb-0">{{ disponibles_count }}</span>
-          <small class="text-success text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Disponibles</small>
+        <div class="inventory-kpi-box kpi-disponible">
+          <span class="kpi-val">{{ disponibles_count }}</span>
+          <small class="kpi-lbl">Disponibles</small>
         </div>
-        <div class="text-center px-3 py-2 rounded-3" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);">
-          <span class="d-block h4 fw-bold text-warning mb-0">{{ mantenimiento_count }}</span>
-          <small class="text-warning text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Mantenimiento</small>
+        <div class="inventory-kpi-box kpi-mantenimiento">
+          <span class="kpi-val">{{ mantenimiento_count }}</span>
+          <small class="kpi-lbl">Mantenimiento</small>
         </div>
       </div>
     </div>
   </div>
 
   <!-- BARRA DE BÚSQUEDA, FILTROS Y ALTERNADOR DE VISTA -->
-  <div class="card bg-dark text-white border-secondary shadow-lg rounded-4 p-3 mb-4">
+  <div class="card bg-dark text-white border-secondary shadow-sm rounded-4 p-3 mb-4">
     <div class="row g-3 align-items-center">
       <!-- Buscador -->
       <div class="col-md-5">
@@ -201,7 +393,7 @@
           <div class="input-group">
             <span class="input-group-text custom-input"><i class="fas fa-search text-white-50"></i></span>
             <input type="text" name="q" class="form-control custom-input" placeholder="Buscar máquina por nombre..." value="{{ search_q }}">
-            <button type="submit" class="btn btn-primary px-3"><i class="fas fa-search"></i></button>
+            <button type="submit" class="btn btn-sena-machine px-3" aria-label="Buscar máquina"><i class="fas fa-search"></i></button>
           </div>
         </form>
       </div>
@@ -218,9 +410,9 @@
         </div>
 
         <div class="d-flex gap-1 flex-wrap">
-          <a href="{% url 'machine_list' %}" class="btn btn-sm {% if not selected_tipo %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">Todas</a>
+          <a href="{% url 'machine_list' %}" class="btn btn-sm {% if not selected_tipo %}btn-sena-machine{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">Todas</a>
           <a href="{% url 'machine_list' %}?tipo=Cardio" class="btn btn-sm {% if selected_tipo == 'Cardio' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-heart me-1"></i> Cardio</a>
-          <a href="{% url 'machine_list' %}?tipo=Fuerza" class="btn btn-sm {% if selected_tipo == 'Fuerza' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-dumbbell me-1"></i> Fuerza</a>
+          <a href="{% url 'machine_list' %}?tipo=Fuerza" class="btn btn-sm {% if selected_tipo == 'Fuerza' %}btn-sena-machine{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-dumbbell me-1"></i> Fuerza</a>
           <a href="{% url 'machine_list' %}?tipo=Funcional" class="btn btn-sm {% if selected_tipo == 'Funcional' %}btn-warning text-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3"><i class="fas fa-bolt me-1"></i> Funcional</a>
         </div>
       </div>
@@ -234,7 +426,12 @@
         <div class="machine-card-grid">
           <!-- IMAGEN GRANDE DE LA MÁQUINA -->
           <div class="machine-card-img-wrap">
-            <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" loading="lazy">
+            <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" loading="lazy"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="machine-img-fallback" aria-hidden="true">
+              <i class="fas {{ m.badge_icon }}"></i>
+              <span>{{ m.nombre }}</span>
+            </div>
             
             <!-- Badge Estado Flotante -->
             <div class="machine-status-badge">
@@ -314,8 +511,9 @@
           {% for m in machines %}
             <tr>
               <td class="px-4 text-center">
-                <div class="rounded-3 overflow-hidden border border-secondary mx-auto" style="width: 50px; height: 50px;">
-                  <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="rounded-3 overflow-hidden border border-secondary mx-auto d-flex align-items-center justify-content-center bg-dark" style="width: 50px; height: 50px;">
+                  <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" style="width: 100%; height: 100%; object-fit: cover;"
+                       onerror="this.onerror=null; this.src='{% static 'img/maquinas/multifuerza.jpg' %}';">
                 </div>
               </td>
               <td class="px-4">
@@ -376,7 +574,8 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center py-4">
-          <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" class="img-fluid rounded-3 mb-3 border border-secondary shadow" style="max-height: 240px; width: 100%; object-fit: cover;">
+          <img src="{{ m.imagen_url }}" alt="{{ m.nombre }}" class="img-fluid rounded-3 mb-3 border border-secondary shadow" style="max-height: 240px; width: 100%; object-fit: cover;"
+               onerror="this.onerror=null; this.src='{% static 'img/maquinas/multifuerza.jpg' %}';">
           <div class="mb-3">
             <span class="badge-sticker bg-{{ m.badge_color }} me-2">
               <i class="fas {{ m.badge_icon }}"></i> {{ m.tipo }}
@@ -518,7 +717,7 @@
         </div>
         <div class="modal-footer border-secondary">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary px-4"><i class="fas fa-plus me-1"></i> Registrar Máquina</button>
+          <button type="submit" class="btn btn-sena-machine px-4"><i class="fas fa-plus me-1"></i> Registrar Máquina</button>
         </div>
       </form>
     </div>
