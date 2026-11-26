@@ -197,12 +197,26 @@
                                 <img src="{% static 'img/maquinas/remo.jpg' %}" alt="{{ e.tipo_maquina }}">
                             {% elif "trx" in e.tipo_maquina|lower or "colchoneta" in e.tipo_maquina|lower or "tapete" in e.tipo_maquina|lower %}
                                 <img src="{% static 'img/maquinas/trx_colchonetas.jpg' %}" alt="{{ e.tipo_maquina }}">
-                            {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower or "balón de fútbol" in e.tipo_maquina|lower or "balon de futbol" in e.tipo_maquina|lower %}
-                                <img src="{% static 'img/sports_soccer.png' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "fútbol" in e.tipo_maquina|lower or "futbol" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/balon_futbol_golty.jpg' %}" alt="{{ e.tipo_maquina }}">
                             {% elif "baloncesto" in e.tipo_maquina|lower or "básquet" in e.tipo_maquina|lower or "basquet" in e.tipo_maquina|lower %}
-                                <img src="{% static 'img/sports_basketball.png' %}" alt="{{ e.tipo_maquina }}">
+                                <img src="{% static 'img/elementos/balon_baloncesto_molten.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "red" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/red_voleibol.jpg' %}" alt="{{ e.tipo_maquina }}">
                             {% elif "voleibol" in e.tipo_maquina|lower or "voley" in e.tipo_maquina|lower %}
-                                <img src="{% static 'img/sports_volleyball.png' %}" alt="{{ e.tipo_maquina }}">
+                                <img src="{% static 'img/elementos/balon_voleibol_mikasa.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "ping pong" in e.tipo_maquina|lower or "raqueta" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/raquetas_ping_pong.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "colchoneta" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/colchoneta_gimnasia.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "mancuerna" in e.tipo_maquina|lower or "pesa" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/pesas_mancuernas_10kg.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "cinta" in e.tipo_maquina|lower or "métrica" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/cinta_metrica_50m.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "cronómetro" in e.tipo_maquina|lower or "cronometro" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/cronometro_digital.jpg' %}" alt="{{ e.tipo_maquina }}">
+                            {% elif "ajedrez" in e.tipo_maquina|lower %}
+                                <img src="{% static 'img/elementos/ajedrez_profesional.jpg' %}" alt="{{ e.tipo_maquina }}">
                             {% else %}
                                 <img src="{% static 'img/balon.png' %}" alt="{{ e.tipo_maquina }}">
                             {% endif %}
