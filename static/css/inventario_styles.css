@@ -19,6 +19,22 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
+}
+
+/* Fechas y estado de sanciones: mantener el contenido íntegro. */
+.sanciones-table {
+    min-width: 980px;
+    table-layout: auto;
+}
+.sanciones-table .sancion-fecha-cell {
+    min-width: 118px;
+    white-space: nowrap !important;
+    font-variant-numeric: tabular-nums;
+}
+.sanciones-table .sancion-estado-cell {
+    min-width: 132px;
+    white-space: nowrap !important;
 }
 
 .btn-icon {
@@ -311,6 +327,14 @@
 
 /* ── RESPONSIVE TABLAS INVENTARIO / DEVOLUCIONES / SANCIONES ── */
 @media (max-width: 768px) {
+    .sanciones-table {
+        min-width: 0;
+    }
+    .sanciones-table .sancion-fecha-cell,
+    .sanciones-table .sancion-estado-cell {
+        min-width: 0;
+        white-space: nowrap !important;
+    }
     #tablaElementos thead,
     .inv-mobile-table thead {
         display: none;

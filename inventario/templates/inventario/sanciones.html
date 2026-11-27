@@ -83,16 +83,16 @@
             </h5>
 
             <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0 inv-mobile-table">
+                <table class="table table-dark table-hover align-middle mb-0 inv-mobile-table sanciones-table">
                     <thead>
                         <tr>
                             <th>#</th>
                             {% if user.is_staff %}<th>Usuario</th>{% endif %}
                             <th>Novedad / Tipo</th>
                             <th>Descripción</th>
-                            <th>Inicio</th>
-                            <th>Fin</th>
-                            <th>Estado</th>
+                            <th class="sancion-fecha-cell">Inicio</th>
+                            <th class="sancion-fecha-cell">Fin</th>
+                            <th class="sancion-estado-cell">Estado</th>
                             {% if user.is_staff %}<th class="text-center">Acción</th>{% endif %}
                         </tr>
                     </thead>
@@ -116,9 +116,9 @@
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ s.descripcion_sancion }}">
                                 {{ s.descripcion_sancion|truncatechars:80 }}
                             </td>
-                            <td data-label="Inicio">{{ s.fecha_inicio_sancion|date:"d/m/Y" }}</td>
-                            <td data-label="Fin" class="text-warning">{{ s.fecha_fin_sancion|date:"d/m/Y" }}</td>
-                            <td data-label="Estado">
+                            <td data-label="Inicio" class="sancion-fecha-cell">{{ s.fecha_inicio_sancion|date:"d/m/Y" }}</td>
+                            <td data-label="Fin" class="text-warning sancion-fecha-cell">{{ s.fecha_fin_sancion|date:"d/m/Y" }}</td>
+                            <td data-label="Estado" class="sancion-estado-cell">
                                 <span class="badge-status {% if s.estado_sancion == 'Activa' %}bg-danger{% else %}bg-success{% endif %}"
                                       tabindex="0" role="status"
                                       data-bs-toggle="tooltip" data-bs-placement="top"

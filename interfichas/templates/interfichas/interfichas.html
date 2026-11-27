@@ -96,7 +96,7 @@
             <th>Lugar</th>
             <th>Fecha</th>
             <th class="col-estado text-center">Estado</th>
-            <th>Equipos</th>
+            <th class="col-equipos">Equipos</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -128,7 +128,7 @@
                 <span class="badge-abierto">Abierto</span>
               {% endif %}
             </td>
-            <td>
+            <td class="col-equipos">
               <span class="fw-bold text-info fs-6">{{ t.equipos.count }}</span>
             </td>
             <td class="text-center">
@@ -823,13 +823,13 @@
 
 <div class="modal fade" id="modalEquipo" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content custom-modal text-white">
+    <div class="modal-content custom-modal">
       <div class="modal-header border-0">
         <div>
           <h5 class="modal-title fw-bold"><i class="fas fa-users text-success me-2"></i>Inscribir Equipo</h5>
           <p class="text-muted small mb-0" id="equipo-torneo-nombre"></p>
         </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="POST" id="formEquipo" enctype="multipart/form-data">
         {% csrf_token %}
@@ -862,7 +862,7 @@
                 <input type="text" name="nombre_equipo" id="campo-nombre-equipo" class="custom-input form-control"
                        placeholder="Ej. Los Halcones, Ficha 250..." minlength="2" maxlength="100">
               </div>
-              <small class="text-white-50 mt-2 d-block" id="ayuda-nombre-equipo">
+              <small class="text-muted mt-2 d-block" id="ayuda-nombre-equipo">
                 <i class="fas fa-info-circle text-success me-1"></i> El nombre de tu equipo (País) se asignará automáticamente en orden de inscripción.
               </small>
             </div>
@@ -915,49 +915,58 @@
             </div>
           </div>
 
-          <!-- ── JUGADORES ── -->
+          <!-- ── PLANILLA DE INSCRIPCIÓN (JUGADORES EN TABLA) ── -->
           <div class="mb-3">
-            <label class="form-label small fw-bold text-muted text-uppercase int-u-67">
-              Jugadores <span class="text-muted fw-normal">(opcional)</span>
-            </label>
-            <div id="jugadores-container">
-              <div class="jugador-row mb-2 p-2 rounded-3 jugador-card-item">
-                <div class="d-flex gap-2 align-items-start">
-                  <div class="flex-fill">
-                    <div class="row g-2 mb-2">
-                      <div class="col-sm-7">
-                        <input type="text" name="jugadores[]" class="custom-input form-control form-control-sm"
-                               placeholder="Nombre completo jugador 1">
-                      </div>
-                      <div class="col-sm-5">
-                        <input type="text" name="documentos[]" class="custom-input form-control form-control-sm"
-                               placeholder="Nº de documento" maxlength="12" oninput="this.value=this.value.replace(/\D/g,'')">
-                      </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                      <span class="small fw-semibold consentimiento-lbl"><i class="fas fa-file-signature me-1"></i>Consentimiento:</span>
-                      <div class="flex-fill">
-                        <input type="file" name="consentimiento_0"
-                               class="form-control form-control-sm custom-input"
-                               accept="image/*,.pdf" title="Consentimiento informado firmado (PDF o Imagen)">
-                      </div>
-                    </div>
-                  </div>
-                  <button type="button" class="btn btn-sm btn-outline-danger border-0 mt-1"
-                          title="Quitar jugador"
-                          onclick="this.closest('.jugador-row').remove(); reindexarConsentimientos()">
-                    <i class="fas fa-times"></i>
-                  </button>
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <div>
+                <label class="form-label small fw-bold text-muted text-uppercase mb-0 int-u-67">
+                  <i class="fas fa-list-ol text-success me-1"></i>Planilla de Inscripción de Jugadores <span class="fw-normal text-muted">(opcional)</span>
+                </label>
+                <div class="small text-muted planilla-description" style="font-size: 0.8rem;">
+                  Registra los datos de cada integrante del equipo (nombre, documento, ficha y programa).
                 </div>
               </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-outline-success fw-semibold px-2 py-1 rounded-pill" onclick="copiarFichaProgramaCapitan()" title="Copiar la ficha y programa del capitán a todas las filas">
+                  <i class="fas fa-copy me-1"></i>Copiar Ficha/Programa
+                </button>
+                <button type="button" class="btn btn-sm btn-success fw-semibold px-3 py-1 rounded-pill" onclick="agregarFilaJugador()">
+                  <i class="fas fa-plus me-1"></i>Agregar Jugador
+                </button>
+              </div>
             </div>
-            <div class="d-flex gap-2 mt-2">
-              <button type="button" class="btn-accion btn-success-a" onclick="agregarJugador()">
-                <i class="fas fa-plus"></i> Agregar jugador
-              </button>
+
+            <datalist id="lista-programas-globales">
+              {% for p in PROGRAMAS_GLOBALES %}
+              <option value="{{ p }}">
+              {% endfor %}
+            </datalist>
+
+            <div class="table-responsive planilla-table-wrap rounded-3 border border-secondary border-opacity-25 shadow-sm" style="max-height: 290px; overflow-y: auto;">
+              <table class="table table-sm table-bordered align-middle mb-0 planilla-inscripcion-table" id="tabla-planilla-inscripcion">
+                <colgroup>
+                  <col class="planilla-col-num"><col class="planilla-col-name"><col class="planilla-col-document">
+                  <col class="planilla-col-ficha"><col class="planilla-col-program"><col class="planilla-col-consent"><col class="planilla-col-remove">
+                </colgroup>
+                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                  <tr class="small text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+                    <th class="text-center">#</th>
+                    <th>Nombre completo <span class="text-danger">*</span></th>
+                    <th>N° Documento</th>
+                    <th>Ficha</th>
+                    <th>Programa</th>
+                    <th>Consentimiento</th>
+                    <th class="text-center"><i class="fas fa-trash-alt" aria-label="Quitar jugador"></i></th>
+                  </tr>
+                </thead>
+                <tbody id="jugadores-table-body">
+                  <!-- Filas dinámicas de jugadores -->
+                </tbody>
+              </table>
             </div>
-            <small class="text-white-50 d-block mt-2">
-              <i class="fas fa-shield-alt text-success me-1"></i>Cada jugador inscrito debe adjuntar su consentimiento informado firmado (imagen o PDF).
+
+            <small class="text-muted d-block mt-2 planilla-help-text" style="font-size: 0.78rem;">
+              <i class="fas fa-file-signature text-success me-1"></i>Cada jugador puede adjuntar su consentimiento informado firmado individual (imagen o PDF).
             </small>
           </div>
 
@@ -1228,7 +1237,12 @@
       estado: "{{ eq.estado|default:'Inscrito'|escapejs }}",
       jugadores: [
         {% for j in eq.jugadores.all %}
-        "{{ j.nombre_completo|escapejs }}"{% if not forloop.last %},{% endif %}
+        {
+          nombre: "{{ j.nombre_completo|escapejs }}",
+          documento: "{{ j.numero_documento|default:''|escapejs }}",
+          ficha: "{{ j.ficha|default:eq.ficha|escapejs }}",
+          programa: "{{ j.programa|default:eq.programa|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
         {% endfor %}
       ],
       edicion_bloqueada: {{ eq.edicion_bloqueada|yesno:"true,false" }},
@@ -1275,7 +1289,11 @@
     tbodyEl.innerHTML = lista.map(eq => {
       const jugadoresCount = eq.jugadores ? eq.jugadores.length : 0;
       const jugadoresHtml = jugadoresCount > 0
-        ? eq.jugadores.map(j => `<span class="player-chip-item"><i class="fas fa-user-circle text-info"></i> ${j}</span>`).join('')
+        ? eq.jugadores.map(j => {
+            const nom = typeof j === 'object' ? (j.nombre || '') : j;
+            const f = typeof j === 'object' && j.ficha ? ` <span class="opacity-75">(${j.ficha})</span>` : '';
+            return `<span class="player-chip-item"><i class="fas fa-user-circle text-info"></i> ${nom}${f}</span>`;
+          }).join('')
         : `<span class="text-muted small italic">Sin integrantes</span>`;
 
       const grupoBadge = eq.nombre_grupo
@@ -1563,55 +1581,114 @@
     if (btn) btn.disabled = false;
   }
 
-  let jugNum = 1;
-
-  function crearFilaJugador(num, nombre, documento) {
+  function crearFilaJugador(num, nombre, documento, ficha, programa) {
+    num = num || 1;
     nombre = nombre || '';
     documento = documento || '';
-    const row = document.createElement('div');
-    row.className = 'jugador-row mb-2 p-2 rounded-3 jugador-card-item';
-    row.innerHTML = `
-      <div class="d-flex gap-2 align-items-start">
-        <div class="flex-fill">
-          <div class="row g-2 mb-2">
-            <div class="col-sm-7">
-              <input type="text" name="jugadores[]" class="custom-input form-control form-control-sm"
-                     placeholder="Nombre completo jugador ${num}" value="${nombre.replace(/"/g, '&quot;')}">
-            </div>
-            <div class="col-sm-5">
-              <input type="text" name="documentos[]" class="custom-input form-control form-control-sm"
-                     placeholder="Nº de documento" maxlength="12" oninput="this.value=this.value.replace(/\\D/g,'')" value="${documento.replace(/"/g, '&quot;')}">
-            </div>
-          </div>
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="small fw-semibold consentimiento-lbl"><i class="fas fa-file-signature me-1"></i>Consentimiento:</span>
-            <div class="flex-fill">
-              <input type="file" name="consentimiento_${num - 1}"
-                     class="form-control form-control-sm custom-input"
-                     accept="image/*,.pdf" title="Consentimiento informado firmado (PDF o Imagen)">
-            </div>
-          </div>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-danger border-0 mt-1"
+    ficha = (ficha !== undefined && ficha !== null && ficha !== '') ? ficha : (document.getElementById('campo-ficha')?.value || '');
+    programa = (programa !== undefined && programa !== null && programa !== '') ? programa : (document.querySelector('select[name="programa"]')?.value || '');
+
+    const tr = document.createElement('tr');
+    tr.className = 'jugador-row align-middle';
+    tr.innerHTML = `
+      <td class="text-center fw-bold text-muted small row-num">${num}</td>
+      <td>
+        <input type="text" name="jugadores[]" class="form-control form-control-sm custom-input"
+               placeholder="Nombre completo" value="${String(nombre).replace(/"/g, '&quot;')}" required minlength="2">
+      </td>
+      <td>
+        <input type="text" name="documentos[]" class="form-control form-control-sm custom-input"
+               placeholder="N° documento" maxlength="10" oninput="this.value=this.value.replace(/\\D/g,'')"
+               value="${String(documento).replace(/"/g, '&quot;')}">
+      </td>
+      <td>
+        <input type="text" name="fichas_jugadores[]" class="form-control form-control-sm custom-input campo-ficha-jugador"
+               placeholder="Ficha" maxlength="7" oninput="this.value=this.value.replace(/\\D/g,'')"
+               value="${String(ficha).replace(/"/g, '&quot;')}">
+      </td>
+      <td>
+        <select name="programas_jugadores[]" class="form-select form-select-sm custom-input campo-programa-jugador"
+                aria-label="Programa de formación del jugador">
+          <option value="">Selecciona programa</option>
+        </select>
+      </td>
+      <td>
+        <input type="file" name="consentimiento_${num - 1}"
+               class="form-control form-control-sm custom-input py-1 px-1"
+               accept="image/*,.pdf" title="Consentimiento informado firmado (PDF o Imagen)"
+               style="font-size: 0.72rem;">
+      </td>
+      <td class="text-center">
+        <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1"
                 title="Quitar jugador"
-                onclick="this.closest('.jugador-row').remove(); reindexarConsentimientos()">
-          <i class="fas fa-times"></i>
+                onclick="eliminarFilaJugador(this)">
+          <i class="fas fa-trash-alt"></i>
         </button>
-      </div>`;
-    return row;
+      </td>
+    `;
+    const selectorPrograma = tr.querySelector('.campo-programa-jugador');
+    const listaProgramas = document.getElementById('lista-programas-globales');
+    if (selectorPrograma && listaProgramas) {
+      Array.from(listaProgramas.options).forEach(opcion => {
+        const nuevaOpcion = document.createElement('option');
+        nuevaOpcion.value = opcion.value;
+        nuevaOpcion.textContent = opcion.value;
+        selectorPrograma.appendChild(nuevaOpcion);
+      });
+      if (programa && !Array.from(selectorPrograma.options).some(opcion => opcion.value === programa)) {
+        const opcionActual = document.createElement('option');
+        opcionActual.value = programa;
+        opcionActual.textContent = programa;
+        selectorPrograma.appendChild(opcionActual);
+      }
+      selectorPrograma.value = programa;
+    }
+    return tr;
   }
 
-  function agregarJugador(nombre, documento) {
-    jugNum++;
-    const container = document.getElementById('jugadores-container');
-    container.appendChild(crearFilaJugador(jugNum, nombre, documento));
+  function agregarFilaJugador(nombre, documento, ficha, programa) {
+    const tbody = document.getElementById('jugadores-table-body');
+    if (!tbody) return;
+    const currentRows = tbody.querySelectorAll('.jugador-row').length;
+    const nextNum = currentRows + 1;
+    tbody.appendChild(crearFilaJugador(nextNum, nombre, documento, ficha, programa));
+    actualizarNumerosYConsentimientos();
   }
 
-  function reindexarConsentimientos() {
-    const rows = document.querySelectorAll('#jugadores-container .jugador-row');
+  function eliminarFilaJugador(btn) {
+    const tbody = document.getElementById('jugadores-table-body');
+    const tr = btn.closest('.jugador-row');
+    if (tbody && tbody.querySelectorAll('.jugador-row').length <= 1) {
+      if (tr) {
+        tr.querySelectorAll('input, select').forEach(inp => inp.value = '');
+      }
+      return;
+    }
+    if (tr) {
+      tr.remove();
+      actualizarNumerosYConsentimientos();
+    }
+  }
+
+  function actualizarNumerosYConsentimientos() {
+    const rows = document.querySelectorAll('#jugadores-table-body .jugador-row');
     rows.forEach((row, idx) => {
+      const numCell = row.querySelector('.row-num');
+      if (numCell) numCell.textContent = idx + 1;
       const fileInput = row.querySelector('input[type="file"]');
       if (fileInput) fileInput.name = `consentimiento_${idx}`;
+    });
+  }
+
+  function copiarFichaProgramaCapitan() {
+    const fCapitan = document.getElementById('campo-ficha')?.value || '';
+    const pCapitan = document.querySelector('select[name="programa"]')?.value || '';
+    const rows = document.querySelectorAll('#jugadores-table-body .jugador-row');
+    rows.forEach(row => {
+      const fInput = row.querySelector('.campo-ficha-jugador');
+      const pInput = row.querySelector('.campo-programa-jugador');
+      if (fInput && fCapitan) fInput.value = fCapitan;
+      if (pInput && pCapitan) pInput.value = pCapitan;
     });
   }
 
@@ -1642,13 +1719,21 @@
     }
     if (phCrearEscudo) phCrearEscudo.style.display = 'block';
 
-    // Reset escudo y jugadores
+    // Reset escudo y tabla de jugadores
     const escudoInput = document.getElementById('crear-equipo-escudo-file');
     if (escudoInput) escudoInput.value = '';
-    jugNum = 1;
-    const container = document.getElementById('jugadores-container');
-    container.innerHTML = '';
-    container.appendChild(crearFilaJugador(1));
+    const tbody = document.getElementById('jugadores-table-body');
+    if (tbody) {
+      tbody.innerHTML = '';
+      tbody.appendChild(crearFilaJugador(1));
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.getElementById('jugadores-table-body');
+    if (tbody && tbody.children.length === 0) {
+      tbody.appendChild(crearFilaJugador(1));
+    }
   });
 </script>
 {% endblock %}

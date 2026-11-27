@@ -52,6 +52,32 @@
     }
     html[data-theme="dark"] .prevencion-sources a,
     html:not([data-theme="light"]).acc-azul-noche .prevencion-sources a { color: #86EFAC; }
+    .nutrition-intro { display:grid; grid-template-columns:1.1fr .9fr; overflow:hidden; margin:1.25rem 0; border:1px solid #d8e9dc; border-radius:20px; background:linear-gradient(135deg,#f0fdf4,#fff); box-shadow:0 12px 30px rgba(22,101,52,.08); }
+    .nutrition-intro-copy { padding:clamp(1.35rem,4vw,2.5rem); align-self:center; }
+    .nutrition-intro h2 { color:#166534; font-weight:850; margin:.65rem 0; }
+    .nutrition-intro p { color:#475569; line-height:1.7; }
+    .nutrition-intro>img { width:100%; height:100%; min-height:280px; object-fit:cover; }
+    .nutrition-kicker { color:#15803d; font-size:.82rem; font-weight:750; text-transform:uppercase; letter-spacing:.06em; }
+    .nutrition-quick-tips { display:grid; gap:.55rem; color:#166534; font-size:.9rem; font-weight:650; }
+    .nutrition-quick-tips i { margin-right:.4rem; }
+    .nutrition-guide { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.25rem 0; }
+    .nutrition-guide article { position:relative; min-height:220px; overflow:hidden; border-radius:16px; background:#10251b; color:white; }
+    .nutrition-guide article>img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.42; }
+    .nutrition-guide article>div,.nutrition-guide-icon { position:relative; z-index:1; }
+    .nutrition-guide article>div { padding:1rem 1.1rem 1.15rem; }
+    .nutrition-guide h3 { color:white; font-size:1.05rem; font-weight:800; }
+    .nutrition-guide p { color:#f1f5f9; margin:0; font-size:.9rem; line-height:1.55; }
+    .nutrition-guide-icon { display:inline-flex; margin:1rem 0 0 1.1rem; width:38px; height:38px; align-items:center; justify-content:center; border-radius:50%; background:#dcfce7; color:#166534; }
+    .nutrition-photo-credit { text-align:right; font-size:.78rem; color:#64748b; }
+    .nutrition-photo-credit a { color:#166534; }
+    .nutrition-pyramid-title { margin:2rem 0 .25rem; color:#166534; font-weight:850; }
+    .nutrition-level-hint { max-width:720px; margin:.25rem auto .8rem; text-align:center; color:var(--muted); font-size:.9rem; line-height:1.5; }
+    html[data-theme="dark"] .nutrition-intro, html:not([data-theme="light"]).acc-azul-noche .nutrition-intro { background:linear-gradient(135deg,#10251b,#0f172a); border-color:rgba(74,222,128,.25); }
+    html[data-theme="dark"] .nutrition-intro h2, html:not([data-theme="light"]).acc-azul-noche .nutrition-intro h2,
+    html[data-theme="dark"] .nutrition-pyramid-title, html:not([data-theme="light"]).acc-azul-noche .nutrition-pyramid-title { color:#86efac; }
+    html[data-theme="dark"] .nutrition-intro p, html:not([data-theme="light"]).acc-azul-noche .nutrition-intro p,
+    html[data-theme="dark"] .nutrition-level-hint, html:not([data-theme="light"]).acc-azul-noche .nutrition-level-hint { color:#cbd5e1; }
+    @media(max-width:767.98px) { .nutrition-intro { grid-template-columns:1fr; } .nutrition-intro>img { min-height:210px; max-height:260px; } .nutrition-guide { grid-template-columns:1fr; } }
 </style>
 {% endblock %}
 
@@ -260,7 +286,30 @@
     </div>
 
     {% elif vista == 'nutricion' %}
-    <p class="edu-u-47">Descubre los alimentos esenciales para una dieta equilibrada a través de la Pirámide Nutricional.</p>
+    <p class="edu-u-47">Una guía práctica para armar platos variados, elegir alimentos frescos y mantener hábitos sostenibles. Las porciones dependen de la edad, actividad, cultura y estado de salud; esta pirámide es orientativa.</p>
+
+    <section class="nutrition-intro reveal" aria-labelledby="nutrition-intro-title">
+        <div class="nutrition-intro-copy">
+            <span class="nutrition-kicker"><i class="fas fa-seedling" aria-hidden="true"></i> Guía para el día a día</span>
+            <h2 id="nutrition-intro-title">Come variado, muévete y disfruta</h2>
+            <p>Prioriza alimentos naturales o mínimamente procesados, combina colores y acompaña tu alimentación con agua, movimiento y buen descanso. No necesitas que cada comida sea perfecta: busca equilibrio a lo largo del tiempo.</p>
+            <div class="nutrition-quick-tips">
+                <span><i class="fas fa-check-circle"></i> Incluye frutas y verduras</span>
+                <span><i class="fas fa-check-circle"></i> Prefiere agua con frecuencia</span>
+                <span><i class="fas fa-check-circle"></i> Modera productos muy procesados</span>
+            </div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1602093697647-f60b58cddfb6?auto=format&fit=crop&w=1000&q=85" alt="Ensalada fresca de verduras variadas, fotografía real de Nadine Primeau en Unsplash" loading="lazy">
+    </section>
+
+    <section class="nutrition-guide reveal" aria-label="Cómo interpretar la pirámide nutricional">
+        <article><span class="nutrition-guide-icon"><i class="fas fa-wheat-awn"></i></span><div><h3>Base · energía y fibra</h3><p>Elige con frecuencia cereales y tubérculos, mejor si son integrales: arroz, avena, maíz, papa o yuca. Acompaña cada comida con agua.</p></div><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80" alt="Pan de grano horneado, fotografía real de Unsplash" loading="lazy"></article>
+        <article><span class="nutrition-guide-icon"><i class="fas fa-carrot"></i></span><div><h3>Todos los días · frutas y verduras</h3><p>Varía colores y tipos. Enteras suelen aportar más fibra que los jugos. Lava bien los alimentos y aprovecha los productos de temporada.</p></div><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=80" alt="Verduras frescas variadas, fotografía real de Unsplash" loading="lazy"></article>
+        <article><span class="nutrition-guide-icon"><i class="fas fa-drumstick-bite"></i></span><div><h3>Proteínas y otros alimentos</h3><p>Alterna fríjoles, lentejas y garbanzos con huevo, pescado, pollo u otras opciones. Incluye lácteos o alternativas adecuadas si hacen parte de tu alimentación.</p></div><img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80" alt="Plato equilibrado con vegetales y alimentos variados, fotografía real de Unsplash" loading="lazy"></article>
+    </section>
+    <p class="nutrition-photo-credit">Fotografías: <a href="https://unsplash.com/photos/vegetable-salad-on-white-ceramic-bowl-KJ_6br6Ykm0" target="_blank" rel="noopener noreferrer">Nadine Primeau</a> y otros autores en <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>.</p>
+
+    <h2 class="nutrition-pyramid-title"><i class="fas fa-layer-group"></i> Pirámide de alimentos</h2>
     
     <div class="panel reveal edu-u-48">
         
@@ -270,6 +319,13 @@
                 <div class="edu-u-50">
                     Nivel {{ nivel }} - {{ alimentos_nivel.0.get_nivel_piramide_display }}
                 </div>
+                <p class="nutrition-level-hint">
+                    {% if nivel == 1 %}Base: cereales, tubérculos y agua para acompañar tu rutina diaria.
+                    {% elif nivel == 2 %}Incluye frutas y verduras variadas en tus comidas habituales.
+                    {% elif nivel == 3 %}Alterna fuentes de proteína y alimentos como lácteos según tus necesidades.
+                    {% elif nivel == 4 %}Usa grasas saludables en cantidades moderadas y elige preparaciones sencillas.
+                    {% else %}Modera azúcares, bebidas azucaradas y productos con exceso de sal o grasas.{% endif %}
+                </p>
                 <div class="pyramid-level">
                     {% for alimento in alimentos_nivel %}
                     <style>

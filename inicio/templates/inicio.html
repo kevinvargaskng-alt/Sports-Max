@@ -307,6 +307,11 @@
               </div>
               <div id="loginAlert" class="alert d-none" role="alert"></div>
               <button type="submit" class="btn w-100 py-3 mt-2 fw-bold text-uppercase text-white ini-u-46">Ingresar al sistema</button>
+              <div class="text-center mt-3">
+                <small class="text-white-50" style="font-size: 0.75rem;">
+                  Al ingresar aceptas nuestra <a href="{% url 'politica_privacidad' %}" target="_blank" class="text-success text-decoration-underline">Política de Datos (Habeas Data)</a> y los <a href="{% url 'terminos_condiciones' %}" target="_blank" class="text-success text-decoration-underline">Términos de Uso</a>.
+                </small>
+              </div>
             </form>
           </div>
 
@@ -480,6 +485,15 @@
                     <input type="password" name="confirmar_contrasena" id="confirmarContrasena" class="form-control custom-input" placeholder="Repite tu contraseña" required minlength="8" maxlength="128" autocomplete="new-password">
                     <button class="btn btn-outline-secondary custom-input" type="button" id="togglePassword3"><i class="fas fa-eye text-white-50"></i></button>
                     <div class="invalid-feedback text-danger small mt-1" id="err_confirmar_contrasena"></div>
+                  </div>
+                </div>
+                <div class="col-12 mt-3 text-start">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="checkHabeasData" name="acepta_terminos" required>
+                    <label class="form-check-label small text-white-50" for="checkHabeasData" style="font-size: 0.78rem;">
+                      Declaro que he leído y acepto la <a href="{% url 'politica_privacidad' %}" target="_blank" class="text-success fw-bold text-decoration-underline">Política de Tratamiento de Datos Personales (Habeas Data Ley 1581)</a> y los <a href="{% url 'terminos_condiciones' %}" target="_blank" class="text-success fw-bold text-decoration-underline">Términos y Condiciones</a> del SENA. <span class="text-danger">*</span>
+                    </label>
+                    <div class="invalid-feedback text-danger small mt-1" id="err_habeas_data">Debes aceptar los términos y tratamiento de datos para continuar.</div>
                   </div>
                 </div>
               </div>

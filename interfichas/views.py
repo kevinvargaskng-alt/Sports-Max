@@ -475,6 +475,8 @@ def interfichas_list(request):
 
             nombres_jugadores = request.POST.getlist('jugadores[]')
             documentos_jugadores = request.POST.getlist('documentos[]')
+            fichas_jugadores = request.POST.getlist('fichas_jugadores[]')
+            programas_jugadores = request.POST.getlist('programas_jugadores[]')
             for idx, nombre in enumerate(nombres_jugadores):
                 if not nombre.strip():
                     continue
@@ -505,16 +507,22 @@ def interfichas_list(request):
                 escudo=request.FILES.get('escudo')
             )
 
-            # Guardar jugadores con documento y consentimiento
+            # Guardar jugadores con documento, ficha, programa y consentimiento
             for idx, nombre in enumerate(nombres_jugadores):
                 if nombre.strip():
-                    doc = ''
-                    if idx < len(documentos_jugadores):
-                        doc = documentos_jugadores[idx].strip()
+                    doc = documentos_jugadores[idx].strip() if idx < len(documentos_jugadores) else ''
+                    f_jug = fichas_jugadores[idx].strip() if idx < len(fichas_jugadores) else ''
+                    if not f_jug:
+                        f_jug = str(ficha_int)
+                    p_jug = programas_jugadores[idx].strip() if idx < len(programas_jugadores) else ''
+                    if not p_jug:
+                        p_jug = nuevo_equipo.programa
 
                     jugador = JugadorEquipo.objects.create(
                         nombre_completo=nombre.strip(),
                         numero_documento=doc,
+                        ficha=f_jug,
+                        programa=p_jug,
                         equipo=nuevo_equipo
                     )
 

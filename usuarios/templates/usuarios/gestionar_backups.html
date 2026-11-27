@@ -221,6 +221,49 @@
             </div>
         </div>
 
+        <!-- PROGRAMACIÓN DE COPIAS AUTOMÁTICAS (CRON / AUTOMATIZACIÓN) -->
+        <div class="backup-card p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="backup-icon-box" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35);">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 rounded-pill mb-1">
+                            <i class="fas fa-robot me-1"></i>Automatización Activa
+                        </span>
+                        <h5 class="fw-bold mb-0 text-white">Programación de Copias de Seguridad Automáticas</h5>
+                    </div>
+                </div>
+                <span class="badge bg-success text-white px-3 py-2 rounded-pill">
+                    <i class="fas fa-check-circle me-1"></i>Servicio Programado
+                </span>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <small class="text-white-50 text-uppercase fw-bold d-block mb-1" style="font-size: 0.72rem;">Frecuencia y Horario</small>
+                        <div class="fw-bold text-white fs-6"><i class="fas fa-clock text-warning me-1"></i>Diario (00:00 Medianoche)</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Expresión Cron: <code>0 0 * * *</code></small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <small class="text-white-50 text-uppercase fw-bold d-block mb-1" style="font-size: 0.72rem;">Comando de Ejecución</small>
+                        <div class="fw-bold text-white fs-6"><i class="fas fa-terminal text-info me-1"></i>dumpdata --natural-foreign</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Respaldo estructurado UTF-8 con claves naturales</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <small class="text-white-50 text-uppercase fw-bold d-block mb-1" style="font-size: 0.72rem;">Almacenamiento y Retención</small>
+                        <div class="fw-bold text-white fs-6"><i class="fas fa-hdd text-success me-1"></i>Local & Cloud (30 días)</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Rotación automática de copias antiguas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- HISTORIAL DE COPIAS DE SEGURIDAD -->
         <div class="backup-card p-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">

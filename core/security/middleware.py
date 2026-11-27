@@ -116,7 +116,7 @@ class SecurityHeadersMiddleware:
             "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com",
             "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com",
             "font-src 'self' fonts.gstatic.com cdn.jsdelivr.net cdnjs.cloudflare.com",
-            "img-src 'self' data: blob:",
+            "img-src 'self' data: blob: images.unsplash.com",
             "connect-src 'self'",
             "media-src 'self' blob:",
             "object-src 'none'",

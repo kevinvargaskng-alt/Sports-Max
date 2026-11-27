@@ -120,26 +120,121 @@ html.acc-claro body .smax-position-bar .smax-pos-current {
 }
 
 /* ── 3. Footer SENA Institucional ──────────────────────────────── */
-html.acc-claro body footer.bg-dark,
-body.light-theme footer.bg-dark {
-    background: #007832 !important;
-    color: #FFFFFF !important;
-    border-top: 3px solid #39A900 !important;
+html[data-theme="light"] body footer.smax-main-footer,
+html.acc-claro body footer.smax-main-footer,
+body.light-theme footer.smax-main-footer {
+    background: #F8FAFC !important;
+    color: #334155 !important;
+    border-top: 2px solid #E2E8F0 !important;
 }
-html.acc-claro body footer *,
-body.light-theme footer * {
-    color: rgba(255, 255, 255, 0.92) !important;
+
+html[data-theme="light"] body footer.smax-main-footer h5,
+html[data-theme="light"] body footer.smax-main-footer h6,
+html[data-theme="light"] body footer.smax-main-footer .footer-heading,
+html[data-theme="light"] body footer.smax-main-footer strong,
+html.acc-claro body footer.smax-main-footer h5,
+html.acc-claro body footer.smax-main-footer h6,
+html.acc-claro body footer.smax-main-footer .footer-heading,
+html.acc-claro body footer.smax-main-footer strong,
+body.light-theme footer.smax-main-footer h5,
+body.light-theme footer.smax-main-footer h6,
+body.light-theme footer.smax-main-footer .footer-heading,
+body.light-theme footer.smax-main-footer strong {
+    color: #0F172A !important;
 }
-html[data-theme="light"] body footer .footer-credit-link,
-html.acc-claro body footer .footer-credit-link,
-body.light-theme footer .footer-credit-link {
-    color: #FFFFFF !important;
-    opacity: 1 !important;
+
+html[data-theme="light"] body footer.smax-main-footer p,
+html[data-theme="light"] body footer.smax-main-footer span,
+html[data-theme="light"] body footer.smax-main-footer li,
+html[data-theme="light"] body footer.smax-main-footer small,
+html[data-theme="light"] body footer.smax-main-footer .text-white-50,
+html.acc-claro body footer.smax-main-footer p,
+html.acc-claro body footer.smax-main-footer span,
+html.acc-claro body footer.smax-main-footer li,
+html.acc-claro body footer.smax-main-footer small,
+html.acc-claro body footer.smax-main-footer .text-white-50,
+body.light-theme footer.smax-main-footer p,
+body.light-theme footer.smax-main-footer span,
+body.light-theme footer.smax-main-footer li,
+body.light-theme footer.smax-main-footer small,
+body.light-theme footer.smax-main-footer .text-white-50 {
+    color: #334155 !important;
 }
-html[data-theme="light"] body footer .footer-credit-link:hover,
-html.acc-claro body footer .footer-credit-link:hover,
-body.light-theme footer .footer-credit-link:hover {
+
+html[data-theme="light"] body footer.smax-main-footer .footer-link,
+html.acc-claro body footer.smax-main-footer .footer-link,
+body.light-theme footer.smax-main-footer .footer-link {
+    color: #334155 !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-link i,
+html.acc-claro body footer.smax-main-footer .footer-link i,
+body.light-theme footer.smax-main-footer .footer-link i {
+    color: #007832 !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-link:hover,
+html.acc-claro body footer.smax-main-footer .footer-link:hover,
+body.light-theme footer.smax-main-footer .footer-link:hover {
+    color: #007832 !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .btn-whatsapp-footer,
+html.acc-claro body footer.smax-main-footer .btn-whatsapp-footer,
+body.light-theme footer.smax-main-footer .btn-whatsapp-footer {
+    background-color: #F0FDF4 !important;
+    color: #15803D !important;
+    border: 1.5px solid #22C55E !important;
+    font-weight: 700 !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .btn-whatsapp-footer i,
+html.acc-claro body footer.smax-main-footer .btn-whatsapp-footer i,
+body.light-theme footer.smax-main-footer .btn-whatsapp-footer i {
+    color: #16A34A !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-social-btn,
+html.acc-claro body footer.smax-main-footer .footer-social-btn,
+body.light-theme footer.smax-main-footer .footer-social-btn {
+    background-color: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-social-btn i,
+html.acc-claro body footer.smax-main-footer .footer-social-btn i,
+body.light-theme footer.smax-main-footer .footer-social-btn i {
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-social-btn:hover,
+html.acc-claro body footer.smax-main-footer .footer-social-btn:hover,
+body.light-theme footer.smax-main-footer .footer-social-btn:hover {
+    background-color: #007832 !important;
+    border-color: #007832 !important;
     color: #FFFFFF !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-social-btn:hover i,
+html.acc-claro body footer.smax-main-footer .footer-social-btn:hover i,
+body.light-theme footer.smax-main-footer .footer-social-btn:hover i {
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer .footer-badge-jornada,
+html.acc-claro body footer.smax-main-footer .footer-badge-jornada,
+body.light-theme footer.smax-main-footer .footer-badge-jornada {
+    background-color: #DCFCE7 !important;
+    color: #166534 !important;
+    border: 1px solid #86EFAC !important;
+    font-weight: 700 !important;
+}
+
+html[data-theme="light"] body footer.smax-main-footer hr,
+html.acc-claro body footer.smax-main-footer hr,
+body.light-theme footer.smax-main-footer hr {
+    border-color: #E2E8F0 !important;
     opacity: 1 !important;
 }
 

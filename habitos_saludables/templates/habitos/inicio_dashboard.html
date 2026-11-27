@@ -267,22 +267,22 @@ body.light-theme .water-cup.locked {
 
   <!-- Acciones rápidas admin -->
   <div class="admin-tabs reveal">
-    <a href="{% url 'admin:habitos_saludables_habitosaludable_changelist' %}" class="admin-tab">
+    <a href="{% url 'habitos:lista_habitos' %}" class="admin-tab">
       <i class="fas fa-apple-alt"></i> Hábitos
     </a>
-    <a href="{% url 'admin:habitos_saludables_rutinafisica_changelist' %}" class="admin-tab">
+    <a href="{% url 'habitos:lista_rutinas' %}" class="admin-tab">
       <i class="fas fa-dumbbell"></i> Rutinas
     </a>
-    <a href="{% url 'admin:habitos_saludables_piramidenutricional_changelist' %}" class="admin-tab">
+    <a href="{% url 'habitos:nutricion' %}" class="admin-tab">
       <i class="fas fa-utensils"></i> Nutrición
     </a>
-    <a href="{% url 'admin:habitos_saludables_materialapoyo_changelist' %}" class="admin-tab">
+    <a href="{% url 'habitos:biblioteca' %}" class="admin-tab">
       <i class="fas fa-book-open"></i> Materiales
     </a>
-    <a href="{% url 'admin:habitos_saludables_seguimientosalud_changelist' %}" class="admin-tab">
+    <a href="{% url 'habitos:reporte_habitos' %}" class="admin-tab">
       <i class="fas fa-notes-medical"></i> Seguimientos
     </a>
-    <a href="{% url 'admin:habitos_saludables_habeasdataconsent_changelist' %}" class="admin-tab">
+    <a href="{% url 'habitos:habeas_data' %}" class="admin-tab">
       <i class="fas fa-shield-alt"></i> Habeas Data
     </a>
   </div>

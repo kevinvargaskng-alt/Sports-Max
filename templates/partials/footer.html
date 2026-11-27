@@ -1,14 +1,332 @@
 {% load static %}
-<footer class="bg-dark text-white-50 text-center py-3 border-top border-secondary mt-auto">
-    <div class="container d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-        <small class="mb-0">&copy; 2026 Gestión Deportiva SENA. Todos los derechos reservados.</small>
-        <small class="mb-0">
-            <a href="#" class="footer-credit-link text-white-50 text-decoration-underline" data-bs-toggle="modal" data-bs-target="#modalCreditosReferencias" title="Ver referencias y créditos de recursos audiovisuales">
-                <i class="fas fa-info-circle me-1"></i>Créditos y Referencias
-            </a>
-        </small>
+<footer class="smax-main-footer border-top mt-auto">
+    <div class="container py-4">
+        <div class="row g-4">
+            <!-- COLUMNA 1: IDENTIDAD INSTITUCIONAL -->
+            <div class="col-lg-4 col-md-6 text-start">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <img src="{% static 'img/logo_sena.png' %}" alt="Logo SENA" style="width: 38px; height: 38px; object-fit: contain;" onerror="this.style.display='none';">
+                    <div>
+                        <h6 class="fw-bold mb-0 footer-heading">SPORTS-MAX SENA</h6>
+                        <small class="footer-desc d-block" style="font-size: 0.75rem;">Sistema de Gestión Deportiva y Bienestar</small>
+                    </div>
+                </div>
+                <p class="small footer-desc mb-2 lh-sm" style="font-size: 0.8rem;">
+                    Servicio Nacional de Aprendizaje — Centro Minero Regional Boyacá. Plataforma integral para la reserva de gimnasio, torneos inter-fichas, inventario deportivo y hábitos saludables.
+                </p>
+                <div class="small footer-desc" style="font-size: 0.78rem;">
+                    <i class="fas fa-map-marker-alt text-success me-1"></i> Vereda Morcá, Km 7 Vía Sogamoso – Monguí, Boyacá, Colombia.
+                </div>
+            </div>
+
+            <!-- COLUMNA 2: HORARIOS DE ATENCIÓN Y BIENESTAR -->
+            <div class="col-lg-3 col-md-6 text-start">
+                <h6 class="fw-bold mb-3 text-uppercase footer-heading" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                    <i class="fas fa-clock text-success me-1"></i> Horarios de Atención
+                </h6>
+                <ul class="list-unstyled small footer-desc mb-0" style="font-size: 0.8rem; line-height: 1.8;">
+                    <li><strong class="footer-subheading">Atención Administrativa:</strong><br><span class="footer-time-text">Lunes a Viernes: 07:00 a.m. – 05:00 p.m.</span></li>
+                    <li class="mt-1"><strong class="footer-subheading">Gimnasio y Escenarios:</strong><br><span class="footer-time-text">Lunes a Viernes: 06:00 a.m. – 06:00 p.m.</span></li>
+                    <li class="mt-2"><span class="badge footer-badge-jornada"><i class="fas fa-check-circle me-1"></i>Jornada Continua</span></li>
+                </ul>
+            </div>
+
+            <!-- COLUMNA 3: SOPORTE TÉCNICO Y REDES SOCIALES -->
+            <div class="col-lg-3 col-md-6 text-start">
+                <h6 class="fw-bold mb-3 text-uppercase footer-heading" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                    <i class="fas fa-headset text-success me-1"></i> Contacto y Soporte
+                </h6>
+                <p class="small footer-desc mb-2" style="font-size: 0.8rem;">
+                    ¿Tienes dudas o necesitas asistencia técnica con la plataforma?
+                </p>
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <a href="https://wa.me/573115625332?text=Hola,%20necesito%20soporte%20en%20Sports-Max%20SENA" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-whatsapp-footer d-inline-flex align-items-center gap-2 rounded-pill px-3 py-1 w-auto align-self-start" style="font-size: 0.78rem;" title="Chatear con soporte técnico por WhatsApp">
+                        <i class="fab fa-whatsapp fs-6"></i> Línea WhatsApp Soporte
+                    </a>
+                    <a href="mailto:soporte.sportsmax@sena.edu.co" class="small footer-mail-link text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Enviar correo a soporte técnico">
+                        <i class="fas fa-envelope text-success"></i> soporte.sportsmax@sena.edu.co
+                    </a>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="https://www.facebook.com/profile.php?id=322214967898780&_rdr" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="Facebook Centro Nacional Minero SENA" aria-label="Facebook Centro Nacional Minero SENA"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://x.com/CNTR_NAL_MINERO?lang=es" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="X (Twitter) @CNTR_NAL_MINERO" aria-label="X Centro Nacional Minero SENA"><svg class="footer-x-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.98 21.75H1.67l7.73-8.835L1.245 2.25h6.83l4.713 6.231zM17.083 19.77h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://www.instagram.com/senacomunica/" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="Instagram SENA Comunica" aria-label="Instagram SENA"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/channel/UCsKcWwcFyrG7-sxHPvkz-5w" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="YouTube Canal Centro Nacional Minero" aria-label="YouTube Centro Nacional Minero SENA"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- COLUMNA 4: ENLACES DE INTERÉS Y LEGAL -->
+            <div class="col-lg-2 col-md-6 text-start">
+                <h6 class="fw-bold mb-3 text-uppercase footer-heading" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                    <i class="fas fa-balance-scale text-success me-1"></i> Normativa y Legal
+                </h6>
+                <ul class="list-unstyled small mb-0 footer-legal-links" style="font-size: 0.8rem; line-height: 2;">
+                    <li><a href="{% url 'politica_privacidad' %}" class="footer-link"><i class="fas fa-user-shield me-1"></i>Habeas Data (Ley 1581)</a></li>
+                    <li><a href="{% url 'terminos_condiciones' %}" class="footer-link"><i class="fas fa-file-contract me-1"></i>Términos de Uso</a></li>
+                    <li><a href="{% url 'politica_cookies' %}" class="footer-link"><i class="fas fa-cookie-bite me-1"></i>Política de Cookies</a></li>
+                    <li><a href="{% url 'manual_usuario' %}" class="footer-link"><i class="fas fa-book-reader me-1"></i>Manual de Usuario</a></li>
+                    <li>
+                        <a href="#" class="footer-link text-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalCreditosReferencias">
+                            <i class="fas fa-info-circle me-1"></i>Créditos y Licencias
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <hr class="footer-divider my-3">
+
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2 text-center text-sm-start">
+            <small class="mb-0 footer-copyright-text" style="font-size: 0.78rem;">
+                &copy; 2026 Servicio Nacional de Aprendizaje SENA — Centro Minero Regional Boyacá. Todos los derechos reservados.
+            </small>
+            <small class="mb-0 footer-version-text" style="font-size: 0.75rem;">
+                Sports-Max v2.0 • Desarrollado por aprendices ADSO bajo estándares de calidad y accesibilidad web.
+            </small>
+        </div>
     </div>
 </footer>
+
+<style>
+    /* ── MODO OSCURO (DEFAULT) ── */
+    .smax-main-footer {
+        background: #0B1325;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #94A3B8;
+    }
+    .footer-heading {
+        color: #F8FAFC !important;
+    }
+    .footer-subheading {
+        color: #E2E8F0 !important;
+    }
+    .footer-desc,
+    .footer-time-text {
+        color: #94A3B8 !important;
+    }
+    .footer-mail-link {
+        color: #94A3B8 !important;
+    }
+    .footer-mail-link:hover {
+        color: #4ADE80 !important;
+    }
+    .footer-link {
+        color: #94A3B8 !important;
+        text-decoration: none;
+        transition: color 0.2s ease, transform 0.2s ease;
+        display: inline-block;
+    }
+    .footer-link i {
+        color: #39A900 !important;
+    }
+    .footer-link:hover {
+        color: #4ADE80 !important;
+        transform: translateX(2px);
+    }
+    .btn-whatsapp-footer {
+        background: rgba(34, 197, 94, 0.12) !important;
+        color: #4ADE80 !important;
+        border: 1px solid rgba(34, 197, 94, 0.45) !important;
+        font-weight: 600 !important;
+    }
+    .btn-whatsapp-footer i {
+        color: #4ADE80 !important;
+    }
+    .btn-whatsapp-footer:hover {
+        background: #16A34A !important;
+        color: #FFFFFF !important;
+        border-color: #16A34A !important;
+    }
+    .btn-whatsapp-footer:hover i {
+        color: #FFFFFF !important;
+    }
+    .footer-badge-jornada {
+        background: rgba(57, 169, 0, 0.18) !important;
+        color: #4ADE80 !important;
+        border: 1px solid rgba(57, 169, 0, 0.4) !important;
+    }
+    .footer-social-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        color: #E2E8F0 !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .footer-social-btn i {
+        color: #E2E8F0 !important;
+    }
+    .footer-social-btn .footer-x-icon {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+        flex: 0 0 auto;
+    }
+    .footer-social-btn:hover {
+        background: #39A900 !important;
+        color: #FFFFFF !important;
+        border-color: #39A900 !important;
+        transform: translateY(-2px);
+    }
+    .footer-social-btn:hover i {
+        color: #FFFFFF !important;
+    }
+    .footer-divider {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        opacity: 1 !important;
+    }
+    .footer-copyright-text {
+        color: #94A3B8 !important;
+    }
+    .footer-version-text {
+        color: #64748B !important;
+    }
+
+    /* ── MODO CLARO INSTITUCIONAL SENA ── */
+    html[data-theme="light"] .smax-main-footer,
+    html.acc-claro .smax-main-footer,
+    body.light-theme .smax-main-footer {
+        background: #F8FAFC !important;
+        color: #334155 !important;
+        border-top: 2px solid #E2E8F0 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-heading,
+    html.acc-claro .smax-main-footer .footer-heading,
+    body.light-theme .smax-main-footer .footer-heading {
+        color: #0F172A !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-subheading,
+    html.acc-claro .smax-main-footer .footer-subheading,
+    body.light-theme .smax-main-footer .footer-subheading {
+        color: #0F172A !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-desc,
+    html.acc-claro .smax-main-footer .footer-desc,
+    body.light-theme .smax-main-footer .footer-desc {
+        color: #334155 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-time-text,
+    html.acc-claro .smax-main-footer .footer-time-text,
+    body.light-theme .smax-main-footer .footer-time-text {
+        color: #1E293B !important;
+        font-weight: 600 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-mail-link,
+    html.acc-claro .smax-main-footer .footer-mail-link,
+    body.light-theme .smax-main-footer .footer-mail-link {
+        color: #334155 !important;
+        font-weight: 600 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-mail-link:hover,
+    html.acc-claro .smax-main-footer .footer-mail-link:hover,
+    body.light-theme .smax-main-footer .footer-mail-link:hover {
+        color: #007832 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-link,
+    html.acc-claro .smax-main-footer .footer-link,
+    body.light-theme .smax-main-footer .footer-link {
+        color: #1E293B !important;
+        font-weight: 500 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-link i,
+    html.acc-claro .smax-main-footer .footer-link i,
+    body.light-theme .smax-main-footer .footer-link i {
+        color: #007832 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-link:hover,
+    html.acc-claro .smax-main-footer .footer-link:hover,
+    body.light-theme .smax-main-footer .footer-link:hover {
+        color: #007832 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .btn-whatsapp-footer,
+    html.acc-claro .smax-main-footer .btn-whatsapp-footer,
+    body.light-theme .smax-main-footer .btn-whatsapp-footer {
+        background: #F0FDF4 !important;
+        color: #15803D !important;
+        border: 1.5px solid #22C55E !important;
+        font-weight: 700 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .btn-whatsapp-footer i,
+    html.acc-claro .smax-main-footer .btn-whatsapp-footer i,
+    body.light-theme .smax-main-footer .btn-whatsapp-footer i {
+        color: #16A34A !important;
+    }
+    html[data-theme="light"] .smax-main-footer .btn-whatsapp-footer:hover,
+    html.acc-claro .smax-main-footer .btn-whatsapp-footer:hover,
+    body.light-theme .smax-main-footer .btn-whatsapp-footer:hover {
+        background: #16A34A !important;
+        color: #FFFFFF !important;
+        border-color: #16A34A !important;
+    }
+    html[data-theme="light"] .smax-main-footer .btn-whatsapp-footer:hover i,
+    html.acc-claro .smax-main-footer .btn-whatsapp-footer:hover i,
+    body.light-theme .smax-main-footer .btn-whatsapp-footer:hover i {
+        color: #FFFFFF !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-badge-jornada,
+    html.acc-claro .smax-main-footer .footer-badge-jornada,
+    body.light-theme .smax-main-footer .footer-badge-jornada {
+        background: #DCFCE7 !important;
+        color: #166534 !important;
+        border: 1.5px solid #86EFAC !important;
+        font-weight: 700 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-badge-jornada i,
+    html.acc-claro .smax-main-footer .footer-badge-jornada i,
+    body.light-theme .smax-main-footer .footer-badge-jornada i {
+        color: #15803D !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-social-btn,
+    html.acc-claro .smax-main-footer .footer-social-btn,
+    body.light-theme .smax-main-footer .footer-social-btn {
+        background: #FFFFFF !important;
+        color: #1E293B !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-social-btn i,
+    html.acc-claro .smax-main-footer .footer-social-btn i,
+    body.light-theme .smax-main-footer .footer-social-btn i {
+        color: #1E293B !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-social-btn:hover,
+    html.acc-claro .smax-main-footer .footer-social-btn:hover,
+    body.light-theme .smax-main-footer .footer-social-btn:hover {
+        background: #007832 !important;
+        border-color: #007832 !important;
+        color: #FFFFFF !important;
+        transform: translateY(-2px) !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-social-btn:hover i,
+    html.acc-claro .smax-main-footer .footer-social-btn:hover i,
+    body.light-theme .smax-main-footer .footer-social-btn:hover i {
+        color: #FFFFFF !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-divider,
+    html.acc-claro .smax-main-footer .footer-divider,
+    body.light-theme .smax-main-footer .footer-divider {
+        border-color: #CBD5E1 !important;
+        opacity: 1 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-copyright-text,
+    html.acc-claro .smax-main-footer .footer-copyright-text,
+    body.light-theme .smax-main-footer .footer-copyright-text {
+        color: #334155 !important;
+        font-weight: 500 !important;
+    }
+    html[data-theme="light"] .smax-main-footer .footer-version-text,
+    html.acc-claro .smax-main-footer .footer-version-text,
+    body.light-theme .smax-main-footer .footer-version-text {
+        color: #475569 !important;
+        font-weight: 500 !important;
+    }
+</style>
 
 <!-- MODAL CRÉDITOS Y REFERENCIAS -->
 <style>

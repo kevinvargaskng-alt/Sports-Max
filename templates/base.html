@@ -15,6 +15,7 @@
             var root = document.documentElement;
             if (isDark) {
                 root.classList.remove('acc-claro');
+                if (acc && acc.theme && accThemes.indexOf(acc.theme) !== -1) root.classList.add(acc.theme);
                 root.setAttribute('data-theme', 'dark');
                 root.setAttribute('data-bs-theme', 'dark');
             } else {
@@ -87,7 +88,7 @@
         "addressRegion": "Boyacá",
         "addressCountry": "CO"
       },
-      "openingHours": "Mo-Fr 07:00-17:00",
+      "openingHours": "Mo-Fr 07:00-16:00",
       "telephone": "+57 (608) 7700000"
     }
     </script>
@@ -230,7 +231,15 @@
 
     {% block extra_css %}{% endblock %}
 </head>
-<body class="d-flex flex-column min-vh-100 light-theme">
+<body class="d-flex flex-column min-vh-100">
+    <script>
+    (function () {
+        var root = document.documentElement;
+        var isLight = root.getAttribute('data-theme') !== 'dark';
+        document.body.classList.toggle('light-theme', isLight);
+        document.body.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    })();
+    </script>
 
     <!-- ── Enlace Accesible de Salto al Contenido Principal (Skip Link) ── -->
     <a href="#main-content" class="skip-to-content visually-hidden-focusable py-2 px-3 bg-success text-white fw-bold position-absolute top-0 start-0 z-index-top" style="z-index: 1100;">
