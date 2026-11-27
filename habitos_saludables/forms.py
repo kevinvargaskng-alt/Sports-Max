@@ -238,8 +238,6 @@ class MaterialApoyoForm(forms.ModelForm):
     def clean(self):
         cleaned = super().clean()
         archivo = cleaned.get('archivo')
-        if not archivo and not (self.instance and self.instance.pk and self.instance.archivo):
-            self.add_error('archivo', 'Debes cargar un documento o archivo para el material de apoyo.')
         if archivo and hasattr(archivo, 'content_type'):
             try:
                 validate_uploaded_file(archivo, allowed_types="document")

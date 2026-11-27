@@ -295,15 +295,15 @@ body.light-theme .nav-card.nc-blue .nc-icon {
 /* ── NAV CARDS ── */
 .nav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.85rem; margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem; margin-bottom: 2.5rem;
 }
 .nav-card {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 16px; padding: 1.5rem 1.25rem;
   text-decoration: none; color: #fff;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.75rem;
   transition: border-color 0.25s, transform 0.25s, background 0.25s;
   position: relative; overflow: hidden;
 }
@@ -360,12 +360,12 @@ body.light-theme .nav-card.nc-blue .nc-icon {
 .library-banner {
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 18px; padding: 1.5rem 2rem;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  flex-wrap: wrap; margin-top: 1.5rem;
+  border-radius: 20px; padding: 2rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1rem;
+  margin-top: 1.5rem;
 }
-.library-banner .lb-left { display: flex; align-items: center; gap: 1rem; }
-.library-banner .lb-icon { width: 50px; height: 50px; border-radius: 14px; background: rgba(92,158,255,0.1); color: #5c9eff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.library-banner .lb-left { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; }
+.library-banner .lb-icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(92,158,255,0.1); color: #5c9eff; font-size: 1.45rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 /* ── ADMIN PANEL ── */
 .admin-section {

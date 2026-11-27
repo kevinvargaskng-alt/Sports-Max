@@ -261,10 +261,10 @@
     </div>
 
     {% elif vista == 'biblioteca' %}
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <p class="edu-u-53 mb-0">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
+    <div class="d-flex flex-column align-items-center text-center gap-2 mb-4">
+        <p class="edu-u-53 mb-1">Explora y descarga nuestros materiales de apoyo para tu bienestar.</p>
         {% if user.is_staff or user.is_superuser %}
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-1">
             <a href="{% url 'habitos:admin_crear_item' 'materiales' %}" class="btn-acid text-decoration-none">
                 <i class="fas fa-plus-circle"></i> Nuevo Material de Apoyo
             </a>
@@ -274,19 +274,22 @@
         </div>
         {% endif %}
     </div>
-    <div class="panel mb-4 reveal p-3">
-        <form method="get" class="edu-u-54">
+    <div class="panel mb-4 reveal p-3 mx-auto" style="max-width: 820px;">
+        <form method="get" class="edu-u-54 justify-content-center align-items-center">
             <div class="edu-u-55">{{ form.q }}</div>
             <div class="edu-u-56">{{ form.tipo }}</div>
             <button type="submit" class="btn-acid"><i class="fas fa-search"></i> Buscar</button>
             <a href="{% url 'habitos:biblioteca' %}" class="btn-outline-sm edu-u-57"><i class="fas fa-redo"></i> Limpiar</a>
         </form>
     </div>
-    <div class="row g-4">
+    <div class="row g-4 justify-content-center">
         {% for material in materiales %}
-        <div class="col-md-6 col-lg-4 reveal">
-            <div class="material-card">
-                <div class="icon">
+        <div class="col-md-6 col-lg-5 col-xl-4 reveal">
+            <div class="material-card align-items-center text-center">
+                {% if material.imagen_portada %}
+                <img src="{{ material.imagen_portada.url }}" alt="{{ material.titulo }}" class="mb-3 rounded-3" style="width: 100%; height: 150px; object-fit: cover; border: 1px solid var(--border);">
+                {% else %}
+                <div class="icon mx-auto d-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 68px; height: 68px; background: rgba(57, 169, 0, 0.1); border: 1px solid rgba(57, 169, 0, 0.25);">
                     {% if material.tipo_contenido == 'pdf' %}<i class="fas fa-file-pdf"></i>
                     {% elif material.tipo_contenido == 'video' %}<i class="fas fa-video"></i>
                     {% elif material.tipo_contenido == 'documento' %}<i class="fas fa-file-alt"></i>
@@ -294,9 +297,10 @@
                     {% elif material.tipo_contenido == 'presentacion' %}<i class="fas fa-file-powerpoint"></i>
                     {% else %}<i class="fas fa-file"></i>{% endif %}
                 </div>
-                <h5>{{ material.titulo }}</h5>
-                <p>{{ material.descripcion|truncatechars:100 }}</p>
-                <div class="meta">
+                {% endif %}
+                <h5 class="w-100">{{ material.titulo }}</h5>
+                <p class="w-100">{{ material.descripcion|truncatechars:110 }}</p>
+                <div class="meta w-100">
                     <span class="edu-u-58"><strong>Autor:</strong> {{ material.autor }}</span>
                     <span class="edu-u-59"><strong>Publicado:</strong> {{ material.fecha_publicacion|date:"d M Y" }}</span>
                     <span class="edu-u-60"><strong>Descargas:</strong> {{ material.descargas }}</span>
@@ -309,7 +313,7 @@
             </div>
         </div>
         {% empty %}
-        <div class="col-12"><p class="edu-u-62">No se encontraron materiales de apoyo.</p></div>
+        <div class="col-12 text-center py-4"><p class="edu-u-62">No se encontraron materiales de apoyo.</p></div>
         {% endfor %}
     </div>
     {% endif %}

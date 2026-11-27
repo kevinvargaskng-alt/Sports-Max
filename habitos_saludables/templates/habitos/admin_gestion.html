@@ -572,16 +572,16 @@
           <div class="p-3 rounded-3" style="background: var(--adm-surface); border: 1.5px dashed var(--adm-border);">
             {% if field.value %}
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-2 border-bottom" style="border-color: var(--adm-border) !important;" id="current-file-box-{{ field.name }}">
-              <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 70%;">
+              <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 68%;">
                 <i class="fas fa-paperclip text-success"></i>
                 <a href="{{ field.value.url }}" target="_blank" class="fw-semibold text-decoration-none text-truncate" style="color: var(--adm-green);">
                   {{ field.value.name }}
                 </a>
               </div>
-              <label class="btn btn-sm btn-outline-danger mb-0 d-inline-flex align-items-center gap-1" style="cursor: pointer;" title="Marcar para quitar este archivo al guardar">
-                <input type="checkbox" name="{{ field.html_name }}-clear" id="{{ field.html_name }}-clear_id" class="form-check-input mt-0 me-1">
+              <input type="checkbox" name="{{ field.html_name }}-clear" id="{{ field.html_name }}-clear_id" class="d-none">
+              <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1" onclick="quitarArchivoActual('{{ field.name }}', '{{ field.html_name }}-clear_id', '{{ field.id_for_label }}')">
                 <i class="fas fa-trash-alt"></i> Quitar archivo
-              </label>
+              </button>
             </div>
             {% endif %}
             <div class="d-flex flex-wrap align-items-center gap-2">
@@ -665,6 +665,19 @@ function limpiarArchivoSeleccionado(inputId) {
   if (input) {
     input.value = '';
     actualizarNombreArchivo(input);
+  }
+}
+
+function quitarArchivoActual(fieldName, clearCheckboxId, fileInputId) {
+  const box = document.getElementById('current-file-box-' + fieldName);
+  const chk = document.getElementById(clearCheckboxId);
+  const span = document.getElementById('file-chosen-' + fileInputId);
+  if (chk) chk.checked = true;
+  if (box) box.classList.add('d-none');
+  if (span) {
+    span.textContent = 'Archivo eliminado (haz clic en Guardar para confirmar o carga uno nuevo)';
+    span.style.color = '#dc3545';
+    span.style.fontWeight = '600';
   }
 }
 </script>
