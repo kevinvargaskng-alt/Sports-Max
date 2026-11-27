@@ -3,7 +3,7 @@
     <div class="container d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
         <small class="mb-0">&copy; 2026 Gestión Deportiva SENA. Todos los derechos reservados.</small>
         <small class="mb-0">
-            <a href="#" class="text-white-50 text-decoration-underline" data-bs-toggle="modal" data-bs-target="#modalCreditosReferencias" title="Ver referencias y créditos de recursos audiovisuales">
+            <a href="#" class="footer-credit-link text-white-50 text-decoration-underline" data-bs-toggle="modal" data-bs-target="#modalCreditosReferencias" title="Ver referencias y créditos de recursos audiovisuales">
                 <i class="fas fa-info-circle me-1"></i>Créditos y Referencias
             </a>
         </small>
@@ -68,77 +68,91 @@
         transform: translateY(-1px);
     }
 
-    /* Modo Claro Institucional SENA */
+    /* Modo Claro Institucional SENA (Completamente en Blanco) */
     html[data-theme="light"] #modalCreditosReferencias .creditos-modal-content,
     html.acc-claro #modalCreditosReferencias .creditos-modal-content,
     body.light-theme #modalCreditosReferencias .creditos-modal-content {
         background: #FFFFFF !important;
-        color: #334155 !important;
-        border: 1px solid #E2E8F0 !important;
-        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14) !important;
+        color: #1E293B !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16) !important;
     }
     html[data-theme="light"] #modalCreditosReferencias .creditos-header,
     html.acc-claro #modalCreditosReferencias .creditos-header,
     body.light-theme #modalCreditosReferencias .creditos-header {
-        background: #F8FAFC !important;
+        background: #FFFFFF !important;
         border-bottom: 2px solid #39A900 !important;
     }
     html[data-theme="light"] #modalCreditosReferencias .creditos-title,
     html.acc-claro #modalCreditosReferencias .creditos-title,
     body.light-theme #modalCreditosReferencias .creditos-title {
-        color: #1E293B !important;
+        color: #0F172A !important;
     }
     html[data-theme="light"] #modalCreditosReferencias .creditos-title i,
     html.acc-claro #modalCreditosReferencias .creditos-title i,
     body.light-theme #modalCreditosReferencias .creditos-title i {
         color: #39A900 !important;
     }
+    html[data-theme="light"] #modalCreditosReferencias .btn-close-white,
+    html.acc-claro #modalCreditosReferencias .btn-close-white,
+    body.light-theme #modalCreditosReferencias .btn-close-white {
+        filter: none !important;
+    }
+    html[data-theme="light"] #modalCreditosReferencias .modal-body,
+    html.acc-claro #modalCreditosReferencias .modal-body,
+    body.light-theme #modalCreditosReferencias .modal-body {
+        background: #FFFFFF !important;
+        color: #334155 !important;
+    }
     html[data-theme="light"] #modalCreditosReferencias .creditos-lead,
     html.acc-claro #modalCreditosReferencias .creditos-lead,
     body.light-theme #modalCreditosReferencias .creditos-lead {
         color: #334155 !important;
     }
-    html[data-theme="light"] #modalCreditosReferencias .creditos-card,
-    html.acc-claro #modalCreditosReferencias .creditos-card,
-    body.light-theme #modalCreditosReferencias .creditos-card {
+    html[data-theme="light"] #modalCreditosReferencias table,
+    html.acc-claro #modalCreditosReferencias table,
+    body.light-theme #modalCreditosReferencias table {
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+    html[data-theme="light"] #modalCreditosReferencias thead,
+    html[data-theme="light"] #modalCreditosReferencias thead th,
+    html.acc-claro #modalCreditosReferencias thead,
+    html.acc-claro #modalCreditosReferencias thead th,
+    body.light-theme #modalCreditosReferencias thead,
+    body.light-theme #modalCreditosReferencias thead th {
         background: #F8FAFC !important;
-        border: 1px solid #E2E8F0 !important;
+        color: #0F172A !important;
+        border-bottom: 2px solid #CBD5E1 !important;
+        border-color: #E2E8F0 !important;
     }
-    html[data-theme="light"] #modalCreditosReferencias .creditos-card:hover,
-    html.acc-claro #modalCreditosReferencias .creditos-card:hover,
-    body.light-theme #modalCreditosReferencias .creditos-card:hover {
-        border-color: #39A900 !important;
-        background: #F1F8EC !important;
-    }
-    html[data-theme="light"] #modalCreditosReferencias .creditos-item-title,
-    html.acc-claro #modalCreditosReferencias .creditos-item-title,
-    body.light-theme #modalCreditosReferencias .creditos-item-title {
+    html[data-theme="light"] #modalCreditosReferencias tbody,
+    html[data-theme="light"] #modalCreditosReferencias tbody tr,
+    html[data-theme="light"] #modalCreditosReferencias tbody td,
+    html.acc-claro #modalCreditosReferencias tbody,
+    html.acc-claro #modalCreditosReferencias tbody tr,
+    html.acc-claro #modalCreditosReferencias tbody td,
+    body.light-theme #modalCreditosReferencias tbody,
+    body.light-theme #modalCreditosReferencias tbody tr,
+    body.light-theme #modalCreditosReferencias tbody td {
+        background: #FFFFFF !important;
         color: #1E293B !important;
+        border-color: #E2E8F0 !important;
     }
-    html[data-theme="light"] #modalCreditosReferencias .creditos-item-title i,
-    html.acc-claro #modalCreditosReferencias .creditos-item-title i,
-    body.light-theme #modalCreditosReferencias .creditos-item-title i {
-        color: #007832 !important;
-    }
-    html[data-theme="light"] #modalCreditosReferencias .creditos-item-desc,
-    html.acc-claro #modalCreditosReferencias .creditos-item-desc,
-    body.light-theme #modalCreditosReferencias .creditos-item-desc {
-        color: #334155 !important;
-    }
-    html[data-theme="light"] #modalCreditosReferencias .creditos-item-desc strong,
-    html.acc-claro #modalCreditosReferencias .creditos-item-desc strong,
-    body.light-theme #modalCreditosReferencias .creditos-item-desc strong {
-        color: #1E293B !important;
+    html[data-theme="light"] #modalCreditosReferencias tbody td strong,
+    html.acc-claro #modalCreditosReferencias tbody td strong,
+    body.light-theme #modalCreditosReferencias tbody td strong {
+        color: #0F172A !important;
     }
     html[data-theme="light"] #modalCreditosReferencias .creditos-footer,
     html.acc-claro #modalCreditosReferencias .creditos-footer,
     body.light-theme #modalCreditosReferencias .creditos-footer {
-        background: #F8FAFC !important;
+        background: #FFFFFF !important;
         border-top: 1px solid #E2E8F0 !important;
     }
 </style>
 <div class="modal fade" id="modalCreditosReferencias" tabindex="-1" aria-labelledby="labelCreditos" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content creditos-modal-content">
             <div class="modal-header creditos-header">
                 <h5 class="modal-title fw-bold creditos-title" id="labelCreditos">
@@ -146,25 +160,73 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body">
-                <p class="small creditos-lead mb-3">En cumplimiento con las normas de propiedad intelectual, se listan las referencias y autorías de los recursos audiovisuales y tipográficos utilizados en esta aplicación:</p>
-                <div class="d-flex flex-column gap-3">
-                    <div class="creditos-card">
-                        <h6 class="fw-bold mb-1 creditos-item-title"><i class="fas fa-font me-2"></i>Tipografías</h6>
-                        <p class="small creditos-item-desc mb-0">Fuentes <strong>Poppins</strong>, <strong>Barlow</strong> y <strong>Syne</strong> provistas por Google Fonts bajo la licencia SIL Open Font License (OFL).</p>
-                    </div>
-                    <div class="creditos-card">
-                        <h6 class="fw-bold mb-1 creditos-item-title"><i class="fas fa-icons me-2"></i>Iconografía</h6>
-                        <p class="small creditos-item-desc mb-0">Iconos vectoriales provistos por <strong>Font Awesome 6</strong> bajo la licencia libre Font Awesome Free License (CC BY 4.0).</p>
-                    </div>
-                    <div class="creditos-card">
-                        <h6 class="fw-bold mb-1 creditos-item-title"><i class="fas fa-image me-2"></i>Imágenes y Fondos</h6>
-                        <p class="small creditos-item-desc mb-0">Fondos de pantalla e ilustraciones provistos por <strong>Unsplash</strong> y <strong>Freepik</strong> bajo licencia de uso gratuito para fines educativos e institucionales (Publicado: 2026).</p>
-                    </div>
-                    <div class="creditos-card">
-                        <h6 class="fw-bold mb-1 creditos-item-title"><i class="fas fa-landmark me-2"></i>Identidad Institucional</h6>
-                        <p class="small creditos-item-desc mb-0">Logotipo y fotografías del Centro Minero provistos por el <strong>Servicio Nacional de Aprendizaje (SENA)</strong>, utilizados con fines académicos y de identidad corporativa.</p>
-                    </div>
+            <div class="modal-body p-4">
+                <p class="small creditos-lead mb-3">
+                    En estricto cumplimiento con las normas de propiedad intelectual y los estándares de evaluación de proyectos, a continuación se detalla la autoría, fuente, fecha y licencia de cada recurso audiovisual, gráfico y tipográfico integrado en <strong>Sports-Max</strong>:
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.8rem;">
+                        <thead class="table-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+                            <tr>
+                                <th>Recurso / Elemento</th>
+                                <th>Autor / Creador</th>
+                                <th>Fuente / Origen</th>
+                                <th>Fecha</th>
+                                <th>Licencia / Autorización</th>
+                            </tr>
+                        </thead>
+                        <tbody class="creditos-table-body">
+                            <tr>
+                                <td><strong>Logotipo y Símbolo Oficial SENA</strong></td>
+                                <td>Servicio Nacional de Aprendizaje</td>
+                                <td>Manual de Identidad Visual SENA</td>
+                                <td>Vigente 2026</td>
+                                <td><span class="badge bg-success">Uso Institucional Formativo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Imagen Complejo Deportivo (Hero Inicio)</strong></td>
+                                <td>Área de Bienestar al Aprendiz</td>
+                                <td>Centro Minero Regional Boyacá</td>
+                                <td>2026</td>
+                                <td><span class="badge bg-success">Autorización SENA Centro Minero</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mascota IA «Tux» (Asistente Virtual)</strong></td>
+                                <td>Larry Ewing / Adaptación SENA</td>
+                                <td>Comunidad Linux / Sports-Max</td>
+                                <td>2026</td>
+                                <td><span class="badge bg-info text-dark">Libre / CC BY-SA 4.0</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Paquete de Iconografía Vectorial</strong></td>
+                                <td>Fonticons, Inc. (Dave Gandy)</td>
+                                <td>Font Awesome Free 6.5.1</td>
+                                <td>2024–2026</td>
+                                <td><span class="badge bg-primary">CC BY 4.0 / SIL OFL 1.1</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Familia Tipográfica (Poppins, Barlow, Syne)</strong></td>
+                                <td>Indian Type Foundry, Jeremy Dooley</td>
+                                <td>Google Fonts Repository</td>
+                                <td>2025–2026</td>
+                                <td><span class="badge bg-secondary">SIL Open Font License 1.1</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fotografías de Gimnasio e Inventario</strong></td>
+                                <td>Equipo de Desarrollo Sports-Max</td>
+                                <td>Instalaciones Gimnasio Centro Minero</td>
+                                <td>2026</td>
+                                <td><span class="badge bg-success">Producción Propia / Derechos Cedidos</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Audios y Notificaciones Web</strong></td>
+                                <td>Google Material Design / Sports-Max</td>
+                                <td>Material Sound Resources</td>
+                                <td>2025</td>
+                                <td><span class="badge bg-secondary">Apache License 2.0</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="modal-footer creditos-footer">

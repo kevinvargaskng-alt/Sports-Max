@@ -1,0 +1,81 @@
+# ════════════════════════════════════════════════════════════
+#  SPORTS-MAX — Docker Compose (desarrollo / pruebas locales)
+#
+#  Uso:
+#      docker compose up --build        # construir y arrancar  → http://localhost:8000
+#      docker compose up -d --build     # en segundo plano
+#      docker compose logs -f web       # ver logs
+#      docker compose down              # apagar (conserva los volúmenes)
+#      docker compose down -v           # apagar y BORRAR datos de los volúmenes
+#
+#  Las variables ${...} se leen de tu archivo ".env" (solo las que se nombran aquí).
+#  SECRET_KEY es obligatoria: ya la tienes en .env.
+# ════════════════════════════════════════════════════════════
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sportsmax:latest
+    container_name: sportsmax-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Define SECRET_KEY en tu archivo .env}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost:8000}
+      # Correo
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-}
+      # Motor de IA (servidor Flask aparte; en Windows/Mac el host se ve como host.docker.internal)
+      IA_SERVER_URL: ${IA_SERVER_URL:-http://host.docker.internal:5001}
+
+      # ── Base de datos ─────────────────────────────────────
+      # Por defecto NO se definen DB_*: el proyecto usa SQLite dentro del contenedor.
+      # (La conexión de MySQL Workbench en 127.0.0.1 no es alcanzable desde el contenedor,
+      #  por eso no se pasa el .env completo.)
+      #
+      # Para usar el servicio PostgreSQL de abajo, descomenta estas líneas y el bloque "db":
+      # DB_ENGINE: django.db.backends.postgresql
+      # DB_NAME: sportsmax
+      # DB_USER: sportsmax
+      # DB_PASSWORD: ${DB_PASSWORD:-sportsmax_dev}
+      # DB_HOST: db
+      # DB_PORT: "5432"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - media_data:/app/media     # fotos y archivos subidos (escudos, máquinas, perfiles)
+      - logs_data:/app/logs       # logs de auditoría y seguridad
+    # depends_on:                 # descomenta junto con el bloque "db"
+    #   db:
+    #     condition: service_healthy
+
+  # ── PostgreSQL opcional (datos persistentes) ───────────────
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: sportsmax-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: sportsmax
+  #     POSTGRES_USER: sportsmax
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-sportsmax_dev}
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U sportsmax -d sportsmax"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 10
+
+volumes:
+  media_data:
+  logs_data:
+  # pg_data:                      # descomenta junto con el bloque "db"

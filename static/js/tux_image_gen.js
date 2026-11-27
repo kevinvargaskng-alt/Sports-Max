@@ -43,6 +43,10 @@ function buildGeneratedImageCardHtml(imgData) {
 function openImageGenPanel() {
     const panel = document.getElementById('imageGenPanel');
     if (panel) {
+        const accessibilityPanel = document.getElementById('acc-panel');
+        const accessibilityToggle = document.getElementById('acc-toggle');
+        if (accessibilityPanel) accessibilityPanel.classList.remove('open');
+        if (accessibilityToggle) accessibilityToggle.setAttribute('aria-expanded', 'false');
         panel.classList.add('open');
         const pInput = document.getElementById('imgGenPrompt');
         if (pInput) setTimeout(() => pInput.focus(), 150);

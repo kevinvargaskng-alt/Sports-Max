@@ -5,6 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -13,6 +14,7 @@ from django.utils import timezone
 from core.security.audit import log_login_attempt, log_admin_action, log_suspicious_request
 from core.security.sanitizers import sanitize_html, sanitize_input
 from core.security.validators import validate_email_strict, validate_text_safe
+from core.validators import validar_letras, normalizar_espacios
 from core.security.file_upload import validate_uploaded_file
 from core.security.decorators import role_required, allowed_fields
 
@@ -225,11 +227,11 @@ def desbloquear_cuenta_view(request):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Formato de correo electrónico inválido.', 'errors': {'email': 'Correo inválido.'}}, status=400)
 
-    if not re.match(r'^\d{10}$', telefono):
+    if not re.fullmatch(r'3\d{9}', telefono):
         return JsonResponse({
             'status': 'error',
-            'message': 'El teléfono debe contener exactamente 10 dígitos numéricos.',
-            'errors': {'telefono': 'El teléfono debe contener exactamente 10 dígitos numéricos.'}
+            'message': 'El teléfono debe tener 10 dígitos y comenzar por 3.',
+            'errors': {'telefono': 'El teléfono debe tener 10 dígitos y comenzar por 3.'}
         }, status=400)
 
     try:
@@ -540,11 +542,11 @@ def perfil_view(request):
 
         usuario.email = email
 
-        # 2. Validación de Teléfono / Celular (Estricto: exactamente 10 dígitos)
+        # 2. Validación de celular colombiano: diez dígitos que empiezan por 3.
         if celular:
             import re
-            if not re.match(r'^\d{10}$', celular):
-                msg = 'El teléfono debe contener exactamente 10 dígitos numéricos.'
+            if not re.fullmatch(r'3\d{9}', celular):
+                msg = 'El teléfono debe tener 10 dígitos y comenzar por 3.'
                 if is_ajax:
                     return JsonResponse({'status': 'error', 'message': msg, 'errors': {'celular': msg}}, status=400)
                 messages.error(request, msg)
@@ -718,18 +720,26 @@ def admin_editar_usuario(request, user_id):
     if not request.user.is_staff:
         return redirect('perfil')
     u = get_object_or_404(Usuario, pk=user_id)
-    u.first_name = validate_text_safe(
-        request.POST.get('first_name', u.first_name).strip(), 'nombre', max_length=100
-    ).title()
-    u.last_name = validate_text_safe(
-        request.POST.get('last_name', u.last_name).strip(), 'apellidos', max_length=100
-    ).title()
-    new_email = request.POST.get('email', u.email).strip()
+    try:
+        first_name = validar_letras(normalizar_espacios(
+            request.POST.get('first_name', u.first_name)))
+        last_name = validar_letras(normalizar_espacios(
+            request.POST.get('last_name', u.last_name)))
+        if len(first_name) > 150 or len(last_name) > 150:
+            raise ValidationError('Los nombres y apellidos no pueden superar 150 caracteres.')
+        u.first_name = first_name.title()
+        u.last_name = last_name.title()
+    except ValidationError as exc:
+        messages.error(request, exc.messages[0])
+        return redirect('gestionar_usuarios')
+    new_email = request.POST.get('email', u.email).strip().lower()
     try:
         validate_email_strict(new_email)
+        if Usuario.objects.filter(email__iexact=new_email).exclude(pk=u.pk).exists():
+            raise ValidationError('Este correo electrónico ya está registrado.')
         u.email = new_email
-    except ValidationError:
-        messages.error(request, 'Correo electrónico inválido.')
+    except ValidationError as exc:
+        messages.error(request, exc.messages[0])
         return redirect('gestionar_usuarios')
     u.save()
     log_admin_action(request, 'EDITAR_USUARIO', 'Usuario', str(user_id),
@@ -832,9 +842,17 @@ def gestionar_usuarios_view(request):
     total_activos = qs.filter(is_active=True).count()
     total_bloqueados = qs.filter(is_active=False).count()
 
+    paginador = Paginator(qs, 10)
+    pagina_usuarios = paginador.get_page(request.GET.get('page'))
+    parametros_paginacion = request.GET.copy()
+    parametros_paginacion.pop('page', None)
+    parametros_paginacion.pop('export', None)
+
     contexto = {
         'usuario': request.user,
-        'todos_usuarios': qs,
+        'todos_usuarios': pagina_usuarios.object_list,
+        'pagina_usuarios': pagina_usuarios,
+        'parametros_paginacion': parametros_paginacion.urlencode(),
         'total_usuarios': total_usuarios,
         'total_activos': total_activos,
         'total_bloqueados': total_bloqueados,
@@ -879,7 +897,7 @@ def gestionar_backups_view(request):
 
 @login_required
 def export_database_backup(request):
-    """Genera y descarga un respaldo completo de la base de datos bajo un esquema estricto con metadatos."""
+    """Genera y descarga un respaldo completo de la base de datos bajo un esquema estricto con metadatos y claves naturales."""
     if not request.user.is_staff:
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("Acceso denegado: Se requieren privilegios de administrador.")
@@ -891,7 +909,15 @@ def export_database_backup(request):
 
     output = io.StringIO()
     try:
-        management.call_command('dumpdata', stdout=output, indent=2, exclude=['contenttypes', 'auth.Permission'])
+        # Exportamos con claves naturales para asegurar portabilidad e integridad relacional completa
+        management.call_command(
+            'dumpdata',
+            stdout=output,
+            indent=2,
+            natural_foreign=True,
+            natural_primary=True,
+            exclude=['contenttypes', 'auth.Permission', 'sessions']
+        )
         raw_json = output.getvalue()
         raw_data = json.loads(raw_json) if raw_json.strip() else []
 
@@ -907,8 +933,10 @@ def export_database_backup(request):
         }
         formatted_json = json.dumps(backup_dict, indent=2, ensure_ascii=False)
         log_admin_action(request, 'EXPORT_DB_BACKUP', 'Database', '', f'Respaldo estructurado generado ({len(raw_data)} registros)')
+
+        timestamp_str = timezone.localtime().strftime("%Y%m%d_%H%M%S")
         response = HttpResponse(formatted_json, content_type='application/json; charset=utf-8')
-        response['Content-Disposition'] = f'attachment; filename="respaldo_sportmax_{timezone.localdate().strftime("%Y%m%d")}.json"'
+        response['Content-Disposition'] = f'attachment; filename="respaldo_sportmax_{timestamp_str}.json"'
         return response
     except Exception as e:
         messages.error(request, f'Error al generar el respaldo de la base de datos: {e}')
@@ -917,7 +945,7 @@ def export_database_backup(request):
 
 @login_required
 def restore_database_backup(request):
-    """Restaura la base de datos a partir de un archivo JSON subido bajo el esquema estructurado."""
+    """Restaura la base de datos a partir de un archivo JSON subido bajo el esquema estructurado o fixture Django."""
     if not request.user.is_staff:
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("Acceso denegado: Se requieren privilegios de administrador.")
@@ -928,43 +956,81 @@ def restore_database_backup(request):
             messages.error(request, "Formato de archivo inválido. Debe ser un archivo .json")
             return redirect('gestionar_backups')
 
+        import io
         import tempfile
         import os
         import json
         from django.core import management
+        from django.db import connection
 
         temp_path = None
         try:
             content_bytes = backup_file.read()
-            content_str = content_bytes.decode('utf-8')
+            # Soportar UTF-8 estándar y UTF-8 con BOM (guardados en Windows)
+            content_str = content_bytes.decode('utf-8-sig')
             parsed = json.loads(content_str)
 
-            # Verificar si viene bajo el esquema estructurado con metadatos
-            if isinstance(parsed, dict) and 'data' in parsed:
-                records = parsed['data']
+            # Verificar si viene bajo el esquema estructurado con metadatos o formato lista directa
+            if isinstance(parsed, dict):
+                if 'data' in parsed and isinstance(parsed['data'], list):
+                    records = parsed['data']
+                elif 'objects' in parsed and isinstance(parsed['objects'], list):
+                    records = parsed['objects']
+                elif 'records' in parsed and isinstance(parsed['records'], list):
+                    records = parsed['records']
+                else:
+                    messages.error(request, "El archivo JSON no tiene un formato compatible. Debe contener una lista de registros en 'data' o ser un fixture estándar de Django.")
+                    return redirect('gestionar_backups')
             elif isinstance(parsed, list):
                 records = parsed
             else:
-                messages.error(request, "El archivo JSON no tiene una estructura de respaldo compatible (debe contener el esquema {'version', 'timestamp', 'entity', 'data': [...]}).")
+                messages.error(request, "El archivo JSON no tiene una estructura de respaldo compatible (debe ser un objeto con lista de datos o un array de registros).")
                 return redirect('gestionar_backups')
 
-            if not isinstance(records, list):
-                messages.error(request, "Los datos del respaldo deben ser una lista de registros.")
+            if not records:
+                messages.warning(request, "El archivo de respaldo está vacío (0 registros a restaurar).")
                 return redirect('gestionar_backups')
 
             with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json', encoding='utf-8') as temp_file:
                 json.dump(records, temp_file, indent=2, ensure_ascii=False)
                 temp_path = temp_file.name
 
-            # Cargar los datos a la base de datos
-            management.call_command('loaddata', temp_path)
+            # Desactivar temporalmente restricciones de claves foráneas para permitir
+            # restauración en cualquier orden sin violar dependencias entre modelos
+            try:
+                with connection.cursor() as cursor:
+                    if connection.vendor == 'mysql':
+                        cursor.execute('SET FOREIGN_KEY_CHECKS = 0;')
+                    elif connection.vendor == 'sqlite':
+                        cursor.execute('PRAGMA foreign_keys = OFF;')
+            except Exception:
+                pass  # Si el usuario de la BD no tiene permisos globales de FK, continuar con loaddata normal
+
+            load_output = io.StringIO()
+            try:
+                management.call_command('loaddata', temp_path, stdout=load_output)
+            finally:
+                # Siempre reactivar restricciones de integridad referencial
+                try:
+                    with connection.cursor() as cursor:
+                        if connection.vendor == 'mysql':
+                            cursor.execute('SET FOREIGN_KEY_CHECKS = 1;')
+                        elif connection.vendor == 'sqlite':
+                            cursor.execute('PRAGMA foreign_keys = ON;')
+                except Exception:
+                    pass
+
+            resumen_carga = load_output.getvalue().strip() or f'{len(records)} registros procesados'
             log_admin_action(request, 'RESTORE_DB_BACKUP', 'Database', '', f'Respaldo restaurado ({len(records)} registros)')
-            messages.success(request, f'Base de datos restaurada exitosamente desde el respaldo JSON ({len(records)} registros procesados).')
+            messages.success(request, f'¡Base de datos restaurada exitosamente! ({resumen_carga}).')
         except Exception as e:
             messages.error(request, f'Error al restaurar la base de datos: {e}')
         finally:
             if temp_path and os.path.exists(temp_path):
-                os.unlink(temp_path)
+                try:
+                    os.unlink(temp_path)
+                except OSError:
+                    pass
     else:
         messages.error(request, "No se ha proporcionado ningún archivo para restaurar.")
 

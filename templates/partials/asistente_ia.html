@@ -420,6 +420,79 @@
   opacity:0.55;cursor:not-allowed;transform:none;
 }
 
+/* Contraste propio del generador cuando el sitio está en modo claro. */
+html[data-theme="light"] body .image-gen-panel,
+html.acc-claro body .image-gen-panel,
+body.light-theme .image-gen-panel{
+  background:#FFFFFF !important;
+  color:#1E293B !important;
+  border:1px solid #CBD5E1;
+  box-shadow:0 12px 30px rgba(15,23,42,.18);
+}
+html[data-theme="light"] body .image-gen-panel .img-panel-title,
+html[data-theme="light"] body .image-gen-panel .toggle-text,
+html[data-theme="light"] body .image-gen-panel .opt-btn,
+html.acc-claro body .image-gen-panel .img-panel-title,
+html.acc-claro body .image-gen-panel .toggle-text,
+html.acc-claro body .image-gen-panel .opt-btn,
+body.light-theme .image-gen-panel .img-panel-title,
+body.light-theme .image-gen-panel .toggle-text,
+body.light-theme .image-gen-panel .opt-btn{
+  color:#1E293B !important;
+}
+html[data-theme="light"] body .image-gen-panel .img-panel-label,
+html[data-theme="light"] body .image-gen-panel .toggle-sub,
+html.acc-claro body .image-gen-panel .img-panel-label,
+html.acc-claro body .image-gen-panel .toggle-sub,
+body.light-theme .image-gen-panel .img-panel-label,
+body.light-theme .image-gen-panel .toggle-sub{
+  color:#475569 !important;
+}
+html[data-theme="light"] body .image-gen-panel .img-panel-textarea,
+html.acc-claro body .image-gen-panel .img-panel-textarea,
+body.light-theme .image-gen-panel .img-panel-textarea{
+  background:#FFFFFF !important;
+  border:1px solid #94A3B8 !important;
+  color:#1E293B !important;
+}
+html[data-theme="light"] body .image-gen-panel .img-panel-textarea::placeholder,
+html.acc-claro body .image-gen-panel .img-panel-textarea::placeholder,
+body.light-theme .image-gen-panel .img-panel-textarea::placeholder{
+  color:#64748B !important;
+  opacity:1;
+}
+html[data-theme="light"] body .image-gen-panel .prompt-chip,
+html.acc-claro body .image-gen-panel .prompt-chip,
+body.light-theme .image-gen-panel .prompt-chip{
+  background:#F1F5F9 !important;
+  border:1px solid #CBD5E1 !important;
+  color:#334155 !important;
+}
+html[data-theme="light"] body .image-gen-panel .opt-btn,
+html.acc-claro body .image-gen-panel .opt-btn,
+body.light-theme .image-gen-panel .opt-btn{
+  background:#F1F5F9 !important;
+  border:1px solid #CBD5E1 !important;
+}
+html[data-theme="light"] body .image-gen-panel .opt-btn.active,
+html.acc-claro body .image-gen-panel .opt-btn.active,
+body.light-theme .image-gen-panel .opt-btn.active{
+  background:#DBEAFE !important;
+  border-color:#2563EB !important;
+  color:#1D4ED8 !important;
+}
+html[data-theme="light"] body .image-gen-panel .toggle-wrap,
+html.acc-claro body .image-gen-panel .toggle-wrap,
+body.light-theme .image-gen-panel .toggle-wrap{
+  background:#F8FAFC !important;
+  border:1px solid #CBD5E1 !important;
+}
+html[data-theme="light"] body .image-gen-panel .img-panel-close,
+html.acc-claro body .image-gen-panel .img-panel-close,
+body.light-theme .image-gen-panel .img-panel-close{
+  color:#475569 !important;
+}
+
 /* Tarjeta de imagen generada en el chat */
 .gen-img-card{
   border-radius:13px;overflow:hidden;background:rgba(0,0,0,0.35);border:0.5px solid rgba(255,255,255,0.12);
@@ -814,6 +887,10 @@ if (tuxPetToggle) {
         e.stopPropagation();
         chatWindow.classList.toggle('open');
         if (chatWindow.classList.contains('open')) {
+            const accessibilityPanel = document.getElementById('acc-panel');
+            const accessibilityToggle = document.getElementById('acc-toggle');
+            if (accessibilityPanel) accessibilityPanel.classList.remove('open');
+            if (accessibilityToggle) accessibilityToggle.setAttribute('aria-expanded', 'false');
             const input = document.getElementById('chatIn');
             if (input) setTimeout(() => input.focus(), 150);
         }

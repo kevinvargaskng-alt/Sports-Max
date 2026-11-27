@@ -59,15 +59,16 @@
                         {% for p in prestamos_activos %}
                         <option value="{{ p.codigo_prestamo }}"
                                 data-cantidad="{{ p.cantidad_prestada }}"
-                                data-elemento="{{ p.elemento.nombre_elemento }}"
+                                data-pendiente="{{ p.cantidad_pendiente }}"
+                                data-elemento="{{ p.elemento.tipo_maquina|default:'Elemento no identificado' }}"
                                 data-vence="{{ p.dia_devolucion|date:'d/m/Y' }}"
                                 data-usuario="{{ p.usuario.get_full_name }}">
                             {% if user.is_staff %}
-                                #{{ p.codigo_prestamo }} — {{ p.usuario.get_full_name }} → {{ p.elemento.nombre_elemento }}
-                                ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.dia_devolucion|date:"d/m/Y" }}
+                                #{{ p.codigo_prestamo }} — {{ p.usuario.get_full_name }} → {{ p.elemento.tipo_maquina|default:'Elemento no identificado' }}
+                                ({{ p.cantidad_prestada }} unid.; pendientes: {{ p.cantidad_pendiente }}) · Vence: {{ p.dia_devolucion|date:"d/m/Y" }}
                             {% else %}
-                                #{{ p.codigo_prestamo }} — {{ p.elemento.nombre_elemento }}
-                                ({{ p.cantidad_prestada }} unid.) · Vence: {{ p.dia_devolucion|date:"d/m/Y" }}
+                                #{{ p.codigo_prestamo }} — {{ p.elemento.tipo_maquina|default:'Elemento no identificado' }}
+                                ({{ p.cantidad_prestada }} unid.; pendientes: {{ p.cantidad_pendiente }}) · Vence: {{ p.dia_devolucion|date:"d/m/Y" }}
                             {% endif %}
                         </option>
                         {% endfor %}
@@ -78,15 +79,16 @@
                     <i class="fas fa-info-circle text-info me-2"></i>
                     {% if user.is_staff %}<span>Usuario: <strong id="infoUsuario"></strong> · </span>{% endif %}
                     Elemento: <strong id="infoElemento"></strong> ·
-                    Cant. prestada: <strong id="infoCantidad"></strong> ·
+                    Pendiente por devolver: <strong id="infoCantidad"></strong> ·
                     Fecha límite: <strong id="infoVence" class="text-warning"></strong>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold small text-white-50">Cantidad a Devolver <span class="text-danger">* (Mínimo 1)</span></label>
+                        <label class="form-label fw-bold small text-white-50">Cantidad a Devolver <span class="text-danger">* (mínimo 1)</span></label>
                         <input type="number" name="cantidad_devuelta" id="inputCantDevuelta"
-                               class="form-control custom-input input-entero-estricto" min="1" max="9999" value="1" required placeholder="Mínimo 1">
+                               class="form-control custom-input input-entero-estricto" min="1" max="1" value="1" required placeholder="Mínimo 1">
+                        <small class="text-white-50 d-block mt-1">Máximo permitido para este préstamo: <strong id="maxCantDevuelta">1</strong></small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold small text-white-50">Estado del Elemento</label>
@@ -108,7 +110,7 @@
                 <div id="panelNovedad" class="p-3 mb-3 dev-u-2">
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-white-50">Tipo de Novedad</label>
-                        <select name="tipo_novedad_devolucion" class="form-select custom-input">
+                        <select name="tipo_novedad_devolucion" id="tipoNovedadDevolucion" class="form-select custom-input">
                             <option value="">Sin novedad</option>
                             <option value="Daño">Daño</option>
                             <option value="Pérdida">Pérdida</option>
@@ -174,7 +176,7 @@
                             {% if user.is_staff %}
                             <td data-label="Usuario">{{ d.prestamo.usuario.get_full_name|default:d.prestamo.usuario.username }}</td>
                             {% endif %}
-                            <td data-label="Elemento">{{ d.prestamo.detalles.first.elemento.nombre_elemento|default:"—" }}</td>
+                            <td data-label="Elemento">{{ d.prestamo.elemento.tipo_maquina|default:"Elemento no identificado" }}</td>
                             <td data-label="Cant.">{{ d.cantidad_devuelta }}</td>
                             <td data-label="Fecha Dev." class="text-warning">{{ d.fecha_devolucion|date:"d/m/Y" }}</td>
                             <td data-label="Estado Elem.">
@@ -217,11 +219,15 @@
    HELPER — rellena el panel de info con los datos del option
 ══════════════════════════════════════════════════════════ */
 function actualizarInfoPrestamo(opt) {
+    if (!opt || !opt.value) return;
+    const pendiente = parseInt(opt.dataset.pendiente || opt.dataset.cantidad, 10) || 1;
     document.getElementById('infoElemento').textContent = opt.dataset.elemento;
-    document.getElementById('infoCantidad').textContent = opt.dataset.cantidad;
+    document.getElementById('infoCantidad').textContent = pendiente;
     document.getElementById('infoVence').textContent    = opt.dataset.vence;
-    document.getElementById('inputCantDevuelta').max    = opt.dataset.cantidad;
-    document.getElementById('inputCantDevuelta').value  = opt.dataset.cantidad;
+    const inputCantidad = document.getElementById('inputCantDevuelta');
+    inputCantidad.max = pendiente;
+    inputCantidad.value = 1;
+    document.getElementById('maxCantDevuelta').textContent = pendiente;
     document.getElementById('infoPrestamo').style.display = 'block';
 
     const infoUsuario = document.getElementById('infoUsuario');
@@ -281,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
 ══════════════════════════════════════════════════════════ */
 document.getElementById('checkNovedad').addEventListener('change', function () {
     document.getElementById('panelNovedad').style.display = this.checked ? 'block' : 'none';
+    document.getElementById('tipoNovedadDevolucion').required = this.checked;
 });
 </script>
 {% endblock %}

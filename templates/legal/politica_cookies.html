@@ -11,31 +11,33 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-9">
-            <div class="card bg-dark text-white border-secondary mb-4 shadow-lg">
+            <div class="card card-legal-sena mb-4 shadow-lg">
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle bg-warning bg-opacity-25 p-3 text-warning">
+                        <div class="legal-icon-circle">
                             <i class="fas fa-cookie-bite fa-2x" aria-hidden="true"></i>
                         </div>
                         <div>
-                            <span class="badge bg-warning text-dark mb-1">Transparencia Digital</span>
-                            <h1 class="h2 fw-bold text-white mb-0">Política de Cookies</h1>
-                            <small class="text-white-50">SENA Centro Minero | Sports-Max</small>
+                            <span class="badge badge-legal-tag mb-1">Transparencia Digital SENA</span>
+                            <h1 class="h2 fw-bold legal-title mb-0">Política de Cookies</h1>
+                            <small class="legal-subtitle">SENA Centro Minero | Sports-Max</small>
                         </div>
                     </div>
 
-                    <p class="text-white-50 small my-4">
+                    <p class="legal-text small my-4">
                         En <strong>Sports-Max</strong> utilizamos cookies y tecnologías similares para garantizar el funcionamiento seguro de la plataforma, recordar tus preferencias de accesibilidad y analizar de forma anónima el rendimiento de nuestros servicios deportivos.
                     </p>
 
-                    <hr class="border-secondary my-4">
+                    <hr class="legal-divider my-4">
 
                     <!-- Tipos de Cookies -->
                     <section class="mb-4">
-                        <h2 class="h4 text-warning fw-bold mb-3">1. Tipos de Cookies que Utilizamos</h2>
+                        <h2 class="h4 legal-section-title fw-bold mb-3">
+                            <i class="fas fa-layer-group me-2" aria-hidden="true"></i>1. Tipos de Cookies que Utilizamos
+                        </h2>
                         
                         <div class="table-responsive">
-                            <table class="table table-dark table-bordered border-secondary small">
+                            <table class="table table-legal-sena align-middle small">
                                 <thead>
                                     <tr>
                                         <th scope="col" style="width: 25%;">Categoría</th>
@@ -45,19 +47,34 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="fw-bold text-success"><i class="fas fa-shield-alt me-1" aria-hidden="true"></i>Técnicas / Necesarias</td>
-                                        <td>Esenciales para el inicio de sesión (`sessionid`), protección contra falsificación de peticiones (`csrftoken`) y control de autenticación.</td>
-                                        <td><span class="badge bg-success">Obligatorias</span><br><small class="text-white-50">2 horas / Sesión</small></td>
+                                        <td class="fw-bold text-sena-cat-green">
+                                            <i class="fas fa-shield-alt me-1" aria-hidden="true"></i>Técnicas / Necesarias
+                                        </td>
+                                        <td>Esenciales para el inicio de sesión (<code>sessionid</code>), protección contra falsificación de peticiones (<code>csrftoken</code>) y control de autenticación.</td>
+                                        <td>
+                                            <span class="badge bg-success">Obligatorias</span><br>
+                                            <small class="legal-meta-text">2 horas / Sesión</small>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold text-info"><i class="fas fa-sliders-h me-1" aria-hidden="true"></i>Preferencias</td>
+                                        <td class="fw-bold text-sena-cat-primary">
+                                            <i class="fas fa-sliders-h me-1" aria-hidden="true"></i>Preferencias
+                                        </td>
                                         <td>Almacenan tus opciones de tema (modo oscuro/claro) y ajustes del panel de accesibilidad (tamaño de fuente, contraste).</td>
-                                        <td><span class="badge bg-info text-dark">Opcionales</span><br><small class="text-white-50">1 año</small></td>
+                                        <td>
+                                            <span class="badge badge-opt-sena">Opcionales</span><br>
+                                            <small class="legal-meta-text">1 año</small>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold text-warning"><i class="fas fa-chart-line me-1" aria-hidden="true"></i>Analíticas</td>
+                                        <td class="fw-bold text-sena-cat-orange">
+                                            <i class="fas fa-chart-line me-1" aria-hidden="true"></i>Analíticas
+                                        </td>
                                         <td>Miden métricas anónimas de navegación para optimizar tiempos de respuesta y rendimiento sin rastreo publicitario.</td>
-                                        <td><span class="badge bg-warning text-dark">Opcionales</span><br><small class="text-white-50">Sujetas a Consentimiento</small></td>
+                                        <td>
+                                            <span class="badge badge-opt-sena">Opcionales</span><br>
+                                            <small class="legal-meta-text">Sujetas a Consentimiento</small>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -66,19 +83,23 @@
 
                     <!-- Cómo Gestionar -->
                     <section class="mb-4">
-                        <h2 class="h4 text-warning fw-bold mb-3">2. Cómo Gestionar tus Preferencias</h2>
-                        <p class="text-white-50 small">
+                        <h2 class="h4 legal-section-title fw-bold mb-3">
+                            <i class="fas fa-user-cog me-2" aria-hidden="true"></i>2. Cómo Gestionar tus Preferencias
+                        </h2>
+                        <p class="legal-text small">
                             Puedes modificar o revocar tu consentimiento en cualquier momento utilizando nuestro panel interactivo de cookies:
                         </p>
-                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="window.SenaCookieConsent && window.SenaCookieConsent.openPreferencesModal()">
-                            <i class="fas fa-cog me-1" aria-hidden="true"></i>Configurar Preferencias de Cookies
+                        <button type="button" class="btn btn-config-cookies-sena btn-sm px-3 py-2" onclick="window.SenaCookieConsent && window.SenaCookieConsent.openPreferencesModal()">
+                            <i class="fas fa-sliders-h me-1" aria-hidden="true"></i>Configurar Preferencias de Cookies
                         </button>
                     </section>
 
                     <!-- Navegadores -->
                     <section>
-                        <h2 class="h4 text-warning fw-bold mb-3">3. Configuración en el Navegador</h2>
-                        <p class="text-white-50 small mb-0">
+                        <h2 class="h4 legal-section-title fw-bold mb-3">
+                            <i class="fas fa-globe me-2" aria-hidden="true"></i>3. Configuración en el Navegador
+                        </h2>
+                        <p class="legal-text small mb-0">
                             También puedes permitir, bloquear o eliminar las cookies instaladas en tu equipo mediante la configuración de las opciones de tu navegador web (Google Chrome, Mozilla Firefox, Microsoft Edge, Safari).
                         </p>
                     </section>
@@ -91,4 +112,164 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Estilos duales Institucionales SENA para Política de Cookies */
+.card-legal-sena {
+    background: #161b22;
+    border: 1px solid #30363d;
+    color: #f0f6fc;
+    border-radius: 16px;
+}
+.legal-title { color: #ffffff; }
+.legal-subtitle { color: #8b949e; }
+.legal-text { color: #c9d1d9; }
+.legal-divider { border-color: #30363d; }
+.legal-section-title { color: #FF6B00; }
+.legal-icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 107, 0, 0.15);
+    color: #FF6B00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.badge-legal-tag {
+    background: rgba(255, 107, 0, 0.2);
+    color: #FF9B42;
+    border: 1px solid rgba(255, 107, 0, 0.4);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.table-legal-sena {
+    color: #c9d1d9;
+    border-color: #30363d;
+}
+.table-legal-sena thead th {
+    background: #21262d;
+    color: #ffffff;
+    border-bottom: 2px solid #39A900;
+    padding: 12px;
+}
+.table-legal-sena tbody td {
+    background: transparent;
+    border-color: #30363d;
+    padding: 12px;
+}
+.text-sena-cat-green { color: #4ADE80; }
+.text-sena-cat-primary { color: #38BDF8; }
+.text-sena-cat-orange { color: #FF9B42; }
+.legal-meta-text { color: #8b949e; }
+.badge-opt-sena {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+.btn-config-cookies-sena {
+    background: linear-gradient(135deg, #39A900, #007832);
+    color: #ffffff;
+    border: 1px solid #007832;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.btn-config-cookies-sena:hover {
+    background: linear-gradient(135deg, #44C700, #00963E);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(57, 169, 0, 0.3);
+}
+
+/* Modo Claro / Alto Contraste */
+html[data-theme="light"] .card-legal-sena,
+html.acc-claro .card-legal-sena,
+body.light-theme .card-legal-sena {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+html[data-theme="light"] .legal-title,
+html.acc-claro .legal-title,
+body.light-theme .legal-title {
+    color: #0F172A !important;
+}
+html[data-theme="light"] .legal-subtitle,
+html.acc-claro .legal-subtitle,
+body.light-theme .legal-subtitle {
+    color: #64748B !important;
+}
+html[data-theme="light"] .legal-text,
+html.acc-claro .legal-text,
+body.light-theme .legal-text {
+    color: #334155 !important;
+}
+html[data-theme="light"] .legal-divider,
+html.acc-claro .legal-divider,
+body.light-theme .legal-divider {
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] .legal-section-title,
+html.acc-claro .legal-section-title,
+body.light-theme .legal-section-title {
+    color: #007832 !important;
+}
+html[data-theme="light"] .legal-icon-circle,
+html.acc-claro .legal-icon-circle,
+body.light-theme .legal-icon-circle {
+    background: #FFF7ED !important;
+    color: #EA580C !important;
+    border: 1.5px solid #FDBA74 !important;
+}
+html[data-theme="light"] .badge-legal-tag,
+html.acc-claro .badge-legal-tag,
+body.light-theme .badge-legal-tag {
+    background: #FFF7ED !important;
+    color: #C2410C !important;
+    border: 1px solid #FDBA74 !important;
+}
+html[data-theme="light"] .table-legal-sena thead th,
+html.acc-claro .table-legal-sena thead th,
+body.light-theme .table-legal-sena thead th {
+    background: #F1F8EC !important;
+    color: #007832 !important;
+    border-bottom: 2px solid #39A900 !important;
+}
+html[data-theme="light"] .table-legal-sena tbody td,
+html.acc-claro .table-legal-sena tbody td,
+body.light-theme .table-legal-sena tbody td {
+    background: #FFFFFF !important;
+    color: #334155 !important;
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] .text-sena-cat-green,
+html.acc-claro .text-sena-cat-green,
+body.light-theme .text-sena-cat-green {
+    color: #007832 !important;
+}
+html[data-theme="light"] .text-sena-cat-primary,
+html.acc-claro .text-sena-cat-primary,
+body.light-theme .text-sena-cat-primary {
+    color: #0284C7 !important;
+}
+html[data-theme="light"] .text-sena-cat-orange,
+html.acc-claro .text-sena-cat-orange,
+body.light-theme .text-sena-cat-orange {
+    color: #D97706 !important;
+}
+html[data-theme="light"] .legal-meta-text,
+html.acc-claro .legal-meta-text,
+body.light-theme .legal-meta-text {
+    color: #64748B !important;
+}
+html[data-theme="light"] .badge-opt-sena,
+html.acc-claro .badge-opt-sena,
+body.light-theme .badge-opt-sena {
+    background: #E0F2FE !important;
+    color: #0369A1 !important;
+    border: 1px solid #BAE6FD !important;
+}
+</style>
 {% endblock %}

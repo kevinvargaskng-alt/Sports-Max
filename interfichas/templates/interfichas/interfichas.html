@@ -755,15 +755,15 @@
 
 <div class="modal fade" id="modalCierre" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content custom-modal text-white">
+    <div class="modal-content custom-modal">
       <div class="modal-header border-0">
         <h5 class="modal-title fw-bold"><i class="fas fa-flag-checkered text-warning me-2"></i>Cerrar Torneo</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="POST" id="formCierre">
         {% csrf_token %}
         <div class="modal-body p-4">
-          <p class="text-muted small mb-3">Selecciona el equipo ganador de <strong id="cierre-nombre" class="text-white"></strong>.</p>
+          <p class="text-muted small mb-3">Selecciona el equipo ganador de <strong id="cierre-nombre" class="fw-bold"></strong>.</p>
           <div class="mb-3">
             <label class="form-label small fw-bold text-muted text-uppercase int-u-58">Equipo campeón <span class="text-danger">*</span></label>
             <select name="ganador_id" id="cierre-equipos" class="custom-input form-control form-select" required>

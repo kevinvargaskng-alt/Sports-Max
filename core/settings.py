@@ -101,27 +101,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # ═══════════════════════════════════════════════════════════
-#  BASE DE DATOS (dinámica: MySQL/PostgreSQL/SQLite)
+#  BASE DE DATOS (MySQL Workbench / Local / Nube)
 # ═══════════════════════════════════════════════════════════
-# ─────────────────────────────────────────────────────────────
-#  CONEXIÓN CON MYSQL WORKBENCH (DESARROLLO LOCAL) — COMENTADA
-#  Mientras el proyecto se sube a Docker/la nube NO se usa MySQL local
-#  (127.0.0.1 de tu PC no es accesible desde el contenedor): si DB_NAME y
-#  DB_USER no están definidos, se usa SQLite automáticamente (ver abajo).
-#
-#  Para volver a conectar con Workbench, define estas variables en tu .env:
-#
-#      # DB_ENGINE=django.db.backends.mysql
-#      # DB_NAME=nombre_de_tu_esquema      # el que ves en Workbench
-#      # DB_USER=root
-#      # DB_PASSWORD=tu_clave
-#      # DB_HOST=127.0.0.1
-#      # DB_PORT=3306
-#
-#  (Quita los "#" para activarlas. El driver PyMySQL ya está configurado en
-#  core/__init__.py.) Para la nube usa una base gestionada (PostgreSQL de
-#  Render, MySQL de Railway/Aiven, etc.) con DB_HOST/DB_PORT de ese servicio.
-# ─────────────────────────────────────────────────────────────
 DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.mysql')
 DB_NAME = os.environ.get('DB_NAME')
 DB_USER = os.environ.get('DB_USER')

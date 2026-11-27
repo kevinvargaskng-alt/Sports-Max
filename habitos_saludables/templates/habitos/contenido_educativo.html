@@ -39,6 +39,50 @@
             <input type="text" id="habitsSearch" class="search-input" placeholder="Buscar hábito...">
         </div>
     </div>
+    {% if categoria_activa == 'prevencion' %}
+    <section class="prevencion-guide reveal" aria-labelledby="prevencion-title">
+        <div class="d-flex align-items-start gap-3 mb-3">
+            <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width:42px;height:42px;background:#DCFCE7;color:#15803D;">
+                <i class="fas fa-shield-virus" aria-hidden="true"></i>
+            </span>
+            <div>
+                <h2 id="prevencion-title" class="h4 mb-1">Prevención de enfermedades</h2>
+                <p class="prevencion-guide-intro mb-0">Pequeñas acciones cotidianas ayudan a reducir riesgos y cuidar tu bienestar.</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-hands-wash" aria-hidden="true"></i>
+                    <h3>Higiene de manos</h3>
+                    <p>Lávate con agua y jabón, especialmente antes de comer y después de ir al baño. Esta práctica ayuda a disminuir la transmisión de algunas infecciones.</p>
+                </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-syringe" aria-hidden="true"></i>
+                    <h3>Vacunación al día</h3>
+                    <p>Consulta tu carné y pregunta en tu IPS cuáles vacunas corresponden a tu edad, antecedentes y condiciones de salud.</p>
+                </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-apple-alt" aria-hidden="true"></i>
+                    <h3>Hábitos protectores</h3>
+                    <p>Procura una alimentación variada, actividad física regular, sueño suficiente y evita el tabaco. Adapta tus hábitos a tus necesidades.</p>
+                </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <article class="prevencion-tip">
+                    <i class="fas fa-user-md" aria-hidden="true"></i>
+                    <h3>Revisiones oportunas</h3>
+                    <p>Pregunta al personal de salud qué controles o pruebas preventivas son adecuados para ti, según tu edad y antecedentes.</p>
+                </article>
+            </div>
+        </div>
+        <p class="small mt-3 mb-2 text-muted">Estas recomendaciones son generales y no reemplazan la valoración de un profesional de salud.</p>
+    </section>
+    {% endif %}
     <div class="row g-4">
         {% for habito in habitos %}
         <div class="col-md-6 col-lg-4 habit-card reveal">
@@ -58,7 +102,9 @@
             </a>
         </div>
         {% empty %}
+        {% if categoria_activa != 'prevencion' %}
         <div class="col-12"><p class="edu-u-5">No hay hábitos disponibles en esta categoría.</p></div>
+        {% endif %}
         {% endfor %}
     </div>
 

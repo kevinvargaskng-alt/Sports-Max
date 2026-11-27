@@ -13,10 +13,6 @@
 <div class="main-container py-4">
     <div class="container">
 
-        {% if user.is_staff or user.is_superuser %}
-            {% include 'partials/admin_nav.html' with admin_tab='perfil' %}
-        {% endif %}
-
         <div class="sport-card mb-4 shadow-lg">
             <div class="row align-items-center p-2">
 
@@ -365,7 +361,7 @@
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label small fw-bold text-cap">Número de teléfono celular</label>
-                            <input type="tel" name="celular" class="custom-input form-control shadow-sm" value="{{ usuario.telefono|default:'' }}" minlength="10" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 3001234567 (10 dígitos)">
+                            <input type="tel" name="celular" class="custom-input form-control shadow-sm" value="{{ usuario.telefono|default:'' }}" minlength="10" maxlength="10" pattern="3[0-9]{9}" inputmode="numeric" placeholder="Ej: 3001234567 (10 dígitos)">
                             <small class="text-white-50 small">Solo dígitos numéricos (exactamente 10 dígitos).</small>
                         </div>
                     </div>

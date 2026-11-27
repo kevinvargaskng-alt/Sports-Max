@@ -12,19 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initSportsMaxValidators() {
-    const REGEX_CARACTERES_PROHIBIDOS = /[@#$%&*=\/\\<>!¡?¿^{}\[\]~|]/g;
+    const REGEX_CARACTERES_PROHIBIDOS = /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g;
 
     // 1. TEXTO LIMPIO & TITLE CASE (Nombres, Apellidos, Campos de texto general)
-    document.querySelectorAll('.input-texto-limpio, input[name*="nombre"], input[name*="apellido"], input[name*="capitan"]').forEach(input => {
+    document.querySelectorAll('.input-texto-limpio, input[name="nombres"], input[name="apellidos"], input[name="first_name"], input[name="last_name"], input[name="capitan"], input[name="ciudad"], input[name="cargo"]').forEach(input => {
+        input.setAttribute('pattern', '[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*');
+        input.setAttribute('inputmode', 'text');
+        const feedback = ensureValidationFeedback(input);
         input.addEventListener('input', (e) => {
-            if (REGEX_CARACTERES_PROHIBIDOS.test(e.target.value)) {
-                e.target.value = e.target.value.replace(REGEX_CARACTERES_PROHIBIDOS, '');
-                e.target.classList.add('is-invalid');
-                e.target.setAttribute('aria-invalid', 'true');
-            } else {
-                e.target.classList.remove('is-invalid');
-                e.target.setAttribute('aria-invalid', 'false');
-            }
+            const el = e.target;
+            const previous = el.value;
+            el.value = previous.replace(REGEX_CARACTERES_PROHIBIDOS, '').replace(/\s+/g, ' ');
+            const changed = previous !== el.value;
+            if (changed) el.dataset.validationRejected = 'true';
+            else delete el.dataset.validationRejected;
+            setFieldValidation(el, changed ? 'El campo solo puede contener letras y espacios.' : '', feedback);
         });
 
         input.addEventListener('blur', (e) => {
@@ -41,15 +43,78 @@ function initSportsMaxValidators() {
 
     // 2. ENTEROS ESTRICTOS (Documentos, Fichas, Teléfono/Celular, Cantidades)
     document.querySelectorAll('.input-entero-estricto, input[name*="ficha"], input[name*="documento"], input[name*="telefono"], input[name*="celular"]').forEach(input => {
+        input.setAttribute('inputmode', 'numeric');
+        input.setAttribute('pattern', '[0-9]+');
+        const esFicha = input.name && input.name.toLowerCase().includes('ficha');
+        input.setAttribute('maxlength', input.getAttribute('maxlength') || (esFicha ? '7' : '10'));
+        if (input.name && /telefono|celular/i.test(input.name)) {
+            input.setAttribute('minlength', input.getAttribute('minlength') || '10');
+            input.setAttribute('maxlength', '10');
+            input.setAttribute('pattern', '3[0-9]{9}');
+            input.setCustomValidity('');
+        }
         input.addEventListener('keydown', (e) => {
             const teclasProhibidas = ['e', 'E', '-', '+', '.', ','];
             if (teclasProhibidas.includes(e.key)) {
                 e.preventDefault();
+                input.dataset.validationRejected = 'true';
+                setFieldValidation(input, 'Este campo solo puede contener dígitos.', numericFeedback);
             }
         });
 
+        const numericFeedback = ensureValidationFeedback(input);
         input.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            const previous = e.target.value;
+            e.target.value = previous.replace(/[^0-9]/g, '');
+            const changed = previous !== e.target.value;
+            if (changed) e.target.dataset.validationRejected = 'true';
+            else delete e.target.dataset.validationRejected;
+            setFieldValidation(e.target, changed ? 'Este campo solo puede contener dígitos.' : '', numericFeedback);
+        });
+    });
+
+    // Campos numéricos nativos en formularios que no usan la clase heredada.
+    document.querySelectorAll('input[type="number"]:not(.input-entero-estricto)').forEach(input => {
+        input.setAttribute('inputmode', input.step && input.step !== '1' ? 'decimal' : 'numeric');
+        const feedback = ensureValidationFeedback(input);
+        input.addEventListener('keydown', (event) => {
+            const esControl = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key) || event.ctrlKey || event.metaKey;
+            const aceptaDecimal = input.step && input.step !== '1' && ['.', ','].includes(event.key);
+            if (!esControl && !aceptaDecimal && !/^\d$/.test(event.key)) {
+                event.preventDefault();
+                input.dataset.validationRejected = 'true';
+                setFieldValidation(input, 'Este campo solo puede contener números positivos.', feedback);
+            }
+        });
+        input.addEventListener('input', () => {
+            const antes = input.value;
+            const decimal = input.step && input.step !== '1';
+            let despues = antes.replace(decimal ? /[^0-9.,]/g : /[^0-9]/g, '');
+            if (decimal) {
+                despues = despues.replace(',', '.');
+                const [entero, ...resto] = despues.split('.');
+                despues = resto.length ? `${entero}.${resto.join('')}` : entero;
+            }
+            input.value = despues;
+            const cambio = antes !== despues;
+            if (cambio) input.dataset.validationRejected = 'true';
+            else delete input.dataset.validationRejected;
+            setFieldValidation(input, cambio ? 'El valor solo puede contener números positivos.' : '', feedback);
+        });
+    });
+
+    // Códigos seriales: REVISAR clasificación si el proyecto incorpora otros formatos.
+    document.querySelectorAll('input[name*="placa"], input[name*="serial"], input[name*="codigo_equipo"]').forEach(input => {
+        input.setAttribute('pattern', '[A-Za-z0-9-]+');
+        input.setAttribute('inputmode', 'text');
+        const feedback = ensureValidationFeedback(input);
+        input.addEventListener('input', () => {
+            const antes = input.value;
+            input.value = antes.replace(/[^A-Za-z0-9-]/g, '');
+            const cambio = antes !== input.value;
+            if (cambio) input.dataset.validationRejected = 'true';
+            else delete input.dataset.validationRejected;
+            setFieldValidation(input, cambio ? 'Use solo letras, números y guiones.' : '', feedback);
         });
     });
 
@@ -228,7 +293,9 @@ function initSportsMaxValidators() {
             if (form.checkValidity && !form.checkValidity()) {
                 return; // Si el formulario HTML5 no es válido, no deshabilitar
             }
-            const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+            const submitBtn = (e.submitter && form.contains(e.submitter))
+                ? e.submitter
+                : form.querySelector('button[type="submit"], input[type="submit"]');
             if (submitBtn && !submitBtn.disabled) {
                 const originalContent = submitBtn.innerHTML;
                 submitBtn.setAttribute('data-original-content', originalContent);
@@ -240,6 +307,73 @@ function initSportsMaxValidators() {
             }
         });
     });
+
+    // Validación visible para campos nativos y formularios que usan novalidate.
+    document.querySelectorAll('form').forEach(form => {
+        // Sustituye el aviso genérico del navegador por errores en español y conserva los valores.
+        form.noValidate = true;
+        form.addEventListener('input', (event) => {
+            const field = event.target;
+            if (!(field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)) return;
+            if (field.checkValidity()) setFieldValidation(field, '', ensureValidationFeedback(field));
+        });
+        form.addEventListener('submit', (event) => {
+            const rejectedInput = form.querySelector('[data-validation-rejected="true"]');
+            if (form.checkValidity() && !rejectedInput) return;
+            event.preventDefault();
+            const invalid = form.querySelector(':invalid') || rejectedInput;
+            if (invalid) {
+                const message = rejectedInput === invalid
+                    ? (invalid.matches('.input-texto-limpio, [name="nombres"], [name="apellidos"], [name="first_name"], [name="last_name"], [name="capitan"], [name="ciudad"], [name="cargo"]')
+                        ? 'El campo solo puede contener letras y espacios.'
+                        : 'Este campo solo puede contener dígitos.')
+                    : mensajeValidacionEspanol(invalid);
+                setFieldValidation(invalid, message, ensureValidationFeedback(invalid));
+                invalid.focus({preventScroll: false});
+                if (window.Swal && typeof window.Swal.fire === 'function') {
+                    window.Swal.fire({icon: 'error', title: 'Revisa el formulario', text: message, confirmButtonText: 'Entendido'});
+                } else if (window.smaxDialog) {
+                    window.smaxDialog.alert(message, {icon: 'danger', title: 'Revisa el formulario'});
+                }
+            }
+        });
+    });
+}
+
+function ensureValidationFeedback(field) {
+    let feedback = field.parentElement && field.parentElement.querySelector(':scope > .invalid-feedback[data-live-validation]');
+    if (!feedback && field.parentElement) {
+        feedback = document.createElement('div');
+        feedback.className = 'invalid-feedback';
+        feedback.dataset.liveValidation = 'true';
+        field.insertAdjacentElement('afterend', feedback);
+    }
+    return feedback;
+}
+
+function setFieldValidation(field, message, feedback) {
+    if (!field) return;
+    field.classList.toggle('is-invalid', Boolean(message));
+    field.setAttribute('aria-invalid', message ? 'true' : 'false');
+    if (feedback) {
+        feedback.textContent = message || '';
+        feedback.style.display = message ? 'block' : '';
+    }
+}
+
+function mensajeValidacionEspanol(field) {
+    if (field.validity.valueMissing) return 'Este campo es obligatorio.';
+    if (field.validity.typeMismatch && field.type === 'email') return 'Ingresa un correo electrónico con formato válido.';
+    if (field.validity.patternMismatch) {
+        if (/telefono|celular/i.test(field.name || '')) return 'El teléfono debe tener 10 dígitos y comenzar por 3.';
+        if (/documento/i.test(field.name || '')) return 'El documento debe contener solo dígitos y tener la longitud indicada.';
+        if (/nombre|apellido|capitan|first_name|last_name/i.test(field.name || '')) return 'El campo solo puede contener letras y espacios.';
+        return 'El formato ingresado no es válido.';
+    }
+    if (field.validity.tooShort) return `Ingresa al menos ${field.minLength} caracteres.`;
+    if (field.validity.tooLong) return `No ingreses más de ${field.maxLength} caracteres.`;
+    if (field.validity.rangeUnderflow || field.validity.rangeOverflow) return 'El valor está fuera del rango permitido.';
+    return 'Revisa este campo e intenta de nuevo.';
 }
 
 /**

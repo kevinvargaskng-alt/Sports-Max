@@ -130,6 +130,29 @@ html.acc-claro body footer *,
 body.light-theme footer * {
     color: rgba(255, 255, 255, 0.92) !important;
 }
+html[data-theme="light"] body footer .footer-credit-link,
+html.acc-claro body footer .footer-credit-link,
+body.light-theme footer .footer-credit-link {
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+}
+html[data-theme="light"] body footer .footer-credit-link:hover,
+html.acc-claro body footer .footer-credit-link:hover,
+body.light-theme footer .footer-credit-link:hover {
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+}
+
+/* Etiqueta de capacidad del encabezado del Gimnasio */
+html[data-theme="light"] body .gym-capacity-badge,
+html.acc-claro body .gym-capacity-badge,
+body.light-theme .gym-capacity-badge {
+    background: #EAF7EF !important;
+    border: 1px solid #A7DDB8 !important;
+    color: #176B3A !important;
+    font-weight: 700 !important;
+    box-shadow: 0 3px 10px rgba(22, 101, 52, 0.08) !important;
+}
 
 /* ── 4. Asistente Tux (ventana de chat) ────────────────────────── */
 html.acc-claro .chat-window {
@@ -369,11 +392,13 @@ html.acc-claro body .sueno-hero,
 html.acc-claro body .rutinas-hero,
 html.acc-claro body .recetas-hero,
 html.acc-claro body .notif-hero,
-html.acc-claro body .roles-hero {
-    background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
-    border-color: #007832 !important;
+html.acc-claro body .roles-hero,
+html[data-theme="light"] body .hero-wrap,
+body.light-theme .hero-wrap {
+    background: linear-gradient(135deg, #071720 0%, #0A2935 48%, #0D3E2F 100%) !important;
+    border: 1px solid rgba(74, 222, 128, 0.3) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 10px 28px rgba(0, 120, 50, 0.2) !important;
+    box-shadow: 0 16px 36px rgba(7, 23, 32, 0.28) !important;
 }
 html.acc-claro body .hero-wrap h1,
 html.acc-claro body .hero-wrap h1 span,
@@ -381,6 +406,12 @@ html.acc-claro body .hero-wrap h2,
 html.acc-claro body .hero-wrap p,
 html.acc-claro body .hero-wrap .text-white,
 html.acc-claro body .hero-wrap .hero-big-icon,
+html[data-theme="light"] body .hero-wrap h1,
+html[data-theme="light"] body .hero-wrap h1 span,
+html[data-theme="light"] body .hero-wrap p,
+body.light-theme .hero-wrap h1,
+body.light-theme .hero-wrap h1 span,
+body.light-theme .hero-wrap p,
 html.acc-claro body .imc-hero h1,
 html.acc-claro body .imc-hero h1 i,
 html.acc-claro body .imc-hero p,
@@ -406,31 +437,85 @@ html.acc-claro body .roles-hero p {
     color: #FFFFFF !important;
     text-shadow: none !important;
 }
-html.acc-claro body .hero-wrap .hero-badge {
-    background: rgba(255, 255, 255, 0.18) !important;
-    border-color: rgba(255, 255, 255, 0.45) !important;
+html.acc-claro body .hero-wrap h1 span,
+html[data-theme="light"] body .hero-wrap h1 span,
+body.light-theme .hero-wrap h1 span {
+    color: #4ADE80 !important;
+    text-shadow: 0 2px 14px rgba(74, 222, 128, 0.4) !important;
+}
+html.acc-claro body .hero-wrap .hero-badge,
+html[data-theme="light"] body .hero-wrap .hero-badge,
+body.light-theme .hero-wrap .hero-badge {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border: 1px solid rgba(52, 211, 153, 0.45) !important;
+    color: #6EE7B7 !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid,
+body.light-theme .hero-wrap .btn-primary-acid {
+    background: #39A900 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(57, 169, 0, 0.35) !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid *,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid *,
+body.light-theme .hero-wrap .btn-primary-acid * {
     color: #FFFFFF !important;
 }
-html.acc-claro body .hero-wrap .btn-primary-acid {
-    background: #FFFFFF !important;
-    color: #007832 !important;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16) !important;
-}
-html.acc-claro body .hero-wrap .btn-primary-acid i {
-    color: #007832 !important;
-}
-html.acc-claro body .hero-wrap .btn-primary-acid:hover {
-    background: #F1F8EC !important;
-    color: #005C25 !important;
-}
-html.acc-claro body .hero-wrap .btn-ghost {
-    background: rgba(255, 255, 255, 0.14) !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+html.acc-claro body .hero-wrap .btn-primary-acid i,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid i,
+body.light-theme .hero-wrap .btn-primary-acid i {
     color: #FFFFFF !important;
 }
-html.acc-claro body .hero-wrap .btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.26) !important;
+html.acc-claro body .hero-wrap .btn-primary-acid:hover,
+html.acc-claro body .hero-wrap .btn-primary-acid:focus,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid:hover,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid:focus,
+body.light-theme .hero-wrap .btn-primary-acid:hover,
+body.light-theme .hero-wrap .btn-primary-acid:focus {
+    background: #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 8px 24px rgba(0, 120, 50, 0.45) !important;
+    transform: translateY(-2px);
+}
+html.acc-claro body .hero-wrap .btn-primary-acid:hover *,
+html.acc-claro body .hero-wrap .btn-primary-acid:focus *,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid:hover *,
+html[data-theme="light"] body .hero-wrap .btn-primary-acid:focus *,
+body.light-theme .hero-wrap .btn-primary-acid:hover *,
+body.light-theme .hero-wrap .btn-primary-acid:focus * {
+    color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost,
+html[data-theme="light"] body .hero-wrap .btn-ghost,
+body.light-theme .hero-wrap .btn-ghost {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost *,
+html[data-theme="light"] body .hero-wrap .btn-ghost *,
+body.light-theme .hero-wrap .btn-ghost * {
+    color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost:hover,
+html.acc-claro body .hero-wrap .btn-ghost:focus,
+html[data-theme="light"] body .hero-wrap .btn-ghost:hover,
+html[data-theme="light"] body .hero-wrap .btn-ghost:focus,
+body.light-theme .hero-wrap .btn-ghost:hover,
+body.light-theme .hero-wrap .btn-ghost:focus {
+    background: rgba(255, 255, 255, 0.24) !important;
     border-color: #FFFFFF !important;
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+}
+html.acc-claro body .hero-wrap .btn-ghost:hover *,
+html.acc-claro body .hero-wrap .btn-ghost:focus *,
+html[data-theme="light"] body .hero-wrap .btn-ghost:hover *,
+html[data-theme="light"] body .hero-wrap .btn-ghost:focus *,
+body.light-theme .hero-wrap .btn-ghost:hover *,
+body.light-theme .hero-wrap .btn-ghost:focus * {
     color: #FFFFFF !important;
 }
 
@@ -687,51 +772,410 @@ html.acc-claro body .rep-period-btn.active {
     color: #FFFFFF !important;
 }
 
+/* ── 11. Formularios, Controles, Modales y Entradas ("Diseño Melo") ─────── */
+html[data-theme="light"] body .form-control,
+html[data-theme="light"] body .form-select,
+html[data-theme="light"] body .form-control-glass,
+html[data-theme="light"] body .custom-input,
+html[data-theme="light"] body .adm-input,
+html[data-theme="light"] body .auth-input,
+html[data-theme="light"] body .search-box,
+html[data-theme="light"] body .search-input,
+html[data-theme="light"] body .score-input,
+html[data-theme="light"] body .set-input,
+html[data-theme="light"] body .input-group-text,
+html[data-theme="light"] body .sport-search-wrap input,
+html[data-theme="light"] body input[type="text"],
+html[data-theme="light"] body input[type="number"],
+html[data-theme="light"] body input[type="email"],
+html[data-theme="light"] body input[type="password"],
+html[data-theme="light"] body input[type="tel"],
+html[data-theme="light"] body input[type="search"],
+html[data-theme="light"] body input[type="date"],
+html[data-theme="light"] body input[type="time"],
+html[data-theme="light"] body textarea,
+html[data-theme="light"] body select,
 html.acc-claro body .form-control,
 html.acc-claro body .form-select,
 html.acc-claro body .form-control-glass,
 html.acc-claro body .custom-input,
+html.acc-claro body .adm-input,
 html.acc-claro body .auth-input,
 html.acc-claro body .search-box,
 html.acc-claro body .search-input,
 html.acc-claro body .score-input,
 html.acc-claro body .set-input,
-html.acc-claro body .input-group-text {
+html.acc-claro body .input-group-text,
+html.acc-claro body .sport-search-wrap input,
+html.acc-claro body input[type="text"],
+html.acc-claro body input[type="number"],
+html.acc-claro body input[type="email"],
+html.acc-claro body input[type="password"],
+html.acc-claro body input[type="tel"],
+html.acc-claro body input[type="search"],
+html.acc-claro body input[type="date"],
+html.acc-claro body input[type="time"],
+html.acc-claro body textarea,
+html.acc-claro body select,
+body.light-theme .form-control,
+body.light-theme .form-select,
+body.light-theme .form-control-glass,
+body.light-theme .custom-input,
+body.light-theme .adm-input,
+body.light-theme .auth-input,
+body.light-theme .search-box,
+body.light-theme .search-input,
+body.light-theme .score-input,
+body.light-theme .set-input,
+body.light-theme .input-group-text,
+body.light-theme .sport-search-wrap input,
+body.light-theme input[type="text"],
+body.light-theme input[type="number"],
+body.light-theme input[type="email"],
+body.light-theme input[type="password"],
+body.light-theme input[type="tel"],
+body.light-theme input[type="search"],
+body.light-theme input[type="date"],
+body.light-theme input[type="time"],
+body.light-theme textarea,
+body.light-theme select {
     background: #FFFFFF !important;
-    border: 1px solid #CBD5E1 !important;
+    border: 1.5px solid #CBD5E1 !important;
+    color: #0F172A !important;
+    border-radius: 8px !important;
+}
+
+/* Selector de archivos (input file) limpio y estilizado */
+html[data-theme="light"] body input[type="file"],
+html.acc-claro body input[type="file"],
+body.light-theme input[type="file"] {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
     color: #1E293B !important;
 }
+html[data-theme="light"] body input[type="file"]::file-selector-button,
+html.acc-claro body input[type="file"]::file-selector-button,
+body.light-theme input[type="file"]::file-selector-button {
+    background: #F1F5F9 !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 6px !important;
+    padding: 0.35rem 0.75rem !important;
+    font-weight: 600 !important;
+    margin-right: 0.75rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+html[data-theme="light"] body input[type="file"]::file-selector-button:hover,
+html.acc-claro body input[type="file"]::file-selector-button:hover,
+body.light-theme input[type="file"]::file-selector-button:hover {
+    background: #DCFCE7 !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+
+/* Placeholders con buen contraste */
+html[data-theme="light"] body .form-control::placeholder,
+html[data-theme="light"] body .form-control-glass::placeholder,
+html[data-theme="light"] body .custom-input::placeholder,
+html[data-theme="light"] body .adm-input::placeholder,
+html[data-theme="light"] body .auth-input::placeholder,
+html[data-theme="light"] body .search-box::placeholder,
+html[data-theme="light"] body .search-input::placeholder,
+html[data-theme="light"] body input::placeholder,
+html[data-theme="light"] body textarea::placeholder,
 html.acc-claro body .form-control::placeholder,
 html.acc-claro body .form-control-glass::placeholder,
 html.acc-claro body .custom-input::placeholder,
+html.acc-claro body .adm-input::placeholder,
 html.acc-claro body .auth-input::placeholder,
 html.acc-claro body .search-box::placeholder,
-html.acc-claro body .search-input::placeholder {
-    color: #64748B !important;
+html.acc-claro body .search-input::placeholder,
+html.acc-claro body input::placeholder,
+html.acc-claro body textarea::placeholder,
+body.light-theme .form-control::placeholder,
+body.light-theme .form-control-glass::placeholder,
+body.light-theme .custom-input::placeholder,
+body.light-theme .adm-input::placeholder,
+body.light-theme .auth-input::placeholder,
+body.light-theme .search-box::placeholder,
+body.light-theme .search-input::placeholder,
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+    color: #94A3B8 !important;
+    opacity: 1 !important;
 }
+
+/* Enfoque institucional SENA (Verde #39A900) */
+html[data-theme="light"] body .form-control:focus,
+html[data-theme="light"] body .form-select:focus,
+html[data-theme="light"] body .form-control-glass:focus,
+html[data-theme="light"] body .custom-input:focus,
+html[data-theme="light"] body .adm-input:focus,
+html[data-theme="light"] body .auth-input:focus,
+html[data-theme="light"] body .search-box:focus,
+html[data-theme="light"] body .search-input:focus,
+html[data-theme="light"] body input:focus,
+html[data-theme="light"] body textarea:focus,
+html[data-theme="light"] body select:focus,
 html.acc-claro body .form-control:focus,
 html.acc-claro body .form-select:focus,
 html.acc-claro body .form-control-glass:focus,
+html.acc-claro body .custom-input:focus,
+html.acc-claro body .adm-input:focus,
 html.acc-claro body .auth-input:focus,
 html.acc-claro body .search-box:focus,
-html.acc-claro body .search-input:focus {
+html.acc-claro body .search-input:focus,
+html.acc-claro body input:focus,
+html.acc-claro body textarea:focus,
+html.acc-claro body select:focus,
+body.light-theme .form-control:focus,
+body.light-theme .form-select:focus,
+body.light-theme .form-control-glass:focus,
+body.light-theme .custom-input:focus,
+body.light-theme .adm-input:focus,
+body.light-theme .auth-input:focus,
+body.light-theme .search-box:focus,
+body.light-theme .search-input:focus,
+body.light-theme input:focus,
+body.light-theme textarea:focus,
+body.light-theme select:focus {
+    background: #FFFFFF !important;
     border-color: #39A900 !important;
-    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.2) !important;
+    box-shadow: 0 0 0 3.5px rgba(57, 169, 0, 0.22) !important;
+    outline: none !important;
 }
+
+/* Opciones de selects */
+html[data-theme="light"] body select option,
+html.acc-claro body select option,
+body.light-theme select option {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+}
+
+/* Checkboxes, Radios y Switches */
+html[data-theme="light"] body .form-check-input,
+html.acc-claro body .form-check-input,
+body.light-theme .form-check-input {
+    background-color: #FFFFFF !important;
+    border: 1.5px solid #94A3B8 !important;
+}
+html[data-theme="light"] body .form-check-input:checked,
+html.acc-claro body .form-check-input:checked,
+body.light-theme .form-check-input:checked {
+    background-color: #39A900 !important;
+    border-color: #007832 !important;
+    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.22) !important;
+}
+html[data-theme="light"] body .form-check-label,
+html.acc-claro body .form-check-label,
+body.light-theme .form-check-label {
+    color: #1E293B !important;
+}
+
+/* Etiquetas de formulario (Labels) */
+html[data-theme="light"] body .form-label,
+html[data-theme="light"] body label:not(.btn),
+html[data-theme="light"] body .auth-label,
+html[data-theme="light"] body .adm-label,
+html[data-theme="light"] body .field-label,
+html[data-theme="light"] body .escudo-upload-label,
+html[data-theme="light"] body .kpi-label,
+html[data-theme="light"] body .kpi-box .kpi-label,
+html[data-theme="light"] body .stat-box .stat-lbl,
 html.acc-claro body .form-label,
+html.acc-claro body label:not(.btn),
 html.acc-claro body .auth-label,
+html.acc-claro body .adm-label,
+html.acc-claro body .field-label,
+html.acc-claro body .escudo-upload-label,
 html.acc-claro body .kpi-label,
 html.acc-claro body .kpi-box .kpi-label,
 html.acc-claro body .stat-box .stat-lbl,
-html.acc-claro body .page-header .subtitle,
-html.acc-claro body .material-card .meta,
-html.acc-claro body .auth-subtitle,
-html.acc-claro body .manual-figure figcaption,
-html.acc-claro body .consent-banner p {
+body.light-theme .form-label,
+body.light-theme label:not(.btn),
+body.light-theme .auth-label,
+body.light-theme .adm-label,
+body.light-theme .field-label,
+body.light-theme .escudo-upload-label,
+body.light-theme .kpi-label,
+body.light-theme .kpi-box .kpi-label,
+body.light-theme .stat-box .stat-lbl {
+    color: #1E293B !important;
+    font-weight: 600 !important;
+}
+
+/* Textos de ayuda y notas de formularios */
+html[data-theme="light"] body .form-text,
+html[data-theme="light"] body .form-hint,
+html[data-theme="light"] body small.text-muted,
+html[data-theme="light"] body .escudo-upload-hint,
+html[data-theme="light"] body .consentimiento-lbl,
+html.acc-claro body .form-text,
+html.acc-claro body .form-hint,
+html.acc-claro body small.text-muted,
+html.acc-claro body .escudo-upload-hint,
+html.acc-claro body .consentimiento-lbl,
+body.light-theme .form-text,
+body.light-theme .form-hint,
+body.light-theme small.text-muted,
+body.light-theme .escudo-upload-hint,
+body.light-theme .consentimiento-lbl {
     color: #475569 !important;
 }
+
+/* Modales de Formularios (Interfichas, Gimnasio, Inventario, Reportes) */
+html[data-theme="light"] body .modal-content,
+html[data-theme="light"] body .custom-modal,
+html[data-theme="light"] body .sug-modal-content,
+html[data-theme="light"] body #modalEquiposTorneo .modal-content,
+html.acc-claro body .modal-content,
+html.acc-claro body .custom-modal,
+html.acc-claro body .sug-modal-content,
+html.acc-claro body #modalEquiposTorneo .modal-content,
+body.light-theme .modal-content,
+body.light-theme .custom-modal,
+body.light-theme .sug-modal-content,
+body.light-theme #modalEquiposTorneo .modal-content {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18) !important;
+}
+
+html[data-theme="light"] body .modal-header,
+html[data-theme="light"] body .modal-sport-header,
+html.acc-claro body .modal-header,
+html.acc-claro body .modal-sport-header,
+body.light-theme .modal-header,
+body.light-theme .modal-sport-header {
+    background: #F8FAFC !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+html[data-theme="light"] body .modal-title,
+html[data-theme="light"] body .modal-header h4,
+html[data-theme="light"] body .modal-header h5,
+html.acc-claro body .modal-title,
+html.acc-claro body .modal-header h4,
+html.acc-claro body .modal-header h5,
+body.light-theme .modal-title,
+body.light-theme .modal-header h4,
+body.light-theme .modal-header h5 {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+}
+
+html[data-theme="light"] body .modal-body,
+html.acc-claro body .modal-body,
+body.light-theme .modal-body {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] body .modal-footer,
+html.acc-claro body .modal-footer,
+body.light-theme .modal-footer {
+    background: #F8FAFC !important;
+    border-top: 1px solid #E2E8F0 !important;
+}
+
+html[data-theme="light"] body .modal .btn-close,
+html[data-theme="light"] body .btn-close-white,
+html.acc-claro body .modal .btn-close,
+html.acc-claro body .btn-close-white,
+body.light-theme .modal .btn-close,
+body.light-theme .btn-close-white {
+    filter: none !important;
+    opacity: 0.75 !important;
+}
+html[data-theme="light"] body .modal .btn-close:hover,
+html.acc-claro body .modal .btn-close:hover,
+body.light-theme .modal .btn-close:hover {
+    opacity: 1 !important;
+}
+
+/* Tarjetas y filas dinámicas de jugadores */
+html[data-theme="light"] body .jugador-card-item,
+html.acc-claro body .jugador-card-item,
+body.light-theme .jugador-card-item {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+}
+
+/* Alertas de validación en formularios */
+html[data-theme="light"] body .alert-ficha,
+html.acc-claro body .alert-ficha,
+body.light-theme .alert-ficha {
+    background: #FEF2F2 !important;
+    border: 1px solid #FCA5A5 !important;
+    color: #B91C1C !important;
+}
+html[data-theme="light"] body .invalid-feedback,
+html.acc-claro body .invalid-feedback,
+body.light-theme .invalid-feedback {
+    color: #DC2626 !important;
+    font-weight: 600 !important;
+}
+
+/* Botones Principales de Envío de Formulario */
+html[data-theme="light"] body .btn-sena-inscribir,
+html[data-theme="light"] body .btn-inscribir,
+html[data-theme="light"] body .btn-primary-a,
+html[data-theme="light"] body #btn-submit-equipo,
+html.acc-claro body .btn-sena-inscribir,
+html.acc-claro body .btn-inscribir,
+html.acc-claro body .btn-primary-a,
+html.acc-claro body #btn-submit-equipo,
+body.light-theme .btn-sena-inscribir,
+body.light-theme .btn-inscribir,
+body.light-theme .btn-primary-a,
+body.light-theme #btn-submit-equipo {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border: 1px solid #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(57, 169, 0, 0.28) !important;
+    font-weight: 700 !important;
+}
+html[data-theme="light"] body .btn-sena-inscribir:hover,
+html[data-theme="light"] body .btn-inscribir:hover,
+html[data-theme="light"] body .btn-primary-a:hover,
+html[data-theme="light"] body #btn-submit-equipo:hover,
+html.acc-claro body .btn-sena-inscribir:hover,
+html.acc-claro body .btn-inscribir:hover,
+html.acc-claro body .btn-primary-a:hover,
+html.acc-claro body #btn-submit-equipo:hover,
+body.light-theme .btn-sena-inscribir:hover,
+body.light-theme .btn-inscribir:hover,
+body.light-theme .btn-primary-a:hover,
+body.light-theme #btn-submit-equipo:hover {
+    background: linear-gradient(135deg, #44C700 0%, #00963E 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 18px rgba(57, 169, 0, 0.38) !important;
+}
+
+/* Botón de Agregar Jugador / Acciones secundarias */
+html[data-theme="light"] body .btn-success-a,
+html.acc-claro body .btn-success-a,
+body.light-theme .btn-success-a {
+    background: #F0FDF4 !important;
+    border: 1.5px solid #86EFAC !important;
+    color: #007832 !important;
+    font-weight: 600 !important;
+}
+html[data-theme="light"] body .btn-success-a:hover,
+html.acc-claro body .btn-success-a:hover,
+body.light-theme .btn-success-a:hover {
+    background: #DCFCE7 !important;
+    border-color: #39A900 !important;
+    color: #005A24 !important;
+}
+
+/* Títulos y encabezados de secciones */
 html.acc-claro body .auth-title,
 html.acc-claro body .smax-dialog-title,
+html.acc-claro body .smax-dialog-message,
 html.acc-claro body .equipo-nombre,
 html.acc-claro body .resultado-display,
 html.acc-claro body .maquina-nombre,
@@ -742,6 +1186,10 @@ html.acc-claro body .team-title-name,
 html.acc-claro body .consent-banner strong,
 html.acc-claro body .manual-section h4 {
     color: #1E293B !important;
+}
+html.acc-claro body .smax-dialog-btn.danger,
+html.acc-claro body .smax-dialog-btn.primary {
+    color: #FFFFFF !important;
 }
 html.acc-claro body .radio-pill + label,
 html.acc-claro body .filter-pill,
@@ -1063,4 +1511,941 @@ html.acc-claro body .modal-sport-header *,
 html.acc-claro body .sport-card-content *,
 body.light-theme .sport-card-content * {
     color: #FFFFFF !important;
+}
+
+/* ── 14. Módulo Gimnasio — Modo Claro Institucional (Tarjetas, Botones de Acción y Navegación) ── */
+html[data-theme="light"] body .adm-hub-card,
+html.acc-claro body .adm-hub-card,
+body.light-theme .adm-hub-card {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06) !important;
+    color: #1E293B !important;
+}
+html[data-theme="light"] body .adm-hub-card:hover,
+html.acc-claro body .adm-hub-card:hover,
+body.light-theme .adm-hub-card:hover {
+    background: #FFFFFF !important;
+    border-color: #94A3B8 !important;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12) !important;
+    transform: translateY(-4px) !important;
+}
+
+html[data-theme="light"] body .adm-hub-title,
+html.acc-claro body .adm-hub-title,
+body.light-theme .adm-hub-title {
+    color: #0F172A !important;
+    font-weight: 800 !important;
+    font-size: 1.05rem !important;
+}
+
+html[data-theme="light"] body .adm-hub-desc,
+html.acc-claro body .adm-hub-desc,
+body.light-theme .adm-hub-desc {
+    color: #475569 !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+}
+
+html[data-theme="light"] body .adm-hub-icon-wrap,
+html.acc-claro body .adm-hub-icon-wrap,
+body.light-theme .adm-hub-icon-wrap {
+    background: #F8FAFC !important;
+    border: 1.5px solid #E2E8F0 !important;
+}
+
+/* Botones de acción dentro de las tarjetas de módulos ("Configurar", "Ver Horarios", etc.) */
+html[data-theme="light"] body .adm-hub-action-btn,
+html.acc-claro body .adm-hub-action-btn,
+body.light-theme .adm-hub-action-btn {
+    background: #F1F5F9 !important;
+    border: 1.5px solid #CBD5E1 !important;
+    color: #1E293B !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    padding: 7px 16px !important;
+    border-radius: 20px !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* Colores de acento individuales para los botones en hover y enfoque en Modo Claro */
+html[data-theme="light"] body .adm-hub-card.hub-accent-amber .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-amber .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-amber .adm-hub-action-btn {
+    background: #FFFBEB !important;
+    border-color: #FCD34D !important;
+    color: #B45309 !important;
+}
+html[data-theme="light"] body .adm-hub-card.hub-accent-amber:hover .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-amber:hover .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-amber:hover .adm-hub-action-btn {
+    background: #D97706 !important;
+    border-color: #D97706 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35) !important;
+}
+
+html[data-theme="light"] body .adm-hub-card.hub-accent-blue .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-blue .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-blue .adm-hub-action-btn {
+    background: #EFF6FF !important;
+    border-color: #93C5FD !important;
+    color: #1D4ED8 !important;
+}
+html[data-theme="light"] body .adm-hub-card.hub-accent-blue:hover .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-blue:hover .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-blue:hover .adm-hub-action-btn {
+    background: #2563EB !important;
+    border-color: #2563EB !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+}
+
+html[data-theme="light"] body .adm-hub-card.hub-accent-green .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-green .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-green .adm-hub-action-btn {
+    background: #F0FDF4 !important;
+    border-color: #86EFAC !important;
+    color: #047857 !important;
+}
+html[data-theme="light"] body .adm-hub-card.hub-accent-green:hover .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-green:hover .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-green:hover .adm-hub-action-btn {
+    background: #16A34A !important;
+    border-color: #16A34A !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35) !important;
+}
+
+html[data-theme="light"] body .adm-hub-card.hub-accent-red .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-red .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-red .adm-hub-action-btn {
+    background: #FEF2F2 !important;
+    border-color: #FCA5A5 !important;
+    color: #B91C1C !important;
+}
+html[data-theme="light"] body .adm-hub-card.hub-accent-red:hover .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-red:hover .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-red:hover .adm-hub-action-btn {
+    background: #DC2626 !important;
+    border-color: #DC2626 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
+}
+
+html[data-theme="light"] body .adm-hub-card.hub-accent-purple .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-purple .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-purple .adm-hub-action-btn {
+    background: #FAF5FF !important;
+    border-color: #D8B4FE !important;
+    color: #6D28D9 !important;
+}
+html[data-theme="light"] body .adm-hub-card.hub-accent-purple:hover .adm-hub-action-btn,
+html.acc-claro body .adm-hub-card.hub-accent-purple:hover .adm-hub-action-btn,
+body.light-theme .adm-hub-card.hub-accent-purple:hover .adm-hub-action-btn {
+    background: #9333EA !important;
+    border-color: #9333EA !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35) !important;
+}
+
+/* Barra superior de pestañas de navegación admin del gimnasio (.adm-nav-btn) */
+html[data-theme="light"] body .adm-nav-btn,
+html.acc-claro body .adm-nav-btn,
+body.light-theme .adm-nav-btn {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+    padding: 7px 15px !important;
+    border-radius: 30px !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+    transition: all 0.2s ease !important;
+}
+html[data-theme="light"] body .adm-nav-btn:hover,
+html.acc-claro body .adm-nav-btn:hover,
+body.light-theme .adm-nav-btn:hover {
+    background: #F1F5F9 !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+html[data-theme="light"] body .adm-nav-btn.active,
+html.acc-claro body .adm-nav-btn.active,
+body.light-theme .adm-nav-btn.active {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(57, 169, 0, 0.3) !important;
+    font-weight: 700 !important;
+}
+
+/* Tarjetas KPI y títulos en panel de gimnasio */
+html[data-theme="light"] body .stat-mini,
+html.acc-claro body .stat-mini,
+body.light-theme .stat-mini {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
+}
+html[data-theme="light"] body .stat-mini .stat-lbl,
+html.acc-claro body .stat-mini .stat-lbl,
+body.light-theme .stat-mini .stat-lbl {
+    color: #475569 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    font-size: 0.72rem !important;
+}
+html[data-theme="light"] body .stat-mini .stat-num,
+html.acc-claro body .stat-mini .stat-num,
+body.light-theme .stat-mini .stat-num {
+    font-weight: 800 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REPORTES DE INTERFICHAS EN MODO CLARO
+   ═══════════════════════════════════════════════════════════ */
+html[data-theme="light"] body .reporte-card,
+html.acc-claro body .reporte-card,
+body.light-theme body .reporte-card,
+body.light-theme .reporte-card {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner,
+html.acc-claro body .reporte-header-banner,
+body.light-theme body .reporte-header-banner,
+body.light-theme .reporte-header-banner {
+    background: linear-gradient(135deg, #0A2540 0%, #0284C7 55%, #10B981 100%) !important;
+    border-bottom: 3px solid #10B981 !important;
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner *,
+html.acc-claro body .reporte-header-banner *,
+body.light-theme body .reporte-header-banner *,
+body.light-theme .reporte-header-banner * {
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner h1,
+html[data-theme="light"] body .reporte-header-banner h1.text-white,
+html.acc-claro body .reporte-header-banner h1,
+html.acc-claro body .reporte-header-banner h1.text-white,
+body.light-theme body .reporte-header-banner h1,
+body.light-theme body .reporte-header-banner h1.text-white {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner p,
+html[data-theme="light"] body .reporte-header-banner p strong,
+html[data-theme="light"] body .reporte-header-banner .text-white-50,
+html.acc-claro body .reporte-header-banner p,
+html.acc-claro body .reporte-header-banner p strong,
+html.acc-claro body .reporte-header-banner .text-white-50,
+body.light-theme body .reporte-header-banner p,
+body.light-theme body .reporte-header-banner p strong,
+body.light-theme body .reporte-header-banner .text-white-50 {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner .text-info,
+html.acc-claro body .reporte-header-banner .text-info,
+body.light-theme body .reporte-header-banner .text-info {
+    color: #7DD3FC !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner .text-warning,
+html.acc-claro body .reporte-header-banner .text-warning,
+body.light-theme body .reporte-header-banner .text-warning {
+    color: #FDE047 !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner .text-danger,
+html.acc-claro body .reporte-header-banner .text-danger,
+body.light-theme body .reporte-header-banner .text-danger {
+    color: #FCA5A5 !important;
+}
+
+html[data-theme="light"] body .reporte-header-banner .badge-torneo-code,
+html.acc-claro body .reporte-header-banner .badge-torneo-code,
+body.light-theme .reporte-header-banner .badge-torneo-code {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] body .no-print .btn-outline-secondary,
+html.acc-claro body .no-print .btn-outline-secondary,
+body.light-theme .no-print .btn-outline-secondary {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] body .no-print .btn-outline-secondary:hover,
+html.acc-claro body .no-print .btn-outline-secondary:hover,
+body.light-theme .no-print .btn-outline-secondary:hover {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border-color: #94A3B8 !important;
+}
+
+/* Grilla y Cajas KPI */
+html[data-theme="light"] body .kpi-stat-box,
+html.acc-claro body .kpi-stat-box,
+body.light-theme .kpi-stat-box {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+html[data-theme="light"] body .kpi-equipos,
+html.acc-claro body .kpi-equipos,
+body.light-theme .kpi-equipos {
+    background: #F0F9FF !important;
+    border: 1px solid #BAE6FD !important;
+    border-top: 4px solid #0284C7 !important;
+}
+
+html[data-theme="light"] body .kpi-equipos .kpi-stat-num,
+html.acc-claro body .kpi-equipos .kpi-stat-num,
+body.light-theme .kpi-equipos .kpi-stat-num {
+    color: #0284C7 !important;
+}
+
+html[data-theme="light"] body .kpi-partidos,
+html.acc-claro body .kpi-partidos,
+body.light-theme .kpi-partidos {
+    background: #FFFBEB !important;
+    border: 1px solid #FDE68A !important;
+    border-top: 4px solid #F59E0B !important;
+}
+
+html[data-theme="light"] body .kpi-partidos .kpi-stat-num,
+html.acc-claro body .kpi-partidos .kpi-stat-num,
+body.light-theme .kpi-partidos .kpi-stat-num {
+    color: #D97706 !important;
+}
+
+html[data-theme="light"] body .kpi-jugados,
+html.acc-claro body .kpi-jugados,
+body.light-theme .kpi-jugados {
+    background: #ECFDF5 !important;
+    border: 1px solid #A7F3D0 !important;
+    border-top: 4px solid #10B981 !important;
+}
+
+html[data-theme="light"] body .kpi-jugados .kpi-stat-num,
+html.acc-claro body .kpi-jugados .kpi-stat-num,
+body.light-theme .kpi-jugados .kpi-stat-num {
+    color: #059669 !important;
+}
+
+html[data-theme="light"] body .kpi-campeon,
+html.acc-claro body .kpi-campeon,
+body.light-theme .kpi-campeon {
+    background: #FEFCE8 !important;
+    border: 1px solid #FEF08A !important;
+    border-top: 4px solid #EAB308 !important;
+}
+
+html[data-theme="light"] body .kpi-campeon .kpi-stat-num,
+html.acc-claro body .kpi-campeon .kpi-stat-num,
+body.light-theme .kpi-campeon .kpi-stat-num {
+    color: #CA8A04 !important;
+}
+
+html[data-theme="light"] body .kpi-stat-label,
+html.acc-claro body .kpi-stat-label,
+body.light-theme .kpi-stat-label {
+    color: #334155 !important;
+}
+
+html[data-theme="light"] body .kpi-stat-sub,
+html.acc-claro body .kpi-stat-sub,
+body.light-theme .kpi-stat-sub {
+    color: #64748B !important;
+}
+
+/* Títulos de sección */
+html[data-theme="light"] body .reporte-section-title,
+html.acc-claro body .reporte-section-title,
+body.light-theme .reporte-section-title {
+    color: #0F172A !important;
+    border-bottom: 2.5px solid #0284C7 !important;
+}
+
+html[data-theme="light"] body .reporte-section-title i,
+html.acc-claro body .reporte-section-title i,
+body.light-theme .reporte-section-title i {
+    color: #0284C7 !important;
+}
+
+/* Cuadro de Honor */
+html[data-theme="light"] body .reporte-card .card.bg-dark,
+html.acc-claro body .reporte-card .card.bg-dark,
+body.light-theme .reporte-card .card.bg-dark {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] body .reporte-card .card.bg-dark.border-warning,
+html.acc-claro body .reporte-card .card.bg-dark.border-warning,
+body.light-theme .reporte-card .card.bg-dark.border-warning {
+    border: 2px solid #F59E0B !important;
+    background: #FFFDF5 !important;
+}
+
+html[data-theme="light"] body .reporte-card .card.bg-dark.border-info,
+html.acc-claro body .reporte-card .card.bg-dark.border-info,
+body.light-theme .reporte-card .card.bg-dark.border-info {
+    border: 2px solid #0284C7 !important;
+    background: #F8FBFE !important;
+}
+
+html[data-theme="light"] body .reporte-card .card.bg-dark.border-success,
+html.acc-claro body .reporte-card .card.bg-dark.border-success,
+body.light-theme .reporte-card .card.bg-dark.border-success {
+    border: 2px solid #10B981 !important;
+    background: #F6FEF9 !important;
+}
+
+html[data-theme="light"] body .reporte-card .card.bg-dark.border-secondary,
+html.acc-claro body .reporte-card .card.bg-dark.border-secondary,
+body.light-theme .reporte-card .card.bg-dark.border-secondary {
+    border: 2px solid #94A3B8 !important;
+    background: #F8FAFC !important;
+}
+
+html[data-theme="light"] body .reporte-card .card.bg-dark h5.text-white,
+html.acc-claro body .reporte-card .card.bg-dark h5.text-white,
+body.light-theme .reporte-card .card.bg-dark h5.text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] body .reporte-card .card.bg-dark small.text-white-50,
+html.acc-claro body .reporte-card .card.bg-dark small.text-white-50,
+body.light-theme .reporte-card .card.bg-dark small.text-white-50 {
+    color: #475569 !important;
+}
+
+/* Tablas de Posiciones de Grupos */
+html[data-theme="light"] body .reporte-card .card.bg-dark.border-secondary,
+html.acc-claro body .reporte-card .card.bg-dark.border-secondary,
+body.light-theme .reporte-card .card.bg-dark.border-secondary {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+}
+
+html[data-theme="light"] body .reporte-card .card-header.bg-secondary,
+html.acc-claro body .reporte-card .card-header.bg-secondary,
+body.light-theme .reporte-card .card-header.bg-secondary {
+    background: linear-gradient(90deg, #1E3A8A 0%, #0284C7 100%) !important;
+    color: #FFFFFF !important;
+    border-bottom: none !important;
+}
+
+html[data-theme="light"] body .reporte-card .card-header.bg-secondary .badge.bg-dark,
+html.acc-claro body .reporte-card .card-header.bg-secondary .badge.bg-dark,
+body.light-theme .reporte-card .card-header.bg-secondary .badge.bg-dark {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+html[data-theme="light"] body .table-reporte,
+html.acc-claro body .table-reporte,
+body.light-theme .table-reporte {
+    background: #FFFFFF !important;
+}
+
+html[data-theme="light"] body .table-reporte thead th,
+html.acc-claro body .table-reporte thead th,
+body.light-theme .table-reporte thead th {
+    background: #F1F5F9 !important;
+    color: #334155 !important;
+    border-bottom: 2px solid #CBD5E1 !important;
+}
+
+html[data-theme="light"] body .table-reporte tbody tr,
+html.acc-claro body .table-reporte tbody tr,
+body.light-theme .table-reporte tbody tr {
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+html[data-theme="light"] body .table-reporte tbody tr:nth-child(even),
+html.acc-claro body .table-reporte tbody tr:nth-child(even),
+body.light-theme .table-reporte tbody tr:nth-child(even) {
+    background: #F8FAFC !important;
+}
+
+html[data-theme="light"] body .table-reporte tbody tr:hover,
+html.acc-claro body .table-reporte tbody tr:hover,
+body.light-theme .table-reporte tbody tr:hover {
+    background: #EFF6FF !important;
+}
+
+html[data-theme="light"] body .table-reporte td,
+html.acc-claro body .table-reporte td,
+body.light-theme .table-reporte td {
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] body .table-reporte td .text-white,
+html.acc-claro body .table-reporte td .text-white,
+body.light-theme .table-reporte td .text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] body .table-reporte td .text-white-50,
+html.acc-claro body .table-reporte td .text-white-50,
+body.light-theme .table-reporte td .text-white-50 {
+    color: #64748B !important;
+}
+
+html[data-theme="light"] body .table-reporte td.text-white-50,
+html.acc-claro body .table-reporte td.text-white-50,
+body.light-theme .table-reporte td.text-white-50 {
+    color: #64748B !important;
+}
+
+html[data-theme="light"] body .badge-pos-n,
+html.acc-claro body .badge-pos-n,
+body.light-theme .badge-pos-n {
+    background: #E2E8F0 !important;
+    color: #475569 !important;
+}
+
+/* Fase Eliminatoria */
+html[data-theme="light"] body .fase-box-cuartos.bg-dark,
+html[data-theme="light"] body .fase-box-semifinal.bg-dark,
+html[data-theme="light"] body .fase-box-final.bg-dark,
+html.acc-claro body .fase-box-cuartos.bg-dark,
+html.acc-claro body .fase-box-semifinal.bg-dark,
+html.acc-claro body .fase-box-final.bg-dark,
+body.light-theme .fase-box-cuartos.bg-dark,
+body.light-theme .fase-box-semifinal.bg-dark,
+body.light-theme .fase-box-final.bg-dark {
+    background: #F8FAFC !important;
+    border: 1.5px solid #CBD5E1 !important;
+}
+
+html[data-theme="light"] body .fase-box-final.bg-dark,
+html.acc-claro body .fase-box-final.bg-dark,
+body.light-theme .fase-box-final.bg-dark {
+    border: 1.5px solid #F59E0B !important;
+    background: #FFFDF5 !important;
+}
+
+html[data-theme="light"] body .partido-row-reporte,
+html.acc-claro body .partido-row-reporte,
+body.light-theme .partido-row-reporte {
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
+}
+
+html[data-theme="light"] body .partido-row-reporte.border-warning,
+html.acc-claro body .partido-row-reporte.border-warning,
+body.light-theme .partido-row-reporte.border-warning {
+    border-color: #F59E0B !important;
+}
+
+html[data-theme="light"] body .partido-row-reporte .text-white,
+html.acc-claro body .partido-row-reporte .text-white,
+body.light-theme .partido-row-reporte .text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] body .partido-row-reporte .text-white-50,
+html.acc-claro body .partido-row-reporte .text-white-50,
+body.light-theme .partido-row-reporte .text-white-50 {
+    color: #64748B !important;
+}
+
+/* Cronograma de Partidos */
+html[data-theme="light"] body .tabla-cronograma-reporte td.text-white,
+html[data-theme="light"] body .tabla-cronograma-reporte td .text-white,
+html.acc-claro body .tabla-cronograma-reporte td.text-white,
+html.acc-claro body .tabla-cronograma-reporte td .text-white,
+body.light-theme .tabla-cronograma-reporte td.text-white,
+body.light-theme .tabla-cronograma-reporte td .text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] body .tabla-cronograma-reporte td.text-white-50,
+html[data-theme="light"] body .tabla-cronograma-reporte td .text-white-50,
+html.acc-claro body .tabla-cronograma-reporte td.text-white-50,
+html.acc-claro body .tabla-cronograma-reporte td .text-white-50,
+body.light-theme .tabla-cronograma-reporte td.text-white-50,
+body.light-theme .tabla-cronograma-reporte td .text-white-50 {
+    color: #64748B !important;
+}
+
+html[data-theme="light"] body .tabla-cronograma-reporte .badge.bg-dark,
+html.acc-claro body .tabla-cronograma-reporte .badge.bg-dark,
+body.light-theme .tabla-cronograma-reporte .badge.bg-dark {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #475569 !important;
+}
+
+html[data-theme="light"] body .badge-hora-cronograma,
+html.acc-claro body .badge-hora-cronograma,
+body.light-theme .badge-hora-cronograma {
+    background: #EFF6FF !important;
+    color: #1D4ED8 !important;
+    border: 1px solid #BFDBFE !important;
+}
+
+/* Firmas */
+html[data-theme="light"] body .firmas-reporte .border-top,
+html.acc-claro body .firmas-reporte .border-top,
+body.light-theme .firmas-reporte .border-top {
+    border-color: #CBD5E1 !important;
+}
+
+html[data-theme="light"] body .firmas-reporte p.text-white,
+html.acc-claro body .firmas-reporte p.text-white,
+body.light-theme .firmas-reporte p.text-white {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] body .firmas-reporte small.text-white-50,
+html.acc-claro body .firmas-reporte small.text-white-50,
+body.light-theme .firmas-reporte small.text-white-50 {
+    color: #64748B !important;
+}
+/* Mensajes globales legibles en modo claro (guardado, error y advertencia). */
+html[data-theme="light"] body .custom-toast-alert,
+html.acc-claro body .custom-toast-alert,
+body.light-theme .custom-toast-alert {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18) !important;
+}
+html[data-theme="light"] body .custom-toast-alert.toast-msg-success,
+html.acc-claro body .custom-toast-alert.toast-msg-success,
+body.light-theme .custom-toast-alert.toast-msg-success {
+    background: #F0FDF4 !important;
+    border-left: 4px solid #16A34A !important;
+    color: #14532D !important;
+}
+html[data-theme="light"] body .custom-toast-alert.toast-msg-error,
+html.acc-claro body .custom-toast-alert.toast-msg-error,
+body.light-theme .custom-toast-alert.toast-msg-error {
+    background: #FEF2F2 !important;
+    border-left: 4px solid #DC2626 !important;
+    color: #7F1D1D !important;
+}
+html[data-theme="light"] body .custom-toast-alert.toast-msg-warning,
+html.acc-claro body .custom-toast-alert.toast-msg-warning,
+body.light-theme .custom-toast-alert.toast-msg-warning {
+    background: #FFFBEB !important;
+    border-left: 4px solid #D97706 !important;
+    color: #78350F !important;
+}
+html[data-theme="light"] body .custom-toast-alert.toast-msg-info,
+html.acc-claro body .custom-toast-alert.toast-msg-info,
+body.light-theme .custom-toast-alert.toast-msg-info {
+    background: #EFF6FF !important;
+    border-left: 4px solid #2563EB !important;
+    color: #1E3A8A !important;
+}
+html[data-theme="light"] body .custom-toast-close,
+html.acc-claro body .custom-toast-close,
+body.light-theme .custom-toast-close {
+    color: #475569 !important;
+}
+
+/* Paginador del listado de usuarios */
+html[data-theme="light"] body .users-pagination,
+html.acc-claro body .users-pagination,
+body.light-theme .users-pagination {
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] body .users-pagination-info,
+html.acc-claro body .users-pagination-info,
+body.light-theme .users-pagination-info {
+    color: #475569 !important;
+}
+html[data-theme="light"] body .users-pagination .page-link,
+html.acc-claro body .users-pagination .page-link,
+body.light-theme .users-pagination .page-link {
+    color: #166534 !important;
+    background: #F0FDF4 !important;
+    border-color: #86EFAC !important;
+}
+html[data-theme="light"] body .users-pagination .page-link:hover,
+html.acc-claro body .users-pagination .page-link:hover,
+body.light-theme .users-pagination .page-link:hover {
+    color: #14532D !important;
+    background: #DCFCE7 !important;
+    border-color: #4ADE80 !important;
+}
+html[data-theme="light"] body .users-pagination .page-item.active .page-link,
+html.acc-claro body .users-pagination .page-item.active .page-link,
+body.light-theme .users-pagination .page-item.active .page-link {
+    color: #FFFFFF !important;
+    background: #007832 !important;
+    border-color: #007832 !important;
+}
+html[data-theme="light"] body .users-pagination .page-item.disabled .page-link,
+html.acc-claro body .users-pagination .page-item.disabled .page-link,
+body.light-theme .users-pagination .page-item.disabled .page-link {
+    color: #94A3B8 !important;
+    background: #F8FAFC !important;
+}
+
+/* Modal de Cerrar Torneo en Modo Claro */
+html[data-theme="light"] body #modalCierre .modal-content,
+html.acc-claro body #modalCierre .modal-content,
+body.light-theme #modalCierre .modal-content {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+
+html[data-theme="light"] body #modalCierre #cierre-nombre,
+html.acc-claro body #modalCierre #cierre-nombre,
+body.light-theme #modalCierre #cierre-nombre {
+    color: #0F172A !important;
+}
+
+html[data-theme="light"] body #modalCierre .btn-close-white,
+html.acc-claro body #modalCierre .btn-close-white,
+body.light-theme #modalCierre .btn-close-white {
+    filter: none !important;
+}
+
+html[data-theme="light"] body .int-u-59,
+html.acc-claro body .int-u-59,
+body.light-theme .int-u-59 {
+    background: #FEF3C7 !important;
+    color: #92400E !important;
+    border: 1.5px solid #F59E0B !important;
+}
+html[data-theme="light"] body .int-u-59:hover,
+html.acc-claro body .int-u-59:hover,
+body.light-theme .int-u-59:hover {
+    background: #FDE68A !important;
+    color: #78350F !important;
+}
+
+html[data-theme="light"] body .int-u-60,
+html.acc-claro body .int-u-60,
+body.light-theme .int-u-60 {
+    background: #FEE2E2 !important;
+    color: #991B1B !important;
+    border: 1.5px solid #EF4444 !important;
+}
+html[data-theme="light"] body .int-u-60:hover,
+html.acc-claro body .int-u-60:hover,
+body.light-theme .int-u-60:hover {
+    background: #FECACA !important;
+    color: #7F1D1D !important;
+}
+
+/* Pie de tarjeta en Gestionar Usuarios (Modo Claro) */
+html[data-theme="light"] body .card-footer-sena,
+html.acc-claro body .card-footer-sena,
+body.light-theme .card-footer-sena {
+    background: #F8FAFC !important;
+    border-top: 1px solid #E2E8F0 !important;
+}
+html[data-theme="light"] body .card-footer-text,
+html.acc-claro body .card-footer-text,
+body.light-theme .card-footer-text {
+    color: #475569 !important;
+    font-weight: 600 !important;
+}
+
+/* Modal Créditos y Referencias en Modo Claro (100% en blanco) */
+html[data-theme="light"] body #modalCreditosReferencias .creditos-modal-content,
+html.acc-claro body #modalCreditosReferencias .creditos-modal-content,
+body.light-theme #modalCreditosReferencias .creditos-modal-content {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1.5px solid #CBD5E1 !important;
+}
+html[data-theme="light"] body #modalCreditosReferencias .creditos-header,
+html.acc-claro body #modalCreditosReferencias .creditos-header,
+body.light-theme #modalCreditosReferencias .creditos-header,
+html[data-theme="light"] body #modalCreditosReferencias .modal-body,
+html.acc-claro body #modalCreditosReferencias .modal-body,
+body.light-theme #modalCreditosReferencias .modal-body,
+html[data-theme="light"] body #modalCreditosReferencias .creditos-footer,
+html.acc-claro body #modalCreditosReferencias .creditos-footer,
+body.light-theme #modalCreditosReferencias .creditos-footer {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+}
+html[data-theme="light"] body #modalCreditosReferencias table,
+html.acc-claro body #modalCreditosReferencias table,
+body.light-theme #modalCreditosReferencias table {
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] body #modalCreditosReferencias thead th,
+html.acc-claro body #modalCreditosReferencias thead th,
+body.light-theme #modalCreditosReferencias thead th {
+    background: #F8FAFC !important;
+    color: #0F172A !important;
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] body #modalCreditosReferencias tbody td,
+html.acc-claro body #modalCreditosReferencias tbody td,
+body.light-theme #modalCreditosReferencias tbody td {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] body #modalCreditosReferencias tbody td strong,
+html.acc-claro body #modalCreditosReferencias tbody td strong,
+body.light-theme #modalCreditosReferencias tbody td strong {
+    color: #0F172A !important;
+}
+html[data-theme="light"] body #modalCreditosReferencias .btn-close-white,
+html.acc-claro body #modalCreditosReferencias .btn-close-white,
+body.light-theme #modalCreditosReferencias .btn-close-white {
+    filter: none !important;
+}
+
+/* Interfichas de usuario: asegurar modo claro con el selector de tema vigente. */
+html[data-theme="light"] body .hero-aprendiz,
+html.acc-claro body .hero-aprendiz,
+body.light-theme .hero-aprendiz {
+    background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+    border: 1px solid #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 12px 30px rgba(0, 120, 50, 0.22) !important;
+}
+html[data-theme="light"] body .hero-aprendiz .hero-title,
+html.acc-claro body .hero-aprendiz .hero-title,
+body.light-theme .hero-aprendiz .hero-title {
+    background: none !important;
+    background-image: none !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+html[data-theme="light"] body .hero-aprendiz .hero-sub,
+html[data-theme="light"] body .hero-aprendiz .hero-stat-lbl,
+html.acc-claro body .hero-aprendiz .hero-sub,
+html.acc-claro body .hero-aprendiz .hero-stat-lbl,
+body.light-theme .hero-aprendiz .hero-sub,
+body.light-theme .hero-aprendiz .hero-stat-lbl {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+html[data-theme="light"] body .hero-aprendiz .hero-stat,
+html.acc-claro body .hero-aprendiz .hero-stat,
+body.light-theme .hero-aprendiz .hero-stat {
+    background: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+html[data-theme="light"] body .hero-aprendiz .hero-stat-num,
+html.acc-claro body .hero-aprendiz .hero-stat-num,
+body.light-theme .hero-aprendiz .hero-stat-num {
+    color: #FFFFFF !important;
+}
+html[data-theme="light"] body main .hero-aprendiz .rol-usuario,
+html.acc-claro body main .hero-aprendiz .rol-usuario,
+body.light-theme main .hero-aprendiz .rol-usuario {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.55) !important;
+    color: #FFFFFF !important;
+}
+html[data-theme="light"] body main .hero-aprendiz .int-u-19,
+html[data-theme="light"] body main .hero-aprendiz .int-u-19 strong,
+html.acc-claro body main .hero-aprendiz .int-u-19,
+html.acc-claro body main .hero-aprendiz .int-u-19 strong,
+body.light-theme main .hero-aprendiz .int-u-19,
+body.light-theme main .hero-aprendiz .int-u-19 strong {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+html[data-theme="light"] body .section-label,
+html.acc-claro body .section-label,
+body.light-theme .section-label {
+    color: #007832 !important;
+}
+html[data-theme="light"] body .main-card,
+html[data-theme="light"] body .stat-mini,
+html[data-theme="light"] body .torneo-card-user,
+html[data-theme="light"] body .partido-row,
+html[data-theme="light"] body .custom-modal,
+html[data-theme="light"] body .team-card-sport,
+html[data-theme="light"] body .grupo-container-card,
+html[data-theme="light"] body .player-chip-item,
+html.acc-claro body .player-chip-item,
+body.light-theme .player-chip-item {
+    background-color: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html[data-theme="light"] body .section-header,
+html[data-theme="light"] body .table-torneos thead th,
+html.acc-claro body .section-header,
+html.acc-claro body .table-torneos thead th,
+body.light-theme .section-header,
+body.light-theme .table-torneos thead th {
+    background: #F1F8EC !important;
+    color: #1E293B !important;
+    border-color: #CBD5E1 !important;
+}
+html[data-theme="light"] body .table-torneos tbody tr,
+html[data-theme="light"] body .table-torneos tbody td,
+html.acc-claro body .table-torneos tbody tr,
+html.acc-claro body .table-torneos tbody td,
+body.light-theme .table-torneos tbody tr,
+body.light-theme .table-torneos tbody td {
+    background-color: #FFFFFF !important;
+    color: #1E293B !important;
+    border-color: #E2E8F0 !important;
+}
+html[data-theme="light"] body .torneo-name,
+html[data-theme="light"] body .torneo-info-row,
+html[data-theme="light"] body .empty-state,
+html[data-theme="light"] body .partido-row strong,
+html[data-theme="light"] body .grupo-container-card h1,
+html[data-theme="light"] body .grupo-container-card h2,
+html[data-theme="light"] body .grupo-container-card h3,
+html[data-theme="light"] body .grupo-container-card h4,
+html[data-theme="light"] body .grupo-container-card h5,
+html.acc-claro body .torneo-name,
+html.acc-claro body .torneo-info-row,
+html.acc-claro body .empty-state,
+body.light-theme .torneo-name,
+body.light-theme .torneo-info-row,
+body.light-theme .empty-state {
+    color: #1E293B !important;
+}
+
+/* Mantener el contraste del encabezado de máquinas frente a los estilos globales */
+html[data-theme="light"] body main .inventory-header h1.text-white,
+html[data-theme="light"] body main .inventory-header h1.text-white i,
+html.acc-claro body main .inventory-header h1.text-white,
+html.acc-claro body main .inventory-header h1.text-white i,
+body.light-theme main .inventory-header h1.text-white,
+body.light-theme main .inventory-header h1.text-white i {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+html[data-theme="light"] body main .inventory-header p.text-white-50,
+html.acc-claro body main .inventory-header p.text-white-50,
+body.light-theme main .inventory-header p.text-white-50 {
+    color: rgba(255, 255, 255, 0.9) !important;
+    opacity: 1 !important;
 }

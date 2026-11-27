@@ -5,6 +5,7 @@ from django.conf import settings
 
 
 from django.core.validators import RegexValidator
+from core.validators import normalizar_espacios, validador_solo_letras
 
 validador_documento_7_10 = RegexValidator(
     regex=r'^\d{7,10}$',
@@ -24,6 +25,9 @@ validador_ficha_7 = RegexValidator(
 
 class Usuario(AbstractUser):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
+
+    first_name = models.CharField(max_length=150, blank=True, validators=[validador_solo_letras])
+    last_name = models.CharField(max_length=150, blank=True, validators=[validador_solo_letras])
 
     TIPO_DOC = [
         ('CC', 'Cédula de Ciudadanía'),
@@ -60,7 +64,10 @@ class Usuario(AbstractUser):
         max_length=2, choices=TIPO_DOC, default='CC')
     telefono = models.CharField(
         max_length=15, blank=True,
-        validators=[validador_telefono_10]
+        validators=[RegexValidator(
+            regex=r'^3\d{9}$',
+            message='El teléfono debe tener 10 dígitos y comenzar por 3.'
+        )]
     )
     genero = models.CharField(
         max_length=2, choices=GENERO_CHOICES, blank=True, null=True)
@@ -81,6 +88,15 @@ class Usuario(AbstractUser):
     # ── Seguridad: bloqueo por intentos fallidos ──────────────
     intentos_fallidos = models.IntegerField(default=0)
     bloqueado_hasta = models.DateTimeField(null=True, blank=True)
+
+    def clean(self):
+        self.first_name = normalizar_espacios(self.first_name)
+        self.last_name = normalizar_espacios(self.last_name)
+        self.email = (self.email or '').strip().lower()
+        self.numero_documento = (self.numero_documento or '').strip()
+        self.telefono = (self.telefono or '').strip()
+        self.ficha = (self.ficha or '').strip() or None
+        super().clean()
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.numero_documento})"

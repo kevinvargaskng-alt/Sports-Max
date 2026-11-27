@@ -1,6 +1,8 @@
 import uuid
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from core.validators import validador_solo_letras, validador_nombre_con_numeros
 
 
 # ================================================================
@@ -95,10 +97,14 @@ class EquipoInterfichas(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
 
     codigo_equipo_interfichas = models.AutoField(primary_key=True)
-    ficha = models.IntegerField()
+    ficha = models.IntegerField(validators=[
+        MinValueValidator(1000000, message='La ficha debe tener 7 dígitos.'),
+        MaxValueValidator(9999999, message='La ficha debe tener 7 dígitos.'),
+    ])
     programa = models.CharField(max_length=150)
-    nombre_equipo = models.CharField(max_length=100)
-    capitan = models.CharField(max_length=100)
+    # REVISAR: se permiten números en nombres de equipos (p. ej., Equipo 2).
+    nombre_equipo = models.CharField(max_length=100, validators=[validador_nombre_con_numeros])
+    capitan = models.CharField(max_length=100, validators=[validador_solo_letras])
     torneo = models.ForeignKey(
         TorneoInterfichas, on_delete=models.CASCADE, related_name='equipos'
     )
@@ -147,8 +153,13 @@ class EquipoInterfichas(models.Model):
 # 4. JUGADORES
 # ================================================================
 class JugadorEquipo(models.Model):
-    nombre_completo = models.CharField(max_length=150)
-    numero_documento = models.CharField(max_length=30, blank=True, default='', verbose_name="Número de Documento")
+    nombre_completo = models.CharField(max_length=150, validators=[validador_solo_letras])
+    numero_documento = models.CharField(
+        max_length=30, blank=True, default='',
+        validators=[RegexValidator(r'^\d{6,10}$', message='El documento debe contener entre 6 y 10 dígitos.')],
+        verbose_name="Número de Documento")
+    ficha = models.CharField(max_length=20, blank=True, default='', verbose_name="Ficha")
+    programa = models.CharField(max_length=150, blank=True, default='', verbose_name="Programa")
     consentimiento_informado = models.FileField(
         upload_to='consentimientos_jugadores/', null=True, blank=True, verbose_name="Consentimiento Informado"
     )

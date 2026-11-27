@@ -2,6 +2,9 @@ import uuid
 from django.db import models
 from usuarios.models import Usuario
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
+from core.validators import validador_nombre_con_numeros
 
 
 
@@ -20,7 +23,9 @@ class Reserva(models.Model):
     hora_entrada = models.TimeField()
     # CAMBIO: Renombrar para coincidir con el MER
     tiempo_permanencia = models.IntegerField(
-        help_text="Tiempo en minutos", default=60)
+        help_text="Tiempo en minutos", default=60,
+        validators=[MinValueValidator(1, message='La permanencia debe ser al menos 1 minuto.'),
+                    MaxValueValidator(1440, message='La permanencia no puede superar 1440 minutos.')])
     hora_salida = models.TimeField()
     fecha_salida = models.DateField()
     franja_horaria = models.ForeignKey(
@@ -32,6 +37,11 @@ class Reserva(models.Model):
     )
     estado = models.CharField(max_length=20, default='Pendiente')
 
+    def clean(self):
+        if self.fecha_entrada and self.fecha_salida and self.fecha_salida < self.fecha_entrada:
+            raise ValidationError({'fecha_salida': 'La fecha de salida no puede ser anterior a la fecha de entrada.'})
+        super().clean()
+
     def __str__(self):
         return f"{self.usuario_solicitante.get_full_name()} - {self.fecha_entrada}"
 
@@ -41,7 +51,10 @@ class FranjaHoraria(models.Model):
     dia_semana = models.CharField(max_length=20, default='Lunes')
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
-    aforo_maximo = models.PositiveIntegerField(default=30)
+    aforo_maximo = models.PositiveIntegerField(
+        default=30,
+        validators=[MinValueValidator(1, message='El aforo debe ser al menos 1.'),
+                    MaxValueValidator(500, message='El aforo no puede superar 500 personas.')])
     habilitada = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
@@ -64,10 +77,17 @@ class GimnasioConfig(models.Model):
     ]
     estado = models.CharField(
         max_length=20, choices=ESTADO_CHOICES, default='abierta')
+    apertura_manual = models.BooleanField(
+        default=False,
+        help_text='Mantiene la sala abierta fuera del horario normal hasta que se cierre manualmente.'
+    )
     dias_habilitados = models.JSONField(default=list)
     horario_apertura = models.TimeField(default='07:00')
     horario_cierre = models.TimeField(default='17:00')
-    capacidad_maxima = models.PositiveIntegerField(default=40)
+    capacidad_maxima = models.PositiveIntegerField(
+        default=40,
+        validators=[MinValueValidator(1, message='La capacidad debe ser al menos 1.'),
+                    MaxValueValidator(500, message='La capacidad no puede superar 500 personas.')])
     actualizado_por = models.ForeignKey(
         Usuario, on_delete=models.SET_NULL, null=True, blank=True)
     actualizado_en = models.DateTimeField(auto_now=True)
@@ -144,7 +164,8 @@ class Maquina(models.Model):
         ('mantenimiento', 'Mantenimiento'),
         ('inactivo', 'Fuera de Servicio'),
     ]
-    nombre = models.CharField(max_length=100)
+    # REVISAR: los nombres de máquinas suelen incluir modelos (p. ej., Bicicleta 2).
+    nombre = models.CharField(max_length=100, validators=[validador_nombre_con_numeros])
     categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='fuerza')
     descripcion = models.TextField(blank=True)
     musculos = models.JSONField(default=list, blank=True)
@@ -179,7 +200,8 @@ class Machine(models.Model):
         ('Fuera de Servicio', 'Fuera de Servicio'),
     ]
 
-    nombre = models.CharField(max_length=100, verbose_name="Nombre de la Máquina")
+    # REVISAR: los nombres de máquinas suelen incluir modelos (p. ej., Bicicleta 2).
+    nombre = models.CharField(max_length=100, validators=[validador_nombre_con_numeros], verbose_name="Nombre de la Máquina")
     tipo = models.CharField(max_length=50, choices=TIPO_CHOICES, default='Cardio', verbose_name="Tipo")
     estado = models.CharField(max_length=50, choices=ESTADO_CHOICES, default='Disponible', verbose_name="Estado")
     imagen = models.ImageField(upload_to='maquinas/', null=True, blank=True, verbose_name="Imagen")

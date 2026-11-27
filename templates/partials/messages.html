@@ -1,16 +1,16 @@
 {% if messages %}
 <div class="toast-container position-fixed top-0 end-0 p-3 custom-toast-container" style="z-index: 9999;">
     {% for msg in messages %}
-        <div class="alert alert-{{ msg.tags|default:'info' }} fade show shadow-lg border-0 custom-toast-alert toast-msg-{% if 'info' in msg.tags %}info{% elif 'error' in msg.tags or 'danger' in msg.tags %}error{% elif 'warning' in msg.tags %}warning{% else %}default{% endif %}" 
+        <div class="alert alert-{{ msg.tags|default:'info' }} fade show shadow-lg border-0 custom-toast-alert toast-msg-{% if 'success' in msg.tags %}success{% elif 'info' in msg.tags %}info{% elif 'error' in msg.tags or 'danger' in msg.tags %}error{% elif 'warning' in msg.tags %}warning{% else %}default{% endif %}"
              role="alert" 
              style="position: relative; padding-right: 45px;">
-            <i class="fas {% if 'info' in msg.tags %}fa-check-circle text-info{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle text-danger{% elif 'warning' in msg.tags %}fa-exclamation-triangle text-warning{% else %}fa-info-circle text-info{% endif %} me-2 fs-5 custom-toast-icon"></i>
+            <i class="fas {% if 'success' in msg.tags %}fa-check-circle text-success{% elif 'info' in msg.tags %}fa-info-circle text-info{% elif 'error' in msg.tags or 'danger' in msg.tags %}fa-exclamation-circle text-danger{% elif 'warning' in msg.tags %}fa-exclamation-triangle text-warning{% else %}fa-info-circle text-info{% endif %} me-2 fs-5 custom-toast-icon"></i>
             {{ msg }}
             
             <button type="button" 
-                    class="custom-toast-close" 
-                    aria-label="Cerrar" 
-                    style="background: transparent; border: none; color: #fff; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; cursor: pointer; opacity: 0.8; z-index: 9999; pointer-events: auto;">
+                    class="custom-toast-close"
+                    onclick="cerrarMensajeGlobal(this)"
+                    aria-label="Cerrar">
                 <i class="fas fa-times" style="pointer-events: none;"></i>
             </button>
         </div>
@@ -19,25 +19,34 @@
 {% endif %}
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.custom-toast-alert').forEach(function(toast) {
-        // Temporizador para auto-eliminar a los 4 segundos
-        var timer = setTimeout(function() {
-            if (toast && toast.parentNode) {
-                toast.remove();
-            }
-        }, 3000);
+function cerrarMensajeGlobal(button) {
+    var toast = button && button.closest('.custom-toast-alert');
+    if (!toast) return;
+    toast.classList.remove('show');
+    window.setTimeout(function() {
+        if (toast.isConnected) toast.remove();
+    }, 180);
+}
 
-        // Evento manual para el botón de cerrar
-        var closeBtn = toast.querySelector('.custom-toast-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                clearTimeout(timer); // Detiene el temporizador
-                toast.remove();      // Elimina la alerta inmediatamente
-            });
-        }
-    });
-});
+(function() {
+    function activarMensajesGlobales() {
+        document.querySelectorAll('.custom-toast-alert:not([data-dismiss-ready])').forEach(function(toast) {
+            toast.setAttribute('data-dismiss-ready', 'true');
+            var esError = toast.classList.contains('toast-msg-error') || toast.classList.contains('toast-msg-warning');
+            window.setTimeout(function() {
+                if (!toast.isConnected) return;
+                toast.classList.remove('show');
+                window.setTimeout(function() {
+                    if (toast.isConnected) toast.remove();
+                }, 220);
+            }, esError ? 8000 : 5000);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', activarMensajesGlobales, { once: true });
+    } else {
+        activarMensajesGlobales();
+    }
+})();
 </script>

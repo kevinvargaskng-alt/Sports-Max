@@ -32,7 +32,7 @@
             <span class="status-pill {% if esta_abierto %}status-open{% else %}status-closed{% endif %}">
                 {% if esta_abierto %}Sala Abierta{% else %}Sala Cerrada{% endif %}
             </span>
-            <span class="badge bg-secondary text-white-50 px-3 py-2 rounded-pill small ms-2">
+            <span class="badge gym-capacity-badge px-3 py-2 rounded-pill small ms-2">
                 Capacidad: {{ config.capacidad_maxima|default:40 }} aprendices
             </span>
         </div>
@@ -829,19 +829,30 @@
                     <div class="gym-date">{{ ahora|date:"d M Y"|upper }}</div>
                 </div>
             </div>
-            <span class="status-pill {% if esta_abierto %}status-open{% else %}status-closed{% endif %}">
+            <span class="status-pill estado-sala-aprendiz {% if esta_abierto %}status-open{% else %}status-closed{% endif %}">
                 {% if esta_abierto %}Sala Abierta{% else %}Sala Cerrada{% endif %}
             </span>
 
-            {% if esta_abierto %}
-            <form method="POST" class="d-inline">
+            {% if user.rol == 'instructor' %}
+            <form method="post" action="{% url 'cerrar_gimnasio' %}" class="d-inline">
+                {% csrf_token %}
+                {% if esta_abierto %}
+                    <input type="hidden" name="accion" value="cerrar">
+                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">Cerrar sala</button>
+                {% else %}
+                    <input type="hidden" name="accion" value="abrir">
+                    <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">Abrir sala</button>
+                {% endif %}
+            </form>
+            {% endif %}
+
+            <form method="POST" class="d-inline form-ingreso-sala" {% if not esta_abierto %}hidden{% endif %}>
                 {% csrf_token %}
                 <input type="hidden" name="accion" value="crear_reserva">
                 <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 py-2 shadow">
                     <i class="fas fa-check-circle me-1"></i> Confirmar Mi Ingreso
                 </button>
             </form>
-            {% endif %}
         </div>
     </header>
 
@@ -1044,6 +1055,30 @@ if (clockEl) {
     }
     setInterval(tickClock, 1000);
     tickClock();
+}
+
+/* Mantiene visible para el aprendiz el estado actualizado por el instructor. */
+const estadoSalaUsuario = document.querySelector('.estado-sala-aprendiz');
+if (estadoSalaUsuario) {
+    const actualizarEstadoSala = async () => {
+        try {
+            const respuesta = await fetch("{% url 'gimnasio_aforo' %}", {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                cache: 'no-store'
+            });
+            if (!respuesta.ok) return;
+            const datos = await respuesta.json();
+            const abierta = datos.esta_abierto === true;
+            estadoSalaUsuario.textContent = abierta ? 'Sala Abierta' : 'Sala Cerrada';
+            estadoSalaUsuario.classList.toggle('status-open', abierta);
+            estadoSalaUsuario.classList.toggle('status-closed', !abierta);
+            const formularioIngreso = document.querySelector('.form-ingreso-sala');
+            if (formularioIngreso) formularioIngreso.hidden = !abierta;
+        } catch (error) {
+            // Conserva el último estado mostrado si no hay conexión temporalmente.
+        }
+    };
+    window.setInterval(actualizarEstadoSala, 15000);
 }
 
 /**
