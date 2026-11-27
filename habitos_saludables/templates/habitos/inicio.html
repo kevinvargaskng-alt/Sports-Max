@@ -371,7 +371,7 @@ body.light-theme .nav-card.nc-blue .nc-icon {
 .admin-section {
   background: var(--surface2);
   border: 1px solid rgba(35, 134, 54, 0.35);
-  border-radius: 20px; padding: 2rem; margin-top: 2.5rem;
+  border-radius: 20px; padding: 2rem; margin-bottom: 2.5rem;
 }
 .admin-section .admin-header {
   display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem;
@@ -431,7 +431,7 @@ body.light-theme .nav-card.nc-blue .nc-icon {
 <div class="container py-4">
 
 
-  {% if not tiene_consent %}
+  {% if not user.is_staff and not tiene_consent %}
   <div class="consent-banner">
     <p><i class="fas fa-shield-alt me-2 hab-ini-u-1"></i>
     Para acceder a <strong>Mi Salud y seguimientos</strong>, necesitas aceptar el tratamiento de datos personales (Habeas Data).</p>
@@ -448,9 +448,24 @@ body.light-theme .nav-card.nc-blue .nc-icon {
         <div class="hero-badge"><i class="fas fa-seedling"></i> Módulo activo</div>
         <h1 class="hero-title">Hábitos<br><span>Saludables</span></h1>
         <p class="hero-desc">
+          {% if user.is_staff %}
+          Administra las guías de hábitos, rutinas físicas, pirámide nutricional y materiales educativos, y consulta los seguimientos y reportes de los aprendices.
+          {% else %}
           Integra buenas prácticas de nutrición, ejercicio y bienestar mental en tu rutina diaria. Haz seguimiento a tu salud y descubre guías creadas para ti.
+          {% endif %}
         </p>
         <div class="hero-actions">
+          {% if user.is_staff %}
+          <a href="{% url 'habitos:admin_gestion' 'habitos' %}" class="btn-primary-acid">
+            <i class="fas fa-sliders-h"></i> Panel de Gestión
+          </a>
+          <a href="{% url 'habitos:reporte_habitos' %}" class="btn-ghost">
+            <i class="fas fa-chart-bar"></i> Ver Reportes
+          </a>
+          <a href="{% url 'habitos:admin_gestion' 'seguimientos' %}" class="btn-ghost">
+            <i class="fas fa-notes-medical"></i> Seguimientos
+          </a>
+          {% else %}
           <a href="{% url 'habitos:dashboard' %}" class="btn-primary-acid">
             <i class="fas fa-chart-line"></i> Mi Dashboard
           </a>
@@ -462,6 +477,7 @@ body.light-theme .nav-card.nc-blue .nc-icon {
             <i class="fas fa-plus-circle"></i> Registrar Seguimiento
           </a>
           {% endif %}
+          {% endif %}
         </div>
       </div>
       <div class="col-lg-5 mt-4 mt-lg-0 d-flex justify-content-center align-items-center">
@@ -472,8 +488,44 @@ body.light-theme .nav-card.nc-blue .nc-icon {
     </div>
   </div>
 
+  <!-- PANEL DE ADMINISTRADOR (solo admin) -->
+  {% if user.is_staff %}
+  <div class="admin-section reveal">
+    <div class="admin-header">
+      <span class="badge-admin"><i class="fas fa-crown me-1"></i>Panel Admin</span>
+      <h4>Gestión del Módulo</h4>
+    </div>
+    <div class="admin-actions-grid">
+      <a href="{% url 'habitos:admin_gestion' 'habitos' %}" class="admin-action-btn">
+        <i class="fas fa-apple-alt hab-ini-u-16"></i>
+        Gestionar Hábitos
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'rutinas' %}" class="admin-action-btn">
+        <i class="fas fa-dumbbell hab-ini-u-18"></i>
+        Gestionar Rutinas
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'nutricion' %}" class="admin-action-btn">
+        <i class="fas fa-utensils hab-ini-u-19"></i>
+        Gestionar Nutrición
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'materiales' %}" class="admin-action-btn">
+        <i class="fas fa-file-pdf hab-ini-u-20"></i>
+        Materiales de Apoyo
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'seguimientos' %}" class="admin-action-btn">
+        <i class="fas fa-notes-medical hab-ini-u-21"></i>
+        Ver Seguimientos
+      </a>
+      <a href="{% url 'habitos:reporte_habitos' %}" class="admin-action-btn">
+        <i class="fas fa-chart-bar hab-ini-u-16"></i>
+        Reportes
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
   <!-- MÓDULOS DE NAVEGACIÓN -->
-  <div class="section-title reveal"><span>Explorar Módulos</span></div>
+  <div class="section-title reveal"><span>{% if user.is_staff %}Vista Previa de Contenidos{% else %}Explorar Módulos{% endif %}</span></div>
   <div class="nav-grid reveal">
     <a href="{% url 'habitos:lista_habitos' %}" class="nav-card nc-green">
       <div class="nc-icon"><i class="fas fa-apple-alt"></i></div>
@@ -496,6 +548,7 @@ body.light-theme .nav-card.nc-blue .nc-icon {
         <p>Pirámide nutricional y guías de dieta.</p>
       </div>
     </a>
+    {% if not user.is_staff %}
     <a href="{% url 'habitos:historial_salud' %}" class="nav-card nc-blue">
       <div class="nc-icon"><i class="fas fa-notes-medical"></i></div>
       <div>
@@ -503,23 +556,18 @@ body.light-theme .nav-card.nc-blue .nc-icon {
         <p>Historial clínico y medidas físicas.</p>
       </div>
     </a>
+    {% endif %}
     <a href="{% url 'habitos:biblioteca' %}" class="nav-card nc-purple">
       <div class="nc-icon"><i class="fas fa-book-open"></i></div>
       <div>
         <h6>Biblioteca</h6>
-        <p>PDF, videos e infografías.</p>
-      </div>
-    </a>
-    <a href="{% url 'habitos:reporte_habitos' %}" class="nav-card nc-green">
-      <div class="nc-icon"><i class="fas fa-chart-bar"></i></div>
-      <div>
-        <h6>Reportes</h6>
-        <p>Consulta por ficha, hábito y fechas.</p>
+        <p>PDF, documentos e infografías.</p>
       </div>
     </a>
   </div>
 
-  <!-- ÚLTIMO SEGUIMIENTO o CTA -->
+  {% if not user.is_staff %}
+  <!-- ÚLTIMO SEGUIMIENTO o CTA (solo aprendices) -->
   <div class="row g-3 mb-4 reveal">
     <div class="col-lg-6">
       {% if ultimo_seguimiento %}
@@ -574,41 +622,6 @@ body.light-theme .nav-card.nc-blue .nc-icon {
           Explorar <i class="fas fa-arrow-right ms-1"></i>
         </a>
       </div>
-    </div>
-  </div>
-
-  <!-- PANEL DE ADMINISTRADOR (solo admin) -->
-  {% if user.is_staff %}
-  <div class="admin-section reveal">
-    <div class="admin-header">
-      <span class="badge-admin"><i class="fas fa-crown me-1"></i>Panel Admin</span>
-      <h4>Gestión del Módulo</h4>
-    </div>
-    <div class="admin-actions-grid">
-      <a href="{% url 'admin:habitos_saludables_habitosaludable_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-apple-alt hab-ini-u-16"></i>
-        Gestionar Hábitos
-      </a>
-      <a href="{% url 'admin:habitos_saludables_habitosaludable_add' %}" class="admin-action-btn">
-        <i class="fas fa-plus-circle hab-ini-u-17"></i>
-        Nuevo Hábito
-      </a>
-      <a href="{% url 'admin:habitos_saludables_rutinafisica_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-dumbbell hab-ini-u-18"></i>
-        Gestionar Rutinas
-      </a>
-      <a href="{% url 'admin:habitos_saludables_piramidenutricional_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-utensils hab-ini-u-19"></i>
-        Gestionar Nutrición
-      </a>
-      <a href="{% url 'admin:habitos_saludables_materialapoyo_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-file-pdf hab-ini-u-20"></i>
-        Materiales de Apoyo
-      </a>
-      <a href="{% url 'admin:habitos_saludables_seguimientosalud_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-notes-medical hab-ini-u-21"></i>
-        Ver Seguimientos
-      </a>
     </div>
   </div>
   {% endif %}

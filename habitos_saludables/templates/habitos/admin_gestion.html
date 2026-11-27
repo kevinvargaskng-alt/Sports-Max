@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} | Hábitos Saludables SENA{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --adm-bg: #111827;
+    --adm-card: #1E293B;
+    --adm-surface: #0F172A;
+    --adm-border: rgba(255, 255, 255, 0.1);
+    --adm-text: #F8FAFC;
+    --adm-muted: #94A3B8;
+    --adm-green: #39A900;
+    --adm-green-dark: #007832;
+  }
+
+  html.acc-claro,
+  body.light-theme,
+  html[data-theme="light"] {
+    --adm-bg: #F8FAFC;
+    --adm-card: #FFFFFF;
+    --adm-surface: #F1F8EC;
+    --adm-border: #CBD5E1;
+    --adm-text: #0F172A;
+    --adm-muted: #475569;
+  }
+
+  .adm-hero {
+    background: linear-gradient(135deg, #007832 0%, #39A900 100%);
+    border-radius: 20px;
+    padding: 1.75rem 2rem;
+    color: #FFFFFF !important;
+    box-shadow: 0 10px 28px rgba(0, 120, 50, 0.22);
+    margin-bottom: 1.5rem;
+  }
+  .adm-hero h1,
+  .adm-hero p,
+  .adm-hero span {
+    color: #FFFFFF !important;
+  }
+  .adm-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .adm-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+  .adm-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: 12px;
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    color: var(--adm-text) !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: all 0.2s ease;
+  }
+  .adm-tab:hover {
+    border-color: var(--adm-green);
+    transform: translateY(-1px);
+  }
+  .adm-tab.active {
+    background: linear-gradient(135deg, #39A900, #007832) !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(57, 169, 0, 0.28);
+  }
+  .adm-tab.active i {
+    color: #FFFFFF !important;
+  }
+
+  .adm-card {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    color: var(--adm-text);
+  }
+
+  .adm-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .adm-table thead th {
+    background: var(--adm-surface);
+    color: var(--adm-text) !important;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.9rem 1rem;
+    border-bottom: 2px solid var(--adm-border);
+  }
+  .adm-table tbody td {
+    padding: 0.95rem 1rem;
+    border-bottom: 1px solid var(--adm-border);
+    color: var(--adm-text) !important;
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+  .adm-table tbody tr:hover td {
+    background: rgba(57, 169, 0, 0.05);
+  }
+
+  .adm-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid var(--adm-border);
+    background: #FFFFFF;
+  }
+  .adm-thumb-placeholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(57, 169, 0, 0.12);
+    color: #39A900;
+    font-size: 1.25rem;
+    border: 1px solid rgba(57, 169, 0, 0.28);
+  }
+
+  .btn-sena-green {
+    background: linear-gradient(135deg, #39A900, #007832);
+    color: #FFFFFF !important;
+    border: none;
+    border-radius: 12px;
+    padding: 0.6rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(57, 169, 0, 0.25);
+    transition: all 0.2s ease;
+  }
+  .btn-sena-green:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    color: #FFFFFF !important;
+  }
+
+  .btn-adm-back {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #FFFFFF !important;
+    border-radius: 12px;
+    padding: 0.55rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .btn-adm-back:hover {
+    background: rgba(255, 255, 255, 0.28);
+    color: #FFFFFF !important;
+  }
+
+  .adm-form-label {
+    font-weight: 700;
+    font-size: 0.86rem;
+    color: var(--adm-text) !important;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+  .adm-card .form-control,
+  .adm-card .form-select {
+    background-color: var(--adm-surface) !important;
+    color: var(--adm-text) !important;
+    border: 1px solid var(--adm-border) !important;
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+  }
+  .adm-card .form-control:focus,
+  .adm-card .form-select:focus {
+    border-color: #39A900 !important;
+    box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.18) !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- CABECERA DEL PANEL DE GESTIÓN -->
+  <div class="adm-hero d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="adm-hero-badge">
+        <i class="fas fa-crown"></i> Panel Administrativo SENA
+      </div>
+      <h1 class="h3 fw-bold mb-1">
+        <i class="fas {{ cfg.icono }} me-2"></i>{{ titulo_pagina }}
+      </h1>
+      <p class="mb-0 small opacity-90">{{ cfg.subtitulo }}</p>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <a href="{% url 'habitos:inicio' %}" class="btn-adm-back">
+        <i class="fas fa-arrow-left"></i> Volver a Hábitos
+      </a>
+      {% if modo == 'lista' and cfg.permite_crear %}
+      <a href="{% url 'habitos:admin_crear_item' seccion %}" class="btn btn-light fw-bold rounded-3 px-3 py-2 text-success shadow-sm">
+        <i class="fas fa-plus-circle me-1"></i> Nuevo {{ cfg.singular }}
+      </a>
+      {% elif modo == 'form' %}
+      {% if accion == 'Editar' and cfg.permite_crear %}
+      <a href="{% url 'habitos:admin_crear_item' seccion %}" class="btn btn-light fw-bold rounded-3 px-3 py-2 text-success shadow-sm">
+        <i class="fas fa-plus-circle me-1"></i> Nuevo {{ cfg.singular }}
+      </a>
+      {% endif %}
+      <a href="{% url 'habitos:admin_gestion' seccion %}" class="btn-adm-back">
+        <i class="fas fa-list"></i> Ver Listado
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PESTAÑAS DE NAVEGACIÓN ENTRE SECCIONES -->
+  <div class="adm-tabs">
+    <a href="{% url 'habitos:admin_gestion' 'habitos' %}" class="adm-tab {% if seccion == 'habitos' %}active{% endif %}">
+      <i class="fas fa-apple-alt"></i> Gestionar Hábitos
+    </a>
+    <a href="{% url 'habitos:admin_gestion' 'rutinas' %}" class="adm-tab {% if seccion == 'rutinas' %}active{% endif %}">
+      <i class="fas fa-dumbbell"></i> Gestionar Rutinas
+    </a>
+    <a href="{% url 'habitos:admin_gestion' 'nutricion' %}" class="adm-tab {% if seccion == 'nutricion' %}active{% endif %}">
+      <i class="fas fa-utensils"></i> Gestionar Nutrición
+    </a>
+    <a href="{% url 'habitos:admin_gestion' 'materiales' %}" class="adm-tab {% if seccion == 'materiales' %}active{% endif %}">
+      <i class="fas fa-file-pdf"></i> Materiales de Apoyo
+    </a>
+    <a href="{% url 'habitos:admin_gestion' 'seguimientos' %}" class="adm-tab {% if seccion == 'seguimientos' %}active{% endif %}">
+      <i class="fas fa-notes-medical"></i> Ver Seguimientos
+    </a>
+    <a href="{% url 'habitos:reporte_habitos' %}" class="adm-tab">
+      <i class="fas fa-chart-bar"></i> Reportes
+    </a>
+  </div>
+
+  {% if modo == 'lista' %}
+  <!-- BARRA DE BÚSQUEDA Y CONTADOR -->
+  <div class="adm-card mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+      <div>
+        <h5 class="fw-bold mb-0">{{ cfg.titulo }}</h5>
+        <small style="color: var(--adm-muted);">Total de registros: <strong>{{ total_items }}</strong></small>
+      </div>
+      <form method="get" class="d-flex gap-2" style="min-width: 280px;">
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Buscar registro...">
+        <button type="submit" class="btn-sena-green py-1 px-3">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+        {% if q %}
+        <a href="{% url 'habitos:admin_gestion' seccion %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center">
+          Limpiar
+        </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="table-responsive">
+      <table class="adm-table">
+        <thead>
+          {% if seccion == 'habitos' %}
+          <tr>
+            <th>Imagen</th>
+            <th>Título</th>
+            <th>Categoría</th>
+            <th>Descripción</th>
+            <th class="text-center">Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+          {% elif seccion == 'rutinas' %}
+          <tr>
+            <th>Imagen</th>
+            <th>Nombre de Rutina</th>
+            <th>Nivel / Objetivo</th>
+            <th class="text-center">Duración</th>
+            <th class="text-center">Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+          {% elif seccion == 'nutricion' %}
+          <tr>
+            <th>Imagen</th>
+            <th>Alimento / Grupo</th>
+            <th>Nivel Pirámide</th>
+            <th>Cantidad Recomendada</th>
+            <th class="text-center">Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+          {% elif seccion == 'materiales' %}
+          <tr>
+            <th>Tipo</th>
+            <th>Título</th>
+            <th>Autor</th>
+            <th class="text-center">Descargas</th>
+            <th class="text-center">Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+          {% elif seccion == 'seguimientos' %}
+          <tr>
+            <th>Aprendiz</th>
+            <th>Fecha</th>
+            <th class="text-center">Peso / Estatura</th>
+            <th class="text-center">IMC</th>
+            <th class="text-center">Sueño / Agua</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+          {% endif %}
+        </thead>
+        <tbody>
+          {% for obj in items %}
+            {% if seccion == 'habitos' %}
+            <tr>
+              <td>
+                {% if obj.imagen %}
+                <img src="{{ obj.imagen.url }}" alt="{{ obj.titulo }}" class="adm-thumb">
+                {% else %}
+                <span class="adm-thumb-placeholder"><i class="fas fa-apple-alt"></i></span>
+                {% endif %}
+              </td>
+              <td class="fw-bold">{{ obj.titulo }}</td>
+              <td><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">{{ obj.get_categoria_display }}</span></td>
+              <td style="max-width: 300px;"><small style="color: var(--adm-muted);">{{ obj.descripcion|truncatechars:90 }}</small></td>
+              <td class="text-center">
+                {% if obj.activo %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="{% url 'habitos:detalle_habito' obj.pk %}" class="btn btn-sm btn-outline-success" title="Ver en guía">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="{% url 'habitos:admin_editar_item' seccion obj.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <form method="post" action="{% url 'habitos:admin_eliminar_item' seccion obj.pk %}" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este hábito?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+
+            {% elif seccion == 'rutinas' %}
+            <tr>
+              <td>
+                {% if obj.imagen %}
+                <img src="{{ obj.imagen.url }}" alt="{{ obj.nombre }}" class="adm-thumb">
+                {% else %}
+                <span class="adm-thumb-placeholder"><i class="fas fa-dumbbell"></i></span>
+                {% endif %}
+              </td>
+              <td class="fw-bold">{{ obj.nombre }}</td>
+              <td>
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 me-1">{{ obj.get_nivel_display }}</span>
+                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">{{ obj.get_objetivo_display }}</span>
+              </td>
+              <td class="text-center fw-semibold">{{ obj.duracion_minutos }} min</td>
+              <td class="text-center">
+                {% if obj.activo %}
+                <span class="badge bg-success">Activa</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactiva</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="{% url 'habitos:detalle_rutina' obj.pk %}" class="btn btn-sm btn-outline-success" title="Ver rutina">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="{% url 'habitos:admin_editar_item' seccion obj.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <form method="post" action="{% url 'habitos:admin_eliminar_item' seccion obj.pk %}" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta rutina?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+
+            {% elif seccion == 'nutricion' %}
+            <tr>
+              <td>
+                {% if obj.imagen %}
+                <img src="{{ obj.imagen.url }}" alt="{{ obj.nombre }}" class="adm-thumb">
+                {% else %}
+                <span class="adm-thumb-placeholder"><i class="fas fa-utensils"></i></span>
+                {% endif %}
+              </td>
+              <td class="fw-bold">{{ obj.nombre }}</td>
+              <td><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Nivel {{ obj.nivel_piramide }} — {{ obj.get_nivel_piramide_display }}</span></td>
+              <td>{{ obj.cantidad_recomendada }}</td>
+              <td class="text-center">
+                {% if obj.activo %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="{% url 'habitos:nutricion' %}" class="btn btn-sm btn-outline-success" title="Ver Pirámide">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="{% url 'habitos:admin_editar_item' seccion obj.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <form method="post" action="{% url 'habitos:admin_eliminar_item' seccion obj.pk %}" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este grupo nutricional?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+
+            {% elif seccion == 'materiales' %}
+            <tr>
+              <td>
+                <span class="adm-thumb-placeholder">
+                  {% if obj.tipo_contenido == 'pdf' %}<i class="fas fa-file-pdf"></i>
+                  {% elif obj.tipo_contenido == 'video' %}<i class="fas fa-video"></i>
+                  {% else %}<i class="fas fa-file-alt"></i>{% endif %}
+                </span>
+              </td>
+              <td>
+                <div class="fw-bold">{{ obj.titulo }}</div>
+                <small style="color: var(--adm-muted);">{{ obj.get_tipo_contenido_display }}</small>
+              </td>
+              <td>{{ obj.autor }}</td>
+              <td class="text-center fw-bold">{{ obj.descargas }}</td>
+              <td class="text-center">
+                {% if obj.activo %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="{% url 'habitos:admin_editar_item' seccion obj.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <form method="post" action="{% url 'habitos:admin_eliminar_item' seccion obj.pk %}" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este material?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+
+            {% elif seccion == 'seguimientos' %}
+            <tr>
+              <td>
+                <div class="fw-bold">{{ obj.usuario.get_full_name|default:obj.usuario.username }}</div>
+                <small style="color: var(--adm-muted);">Doc: {{ obj.usuario.numero_documento|default:"N/A" }} | Ficha: {{ obj.usuario.ficha|default:"N/A" }}</small>
+              </td>
+              <td>{{ obj.fecha_evaluacion|date:"d/m/Y" }}</td>
+              <td class="text-center">{{ obj.peso_kg }} kg / {{ obj.estatura_cm }} cm</td>
+              <td class="text-center">
+                {% with cat=obj.get_categoria_imc %}
+                <span class="badge bg-{{ cat.1 }}">{{ obj.imc }} — {{ cat.0 }}</span>
+                {% endwith %}
+              </td>
+              <td class="text-center">
+                <small>{{ obj.horas_sueno|default:"—" }} h sueño | {{ obj.vasos_agua|default:"—" }} vasos</small>
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="{% url 'habitos:admin_editar_item' seccion obj.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <form method="post" action="{% url 'habitos:admin_eliminar_item' seccion obj.pk %}" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este seguimiento?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endif %}
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="fas {{ cfg.icono }} fa-2x mb-2 text-success opacity-50 d-block"></i>
+              <p class="mb-2 fw-semibold">No hay registros en esta sección.</p>
+              {% if cfg.permite_crear %}
+              <a href="{% url 'habitos:admin_crear_item' seccion %}" class="btn-sena-green">
+                <i class="fas fa-plus-circle"></i> Crear {{ cfg.singular }}
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- FORMULARIO DE CREACIÓN / EDICIÓN -->
+  <div class="adm-card">
+    <h5 class="fw-bold mb-3 pb-2 border-bottom" style="border-color: var(--adm-border) !important;">
+      <i class="fas {% if accion == 'Nuevo' %}fa-plus-circle{% else %}fa-edit{% endif %} text-success me-2"></i>
+      {{ accion }} {{ cfg.singular }}
+    </h5>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div class="row g-3">
+        {% for field in form %}
+        <div class="{% if field.name == 'descripcion' or field.name == 'consejos' or field.name == 'ejercicios' or field.name == 'beneficios' or field.name == 'observaciones' %}col-12{% elif field.field.widget.input_type == 'checkbox' %}col-12{% else %}col-md-6{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}
+          <div class="form-check mt-2">
+            {{ field }}
+            <label class="form-check-label fw-semibold" for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+          </div>
+          {% elif field.field.widget.input_type == 'file' %}
+          <label class="adm-form-label">
+            {{ field.label }}
+            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+          </label>
+          <div class="p-3 rounded-3" style="background: var(--adm-surface); border: 1.5px dashed var(--adm-border);">
+            {% if field.value %}
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-2 border-bottom" style="border-color: var(--adm-border) !important;" id="current-file-box-{{ field.name }}">
+              <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 70%;">
+                <i class="fas fa-paperclip text-success"></i>
+                <a href="{{ field.value.url }}" target="_blank" class="fw-semibold text-decoration-none text-truncate" style="color: var(--adm-green);">
+                  {{ field.value.name }}
+                </a>
+              </div>
+              <label class="btn btn-sm btn-outline-danger mb-0 d-inline-flex align-items-center gap-1" style="cursor: pointer;" title="Marcar para quitar este archivo al guardar">
+                <input type="checkbox" name="{{ field.html_name }}-clear" id="{{ field.html_name }}-clear_id" class="form-check-input mt-0 me-1">
+                <i class="fas fa-trash-alt"></i> Quitar archivo
+              </label>
+            </div>
+            {% endif %}
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <label for="{{ field.id_for_label }}" class="btn-sena-green py-2 px-3 mb-0" style="cursor: pointer; font-size: 0.84rem;">
+                <i class="fas fa-cloud-upload-alt"></i> Cargar archivo
+              </label>
+              <span id="file-chosen-{{ field.id_for_label }}" class="small" style="color: var(--adm-muted);">
+                Ningún archivo seleccionado
+              </span>
+              <button type="button" id="btn-clear-new-{{ field.id_for_label }}" class="btn btn-sm btn-outline-secondary d-none py-1 px-2" onclick="limpiarArchivoSeleccionado('{{ field.id_for_label }}')">
+                <i class="fas fa-times"></i> Cancelar selección
+              </button>
+            </div>
+            <input type="file" name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="d-none custom-sena-file-input" {% if field.field.widget.attrs.accept %}accept="{{ field.field.widget.attrs.accept }}"{% endif %} onchange="actualizarNombreArchivo(this)">
+          </div>
+          {% else %}
+          <label class="adm-form-label" for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+          </label>
+          {{ field }}
+          {% endif %}
+          {% if field.help_text %}
+          <small class="d-block mt-1" style="color: var(--adm-muted);">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+          <div class="text-danger small mt-1"><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4 pt-3 border-top" style="border-color: var(--adm-border) !important;">
+        <div>
+          {% if accion == 'Editar' and item %}
+          <button type="button" class="btn btn-outline-danger px-3 rounded-3" onclick="if(confirm('¿Seguro que deseas eliminar este {{ cfg.singular|lower }} definitivamente?')) { document.getElementById('delete-item-form').submit(); }">
+            <i class="fas fa-trash-alt me-1"></i> Eliminar {{ cfg.singular }}
+          </button>
+          {% endif %}
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'habitos:admin_gestion' seccion %}" class="btn btn-outline-secondary px-4 rounded-3">
+            Cancelar
+          </a>
+          <button type="submit" class="btn-sena-green px-4">
+            <i class="fas fa-save"></i> Guardar {{ cfg.singular }}
+          </button>
+        </div>
+      </div>
+    </form>
+
+    {% if accion == 'Editar' and item %}
+    <form id="delete-item-form" method="post" action="{% url 'habitos:admin_eliminar_item' seccion item.pk %}" class="d-none">
+      {% csrf_token %}
+    </form>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function actualizarNombreArchivo(input) {
+  const span = document.getElementById('file-chosen-' + input.id);
+  const btnClear = document.getElementById('btn-clear-new-' + input.id);
+  if (input.files && input.files.length > 0) {
+    span.textContent = input.files[0].name;
+    span.style.fontWeight = '600';
+    span.style.color = '#39A900';
+    if (btnClear) btnClear.classList.remove('d-none');
+  } else {
+    span.textContent = 'Ningún archivo seleccionado';
+    span.style.fontWeight = 'normal';
+    span.style.color = '';
+    if (btnClear) btnClear.classList.add('d-none');
+  }
+}
+
+function limpiarArchivoSeleccionado(inputId) {
+  const input = document.getElementById(inputId);
+  if (input) {
+    input.value = '';
+    actualizarNombreArchivo(input);
+  }
+}
+</script>
+{% endblock %}

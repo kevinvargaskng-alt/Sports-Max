@@ -212,49 +212,65 @@ class MaterialApoyoForm(forms.ModelForm):
     class Meta:
         model = MaterialApoyo
         fields = [
-            'titulo', 'descripcion', 'tipo_contenido',
-            'archivo', 'url_video', 'imagen_portada',
+            'titulo', 'descripcion',
+            'archivo', 'imagen_portada',
             'autor', 'fecha_publicacion', 'activo'
         ]
         widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control', 'minlength': '2', 'maxlength': '150'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'maxlength': '1000'}),
-            'tipo_contenido': forms.Select(attrs={'class': 'form-select'}),
-            'url_video': forms.URLInput(attrs={'class': 'form-control',
-                                               'placeholder': 'https://youtube.com/...',
-                                               'maxlength': '500'}),
-            'autor': forms.TextInput(attrs={'class': 'form-control', 'maxlength': '100'}),
-            'fecha_publicacion': forms.DateInput(attrs={'type': 'date',
-                                                        'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'minlength': '2', 'maxlength': '150', 'placeholder': 'Ej: Guía Institucional de Nutrición SENA'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'maxlength': '1000', 'placeholder': 'Descripción breve del material de apoyo...'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'form-control d-none custom-file-input-hidden', 'accept': '.pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg'}),
+            'imagen_portada': forms.ClearableFileInput(attrs={'class': 'form-control d-none custom-file-input-hidden', 'accept': 'image/*'}),
+            'autor': forms.TextInput(attrs={'class': 'form-control', 'maxlength': '100', 'placeholder': 'Ej: Bienestar al Aprendiz SENA'}),
+            'fecha_publicacion': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'titulo': 'Título del Material',
+            'descripcion': 'Descripción',
+            'archivo': 'Documento o Archivo Adjunto (PDF, Word, Infografía)',
+            'imagen_portada': 'Imagen de Portada (opcional)',
+            'autor': 'Autor / Dependencia',
+            'fecha_publicacion': 'Fecha de Publicación',
+            'activo': 'Material Activo (visible en la biblioteca)',
         }
 
     def clean(self):
         cleaned = super().clean()
-        tipo = cleaned.get('tipo_contenido')
         archivo = cleaned.get('archivo')
-        url_video = cleaned.get('url_video')
-
-        if tipo == 'video' and not url_video:
-            raise ValidationError(
-                'Para tipo "Video" debes ingresar la URL del video.'
-            )
-        if tipo in ('pdf', 'documento', 'presentacion') and not archivo:
-            raise ValidationError(
-                f'Para tipo "{tipo}" debes adjuntar un archivo.'
-            )
-        # Validar tipo/size/magic-bytes del archivo subido
-        if archivo:
+        if not archivo and not (self.instance and self.instance.pk and self.instance.archivo):
+            self.add_error('archivo', 'Debes cargar un documento o archivo para el material de apoyo.')
+        if archivo and hasattr(archivo, 'content_type'):
             try:
                 validate_uploaded_file(archivo, allowed_types="document")
             except ValidationError:
-                self.add_error(
-                    'archivo',
-                    'Tipo de archivo no permitido o archivo inválido.')
+                try:
+                    validate_uploaded_file(archivo, allowed_types="image")
+                except ValidationError:
+                    self.add_error(
+                        'archivo',
+                        'Tipo de archivo no permitido o archivo inválido.')
         return cleaned
 
-    # REVISAR: títulos y nombres de autor pueden contener puntuación legítima;
-    # se permite texto libre, pero se eliminan etiquetas y se respeta la longitud.
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        archivo = self.cleaned_data.get('archivo')
+        if archivo and hasattr(archivo, 'name'):
+            ext = archivo.name.rsplit('.', 1)[-1].lower() if '.' in archivo.name else ''
+            if ext == 'pdf':
+                instance.tipo_contenido = 'pdf'
+            elif ext in ('ppt', 'pptx'):
+                instance.tipo_contenido = 'presentacion'
+            elif ext in ('png', 'jpg', 'jpeg', 'webp'):
+                instance.tipo_contenido = 'infografia'
+            else:
+                instance.tipo_contenido = 'documento'
+        elif not instance.tipo_contenido:
+            instance.tipo_contenido = 'documento'
+        if commit:
+            instance.save()
+        return instance
+
     def clean_titulo(self):
         return limpiar_texto_largo(self.cleaned_data.get('titulo', ''), 250, 'El título')
 
@@ -299,6 +315,85 @@ class RecetaSaludableForm(forms.ModelForm):
         if imagen:
             validate_uploaded_file(imagen, allowed_types='image')
         return imagen
+
+
+class HabitoSaludableForm(forms.ModelForm):
+    """Formulario para crear y editar Hábitos Saludables en la interfaz web."""
+    class Meta:
+        model = HabitoSaludable
+        fields = ['titulo', 'categoria', 'descripcion', 'consejos', 'imagen', 'activo']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Hidratación Óptima', 'maxlength': '200'}),
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descripción del hábito saludable...'}),
+            'consejos': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Escribe un consejo por línea...'}),
+            'imagen': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'titulo': 'Título del Hábito',
+            'categoria': 'Categoría',
+            'descripcion': 'Descripción',
+            'consejos': 'Consejos Clave (uno por línea)',
+            'imagen': 'Imagen Ilustrativa',
+            'activo': 'Hábito Activo (visible para aprendices)',
+        }
+
+
+class RutinaFisicaForm(forms.ModelForm):
+    """Formulario para crear y editar Rutinas Físicas en la interfaz web."""
+    class Meta:
+        model = RutinaFisica
+        fields = ['nombre', 'nivel', 'objetivo', 'duracion_minutos', 'descripcion', 'ejercicios', 'imagen', 'activo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Cardio Express 20 Min', 'maxlength': '200'}),
+            'nivel': forms.Select(attrs={'class': 'form-select'}),
+            'objetivo': forms.Select(attrs={'class': 'form-select'}),
+            'duracion_minutos': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'max': '360', 'placeholder': 'Ej: 30'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descripción de la rutina...'}),
+            'ejercicios': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Escribe un ejercicio por línea (ej: Sentadillas 3x15)...'}),
+            'imagen': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'nombre': 'Nombre de la Rutina',
+            'nivel': 'Nivel de Dificultad',
+            'objetivo': 'Objetivo Principal',
+            'duracion_minutos': 'Duración Estimada (minutos)',
+            'descripcion': 'Descripción',
+            'ejercicios': 'Lista de Ejercicios (uno por línea)',
+            'imagen': 'Imagen de la Rutina',
+            'activo': 'Rutina Activa (visible para aprendices)',
+        }
+
+
+class PiramideNutricionalForm(forms.ModelForm):
+    """Formulario para crear y editar elementos de la Pirámide Nutricional en la interfaz web."""
+    class Meta:
+        model = PiramideNutricional
+        fields = ['nombre', 'categoria', 'nivel_piramide', 'cantidad_recomendada', 'beneficios', 'ejemplos', 'color_tarjeta', 'imagen', 'activo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Frutas y Vegetales', 'maxlength': '150'}),
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'nivel_piramide': forms.Select(attrs={'class': 'form-select'}),
+            'cantidad_recomendada': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 3 a 5 porciones diarias'}),
+            'beneficios': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Beneficios nutricionales...'}),
+            'ejemplos': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Separados por coma: Manzana, Brócoli, Zanahoria'}),
+            'color_tarjeta': forms.TextInput(attrs={'type': 'color', 'class': 'form-control form-control-color'}),
+            'imagen': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'nombre': 'Nombre del Grupo / Alimento',
+            'categoria': 'Categoría Nutricional',
+            'nivel_piramide': 'Nivel en la Pirámide',
+            'cantidad_recomendada': 'Porción / Cantidad Recomendada',
+            'beneficios': 'Beneficios para la Salud',
+            'ejemplos': 'Ejemplos de Alimentos (separados por comas)',
+            'color_tarjeta': 'Color Distintivo',
+            'imagen': 'Imagen Representativa',
+            'activo': 'Elemento Activo',
+        }
 
 
 class BuscarMaterialForm(forms.Form):
