@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('interfichas', '0007_remove_equipointerfichas_planilla_inscripcion'),
+        ('interfichas', '0002_initial'),
     ]
 
     operations = [
