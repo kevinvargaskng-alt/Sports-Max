@@ -213,45 +213,46 @@ body {
 .pyramid-item {
     background: var(--surface3);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem;
+    border-radius: 16px;
+    padding: 1.15rem 1rem;
     text-align: center;
-    width: 150px;
+    width: 185px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.2s ease, border-color 0.2s;
+    transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
 }
 
 .pyramid-item:hover {
     transform: translateY(-5px);
     border-color: var(--acid-text);
-    box-shadow: 0 8px 20px rgba(22, 101, 52, 0.25);
+    box-shadow: 0 10px 24px rgba(22, 101, 52, 0.25);
 }
 
 .pyramid-item img {
-    background-color: rgba(255, 255, 255, 0.03);
-    border-radius: 50%;
-    padding: 8px;
-    width: 70px;
-    height: 70px;
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 4px;
+    width: 115px;
+    height: 115px;
     object-fit: cover;
     margin-bottom: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .pyramid-item h6 {
     color: white;
     font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
     line-height: 1.3;
 }
 
 .pyramid-item small {
     color: var(--muted);
-    font-size: 0.75rem;
-    line-height: 1.2;
+    font-size: 0.78rem;
+    line-height: 1.3;
 }
 
 /* Material / Library */
@@ -373,8 +374,8 @@ body {
 
 .edu-u-6 {
     width: 100%;
-    max-height: 350px;
-    object-fit: cover;
+    max-height: 360px;
+    object-fit: contain;
     border-radius: 12px;
     margin-bottom: 1.5rem;
     border: 1px solid var(--border);
@@ -490,8 +491,9 @@ body {
 
 .edu-u-25 {
     width: 100%;
-    height: 160px;
+    height: 195px;
     object-fit: cover;
+    object-position: center;
     border-bottom: 1px solid var(--border);
 }
 
@@ -542,8 +544,8 @@ body {
 
 .edu-u-33 {
     width: 100%;
-    max-height: 350px;
-    object-fit: cover;
+    max-height: 360px;
+    object-fit: contain;
     border-radius: 12px;
     margin-bottom: 1.5rem;
     border: 1px solid var(--border);
@@ -700,9 +702,168 @@ body {
         }
 
         .edu-u-61 {
-            margin-top: 1rem; width: 100%; justify-content: center; border-color: rgba(92, 158, 255, 0.3); color: #5c9eff;
+            margin-top: 1rem; width: 100%; justify-content: center; border-color: rgba(35, 134, 54, 0.45); color: #2ea043;
         }
 
         .edu-u-62 {
             color: var(--muted);
         }
+
+/* ════════════════════════════════════════════════════════════════
+   MODO CLARO SENA — CONTENIDO EDUCATIVO (HÁBITOS, RUTINAS, PIRÁMIDE, BIBLIOTECA)
+   Garantiza fondos blancos/claros y texto de alto contraste sin tarjetas azules
+   ════════════════════════════════════════════════════════════════ */
+html.acc-claro body,
+body.light-theme,
+html[data-theme="light"] body {
+    background: #F8FAFC !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .page-header,
+body.light-theme .page-header {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F1F8EC 100%) !important;
+    border-bottom: 3px solid #39A900 !important;
+    color: #0F172A !important;
+}
+html.acc-claro body .page-header h1,
+body.light-theme .page-header h1 {
+    color: #0F172A !important;
+    text-shadow: none !important;
+}
+html.acc-claro body .panel,
+html.acc-claro body .content-card,
+html.acc-claro body .pyramid-item,
+html.acc-claro body .material-card,
+body.light-theme .panel,
+body.light-theme .content-card,
+body.light-theme .pyramid-item,
+body.light-theme .material-card {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+    box-shadow: 0 6px 20px rgba(30, 41, 59, 0.07) !important;
+}
+html.acc-claro body .content-card:hover,
+html.acc-claro body .pyramid-item:hover,
+html.acc-claro body .material-card:hover,
+body.light-theme .content-card:hover,
+body.light-theme .pyramid-item:hover,
+body.light-theme .material-card:hover {
+    border-color: #39A900 !important;
+    box-shadow: 0 12px 28px rgba(0, 120, 50, 0.14) !important;
+    color: #0F172A !important;
+}
+html.acc-claro body .content-card h5,
+html.acc-claro body .pyramid-item h6,
+html.acc-claro body .material-card h5,
+html.acc-claro body .edu-u-3,
+html.acc-claro body .edu-u-7,
+html.acc-claro body .edu-u-8,
+html.acc-claro body .edu-u-10,
+html.acc-claro body .edu-u-15,
+html.acc-claro body .edu-u-16,
+html.acc-claro body .edu-u-20,
+html.acc-claro body .edu-u-29,
+html.acc-claro body .edu-u-35,
+html.acc-claro body .edu-u-36,
+html.acc-claro body .edu-u-38,
+html.acc-claro body .edu-u-43,
+html.acc-claro body .edu-u-45,
+body.light-theme .content-card h5,
+body.light-theme .pyramid-item h6,
+body.light-theme .material-card h5,
+body.light-theme .edu-u-3,
+body.light-theme .edu-u-7,
+body.light-theme .edu-u-8,
+body.light-theme .edu-u-10,
+body.light-theme .edu-u-15,
+body.light-theme .edu-u-16,
+body.light-theme .edu-u-20,
+body.light-theme .edu-u-29,
+body.light-theme .edu-u-35,
+body.light-theme .edu-u-36,
+body.light-theme .edu-u-38,
+body.light-theme .edu-u-43,
+body.light-theme .edu-u-45 {
+    color: #1E293B !important;
+}
+html.acc-claro body .edu-u-1,
+html.acc-claro body .edu-u-2,
+html.acc-claro body .edu-u-4,
+html.acc-claro body .edu-u-5,
+html.acc-claro body .edu-u-21,
+html.acc-claro body .edu-u-22,
+html.acc-claro body .edu-u-23,
+html.acc-claro body .edu-u-30,
+html.acc-claro body .edu-u-32,
+html.acc-claro body .edu-u-47,
+html.acc-claro body .edu-u-52,
+html.acc-claro body .edu-u-53,
+html.acc-claro body .edu-u-62,
+html.acc-claro body .pyramid-item small,
+html.acc-claro body .material-card p,
+html.acc-claro body .material-card .meta,
+body.light-theme .edu-u-1,
+body.light-theme .edu-u-2,
+body.light-theme .edu-u-4,
+body.light-theme .edu-u-5,
+body.light-theme .edu-u-21,
+body.light-theme .edu-u-22,
+body.light-theme .edu-u-23,
+body.light-theme .edu-u-30,
+body.light-theme .edu-u-32,
+body.light-theme .edu-u-47,
+body.light-theme .edu-u-52,
+body.light-theme .edu-u-53,
+body.light-theme .edu-u-62,
+body.light-theme .pyramid-item small,
+body.light-theme .material-card p,
+body.light-theme .material-card .meta {
+    color: #475569 !important;
+}
+html.acc-claro body .edu-u-41,
+html.acc-claro body .edu-u-18:hover,
+body.light-theme .edu-u-41,
+body.light-theme .edu-u-18:hover {
+    background: #F8FAFC !important;
+    border-color: #CBD5E1 !important;
+}
+html.acc-claro body .edu-u-44,
+body.light-theme .edu-u-44 {
+    background: #F0FDF4 !important;
+    border-left: 4px solid #39A900 !important;
+}
+html.acc-claro body .edu-u-46,
+html.acc-claro body .edu-u-50,
+html.acc-claro body .edu-u-60,
+html.acc-claro body .material-card .icon,
+body.light-theme .edu-u-46,
+body.light-theme .edu-u-50,
+body.light-theme .edu-u-60,
+body.light-theme .material-card .icon {
+    color: #007832 !important;
+}
+html.acc-claro body .btn-outline-sm,
+html.acc-claro body .edu-u-61,
+body.light-theme .btn-outline-sm,
+body.light-theme .edu-u-61 {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .btn-outline-sm:hover,
+html.acc-claro body .btn-outline-sm.active,
+html.acc-claro body .edu-u-61:hover,
+body.light-theme .btn-outline-sm:hover,
+body.light-theme .btn-outline-sm.active,
+body.light-theme .edu-u-61:hover {
+    background: #39A900 !important;
+    border-color: #007832 !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro body .search-input,
+body.light-theme .search-input {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}

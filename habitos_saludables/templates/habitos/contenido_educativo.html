@@ -4,7 +4,7 @@
 {% block title %}{{ titulo_pagina }} | Hábitos Saludables{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/contenido_educativo_styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/contenido_educativo_styles.css' %}?v=20261126b">
 {% endblock %}
 
 {% block content %}
@@ -42,11 +42,19 @@
     <div class="row g-4">
         {% for habito in habitos %}
         <div class="col-md-6 col-lg-4 habit-card reveal">
-            <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="content-card">
-                <div class="icon-wrapper icon-green"><i class="fas fa-{{ habito.icono_css }}"></i></div>
-                <h5 class="edu-u-3">{{ habito.titulo }}</h5>
-                <p class="edu-u-4">{{ habito.descripcion|truncatechars:100 }}</p>
-                <div><span class="badge-cat badge-green">{{ habito.get_categoria_display }}</span></div>
+            <a href="{% url 'habitos:detalle_habito' habito.pk %}" class="content-card edu-u-24">
+                {% if habito.imagen %}
+                <img loading="lazy" src="{{ habito.imagen.url }}" alt="{{ habito.titulo }}" class="edu-u-25">
+                {% else %}
+                <div class="edu-u-26">
+                    <i class="fas fa-{{ habito.icono_css }} edu-u-27"></i>
+                </div>
+                {% endif %}
+                <div class="edu-u-28">
+                    <h5 class="edu-u-3">{{ habito.titulo }}</h5>
+                    <p class="edu-u-4">{{ habito.descripcion|truncatechars:100 }}</p>
+                    <div><span class="badge-cat badge-green">{{ habito.get_categoria_display }}</span></div>
+                </div>
             </a>
         </div>
         {% empty %}
@@ -84,7 +92,11 @@
                 <div class="edu-u-17">
                     {% for rel_habito in relacionados %}
                     <a href="{% url 'habitos:detalle_habito' rel_habito.pk %}" class="edu-u-18">
+                        {% if rel_habito.imagen %}
+                        <img loading="lazy" src="{{ rel_habito.imagen.url }}" alt="{{ rel_habito.titulo }}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.12);">
+                        {% else %}
                         <div class="icon-wrapper icon-blue edu-u-19"><i class="fas fa-{{ rel_habito.icono_css }}"></i></div>
+                        {% endif %}
                         <div>
                             <h6 class="edu-u-20">{{ rel_habito.titulo }}</h6>
                             <small class="edu-u-21">{{ rel_habito.get_categoria_display }}</small>

@@ -474,35 +474,39 @@ def poblar_datos():
 
     # Hábitos
     habitos = [
-        ("Hidratación Óptima", "hidratacion", "Beber agua a lo largo del día mantiene el rendimiento físico y mental.", "2 a 3 litros al día\nLlevar termo propio"),
-        ("Higiene del Sueño", "sueno", "Dormir de 7 a 8 horas diarias para reparar fibras musculares.", "Horario fijo\nSin pantallas 1h antes"),
-        ("Pausas Activas", "ejercicio", "Estiramientos breves durante las jornadas académicas.", "Cada 2 horas\nEstirar cuello y espalda"),
-        ("Alimentación Consciente", "alimentacion", "Incluir porciones adecuadas de vegetales, proteínas y carbohidratos.", "5 porciones de frutas/verduras\nReducir azúcares"),
-        ("Salud y Gestión Emocional", "mental", "Prácticas de respiración y descanso activo frente al estrés.", "Técnicas de respiración diafragmática\nEsparcimiento"),
+        ("Hidratación Óptima", "hidratacion", "Beber agua a lo largo del día mantiene el rendimiento físico y mental.", "2 a 3 litros al día\nLlevar termo propio", "habitos/imagenes/hidratacion_optima.jpg", "tint"),
+        ("Higiene del Sueño", "sueno", "Dormir de 7 a 8 horas diarias para reparar fibras musculares.", "Horario fijo\nSin pantallas 1h antes", "habitos/imagenes/higiene_sueno.jpg", "bed"),
+        ("Pausas Activas", "ejercicio", "Estiramientos breves durante las jornadas académicas.", "Cada 2 horas\nEstirar cuello y espalda", "habitos/imagenes/pausas_activas.jpg", "running"),
+        ("Alimentación Consciente", "alimentacion", "Incluir porciones adecuadas de vegetales, proteínas y carbohidratos.", "5 porciones de frutas/verduras\nReducir azúcares", "habitos/imagenes/alimentacion_consciente.jpg", "apple-alt"),
+        ("Salud y Gestión Emocional", "mental", "Prácticas de respiración y descanso activo frente al estrés.", "Técnicas de respiración diafragmática\nEsparcimiento", "habitos/imagenes/salud_emocional.jpg", "spa"),
     ]
     habitos_objs = []
-    for tit, cat, desc, cons in habitos:
+    for tit, cat, desc, cons, img_h, ico_h in habitos:
         h, _ = HabitoSaludable.objects.get_or_create(
             titulo=tit,
             defaults={
                 'categoria': cat,
                 'descripcion': desc,
                 'consejos': cons,
-                'icono_css': 'bi-heart-pulse'
+                'imagen': img_h,
+                'icono_css': ico_h
             }
         )
+        if not h.imagen:
+            h.imagen = img_h
+            h.save(update_fields=['imagen'])
         habitos_objs.append(h)
 
     # Pirámide Nutricional
     piramide_items = [
-        ("Agua Natural", "agua", 1, "Base fundamental de hidratación celular.", "2 a 3 litros al día", "Agua pura, infusiones sin azúcar"),
-        ("Cereales Integrales", "cereales", 1, "Energía de liberación prolongada.", "4 a 6 porciones diarias", "Avena en hojuelas, arroz integral, quinua"),
-        ("Frutas y Vegetales", "frutas", 2, "Aporte de micronutrientes, fibra y antioxidantes.", "5 porciones al día", "Manzanas, naranjas, espinacas, zanahorias"),
-        ("Proteínas Magras", "proteinas", 3, "Construcción y recuperación de tejido muscular.", "2 a 3 porciones al día", "Pechuga de pollo, huevos, pescado, legumbres"),
-        ("Grasas Saludables", "grasas", 4, "Salud cardiovascular y hormonal.", "1 a 2 porciones al día", "Aguacate, frutos secos, aceite de oliva"),
+        ("Agua Natural", "agua", 1, "Base fundamental de hidratación celular.", "2 a 3 litros al día", "Agua pura, infusiones sin azúcar", "nutricion/imagenes/agua_natural.jpg"),
+        ("Cereales Integrales", "cereales", 1, "Energía de liberación prolongada.", "4 a 6 porciones diarias", "Avena en hojuelas, arroz integral, quinua", "nutricion/imagenes/cereales_integrales.jpg"),
+        ("Frutas y Vegetales", "frutas", 2, "Aporte de micronutrientes, fibra y antioxidantes.", "5 porciones al día", "Manzanas, naranjas, espinacas, zanahorias", "nutricion/imagenes/frutas_vegetales.jpg"),
+        ("Proteínas Magras", "proteinas", 3, "Construcción y recuperación de tejido muscular.", "2 a 3 porciones al día", "Pechuga de pollo, huevos, pescado, legumbres", "nutricion/imagenes/proteinas_magras.jpg"),
+        ("Grasas Saludables", "grasas", 4, "Salud cardiovascular y hormonal.", "1 a 2 porciones al día", "Aguacate, frutos secos, aceite de oliva", "nutricion/imagenes/grasas_saludables.jpg"),
     ]
-    for nom, cat, niv, ben, cant, ej in piramide_items:
-        PiramideNutricional.objects.get_or_create(
+    for nom, cat, niv, ben, cant, ej, img_p in piramide_items:
+        p_obj, _ = PiramideNutricional.objects.get_or_create(
             nombre=nom,
             defaults={
                 'categoria': cat,
@@ -510,18 +514,23 @@ def poblar_datos():
                 'beneficios': ben,
                 'cantidad_recomendada': cant,
                 'ejemplos': ej,
-                'color_tarjeta': '#0284c7'
+                'imagen': img_p,
+                'color_tarjeta': '#39A900'
             }
         )
+        if not p_obj.imagen:
+            p_obj.imagen = img_p
+            p_obj.color_tarjeta = '#39A900'
+            p_obj.save(update_fields=['imagen', 'color_tarjeta'])
 
     # Rutinas Físicas
     rutinas = [
-        ("Acondicionamiento General", "principiante", "bienestar", "Rutina ideal para aprendices que inician actividad física.", 35, "10 Sentadillas\n10 Flexiones inclinadas\n30s Plancha"),
-        ("Fuerza Tren Superior", "intermedio", "fuerza", "Desarrollo de fuerza en pectorales, hombros y brazos.", 45, "15 Flexiones de pecho\n12 Fondos en banca\n12 Dominadas asistidas"),
-        ("Cardio HIIT Minero", "avanzado", "cardio", "Entrenamiento de intervalos de alta intensidad para resistencia.", 30, "40s Burpees\n20s Descanso\n40s Jumping Jacks\n20s Descanso"),
+        ("Acondicionamiento General", "principiante", "bienestar", "Rutina ideal para aprendices que inician actividad física.", 35, "10 Sentadillas\n10 Flexiones inclinadas\n30s Plancha", "rutinas/imagenes/acondicionamiento_general.jpg"),
+        ("Fuerza Tren Superior", "intermedio", "fuerza", "Desarrollo de fuerza en pectorales, hombros y brazos.", 45, "15 Flexiones de pecho\n12 Fondos en banca\n12 Dominadas asistidas", "rutinas/imagenes/fuerza_tren_superior.jpg"),
+        ("Cardio HIIT Minero", "avanzado", "cardio", "Entrenamiento de intervalos de alta intensidad para resistencia.", 30, "40s Burpees\n20s Descanso\n40s Jumping Jacks\n20s Descanso", "rutinas/imagenes/cardio_hiit_minero.jpg"),
     ]
     rutinas_objs = []
-    for nom, niv, obj, desc, dur, ejerc in rutinas:
+    for nom, niv, obj, desc, dur, ejerc, img_r in rutinas:
         r, _ = RutinaFisica.objects.get_or_create(
             nombre=nom,
             defaults={
@@ -529,9 +538,13 @@ def poblar_datos():
                 'objetivo': obj,
                 'descripcion': desc,
                 'duracion_minutos': dur,
-                'ejercicios': ejerc
+                'ejercicios': ejerc,
+                'imagen': img_r
             }
         )
+        if not r.imagen:
+            r.imagen = img_r
+            r.save(update_fields=['imagen'])
         rutinas_objs.append(r)
 
     # Recetas Saludables

@@ -4,10 +4,38 @@
 {% block title %}Fichas de Salud y Anamnesis | Gimnasio SENA{% endblock %}
 
 {% block content %}
+<style>
+  .anamnesis-hero-card {
+    background: linear-gradient(135deg, rgba(220,53,69,0.2) 0%, rgba(15,23,42,0.9) 100%);
+    border: 1px solid rgba(220,53,69,0.3);
+  }
+  .anamnesis-kpi-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .anamnesis-thead-tr {
+    background: rgba(15, 26, 46, 0.95);
+  }
+  html.acc-claro .anamnesis-hero-card,
+  body.light-theme .anamnesis-hero-card {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%) !important;
+    border: 1.5px solid #FECACA !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+  }
+  html.acc-claro .anamnesis-kpi-box,
+  body.light-theme .anamnesis-kpi-box {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+  }
+  html.acc-claro .anamnesis-thead-tr,
+  body.light-theme .anamnesis-thead-tr {
+    background: #F1F8EC !important;
+  }
+</style>
 <div class="container py-4">
 
   <!-- CABECERA -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-4 rounded-4" style="background: linear-gradient(135deg, rgba(220,53,69,0.2) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(220,53,69,0.3);">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-4 rounded-4 anamnesis-hero-card">
     <div>
       <div class="d-flex align-items-center gap-2 mb-2">
         <a href="{% url 'gimnasio' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">
@@ -26,7 +54,7 @@
     </div>
 
     <div class="d-flex align-items-center gap-3">
-      <div class="text-center px-4 py-2 rounded-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+      <div class="text-center px-4 py-2 rounded-3 anamnesis-kpi-box">
         <span class="d-block h3 fw-bold text-white mb-0">{{ total_fichas|default:0 }}</span>
         <small class="text-white-50 text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Evaluaciones Registradas</small>
       </div>
@@ -42,7 +70,7 @@
       <div class="table-responsive">
         <table class="table table-dark table-hover align-middle mb-0">
           <thead>
-            <tr class="text-uppercase small text-white-50" style="background: rgba(15, 26, 46, 0.95);">
+            <tr class="text-uppercase small text-white-50 anamnesis-thead-tr">
               <th class="py-3 px-4">Aprendiz</th>
               <th class="py-3 px-4 text-center">Documento / Ficha</th>
               <th class="py-3 px-4 text-center">Fecha Evaluación</th>
