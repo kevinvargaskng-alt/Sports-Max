@@ -4,8 +4,8 @@
 {% block title %}Gimnasio SENA{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-<link rel="stylesheet" href="{% static 'css/gimnasio_styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}?v=20261126c">
+<link rel="stylesheet" href="{% static 'css/gimnasio_styles.css' %}?v=20261126c">
 {% endblock %}
 
 {% block content %}
@@ -945,8 +945,7 @@
                     {% endif %}
                     <div class="maquina-img-wrap">
                         <img loading="lazy" src="{{ maquina.imagen_url }}" alt="{{ maquina.nombre }}"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <i class="fas fa-dumbbell maquina-icon-fallback gym-u-51"></i>
+                             onerror="this.style.display='none';">
                     </div>
                     <div class="maquina-body">
                         <span class="maquina-cat cat-{{ maquina.categoria }}">{{ maquina.get_categoria_display|default:maquina.categoria }}</span>

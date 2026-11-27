@@ -4,7 +4,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gimnasio', '0008_franjahoraria_alter_machine_options_and_more'),
+        ('gimnasio', '0002_initial'),
     ]
 
     operations = [

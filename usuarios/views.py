@@ -478,14 +478,12 @@ def perfil_view(request):
         if 'comentario' in request.POST:
             tipo = request.POST.get('tipo', 'otro')
             comentario = request.POST.get('comentario')
-            anonimo_flag = request.POST.get('anonimo') == 'on'
-            sugerencia_usuario = None if anonimo_flag else usuario
 
             sugerencia = Sugerencia.objects.create(
-                usuario=sugerencia_usuario,
+                usuario=usuario,
                 tipo=tipo,
                 comentario=sanitize_html(sanitize_input(comentario, max_length=2000)),
-                anonimo=anonimo_flag,
+                anonimo=False,
                 imagen=validate_uploaded_file(request.FILES.get('imagen_error'), allowed_types='image') if request.FILES.get('imagen_error') else None
             )
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

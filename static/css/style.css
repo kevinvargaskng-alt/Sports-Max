@@ -2677,8 +2677,8 @@ body.light-theme .btn-outline-sm.active {
    ============================================================ */
 /* MÓDULO HÁBITOS SALUDABLES — ESTILO GLASSMORPHISM UNIFICADO */
 
-/* Glassmorphism para Hero y Tarjetas del Módulo */
-.hero-wrap {
+/* Glassmorphism para Hero y Tarjetas del Módulo (Solo Modo Oscuro) */
+html:not(.acc-claro) body:not(.light-theme) .hero-wrap {
     background: rgba(15, 23, 42, 0.82) !important;
     backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(35, 134, 54, 0.45) !important;
@@ -2686,17 +2686,46 @@ body.light-theme .btn-outline-sm.active {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
-.nav-card,
-.panel,
-.tracking-card,
-.no-tracking-card,
-.library-banner,
-.admin-section {
+html:not(.acc-claro) body:not(.light-theme) .nav-card,
+html:not(.acc-claro) body:not(.light-theme) .panel,
+html:not(.acc-claro) body:not(.light-theme) .tracking-card,
+html:not(.acc-claro) body:not(.light-theme) .no-tracking-card,
+html:not(.acc-claro) body:not(.light-theme) .library-banner,
+html:not(.acc-claro) body:not(.light-theme) .admin-section {
     background: rgba(15, 23, 42, 0.78) !important;
     backdrop-filter: blur(14px) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 20px !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Modo Claro para Hero y Tarjetas de Hábitos Saludables */
+html.acc-claro body .hero-wrap,
+body.light-theme .hero-wrap {
+    background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+    border: 1px solid #007832 !important;
+    border-radius: 24px !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 12px 30px rgba(0, 120, 50, 0.22) !important;
+}
+
+html.acc-claro body .nav-card,
+html.acc-claro body .panel,
+html.acc-claro body .tracking-card,
+html.acc-claro body .no-tracking-card,
+html.acc-claro body .library-banner,
+html.acc-claro body .admin-section,
+body.light-theme .nav-card,
+body.light-theme .panel,
+body.light-theme .tracking-card,
+body.light-theme .no-tracking-card,
+body.light-theme .library-banner,
+body.light-theme .admin-section {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 20px !important;
+    color: #1E293B !important;
+    box-shadow: 0 6px 20px rgba(30, 41, 59, 0.07) !important;
 }
 
 .nav-card:hover,
@@ -2956,8 +2985,8 @@ body.light-theme .btn-outline-sm.active {
    ============================================================ */
 /* MÓDULO HÁBITOS SALUDABLES — ESTILO GLASSMORPHISM UNIFICADO */
 
-/* Glassmorphism para Hero y Tarjetas del Módulo */
-.hero-wrap {
+/* Glassmorphism para Hero y Tarjetas del Módulo (Solo Modo Oscuro) */
+html:not(.acc-claro) body:not(.light-theme) .hero-wrap {
     background: rgba(15, 23, 42, 0.82) !important;
     backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(35, 134, 54, 0.45) !important;
@@ -2965,17 +2994,46 @@ body.light-theme .btn-outline-sm.active {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
-.nav-card,
-.panel,
-.tracking-card,
-.no-tracking-card,
-.library-banner,
-.admin-section {
+html:not(.acc-claro) body:not(.light-theme) .nav-card,
+html:not(.acc-claro) body:not(.light-theme) .panel,
+html:not(.acc-claro) body:not(.light-theme) .tracking-card,
+html:not(.acc-claro) body:not(.light-theme) .no-tracking-card,
+html:not(.acc-claro) body:not(.light-theme) .library-banner,
+html:not(.acc-claro) body:not(.light-theme) .admin-section {
     background: rgba(15, 23, 42, 0.78) !important;
     backdrop-filter: blur(14px) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 20px !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Modo Claro para Hero y Tarjetas de Hábitos Saludables */
+html.acc-claro body .hero-wrap,
+body.light-theme .hero-wrap {
+    background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+    border: 1px solid #007832 !important;
+    border-radius: 24px !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 12px 30px rgba(0, 120, 50, 0.22) !important;
+}
+
+html.acc-claro body .nav-card,
+html.acc-claro body .panel,
+html.acc-claro body .tracking-card,
+html.acc-claro body .no-tracking-card,
+html.acc-claro body .library-banner,
+html.acc-claro body .admin-section,
+body.light-theme .nav-card,
+body.light-theme .panel,
+body.light-theme .tracking-card,
+body.light-theme .no-tracking-card,
+body.light-theme .library-banner,
+body.light-theme .admin-section {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 20px !important;
+    color: #1E293B !important;
+    box-shadow: 0 6px 20px rgba(30, 41, 59, 0.07) !important;
 }
 
 .nav-card:hover,

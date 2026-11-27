@@ -647,6 +647,14 @@ html.acc-claro body *:not(.hero-wrap) > .btn-primary-acid:hover {
 }
 
 /* Tarjetas, paneles y contenedores de Hábitos Saludables */
+html.acc-claro body .panel,
+html.acc-claro body .nav-card,
+html.acc-claro body .tracking-card,
+html.acc-claro body .no-tracking-card,
+html.acc-claro body .library-banner,
+html.acc-claro body .admin-section,
+html.acc-claro body .empty-state,
+html.acc-claro body .admin-tab,
 html.acc-claro body .calc-card,
 html.acc-claro body .kpi-box,
 html.acc-claro body .kpi-card,
@@ -1352,7 +1360,8 @@ html.acc-claro body .date-group-header {
     border-color: #CBD5E1 !important;
 }
 html.acc-claro body .maquina-img-wrap {
-    background: #F1F5F9 !important;
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
 }
 
 /* Proteger texto blanco en botones de acción y badges de color */
@@ -1382,13 +1391,21 @@ html.acc-claro body .btn-success *,
 html.acc-claro body .btn-primary,
 html.acc-claro body .btn-primary *,
 html.acc-claro body .btn-info,
+html.acc-claro body .btn-info.text-dark,
 html.acc-claro body .btn-info *,
+body.light-theme .btn-info,
+body.light-theme .btn-info.text-dark,
+body.light-theme .btn-info *,
 html.acc-claro body .btn-danger,
 html.acc-claro body .btn-danger *,
 html.acc-claro body .badge.bg-success,
 html.acc-claro body .badge.bg-primary,
 html.acc-claro body .badge.bg-info,
+html.acc-claro body .badge.bg-info.text-dark,
 html.acc-claro body .badge.bg-info *,
+body.light-theme .badge.bg-info,
+body.light-theme .badge.bg-info.text-dark,
+body.light-theme .badge.bg-info *,
 html.acc-claro body .badge.bg-danger,
 html.acc-claro body .badge.bg-dark,
 html.acc-claro body .stock-badge.bg-success,
@@ -1414,11 +1431,73 @@ body.light-theme input[type="time"]::-webkit-calendar-picker-indicator {
     filter: none !important;
 }
 
-/* ── 13. Regla Global de Alto Contraste para Manual, Ayuda, Legales y Créditos (Modo Claro) ── */
+/* ── 13. Regla Global de Alto Contraste para Manual, Ayuda, Modales, Diálogos y Contenido (Modo Claro) ── */
 html[data-theme="light"] body main .text-white:not(.btn):not(.badge):not(.skip-to-content),
 html.acc-claro body main .text-white:not(.btn):not(.badge):not(.skip-to-content),
-body.light-theme main .text-white:not(.btn):not(.badge):not(.skip-to-content) {
-    color: #1E293B;
+body.light-theme main .text-white:not(.btn):not(.badge):not(.skip-to-content),
+html[data-theme="light"] body .modal-content .text-white:not(.btn):not(.badge),
+html.acc-claro body .modal-content .text-white:not(.btn):not(.badge),
+body.light-theme .modal-content .text-white:not(.btn):not(.badge),
+html[data-theme="light"] body .modal-content .modal-title,
+html.acc-claro body .modal-content .modal-title,
+body.light-theme .modal-content .modal-title,
+html.acc-claro body .smax-dialog-title,
+body.light-theme .smax-dialog-title {
+    color: #1E293B !important;
+}
+html[data-theme="light"] body .modal-content .text-white-50,
+html.acc-claro body .modal-content .text-white-50,
+body.light-theme .modal-content .text-white-50,
+html.acc-claro body .smax-dialog-message,
+html.acc-claro body .smax-dialog-message *,
+body.light-theme .smax-dialog-message,
+body.light-theme .smax-dialog-message * {
+    color: #334155 !important;
+}
+html.acc-claro body .modal-content .btn-outline-light,
+body.light-theme .modal-content .btn-outline-light,
+html.acc-claro body main *:not(.hero):not(.hero-wrap) > .btn-outline-light,
+body.light-theme main *:not(.hero):not(.hero-wrap) > .btn-outline-light {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .modal-content .btn-outline-light:hover,
+body.light-theme .modal-content .btn-outline-light:hover {
+    background: #F1F8EC !important;
+    border-color: #39A900 !important;
+    color: #007832 !important;
+}
+html.acc-claro body .hero-aprendiz,
+body.light-theme .hero-aprendiz {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F1F8EC 100%) !important;
+    border: 1.5px solid #86EFAC !important;
+    color: #1E293B !important;
+}
+html.acc-claro body .hero-aprendiz .hero-title,
+body.light-theme .hero-aprendiz .hero-title {
+    background: none !important;
+    -webkit-text-fill-color: #0F172A !important;
+    color: #0F172A !important;
+}
+html.acc-claro body .hero-aprendiz .hero-sub,
+html.acc-claro body .hero-aprendiz .hero-stat-lbl,
+body.light-theme .hero-aprendiz .hero-sub,
+body.light-theme .hero-aprendiz .hero-stat-lbl {
+    color: #475569 !important;
+}
+html.acc-claro body .hero-aprendiz .hero-stat,
+body.light-theme .hero-aprendiz .hero-stat {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+}
+html.acc-claro body .hero-aprendiz .hero-stat-num,
+body.light-theme .hero-aprendiz .hero-stat-num {
+    color: #007832 !important;
+}
+html.acc-claro body .custom-toast-close,
+body.light-theme .custom-toast-close {
+    color: #1E293B !important;
 }
 html[data-theme="light"] body main h1.text-white,
 html[data-theme="light"] body main h2.text-white,
@@ -1488,6 +1567,20 @@ html[data-theme="light"] body .hero-wrap p,
 html.acc-claro body .hero-wrap h1,
 html.acc-claro body .hero-wrap h2,
 html.acc-claro body .hero-wrap p,
+html.acc-claro body .imc-hero h1,
+html.acc-claro body .imc-hero p,
+html.acc-claro body .progreso-hero h1,
+html.acc-claro body .progreso-hero p,
+html.acc-claro body .sueno-hero h1,
+html.acc-claro body .sueno-hero p,
+html.acc-claro body .rutinas-hero h1,
+html.acc-claro body .rutinas-hero p,
+html.acc-claro body .recetas-hero h1,
+html.acc-claro body .recetas-hero p,
+html.acc-claro body .notif-hero h1,
+html.acc-claro body .notif-hero p,
+html.acc-claro body .roles-hero h1,
+html.acc-claro body .roles-hero p,
 html[data-theme="light"] body .imc-hero h1,
 html[data-theme="light"] body .imc-hero p,
 html[data-theme="light"] body .progreso-hero h1,
@@ -1502,6 +1595,14 @@ html[data-theme="light"] body .notif-hero h1,
 html[data-theme="light"] body .notif-hero p,
 html[data-theme="light"] body .roles-hero h1,
 html[data-theme="light"] body .roles-hero p,
+html.acc-claro body .inventory-header h1,
+html.acc-claro body .inventory-header p,
+html.acc-claro body .inventory-header .text-white,
+html.acc-claro body .inventory-header .text-white-50,
+html.acc-claro body .torneo-hero h1,
+html.acc-claro body .torneo-hero p,
+html.acc-claro body .ganador-card *,
+html.acc-claro body .modal-sport-header *,
 html.acc-claro body .sport-card-content *,
 body.light-theme .sport-card-content * {
     color: #FFFFFF !important;

@@ -151,24 +151,26 @@
 
 /* Primary */
 .smax-dialog-btn.primary {
-    background: linear-gradient(135deg, #2b7de9, #1f64c8);
-    color: #fff;
-    border-color: rgba(43, 125, 233, 0.5);
+    background: linear-gradient(135deg, #39A900, #007832);
+    color: #fff !important;
+    border-color: #007832;
 }
 .smax-dialog-btn.primary:hover {
-    background: linear-gradient(135deg, #3d8ef5, #2b7de9);
-    box-shadow: 0 4px 20px rgba(43, 125, 233, 0.35);
+    background: linear-gradient(135deg, #007832, #005C25);
+    box-shadow: 0 4px 20px rgba(57, 169, 0, 0.35);
+    color: #fff !important;
 }
 
 /* Danger */
 .smax-dialog-btn.danger {
     background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #fff;
+    color: #fff !important;
     border-color: rgba(239, 68, 68, 0.5);
 }
 .smax-dialog-btn.danger:hover {
     background: linear-gradient(135deg, #f87171, #ef4444);
     box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
+    color: #fff !important;
 }
 
 /* Secondary / Cancel */
@@ -181,6 +183,88 @@
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ═══ ADAPTACIÓN MODO CLARO INSTITUCIONAL SENA ═══ */
+html.acc-claro .smax-dialog,
+body.light-theme .smax-dialog,
+html[data-theme="light"] .smax-dialog {
+    background: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22) !important;
+    color: #1E293B !important;
+}
+html.acc-claro .smax-dialog-title,
+body.light-theme .smax-dialog-title,
+html[data-theme="light"] .smax-dialog-title {
+    color: #0F172A !important;
+    font-weight: 800 !important;
+}
+html.acc-claro .smax-dialog-message,
+html.acc-claro .smax-dialog-message *,
+body.light-theme .smax-dialog-message,
+body.light-theme .smax-dialog-message *,
+html[data-theme="light"] .smax-dialog-message,
+html[data-theme="light"] .smax-dialog-message * {
+    color: #334155 !important;
+    font-weight: 500;
+}
+html.acc-claro .smax-dialog-message strong,
+body.light-theme .smax-dialog-message strong,
+html[data-theme="light"] .smax-dialog-message strong {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+}
+html.acc-claro .smax-dialog-message .smax-highlight,
+body.light-theme .smax-dialog-message .smax-highlight,
+html[data-theme="light"] .smax-dialog-message .smax-highlight {
+    background: #F0FDF4 !important;
+    border: 1px solid #86EFAC !important;
+    color: #007832 !important;
+}
+html.acc-claro .smax-dialog-icon .icon-circle.info,
+html.acc-claro .smax-dialog-icon .icon-circle.success,
+body.light-theme .smax-dialog-icon .icon-circle.info,
+body.light-theme .smax-dialog-icon .icon-circle.success {
+    background: #DCFCE7 !important;
+    color: #007832 !important;
+    border: 1px solid #86EFAC !important;
+}
+html.acc-claro .smax-dialog-icon .icon-circle.warning,
+body.light-theme .smax-dialog-icon .icon-circle.warning {
+    background: #FEF3C7 !important;
+    color: #B45309 !important;
+    border: 1px solid #FCD34D !important;
+}
+html.acc-claro .smax-dialog-icon .icon-circle.danger,
+body.light-theme .smax-dialog-icon .icon-circle.danger {
+    background: #FEE2E2 !important;
+    color: #DC2626 !important;
+    border: 1px solid #FCA5A5 !important;
+}
+html.acc-claro .smax-dialog-btn.primary,
+body.light-theme .smax-dialog-btn.primary {
+    background: linear-gradient(135deg, #39A900 0%, #007832 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #007832 !important;
+    box-shadow: 0 6px 16px rgba(57, 169, 0, 0.28) !important;
+}
+html.acc-claro .smax-dialog-btn.primary:hover,
+body.light-theme .smax-dialog-btn.primary:hover {
+    background: linear-gradient(135deg, #007832 0%, #005C25 100%) !important;
+    color: #FFFFFF !important;
+}
+html.acc-claro .smax-dialog-btn.secondary,
+body.light-theme .smax-dialog-btn.secondary {
+    background: #F1F5F9 !important;
+    color: #1E293B !important;
+    border: 1.5px solid #CBD5E1 !important;
+}
+html.acc-claro .smax-dialog-btn.secondary:hover,
+body.light-theme .smax-dialog-btn.secondary:hover {
+    background: #E2E8F0 !important;
+    color: #0F172A !important;
+    border-color: #94A3B8 !important;
 }
 </style>
 

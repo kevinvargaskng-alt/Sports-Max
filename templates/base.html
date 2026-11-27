@@ -70,7 +70,7 @@
     <link rel="stylesheet" href="{% static 'vendor/fontawesome/css/all.min.css' %}">
     
     <!-- Estilos principales -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20261126c">
 
     <!-- ── Schema.org JSON-LD (Estructurado) ─────────────────── -->
     <script type="application/ld+json">
@@ -280,8 +280,8 @@
     {% include "partials/scroll_flechas.html" %}
 
     <!-- Corrección de contraste en modo claro (debe cargarse al final) -->
-    <link rel="stylesheet" href="{% static 'css/modo_claro_auto.css' %}">
-    <link rel="stylesheet" href="{% static 'css/modo_claro_contraste.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modo_claro_auto.css' %}?v=20261126c">
+    <link rel="stylesheet" href="{% static 'css/modo_claro_contraste.css' %}?v=20261126c">
 
     {% if user.is_authenticated %}
         {% include "partials/sugerencias_modal.html" %}

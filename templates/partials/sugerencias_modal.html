@@ -9,14 +9,49 @@
             </div>
 
             <div class="modal-body pt-0">
-                <ul class="nav nav-tabs mb-4 border-0" id="buzonTabs" role="tablist">
+                <style>
+                    #buzonTabs .nav-link {
+                        color: rgba(255, 255, 255, 0.85) !important;
+                        font-weight: 600;
+                        border: none !important;
+                        border-bottom: 3px solid transparent !important;
+                        background: transparent !important;
+                        padding: 0.65rem 1.15rem;
+                    }
+                    #buzonTabs .nav-link.active {
+                        color: #39A900 !important;
+                        border-bottom-color: #39A900 !important;
+                        font-weight: 700;
+                    }
+                    html.acc-claro #buzonTabs .nav-link,
+                    body.light-theme #buzonTabs .nav-link,
+                    html[data-theme="light"] #buzonTabs .nav-link {
+                        color: #334155 !important;
+                    }
+                    html.acc-claro #buzonTabs .nav-link i,
+                    body.light-theme #buzonTabs .nav-link i,
+                    html[data-theme="light"] #buzonTabs .nav-link i {
+                        color: #475569 !important;
+                    }
+                    html.acc-claro #buzonTabs .nav-link.active,
+                    html.acc-claro #buzonTabs .nav-link.active i,
+                    body.light-theme #buzonTabs .nav-link.active,
+                    body.light-theme #buzonTabs .nav-link.active i,
+                    html[data-theme="light"] #buzonTabs .nav-link.active,
+                    html[data-theme="light"] #buzonTabs .nav-link.active i {
+                        color: #007832 !important;
+                        border-bottom-color: #39A900 !important;
+                        background: rgba(57, 169, 0, 0.08) !important;
+                    }
+                </style>
+                <ul class="nav nav-tabs mb-4 border-bottom" id="buzonTabs" role="tablist">
                     <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#buzon-enviar">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#buzon-enviar" type="button" role="tab">
                             <i class="fas fa-bug me-2"></i>Enviar Reporte
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#buzon-respuestas">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#buzon-respuestas" type="button" role="tab">
                             <i class="fas fa-history me-2"></i>Mis Reportes
                         </button>
                     </li>
@@ -60,11 +95,6 @@
                                     </div>
                                     <div class="small text-white-50 mt-1" id="fileSizeInfo"></div>
                                 </div>
-                            </div>
-
-                            <div class="form-check form-switch mt-3 text-start">
-                                <input class="form-check-input" type="checkbox" id="anonimo" name="anonimo">
-                                <label class="form-check-label text-white-50 small" for="anonimo">Enviar de forma anónima (ocultar mi identidad)</label>
                             </div>
 
                             <button type="submit" class="btn btn-info btn-enviar-reporte w-100 mt-4 py-3 fw-bold">

@@ -119,6 +119,156 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
   opacity: 0.25; line-height: 1;
   filter: drop-shadow(0 0 40px rgba(52, 211, 153, 0.35));
 }
+.hero-img-card {
+  width: 100%;
+  max-width: 390px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  background: #0f172a;
+}
+.hero-img-card img {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── MODO CLARO SENA (ALTO CONTRASTE, SIN FONDO AZUL NI TEXTO INVISIBLE) ── */
+html.acc-claro body .hero-wrap,
+body.light-theme .hero-wrap,
+html[data-theme="light"] body .hero-wrap {
+  background: linear-gradient(135deg, #007832 0%, #39A900 100%) !important;
+  border: 1px solid #007832 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 12px 30px rgba(0, 120, 50, 0.22) !important;
+}
+html.acc-claro body .hero-wrap .hero-title,
+html.acc-claro body .hero-wrap .hero-title span,
+html.acc-claro body .hero-wrap .hero-desc,
+body.light-theme .hero-wrap .hero-title,
+body.light-theme .hero-wrap .hero-title span,
+body.light-theme .hero-wrap .hero-desc {
+  color: #FFFFFF !important;
+  text-shadow: none !important;
+}
+html.acc-claro body .hero-wrap .hero-badge,
+body.light-theme .hero-wrap .hero-badge {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid,
+body.light-theme .hero-wrap .btn-primary-acid {
+  background: #FFFFFF !important;
+  color: #007832 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16) !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid i,
+body.light-theme .hero-wrap .btn-primary-acid i {
+  color: #007832 !important;
+}
+html.acc-claro body .hero-wrap .btn-primary-acid:hover,
+body.light-theme .hero-wrap .btn-primary-acid:hover {
+  background: #F0FDF4 !important;
+  color: #005C25 !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost,
+body.light-theme .hero-wrap .btn-ghost {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+  color: #FFFFFF !important;
+}
+html.acc-claro body .hero-wrap .btn-ghost:hover,
+body.light-theme .hero-wrap .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+  border-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+html.acc-claro body .nav-card,
+html.acc-claro body .tracking-card,
+html.acc-claro body .no-tracking-card,
+html.acc-claro body .library-banner,
+html.acc-claro body .admin-section,
+html.acc-claro body .admin-action-btn,
+body.light-theme .nav-card,
+body.light-theme .tracking-card,
+body.light-theme .no-tracking-card,
+body.light-theme .library-banner,
+body.light-theme .admin-section,
+body.light-theme .admin-action-btn {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #1E293B !important;
+  box-shadow: 0 6px 20px rgba(30, 41, 59, 0.07) !important;
+}
+html.acc-claro body .nav-card h6,
+html.acc-claro body .tracking-card h5,
+html.acc-claro body .no-tracking-card h5,
+html.acc-claro body .library-banner h5,
+html.acc-claro body .admin-section h4,
+html.acc-claro body .hab-ini-u-6,
+html.acc-claro body .hab-ini-u-9,
+html.acc-claro body .hab-ini-u-13,
+body.light-theme .nav-card h6,
+body.light-theme .tracking-card h5,
+body.light-theme .no-tracking-card h5,
+body.light-theme .library-banner h5,
+body.light-theme .admin-section h4,
+body.light-theme .hab-ini-u-6,
+body.light-theme .hab-ini-u-9,
+body.light-theme .hab-ini-u-13 {
+  color: #1E293B !important;
+}
+html.acc-claro body .nav-card p,
+html.acc-claro body .hab-ini-u-3,
+html.acc-claro body .hab-ini-u-4,
+html.acc-claro body .hab-ini-u-7,
+html.acc-claro body .hab-ini-u-10,
+html.acc-claro body .hab-ini-u-14,
+html.acc-claro body .section-title,
+body.light-theme .nav-card p,
+body.light-theme .hab-ini-u-3,
+body.light-theme .hab-ini-u-4,
+body.light-theme .hab-ini-u-7,
+body.light-theme .hab-ini-u-10,
+body.light-theme .hab-ini-u-14,
+body.light-theme .section-title {
+  color: #475569 !important;
+}
+html.acc-claro body .nav-card:hover,
+html.acc-claro body .tracking-card:hover,
+html.acc-claro body .no-tracking-card:hover,
+html.acc-claro body .admin-action-btn:hover,
+body.light-theme .nav-card:hover,
+body.light-theme .tracking-card:hover,
+body.light-theme .no-tracking-card:hover,
+body.light-theme .admin-action-btn:hover {
+  background: #F0FDF4 !important;
+  border-color: #39A900 !important;
+  color: #007832 !important;
+}
+html.acc-claro body .library-banner .btn-ghost,
+body.light-theme .library-banner .btn-ghost {
+  background: #F0FDF4 !important;
+  border: 1.5px solid #39A900 !important;
+  color: #007832 !important;
+}
+html.acc-claro body .library-banner .btn-ghost:hover,
+body.light-theme .library-banner .btn-ghost:hover {
+  background: #39A900 !important;
+  border-color: #007832 !important;
+  color: #FFFFFF !important;
+}
+html.acc-claro body .library-banner .lb-icon,
+html.acc-claro body .nav-card.nc-blue .nc-icon,
+body.light-theme .library-banner .lb-icon,
+body.light-theme .nav-card.nc-blue .nc-icon {
+  background: #DCFCE7 !important;
+  color: #007832 !important;
+}
 
 /* ── CONSENT BANNER ── */
 .consent-banner {
@@ -145,15 +295,15 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 /* ── NAV CARDS ── */
 .nav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.85rem; margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem; margin-bottom: 2.5rem;
 }
 .nav-card {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 16px; padding: 1.5rem 1.25rem;
   text-decoration: none; color: #fff;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.75rem;
   transition: border-color 0.25s, transform 0.25s, background 0.25s;
   position: relative; overflow: hidden;
 }
@@ -210,18 +360,18 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 .library-banner {
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 18px; padding: 1.5rem 2rem;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  flex-wrap: wrap; margin-top: 1.5rem;
+  border-radius: 20px; padding: 2rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1rem;
+  margin-top: 1.5rem;
 }
-.library-banner .lb-left { display: flex; align-items: center; gap: 1rem; }
-.library-banner .lb-icon { width: 50px; height: 50px; border-radius: 14px; background: rgba(92,158,255,0.1); color: #5c9eff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.library-banner .lb-left { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; }
+.library-banner .lb-icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(92,158,255,0.1); color: #5c9eff; font-size: 1.45rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 /* ── ADMIN PANEL ── */
 .admin-section {
   background: var(--surface2);
   border: 1px solid rgba(35, 134, 54, 0.35);
-  border-radius: 20px; padding: 2rem; margin-top: 2.5rem;
+  border-radius: 20px; padding: 2rem; margin-bottom: 2.5rem;
 }
 .admin-section .admin-header {
   display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem;
@@ -281,7 +431,7 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
 <div class="container py-4">
 
 
-  {% if not tiene_consent %}
+  {% if not user.is_staff and not tiene_consent %}
   <div class="consent-banner">
     <p><i class="fas fa-shield-alt me-2 hab-ini-u-1"></i>
     Para acceder a <strong>Mi Salud y seguimientos</strong>, necesitas aceptar el tratamiento de datos personales (Habeas Data).</p>
@@ -294,13 +444,28 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
   <!-- HERO -->
   <div class="hero-wrap reveal">
     <div class="row align-items-center">
-      <div class="col-lg-8">
+      <div class="col-lg-7">
         <div class="hero-badge"><i class="fas fa-seedling"></i> Módulo activo</div>
         <h1 class="hero-title">Hábitos<br><span>Saludables</span></h1>
         <p class="hero-desc">
+          {% if user.is_staff %}
+          Administra las guías de hábitos, rutinas físicas, pirámide nutricional y materiales educativos, y consulta los seguimientos y reportes de los aprendices.
+          {% else %}
           Integra buenas prácticas de nutrición, ejercicio y bienestar mental en tu rutina diaria. Haz seguimiento a tu salud y descubre guías creadas para ti.
+          {% endif %}
         </p>
         <div class="hero-actions">
+          {% if user.is_staff %}
+          <a href="{% url 'habitos:admin_gestion' 'habitos' %}" class="btn-primary-acid">
+            <i class="fas fa-sliders-h"></i> Panel de Gestión
+          </a>
+          <a href="{% url 'habitos:reporte_habitos' %}" class="btn-ghost">
+            <i class="fas fa-chart-bar"></i> Ver Reportes
+          </a>
+          <a href="{% url 'habitos:admin_gestion' 'seguimientos' %}" class="btn-ghost">
+            <i class="fas fa-notes-medical"></i> Seguimientos
+          </a>
+          {% else %}
           <a href="{% url 'habitos:dashboard' %}" class="btn-primary-acid">
             <i class="fas fa-chart-line"></i> Mi Dashboard
           </a>
@@ -312,16 +477,55 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
             <i class="fas fa-plus-circle"></i> Registrar Seguimiento
           </a>
           {% endif %}
+          {% endif %}
         </div>
       </div>
-      <div class="col-lg-4 d-none d-lg-flex justify-content-center align-items-center">
-        <i class="fas fa-heartbeat hero-big-icon"></i>
+      <div class="col-lg-5 mt-4 mt-lg-0 d-flex justify-content-center align-items-center">
+        <div class="hero-img-card">
+          <img src="{% static 'img/habitos/habitos_hero.jpg' %}" alt="Hábitos Saludables y Bienestar SENA" loading="eager">
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- PANEL DE ADMINISTRADOR (solo admin) -->
+  {% if user.is_staff %}
+  <div class="admin-section reveal">
+    <div class="admin-header">
+      <span class="badge-admin"><i class="fas fa-crown me-1"></i>Panel Admin</span>
+      <h4>Gestión del Módulo</h4>
+    </div>
+    <div class="admin-actions-grid">
+      <a href="{% url 'habitos:admin_gestion' 'habitos' %}" class="admin-action-btn">
+        <i class="fas fa-apple-alt hab-ini-u-16"></i>
+        Gestionar Hábitos
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'rutinas' %}" class="admin-action-btn">
+        <i class="fas fa-dumbbell hab-ini-u-18"></i>
+        Gestionar Rutinas
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'nutricion' %}" class="admin-action-btn">
+        <i class="fas fa-utensils hab-ini-u-19"></i>
+        Gestionar Nutrición
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'materiales' %}" class="admin-action-btn">
+        <i class="fas fa-file-pdf hab-ini-u-20"></i>
+        Materiales de Apoyo
+      </a>
+      <a href="{% url 'habitos:admin_gestion' 'seguimientos' %}" class="admin-action-btn">
+        <i class="fas fa-notes-medical hab-ini-u-21"></i>
+        Ver Seguimientos
+      </a>
+      <a href="{% url 'habitos:reporte_habitos' %}" class="admin-action-btn">
+        <i class="fas fa-chart-bar hab-ini-u-16"></i>
+        Reportes
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
   <!-- MÓDULOS DE NAVEGACIÓN -->
-  <div class="section-title reveal"><span>Explorar Módulos</span></div>
+  <div class="section-title reveal"><span>{% if user.is_staff %}Vista Previa de Contenidos{% else %}Explorar Módulos{% endif %}</span></div>
   <div class="nav-grid reveal">
     <a href="{% url 'habitos:lista_habitos' %}" class="nav-card nc-green">
       <div class="nc-icon"><i class="fas fa-apple-alt"></i></div>
@@ -344,6 +548,7 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
         <p>Pirámide nutricional y guías de dieta.</p>
       </div>
     </a>
+    {% if not user.is_staff %}
     <a href="{% url 'habitos:historial_salud' %}" class="nav-card nc-blue">
       <div class="nc-icon"><i class="fas fa-notes-medical"></i></div>
       <div>
@@ -351,23 +556,18 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
         <p>Historial clínico y medidas físicas.</p>
       </div>
     </a>
+    {% endif %}
     <a href="{% url 'habitos:biblioteca' %}" class="nav-card nc-purple">
       <div class="nc-icon"><i class="fas fa-book-open"></i></div>
       <div>
         <h6>Biblioteca</h6>
-        <p>PDF, videos e infografías.</p>
-      </div>
-    </a>
-    <a href="{% url 'habitos:reporte_habitos' %}" class="nav-card nc-green">
-      <div class="nc-icon"><i class="fas fa-chart-bar"></i></div>
-      <div>
-        <h6>Reportes</h6>
-        <p>Consulta por ficha, hábito y fechas.</p>
+        <p>PDF, documentos e infografías.</p>
       </div>
     </a>
   </div>
 
-  <!-- ÚLTIMO SEGUIMIENTO o CTA -->
+  {% if not user.is_staff %}
+  <!-- ÚLTIMO SEGUIMIENTO o CTA (solo aprendices) -->
   <div class="row g-3 mb-4 reveal">
     <div class="col-lg-6">
       {% if ultimo_seguimiento %}
@@ -422,41 +622,6 @@ body { background: var(--surface); color: #fff; font-family: var(--font-body); }
           Explorar <i class="fas fa-arrow-right ms-1"></i>
         </a>
       </div>
-    </div>
-  </div>
-
-  <!-- PANEL DE ADMINISTRADOR (solo admin) -->
-  {% if user.is_staff %}
-  <div class="admin-section reveal">
-    <div class="admin-header">
-      <span class="badge-admin"><i class="fas fa-crown me-1"></i>Panel Admin</span>
-      <h4>Gestión del Módulo</h4>
-    </div>
-    <div class="admin-actions-grid">
-      <a href="{% url 'admin:habitos_saludables_habitosaludable_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-apple-alt hab-ini-u-16"></i>
-        Gestionar Hábitos
-      </a>
-      <a href="{% url 'admin:habitos_saludables_habitosaludable_add' %}" class="admin-action-btn">
-        <i class="fas fa-plus-circle hab-ini-u-17"></i>
-        Nuevo Hábito
-      </a>
-      <a href="{% url 'admin:habitos_saludables_rutinafisica_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-dumbbell hab-ini-u-18"></i>
-        Gestionar Rutinas
-      </a>
-      <a href="{% url 'admin:habitos_saludables_piramidenutricional_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-utensils hab-ini-u-19"></i>
-        Gestionar Nutrición
-      </a>
-      <a href="{% url 'admin:habitos_saludables_materialapoyo_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-file-pdf hab-ini-u-20"></i>
-        Materiales de Apoyo
-      </a>
-      <a href="{% url 'admin:habitos_saludables_seguimientosalud_changelist' %}" class="admin-action-btn">
-        <i class="fas fa-notes-medical hab-ini-u-21"></i>
-        Ver Seguimientos
-      </a>
     </div>
   </div>
   {% endif %}

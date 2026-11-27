@@ -69,4 +69,10 @@ urlpatterns = [
 
     # ── Reporte Multimódulo de Hábitos Saludables ────
     path('reportes/', views.reporte_habitos_view, name='reporte_habitos'),
+
+    # ── Gestión Administrativa Propia (sin Django Admin) ──
+    path('gestion/<str:seccion>/', views.admin_gestion_modulo, name='admin_gestion'),
+    path('gestion/<str:seccion>/nuevo/', views.admin_crear_item, name='admin_crear_item'),
+    path('gestion/<str:seccion>/<int:pk>/editar/', views.admin_editar_item, name='admin_editar_item'),
+    path('gestion/<str:seccion>/<int:pk>/eliminar/', views.admin_eliminar_item, name='admin_eliminar_item'),
 ]

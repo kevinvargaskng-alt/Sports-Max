@@ -20,7 +20,8 @@ from .models import (
 )
 from .forms import (
     SeguimientoSaludForm, MaterialApoyoForm,
-    BuscarMaterialForm, HabeasDataForm, RecetaSaludableForm
+    BuscarMaterialForm, HabeasDataForm, RecetaSaludableForm,
+    HabitoSaludableForm, RutinaFisicaForm, PiramideNutricionalForm,
 )
 
 
@@ -989,11 +990,12 @@ def reporte_habitos_view(request):
     from django.core.paginator import Paginator
     from django.http import HttpResponse
 
+    if not _verificar_admin_habitos(request):
+        messages.error(request, 'No tienes permisos para acceder a la sección de reportes.')
+        return redirect('habitos:inicio')
+
     hoy = timezone.localdate()
     qs = RegistroHabitoUsuario.objects.select_related('usuario', 'habito').order_by('-fecha')
-
-    if not (request.user.is_staff or request.user.is_superuser):
-        qs = qs.filter(usuario=request.user)
 
     # 1. Filtro de Periodo / Rango de Fechas
     periodo = request.GET.get('periodo', 'todos').strip()
@@ -1082,3 +1084,200 @@ def reporte_habitos_view(request):
         }
     }
     return render(request, 'habitos/reporte_habitos.html', context)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# PANEL DE GESTIÓN ADMINISTRATIVA DEL MÓDULO (SIN SALIR A DJANGO ADMIN)
+# ══════════════════════════════════════════════════════════════════════
+_SECCIONES_ADMIN = {
+    'habitos': {
+        'titulo': 'Gestión de Hábitos Saludables',
+        'subtitulo': 'Crea, edita o activa las guías de hábitos visibles para los aprendices.',
+        'singular': 'Hábito Saludable',
+        'icono': 'fa-apple-alt',
+        'model': HabitoSaludable,
+        'form': HabitoSaludableForm,
+        'permite_crear': True,
+    },
+    'rutinas': {
+        'titulo': 'Gestión de Rutinas Físicas',
+        'subtitulo': 'Administra los planes de entrenamiento por nivel y objetivo.',
+        'singular': 'Rutina Física',
+        'icono': 'fa-dumbbell',
+        'model': RutinaFisica,
+        'form': RutinaFisicaForm,
+        'permite_crear': True,
+    },
+    'nutricion': {
+        'titulo': 'Gestión de Pirámide Nutricional',
+        'subtitulo': 'Administra los niveles, porciones e imágenes de los grupos alimenticios.',
+        'singular': 'Grupo Nutricional',
+        'icono': 'fa-utensils',
+        'model': PiramideNutricional,
+        'form': PiramideNutricionalForm,
+        'permite_crear': True,
+    },
+    'materiales': {
+        'titulo': 'Gestión de Materiales de Apoyo',
+        'subtitulo': 'Administra documentos PDF, infografías y videos educativos de la biblioteca.',
+        'singular': 'Material de Apoyo',
+        'icono': 'fa-file-pdf',
+        'model': MaterialApoyo,
+        'form': MaterialApoyoForm,
+        'permite_crear': True,
+    },
+    'seguimientos': {
+        'titulo': 'Seguimientos de Salud de Aprendices',
+        'subtitulo': 'Consulta las mediciones físicas, IMC, sueño e hidratación registradas por los aprendices.',
+        'singular': 'Seguimiento de Salud',
+        'icono': 'fa-notes-medical',
+        'model': SeguimientoSalud,
+        'form': SeguimientoSaludForm,
+        'permite_crear': False,
+    },
+}
+
+
+def _verificar_admin_habitos(request):
+    return request.user.is_authenticated and (
+        request.user.is_staff or request.user.is_superuser or getattr(request.user, 'rol', '') in ('admin', 'instructor')
+    )
+
+
+@login_required
+def admin_gestion_modulo(request, seccion):
+    """Vista unificada de gestión administrativa dentro del diseño de SportMax."""
+    if not _verificar_admin_habitos(request):
+        messages.error(request, 'No tienes permisos para acceder al panel de gestión.')
+        return redirect('habitos:inicio')
+
+    cfg = _SECCIONES_ADMIN.get(seccion)
+    if not cfg:
+        raise Http404('Sección de gestión no encontrada.')
+
+    model = cfg['model']
+    q = request.GET.get('q', '').strip()
+
+    if seccion == 'seguimientos':
+        items = model.objects.select_related('usuario').order_by('-fecha_evaluacion')
+        if q:
+            items = items.filter(
+                Q(usuario__first_name__icontains=q) |
+                Q(usuario__last_name__icontains=q) |
+                Q(usuario__username__icontains=q) |
+                Q(usuario__numero_documento__icontains=q) |
+                Q(usuario__ficha__icontains=q)
+            )
+    elif seccion == 'nutricion':
+        items = model.objects.all().order_by('nivel_piramide', 'nombre')
+        if q:
+            items = items.filter(Q(nombre__icontains=q) | Q(beneficios__icontains=q))
+    elif seccion == 'rutinas':
+        items = model.objects.all().order_by('nivel', 'nombre')
+        if q:
+            items = items.filter(Q(nombre__icontains=q) | Q(descripcion__icontains=q))
+    else:
+        items = model.objects.all().order_by('-id')
+        if q:
+            items = items.filter(Q(titulo__icontains=q) | Q(descripcion__icontains=q))
+
+    ctx = {
+        'seccion': seccion,
+        'cfg': cfg,
+        'secciones_menu': _SECCIONES_ADMIN,
+        'items': items,
+        'total_items': items.count(),
+        'q': q,
+        'modo': 'lista',
+        'titulo_pagina': cfg['titulo'],
+    }
+    return render(request, 'habitos/admin_gestion.html', ctx)
+
+
+@login_required
+def admin_crear_item(request, seccion):
+    """Formulario propio de SportMax para crear un registro del módulo."""
+    if not _verificar_admin_habitos(request):
+        messages.error(request, 'No tienes permisos para realizar esta acción.')
+        return redirect('habitos:inicio')
+
+    cfg = _SECCIONES_ADMIN.get(seccion)
+    if not cfg or not cfg['permite_crear']:
+        return redirect('habitos:admin_gestion', seccion=seccion if cfg else 'habitos')
+
+    FormClass = cfg['form']
+    if request.method == 'POST':
+        form = FormClass(request.POST, request.FILES)
+        if form.is_valid():
+            obj = form.save()
+            messages.success(request, f'✓ {cfg["singular"]} "{obj}" creado correctamente.')
+            return redirect('habitos:admin_gestion', seccion=seccion)
+    else:
+        form = FormClass()
+
+    ctx = {
+        'seccion': seccion,
+        'cfg': cfg,
+        'secciones_menu': _SECCIONES_ADMIN,
+        'form': form,
+        'modo': 'form',
+        'accion': 'Nuevo',
+        'titulo_pagina': f'Nuevo {cfg["singular"]}',
+    }
+    return render(request, 'habitos/admin_gestion.html', ctx)
+
+
+@login_required
+def admin_editar_item(request, seccion, pk):
+    """Formulario propio de SportMax para editar un registro del módulo."""
+    if not _verificar_admin_habitos(request):
+        messages.error(request, 'No tienes permisos para realizar esta acción.')
+        return redirect('habitos:inicio')
+
+    cfg = _SECCIONES_ADMIN.get(seccion)
+    if not cfg:
+        raise Http404('Sección no encontrada.')
+
+    item = get_object_or_404(cfg['model'], pk=pk)
+    FormClass = cfg['form']
+
+    if request.method == 'POST':
+        form = FormClass(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            obj = form.save()
+            messages.success(request, f'✓ {cfg["singular"]} "{obj}" actualizado correctamente.')
+            return redirect('habitos:admin_gestion', seccion=seccion)
+    else:
+        form = FormClass(instance=item)
+
+    ctx = {
+        'seccion': seccion,
+        'cfg': cfg,
+        'secciones_menu': _SECCIONES_ADMIN,
+        'form': form,
+        'item': item,
+        'modo': 'form',
+        'accion': 'Editar',
+        'titulo_pagina': f'Editar {cfg["singular"]}',
+    }
+    return render(request, 'habitos/admin_gestion.html', ctx)
+
+
+@login_required
+@require_POST
+def admin_eliminar_item(request, seccion, pk):
+    """Elimina un registro desde el panel propio de SportMax."""
+    if not _verificar_admin_habitos(request):
+        messages.error(request, 'No tienes permisos para realizar esta acción.')
+        return redirect('habitos:inicio')
+
+    cfg = _SECCIONES_ADMIN.get(seccion)
+    if not cfg:
+        raise Http404('Sección no encontrada.')
+
+    item = get_object_or_404(cfg['model'], pk=pk)
+    nombre_item = str(item)
+    item.delete()
+    messages.success(request, f'✓ {cfg["singular"]} "{nombre_item}" eliminado correctamente.')
+    return redirect('habitos:admin_gestion', seccion=seccion)
+
